@@ -21,8 +21,8 @@ header("Last-Modified: " . gmdate("D, d M Y H:i:s",$t) . " GMT");
 <h1>freesteam<br></h1>
 
 <table><tr><td valign=top>
-<div class="nav"><span style="font-weight: bold;">Current version: </span>0.5.2<br>
-<span style="font-weight: bold;">Released: </span>12 Mar 2005<br>
+<div class="nav"><span style="font-weight: bold;">Current version: </span>0.5.3<br>
+<span style="font-weight: bold;">Released: </span>22 Mar 2005<br>
 <br>
 Quick links
 <ul>
