@@ -191,6 +191,19 @@ cleantests:
 #%.test.o %.test.d: %.test.cpp $(LIB)
 #	$(CXX) $^ -o $@ $(CPPFLAGS) $(CXXFLAGS_CPPUNIT) $(CXXFLAGS) -DTEST
 #
+
+#-----------------------------
+# LITTLE COMMANDLINE DIAGNOSTIC PROGRAMS
+
+%.cli.exe: %.cli.o $(OBJS) 
+	$(CXX) $< $(OBJS) -o $@ $(LDFLAGS)
+
+critsurf.m: criticalsurface.cli.exe
+	./$< > $@
+
+pboundt.m: pboundt.cli.exe
+	./$< > $@
+
 #-----------------------------
 # INDENT THE CODE
 

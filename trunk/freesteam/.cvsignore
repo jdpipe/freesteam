@@ -8,3 +8,6 @@ gmon.out
 *.asty
 *.d.????
 *.ok
+critsurf.m
+criticalsurface.m
+pboundt.m
