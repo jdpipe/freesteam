@@ -1,0 +1,40 @@
+#* 
+	Open loop cycle model
+	with all component model specified in terms of intrinsic parameters, 
+	rather than intermediatate steam properties
+	
+	John Pye 2005 http://freesteam.sf.net
+*#
+
+using "rankine";
+
+FlowSheet RankineTest
+	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
+    DEVICES
+	cyc as Rankine;
+		
+	SPECIFY # -9 DF
+	
+	# Intrinsic properties of equipment:
+	cyc.TU.eta = 0.85;
+	cyc.PU.eta = 0.65;
+	
+	# Some chosen operating point constraints:
+	cyc.mdot = 1 * "kg/s";
+	cyc.BO.In.p = 60 * "bar";
+	cyc.BO.Dp = -2 * "bar";
+	
+	cyc.BO.Out.T = (300 + 273.15) * "K";
+	
+	cyc.TU.Dp = -56 * "bar";
+	
+	cyc.CO.Dp = -0.5 * "bar";
+	cyc.CO.x = 0.00001;
+
+OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+end
