@@ -92,6 +92,7 @@ cleanctests:
 	@-rm *.cpass.exe
 	@-rm *.cfail.exe
 	@-rm &.cfail.cpp.ok
+	@-rm ctest.skip
 	
 #--------------------------
 # MAKEDEPEND
@@ -141,6 +142,7 @@ $(NAME)-$(VERSION).tar: # tags
 	-rm /tmp/$(NAME)-$(VERSION)/*.tar.bz2
 	-rm /tmp/$(NAME)-$(VERSION)/*.tar.gz
 	-rm /tmp/$(NAME)-$(VERSION)/*.
+	-rm /tmp/$(NAME)-$(VERSION)/ctest.skip
 	-rm -Rf /tmp/$(NAME)-$(VERSION)/CVS/
 	tar -C /tmp -cvf ./$(NAME)-$(VERSION).tar $(NAME)-$(VERSION)
 	-rm -rf /tmp/$(NAME)-$(VERSION)
