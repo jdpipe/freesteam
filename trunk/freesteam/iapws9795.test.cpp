@@ -45,7 +45,7 @@ class IAPWS9795TestPoint{
 				// First get a rough value of rho...
 				
 				if(Boundaries::isRegion3_pT(p,T)){
-					cerr << "Ignoring region 3 point, p = " << p/MPa << "MPa, T = " << T << endl;
+					//cerr << "Ignoring region 3 point, p = " << p/MPa << "MPa, T = " << T << endl;
 					return;
 				}
 				
@@ -63,7 +63,7 @@ class IAPWS9795TestPoint{
 				// Now, re-set the IAPWS-IF97 values
 
 				if(Boundaries::isRegion3_pT(p95,T)){
-					cerr << "Ignoring region 3 point, p = " << p << ", T = " << T << endl;
+					//cerr << "Ignoring region 3 point, p = " << p << ", T = " << T << endl;
 					return;
 				}
 				
@@ -110,7 +110,7 @@ class IAPWS9795Test : public BatchTest<IAPWS9795TestPoint>{
 			
 			tol = 0;
 			
-			cerr << endl << "(relative) tolerance is " << tol <<endl;
+			//cerr << endl << "(relative) tolerance is " << tol <<endl;
 			
 			const int P_COUNT=29;
 			const int T_COUNT=22;
@@ -131,6 +131,7 @@ class IAPWS9795Test : public BatchTest<IAPWS9795TestPoint>{
 		}
 		
 		void tearDown(){
+			cerr << " (Note: didn't test points lying in region 3!)";
 		}
 
 	public:

@@ -71,9 +71,10 @@ class SteamCalculator:public DesignByContract {
 
 		bool isSet(void);
 
-#ifndef NDEBUG
+		#ifndef NDEBUG
+		// Design by contract stuff...
 		virtual bool isValid(void);
-#endif
+		#endif
 
 		// Methods to return properties and state
 
@@ -95,7 +96,7 @@ class SteamCalculator:public DesignByContract {
 		METHOD_SC(dynvisc,       DynamicViscosity);	// Dynamic viscosity, mu            [Pa.s]
 		METHOD_SC(conductivity,  Conductivity);	    // Conductivity
 
-		void setTarget(SteamPropertyCode p, Num value);
+		//void setTarget(SteamPropertyCode p, Num value);
 		
 		/*
 		HOW TO IMPLEMENT THE SOLVER WITH THESE STRONGLY TYPED THINGOS?
@@ -106,21 +107,20 @@ class SteamCalculator:public DesignByContract {
 		
 			ZeroIn<SteamCalculator,prop,
 		*/
-		
-		Temperature solveTemperature();
+								
+		//Temperature solveTemperature();
 
-		Pressure solvePressure();
-		Num solveQuality();
+		//Pressure solvePressure();
+		//Num solveQuality();
 
-		Num my_zeroin(Num ax, Num bx,
-		                     double (*f) (double x), double tol);
+		//Num my_zeroin(Num ax, Num bx, double (*f) (double x), double tol);
 
-		Num getPropertyValue_p(Num p);
-		Num getPropertyValue_T(Num T);
-		Num getPropertyValue();
+		//Num getPropertyValue_p(Num p);
+		//Num getPropertyValue_T(Num T);
+		//Num getPropertyValue();
 
-		static double wrap_getPropertyValue_p(double);
-		static double wrap_getPropertyValue_T(double);
+		//static double wrap_getPropertyValue_p(double);
+		//static double wrap_getPropertyValue_T(double);
 
 	protected:
 		friend class SteamState;
@@ -182,9 +182,9 @@ class SteamCalculator:public DesignByContract {
 		SteamCalculator *gas;	// for use in two-phase calcs
 		SteamCalculator *liq;	// for use in two-phase calcs
 
-		SteamPropertyCode zeroin_property;
-		Num zeroin_target_value;
-		SteamStateCode zeroin_asserted_state;
+		//SteamPropertyCode zeroin_property;
+		//Num zeroin_target_value;
+		//SteamStateCode zeroin_asserted_state;
 
 		// for set_rhou:
 		Density rho_target;

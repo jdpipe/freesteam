@@ -12,6 +12,10 @@ using namespace std;
 /**
 	Whacko, this class does root finding with units intact!
 	
+	@param Subject class on which solving of a function like y(x)=0 is to be done
+	@param Ordinate y-value type
+	@param Abscissa x-value type
+	
 	@see units.h
 */
 template < class Subject, class Ordinate = double, class Abscissa = double >
@@ -37,6 +41,7 @@ class ZeroIn : public DesignByContract {
     ZeroIn() {
 	    this->tol = 0.0 * Abscissa();
     }
+    
     /// Set the lower bound of the range that will be searched for a solution
     void setLowerBound(Abscissa ax) {
 	    this->ax = ax;
@@ -63,9 +68,11 @@ class ZeroIn : public DesignByContract {
     }
 
     /// Set the member function that will be solved
-    /*
-       @example
-       z->setMethod(&Quadratic::evaluate);
+    /**
+		The method Ordinate(Subject::*method)(Abscissa) returns values like y(x)
+		
+		@example
+		z->setMethod(&Quadratic::evaluate);
      */
     void setMethod(Ordinate(Subject::*method) (Abscissa)) {
 	    this->method = method;

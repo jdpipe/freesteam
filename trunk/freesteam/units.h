@@ -389,6 +389,7 @@ const Force Newton = kilogram * metre / (second * second);
 const Pressure Pascal = Newton / (metre * metre);
 const Pressure bar = 100.0 * kilo * Pascal;
 const Pressure MPa = Mega * Pascal;
+const Pressure kPa = kilo * Pascal;
 const Energy Joule = Newton * metre;
 const Energy kJ = kilo * Joule;
 

@@ -28,15 +28,18 @@ CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
 CXXFLAGS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --cflags)
 LIBS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --libs)
 
-OBJS = steamcalculator.o state.o region1.o region2.o region3.o region4.o boundaries.o steamcalculatorexception.o zeroin.o designbycontract.o units.o
+OBJS = steamcalculator.o state.o region1.o region2.o region3.o region4.o boundaries.o steamcalculatorexception.o zeroin.o designbycontract.o units.o solver.o
 
 # This line will cause all tests to be run in alphabetical order by filename
 #TESTS = $(shell ls *.test.cpp | /bin/sed -r s%\.test\.cpp%.test.o%)
 
 # Or, define the tests in the order you want:
 TESTS = cppunit.test.o empty.test.o units.test.o batchtest.test.o \
+	zeroin.test.o \
 	region4.test.o b23.test.o boundaries.test.o region1.test.o \
-	region2.test.o region3.test.o iapws95.test.o iapws9795.test.o
+	region2.test.o region3.test.o \
+	iapws95.test.o iapws9795.test.o \
+	pressuresolver.test.o temperaturesolver.test.o
 
 CPASS = $(wildcard *.cpass.cpp)
 CFAIL = $(wildcard *.cfail.cpp)
@@ -158,7 +161,7 @@ cleanctests:
 #--------------------------
 # RUN-TIME TESTING
 
-test.exe:  test.o $(TESTS) $(TESTOBJS) $(LIB)
+test.exe: test.o $(TESTS) $(TESTOBJS) $(LIB)
 	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS_CPPUNIT)
 
 

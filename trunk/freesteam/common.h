@@ -68,7 +68,7 @@ const Temperature T_CRIT_PLUS=(T_CRIT + STEAM_T_EPS);
 
 const Density REG3_ZEROIN_DENS_MAX = 765.0 * kg_m3;
 
-const Density REG3_ZEROIN_TOL= 0.00005 * kg_m3;
+const Density REG3_ZEROIN_TOL= 1e-12 * kg_m3;
 
 //#define K_TO_C(TEMP) (((Num)(TEMP))-T_0DEGC)
 //#define C_TO_K(TEMP) (((Num)(TEMP))+T_0DEGC)

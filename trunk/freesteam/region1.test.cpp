@@ -51,7 +51,7 @@ class Region1RefDataTest : public BatchTest<Region1TestPoint > {
 
 		void setUp(){
 
-			setTolerance(0.0000005);
+			setTolerance(0.00005 * Percent);
 
 /*
 

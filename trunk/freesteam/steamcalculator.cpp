@@ -252,7 +252,7 @@ void SteamCalculator::setSatWater_T(Temperature T) {
 		changeState(Region3::Instance());
 	} else {
 		stringstream s;
-		s << "Couldn't setSatWater_T(T = "<< T << "); p = " << p;
+		s << "Couldn't setSatWater_T(T = "<< T << "); p = " << p/MPa << "MPa";
 		throw new Exception(s.str());
 	}
 
@@ -821,4 +821,5 @@ SteamCalculator::getRegion3PressureError(Density test_rho) {
 	return (p - reg3_target_pressure);
 }
 
-
+//-----------------------------------
+// SOLVER ROUTINES

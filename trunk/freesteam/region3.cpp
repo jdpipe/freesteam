@@ -64,6 +64,7 @@ void Region3::set_pT(SteamCalculator * c, Pressure p, Temperature T,
                           Num x) {
 
 	SteamCalculator *c2;
+	ZeroIn<SteamCalculator, Pressure, Density> z;
 
 	c->T = T;
 	c->tau = REG3_TEMP_REF / T;
@@ -74,19 +75,21 @@ void Region3::set_pT(SteamCalculator * c, Pressure p, Temperature T,
 
 	SteamCalculator S2;
 	S2.set_pT(pb, T);
+	
+	z.setLowerBound(S2.dens());
+	z.setUpperBound(REG3_ZEROIN_DENS_MAX);
+	z.setTolerance(REG3_ZEROIN_TOL);
+	z.setMethod(&SteamCalculator::getRegion3PressureError);
 
-	ZeroIn < SteamCalculator, Pressure, Density > *z =
-	    new ZeroIn < SteamCalculator, Pressure, Density > ();
+	z.visit(c);
 
-	z->setLowerBound(S2.dens());
-	z->setUpperBound(REG3_ZEROIN_DENS_MAX);
-	z->setTolerance(REG3_ZEROIN_TOL);
-	z->setMethod(&SteamCalculator::getRegion3PressureError);
-
-	c->accept(z);
-
-	if (!z->isSolved(0.00001 * MPa)) {
-		throw new Exception("Couldn't solve set_pT in reg3");
+	Pressure maxerror = 0.001 * Pascal;
+	
+	if (!z.isSolved(maxerror)) {
+		stringstream s;
+		s << "Region3::set_pT: Couldn't solve for p = " << p/MPa << "MPa, T = " << T;
+		s << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
+		throw new Exception(s.str());
 	}
 
 	/**
