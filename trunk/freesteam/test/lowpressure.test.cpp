@@ -29,8 +29,8 @@ class LowPressureTest : public CppUnit::TestFixture{
 
 			}catch(Exception *E){
 				stringstream ss;
-				ss << "IAPWS9795TestPoint::test: " << e->what();
-				delete e;
+				ss << "IAPWS9795TestPoint::test: " << E->what();
+				delete E;
 				CPPUNIT_FAIL(ss.str());
 			}
 		}
