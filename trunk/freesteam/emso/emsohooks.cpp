@@ -275,7 +275,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 
 					case given_Ts:
 						strcpy(inputUnits[0], "K");
-						strcpy(inputUnits[1], "kJ/kgK");
+						strcpy(inputUnits[1], "kJ/kg/K");
 
 					case given_waterT:
 					case given_steamT:
@@ -345,6 +345,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 					case ph:
 						strcpy(outputUnits[0], "MPa");
 						strcpy(outputUnits[1], "kJ/kg");
+						break;
 
 					// Three outputs
 					case psh:
@@ -598,6 +599,14 @@ class EMSOfreesteam : public ExternalObjectBase {
 						outputValues[1] = S.specentropy() / kJ_kgK;
 						#ifdef EMSO_DEBUG
 							cerr << " => h=" << S.specenthalpy() << ", s=" << S.specentropy() << endl;
+						#endif
+						break;
+
+					case ph:
+						outputValues[0] = S.pres() / MPa;
+						outputValues[1] = S.specenthalpy() / kJ_kg;
+						#ifdef EMSO_DEBUG
+							cerr << " => p=" << S.pres() << ", h=" << S.specenthalpy() << endl;
 						#endif
 						break;
 
