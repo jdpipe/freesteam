@@ -1,0 +1,51 @@
+#* 
+    freesteam stream integration for use in steam system calculations
+    
+    Based on steam.mso by Rafael de Pelegrini Soares,
+
+    Copyright 2002-2005 Rafael de Pelegrini Soares.
+    Modified by John Pye 2005 http://freesteam.sf.net
+    
+    This copyright statement must not be deleted and must be
+    included in any modification or adaptation of this Model.
+*#
+
+using "steamequipment"
+
+#*  Steam Condenser.
+
+    This model receives one In strem from which a quantity of heat q
+    is removed.
+
+    Specification for this model can be q or dt. The specification of q
+    should be prefered, once a bad specificafion of dt can lead singular
+    systems (infinite solutions if the Out stream became saturated).
+*#
+Model Condenser as SteamEquipment
+    
+    VARIABLES
+    q   as HeatRate(Brief="Heat removed from the stream");
+    DT  as Temperature(Brief="Temperature difference");
+
+    EQUATIONS
+    "Mass balance"
+    Out.mdot = In.mdot;
+    
+    "Energy balance"
+    q = (In.h - Out.h) * In.mdot;
+    
+    "Pressure"
+    Out.p = In.p;
+    
+    "Temperature difference"
+    DT = In.T - Out.T;
+    
+    # "Out Stream"
+    # [Out.T, Out.s, Out.v, Out.x] = freesteam.Tsvx_ph(Out.p, Out.h);
+
+#   GUESS # FIXME: implement GUESS on models!!
+#   Out.h = 300 * "kJ/kg";
+
+end
+
+# CondenserPT removed...

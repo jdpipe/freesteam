@@ -1,0 +1,112 @@
+#* 
+	freesteam stream integration for use in steam system calculations
+	
+	Based on steam.mso by Rafael de Pelegrini Soares,
+
+	Copyright 2002-2005 Rafael de Pelegrini Soares.
+	Modified by John Pye 2005 http://freesteam.sf.net
+	
+	This copyright statement must not be deleted and must be
+	included in any modification or adaptation of this Model.
+*#
+
+using "newtypes";
+
+#*
+	Properties of steam
+
+	The properties are defined here, but they are all remaining to be related,
+	according to the requirements of whatever model is derived from this one.
+*#
+Model Steam # 4 DF
+	
+	VARIABLES
+
+	T as AbsoluteTemperature(    Lower=273.15, Upper=1073.15,Default = 600,  Unit = "K");
+	p as Pressure(               Lower=0,      Upper=100,    Default = 10,   Unit = "MPa");
+	h as SpecificEnthalpy(       Lower=0,      Upper=4300,   Default=1500,   Unit = "kJ/kg");
+	s as SpecificEntropy(        Lower=0,      Upper=12,     Default=9.1,    Unit = "kJ/kg/K");
+
+end
+
+Model Steam_ps as Steam # 6 - 4 = 2 DF
+
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
+		
+	EQUATIONS
+	"Steam properties"
+	[T, h] = freesteam.Th_ps(p, s);	
+
+end
+
+
+Model Steam_ph as Steam # 6 - 4 = 2 DF
+
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
+		
+	EQUATIONS
+	"Steam properties"
+	[T, s] = freesteam.Ts_ph(p, h);	
+
+end
+
+Model Steam_pu as Steam # 6 - 4 = 2 DF
+
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
+	
+	VARIABLES
+	u as SpecificInternalEnergy;
+	
+	EQUATIONS
+	"Steam properties"
+	[T, s] = freesteam.Ts_pu(p,u);
+	h = freesteam.h_pu(p,u);
+	
+end
+
+Model Steam_waterT as Steam # 6 - 5 = 1 DF
+
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
+		
+	EQUATIONS
+	"Steam properties"
+	[p, s, h] = freesteam.psh_waterT(T);
+	
+end
+
+Model Steam_steamT as Steam # 6 - 5 = 1 DF
+
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
+		
+	EQUATIONS
+	"Steam properties"
+	[p, s, h] = freesteam.psvhx_steamT(T);
+	
+end
+
+Model Steam_pT as Steam
+
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
+		
+	EQUATIONS
+	"Steam properties"
+	[h, s] = freesteam.hs_pT(p,T);
+
+end
+
+Model Steam_Ts as Steam
+
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
+	
+	EQUATIONS
+	"Steam properties"
+	[p, h] = freesteam.ph_Ts(T,s);
+
+end
