@@ -2,6 +2,7 @@
 #include "region3.h"
 #include "zeroin.h"
 #include "steamcalculator_macros.h"
+#include "isinfnan.h"
 
 Region3 *Region3::_instance = 0;
 

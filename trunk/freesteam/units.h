@@ -1,6 +1,8 @@
 #ifndef UNITS_H
 #define UNITS_H
 
+#include "isinfnan.h"
+
 #include <iostream>
 #include <sstream>
 #include <cmath>

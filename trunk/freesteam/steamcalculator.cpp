@@ -7,6 +7,7 @@
 #include "region4.h"
 #include "zeroin.h"
 #include "units.h"
+#include "isinfnan.h"
 
 #include <cmath>
 #include <sstream>

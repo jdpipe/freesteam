@@ -9,6 +9,15 @@ Please follow these exact steps when building the DLL (or
 shared object, '.so' file in the case of linux) for EMSO. 
 That way we can diagnose any problems which arise.
 
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+IMPORTANT NOTE
+emsofreesteam does NOT build
+correctly under cygwin at the 
+moment. You need to download
+and install MinGW and MSYS
+then type 'make emso' under
+that environment
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 1. Build and test freesteam
 
@@ -23,7 +32,7 @@ That way we can diagnose any problems which arise.
    they are accessible as <emso/emso_types.h> and 
    <emso/external_object.h>
 
-       On cygwin, this would be c:\cygwin\usr\local\include\emso
+       On Windows, this would be c:\Windows\usr\local\include\emso
    
        On Linux, this would be /usr/local/include/emso
 
@@ -42,8 +51,8 @@ That way we can diagnose any problems which arise.
    
    You should find a DLL/SO file generated as a result
    
-       On windows, this would be emsofreesteam-X.X.X.dll
-       On linux, this would be libemsofreesteam-X.X.X.so
+       On Windows, this would be emsofreesteam.dll
+       On Linux, this would be libemsofreesteam.so
    
 6. Copy the shared object / DLL to its required location,
    and rename it according to the requirements of EMSO. This 
@@ -61,11 +70,16 @@ That way we can diagnose any problems which arise.
 8. Right-click on test2, click 'check consistency'
 
 
-At present, on cygwin under WinXP, this causes EMSO to crash 
-immediately. But we are working to fix this!
+At present, on Windows with MinGW/MSYS under WinXP, this 
+works OK. If you find that these steps break for you, 
+please let me know by email to 
 
-If you find that these steps break for you, please let me 
-know by email to john_DOT_pye#student-unsw-edu-au
+john_DOT_pye#student-unsw-edu-au
+
+If you do have any problems, and you're using Windows, I 
+suggest you download and install the Microsoft Dependency 
+Walker, from http://www.dependencywalker.com/ and check
+to make sure you're not having DLL dependency problems.
 
 ---------------------------------
 John Pye

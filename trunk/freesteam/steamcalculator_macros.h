@@ -1,6 +1,8 @@
 //-------------------------------------------------------------------------
 // These #defines set up some series-evaluation and debug-output functions
 
+#include "isinfnan.h"
+
 // Output messages and expression debug stuff
 
 #define SHOW_STRVAL(EXPR) \

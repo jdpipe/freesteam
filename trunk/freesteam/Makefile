@@ -40,15 +40,15 @@ include make-$(BUILD_PLATFORM).mak
 #CXX = /usr/local/bin/gfilt
 CXX = g++
 
-CXXFLAGS = -fmessage-length=170 -O3 -Wall
-LDFLAGS = -lc -lm -O3
+CXXFLAGS = -fmessage-length=170 -O3 -Wall $(PLATFORM_CXX_FLAGS)
+LDFLAGS = $(PLATFORM_LD_FLAGS) -lm -O3
 
 CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
 
 CPPFLAGS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --cflags)
 LIBS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --libs)
 
-CPPFLAGS = -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -W $(CPPFLAGS_CPPUNIT)
+CPPFLAGS = $(PLATFORM_CPP_FLAGS) -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -W
 
 OBJS = exception.o steamcalculator.o state.o region1.o region2.o region3.o region4.o boundaries.o \
 	steamcalculatorexception.o zeroin.o designbycontract.o units.o solver.o steamproperty.o \
@@ -150,8 +150,8 @@ cleanctests:
 # MAKEDEPEND
 
 -include $(OBJS:.o=.d )
--include $(TESTS:.o=.d)
--include $(TESTOBJS:.o=.d)
+#-include $(TESTS:.o=.d)
+#-include $(TESTOBJS:.o=.d)
 -include $(CLIS:.cpp=.cli.d)
 -include $(CLIOBJS:.o=.d)
 -include $(HOOKOBJS:.o=.d)

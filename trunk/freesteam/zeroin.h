@@ -7,49 +7,51 @@
 #include <cmath>
 using namespace std;
 
-#define DBL_EPSILON 2e-16
+#ifndef DBL_EPSILON
+	#define DBL_EPSILON 2e-16
+#endif
 
 /// Root-finding by Brent algorithm
 /**
 	Whacko, this class does root finding with units intact!
-	
+
 	We will be varying the x (Abscissa) value until the y (Ordinate) value is zero.
-	
+
 	@param Subject class on which solving of a function like y(x)=0 is to be done
 	@param Ordinate y-value type
 	@param Abscissa x-value type
-	
+
 	@see units.h
 	@see ZeroIn::visit
-	
+
 	@example
 		To solve the quadratic x²-4x-4=0 in the region x in [-10,4.566] by iteration (@see zeroin.test.cpp):
-		
+
 		@code
-			
+
 			class Quad{
 				double eval(double x){
 					return x*x-4*x-4;
 				}
 			};
-			
+
 			// ...
-			
+
 			Quad q;
-			
+
 			ZeroIn<Quad> z;
 			z.setLowerBound(-10);
 			z.setUpperBound(4.566);
 			z.setMethod(&ZeroInTest::eval);
 			z.setTolerance(1e-10);
 			z.visit(q);
-			
+
 			if(z.isSolved(0.001)){
 				cerr << "Quadratic was solved, x = " << z.getSolution() << endl;
 			}
-			
+
 			cerr << "Unable to solve quadratic over given region" << endl;
-		@endcode	
+		@endcode
 */
 template < class Subject, class Ordinate = double, class Abscissa = double >
 class ZeroIn : public DesignByContract {
@@ -74,7 +76,7 @@ class ZeroIn : public DesignByContract {
     ZeroIn() {
 	    this->tol = 0.0 * Abscissa();
     }
-    
+
     /// Set the lower bound of the range that will be searched for a solution
     void setLowerBound(const Abscissa& ax) {
 	    this->ax = ax;
@@ -103,7 +105,7 @@ class ZeroIn : public DesignByContract {
     /// Set the member function that will be solved
     /**
 		The method Ordinate(Subject::*method)(Abscissa) returns values like y(x)
-		
+
 		@example
 			@code
 				z->setMethod(&Quadratic::evaluate);
@@ -116,22 +118,22 @@ class ZeroIn : public DesignByContract {
     /// ZeroIn visit method
     /**
     	This is a visitor pattern implementation of the Brent ZEROIN routine adapted from the C math library version.
-    	
+
     	USAGE
-    	
+
     	@see brent.shar at http://www.netlib.org/c/
-    		
+
     	Original documentation:
-    	
+
     	 function ZEROIN - obtain a function zero within the given range
 
     	 Input
     		double zeroin(ax,bx,f,tol)
     		double ax; 				Root will be sought for within a range [ax,bx]
-    		double bx;  			
-    		
+    		double bx;
+
     		double (*f)(double x);	Name of the function whose zero will be sought for
-    								
+
     		double tol;				Acceptable tolerance for the root value.
     								May be specified as 0.0 to cause the program to find the root as accurate as possible
 
@@ -140,13 +142,13 @@ class ZeroIn : public DesignByContract {
     		4*EPSILON*abs(x) + tol
 
     	 Algorithm
-    		
+
     		G.Forsythe, M.Malcolm, C.Moler, Computer methods for mathematical computations. M., Mir, 1980, p.180 of the Russian edition
 
     		The function makes use of the bissection procedure combined with the linear or quadric inverse interpolation.
-    		
+
     		At every step program operates on three abscissae - a, b, and c.
-    		
+
     		b - the last and the best approximation to the root
     		a - the last but one approximation
     		c - the last but one or even earlier approximation than a that
@@ -170,12 +172,12 @@ class ZeroIn : public DesignByContract {
 	    fb = ((*subject).*method) (b);
 	    c = a;
 	    fc = fa;
-		
+
 		if(fa == 0.0 * Ordinate()){
 			fb=0.0 * Ordinate(); // used by getError
 			return;
 		}
-		
+
 	    //  Main iteration loop
 
 	    for (;;) {

@@ -1,6 +1,6 @@
 #include "region2.h"
 #include "steamcalculator_macros.h"
-
+#include "isinfnan.h"
 
 Region2 *Region2::_instance = 0;
 
