@@ -149,9 +149,10 @@ class SteamCalculator:public DesignByContract {
 		// Design by contract stuff...
 		virtual bool isValid(void) const;
 
-	protected:
 		/// Copy operation, virtual
 		virtual void copy(const SteamCalculator & original);
+
+	protected:
 
 		Num tau_iaps85() const;
 		Num del_iaps85() const;
