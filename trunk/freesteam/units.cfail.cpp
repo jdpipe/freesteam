@@ -9,6 +9,5 @@ int main(void){
 	double d = 3;
 	
 	Pressure p2 = p + d;
-	
-	qwiqwiweqoi = }}}
+
 }

@@ -7,7 +7,7 @@
 #include <sstream>
 using namespace std;
 
-#define STM_SATURATION_TOL 5e-7
+const double STM_SATURATION_TOL=5e-7;
 
 //----------------------------------------------------------------
 // COEFFICIENT TABLE DATA
@@ -155,8 +155,7 @@ Pressure Boundaries::getSatPres_T(Temperature T) {
 	Num c = C(u);
 
 	Pressure psat = MPa * 
-	    pow(2 * c / (-b + pow(sq(b) - 4 * a * c, (Num) 0.5)),
-	        (Num) 4);
+	    pow(2 * c / (-b + pow(sq(b) - 4 * a * c, 0.5)), 4);
 
 	//cerr << "getSatPres_T: psat = " << setprecision(15) << psat << endl;
 	//ENSURE(psat <= P_CRIT + STEAM_P_EPS);
@@ -176,7 +175,7 @@ Pressure Boundaries::getSatPres_T(Temperature T) {
 bool Boundaries::isRegion1_pT(Pressure p, Temperature T,
         bool throw_me) {
 	
-	MESSAGE("TESTING POING FOR REGION 1");
+	MESSAGE("  IS POINT IN REGION 1?");
 	
 	if (!isValid_pT(p, T, throw_me)) {
 		return false;
@@ -184,23 +183,28 @@ bool Boundaries::isRegion1_pT(Pressure p, Temperature T,
 
 	if (T > T_REG1_REG3) {
 
-		MESSAGE("TEMPERATURE IS ABOVE T_REG1_REG3");
+		MESSAGE("  NO, TEMPERATURE > T_REG1_REG3");
 	
 		if (throw_me)
 			throw new SteamCalculatorException(p, T, REG1_RANGE_T_HIGH);
 		return false;
 
-	} else if (T > getSatTemp_p(p) + STM_SATURATION_TOL * T) {
+	}else{
+		Temperature T_sat=getSatTemp_p(p); /* getSatTemp_p(p) + STM_SATURATION_TOL * T */
+		if (T > T_sat) {
+			cerr << "T = " << T << ", T_sat = " << T_sat << endl;
+			
+			MESSAGE("  NO, TEMPERATURE > SATURATION CURVE");
 
-		MESSAGE("TEMPERATURE IS TO RIGHT OF SATURATION CURVE");
-
-		if (throw_me) {
-			cerr << "Temperature is too high, by " << (T - getSatTemp_p(p)) << endl;
-			throw new SteamCalculatorException(p, T, REG1_RANGE_P_LOW);
+			if (throw_me) {
+				cerr << "  Temp is too high, by " << (T - getSatTemp_p(p)) << endl;
+				throw new SteamCalculatorException(p, T, REG1_RANGE_P_LOW);
+			}
+			return false;
 		}
-		return false;
 	}
 
+	MESSAGE("  YES.");
 	return true;
 }
 
@@ -315,7 +319,8 @@ Boundaries::D(Num E, Num F, Num G) {
 	@see IF-97, p 33, Eqn 29b
 */
 Num Boundaries::upsilon(Temperature T) {
-	return T + REGION4_N[9] / (T - REGION4_N[10]);
+	
+	return (T / Kelvin) + REGION4_N[9] / ((T/Kelvin) - REGION4_N[10]);
 }
 
 /**

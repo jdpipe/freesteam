@@ -35,7 +35,7 @@ OBJS = steamcalculator.o state.o region1.o region2.o region3.o region4.o boundar
 
 # Or, define the tests in the order you want:
 TESTS = cppunit.test.o empty.test.o units.test.o batchtest.test.o \
-	boundaries.test.o 
+	region4.test.o boundaries.test.o 
 #region1.test.o region2.test.o region3.test.o
 
 CPASS = $(wildcard *.cpass.cpp)
@@ -58,7 +58,7 @@ all: $(LIB)
 
 again: clean all
 	
-clean: cleanobjs cleantests
+clean: cleanobjs cleantests cleanctests
 
 cleanobjs:
 	-rm *.o *.d *~ core *.stackdump *.a
@@ -117,15 +117,20 @@ $(NAME)-$(VERSION).tar: # tags
 # COMPILE-TIME TESTING
 
 CPASSEXES = $(CPASS:.cpp=.exe )
-CFAILEXES = $(CFAIL:.cpp=.exe )
+CFAILOKS = $(CFAIL:.cpp=.ok )
 
-ctest: $(CPASSEXES) $(CFAILEXES)
-.PHONY: ctest cpasstest cfailtest
+ctest: $(LIB) ctestheading $(CPASSEXES) $(CFAILOKS)
+.PHONY: ctest cpasstest cfailtest ctestheading
 
-%.cpass.exe: %.cpass.cpp $(LIB)
-#	@echo
+ctestheading:
+	@echo
+	@echo "COMPILE-TIME TESTING"
+	@echo
+
+%.cpass.exe: %.cpass.cpp $(LIB) Makefile
 	@echo "ctest $< (expect pass)..."
-	@if $(CXX) -DCTEST $^ -o $@ $(LDFLAGS); then \
+	@echo $(CXX) -DCTEST $< $(LIB) -o $@ $(LDFLAGS);
+	@if $(CXX) -DCTEST $< $(LIB) -o $@ $(LDFLAGS); then \
 	else \
 	  echo; \
 	  echo "$<:1: CTEST FAIL: Expected to compile, but did not."; \
@@ -133,34 +138,42 @@ ctest: $(CPASSEXES) $(CFAILEXES)
 	  exit 1; \
 	fi;
 
-%.cfail.exe: %.cfail.cpp $(LIB) Makefile
-#	@echo
+%.cfail.ok: %.cfail.cpp $(LIB) Makefile
 	@echo "ctest $< (expect fail)..."
-	@if $(CXX) -DCTEST $< $(LIB) -o $@ $(LDFLAGS); then \
+	@echo $(CXX) -DCTEST $< $(LIB) -o cfail.exe $(LDFLAGS)
+	@if $(CXX) -DCTEST $< $(LIB) -o cfail.exe $(LDFLAGS); then \
 	  echo; \
 	  echo "$<:1: CTEST FAIL: Shouldn't have compiled, but did."; \
 	  echo; \
-	  if [ -f $@ ]; then rm $@; fi; \
+	  if [ -f $@ ]; then rm cfail.exe; fi; \
 	  exit 1; \
-	fi
+	fi; \
+	echo "$<" > $@;
 
 cleanctests:
 	@-rm *.cpass.exe
 	@-rm *.cfail.exe
+	@-rm &.cfail.cpp.ok
 
 #--------------------------
 # RUN-TIME TESTING
 
-test.exe: test.o $(TESTS) $(TESTOBJS) $(LIB)
+test.exe:  test.o $(TESTS) $(TESTOBJS) $(LIB)
 	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS_CPPUNIT)
 
 
 #	$(CXX) $^ -o $@ $(CPPFLAGS) $(CXXFLAGS_CPPUNIT) $(CXXFLAGS) $(LDFLAGS) $(LIBS_CPPUNIT) -DTEST
 
-test: ctest test.exe $(TESTS)
+test: ctest testheading test.exe $(TESTS)
 	./$@
 
-.PHONY:	test
+.PHONY:	test testheading
+
+testheading:
+	@echo
+	@echo "RUNTIME TESTING"
+	@echo
+
 
 cleantests:
 	@-rm *.test *.test.exe

@@ -109,7 +109,7 @@ void Region3::set_pT(SteamCalculator * c, Pressure p, Temperature T,
 
 SpecificVolume
 Region3::specvol(SteamCalculator *c){
-	return 1 / c->rho;
+	return 1.0 / c->rho;
 }
 
 Density

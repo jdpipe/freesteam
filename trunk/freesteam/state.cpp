@@ -53,7 +53,7 @@ SteamState::specvol(SteamCalculator *c){
 */
 inline Density
 SteamState::dens(SteamCalculator *c){
-	return 1 / specvol(c);
+	return 1.0 / specvol(c);
 }
 
 /*
