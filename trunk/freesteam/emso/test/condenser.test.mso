@@ -10,7 +10,12 @@
 using "streams";
 using "condenser";
 
-FlowSheet TestCondenser
+#*
+	Simple condenser test: specify inlet andoutlet conditions
+
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet CondenserTest
 	
 	PARAMETERS
 	freesteam as CalcObject(File="emsofreesteam");
@@ -40,10 +45,12 @@ FlowSheet TestCondenser
 	outputLevel = "all";
 end
 
-FlowSheet TestCondenser2
-	
-	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam");
+#*
+	Condenser specified in terms of UA and outlet pressure
+
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet CondenserTest2
 	
 	DEVICES
 	S as Stream_pT; # 5 - 2       = 3
@@ -71,7 +78,12 @@ FlowSheet TestCondenser2
 	outputLevel = "all";
 end
 
-FlowSheet TestCondenser3
+#*
+	Similar to TestCondenser2 but different operation conditions
+	
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet CondenserTest3
 	
 	PARAMETERS
 	freesteam as CalcObject(File="emsofreesteam");
@@ -88,8 +100,8 @@ FlowSheet TestCondenser3
 	S.h = 2000 * "kJ/kg";
 	S.T = (300 + 273.15) * "K";
 	
-	CO.UA = 140 * "kW/K";
-	# CO.Out.h = 700 * "kJ/kg";
+	#CO.UA = 140 * "kW/K";
+	CO.Out.h = 700 * "kJ/kg";
 	CO.Out.p = 0.05 * "bar";
 	
 	OPTIONS
@@ -97,3 +109,32 @@ FlowSheet TestCondenser3
 	outputLevel = "all";
 end
 
+#*
+	Test condenser with pressure loss
+
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet CondensertWithLossTest
+	
+	DEVICES
+	S as Stream_ph;
+	CO as CondenserWithLoss;
+	
+	CONNECTIONS
+		S to CO.In;
+	
+	SPECIFY
+	S.mdot=30 * "kg/s";
+	S.h = 2000 * "kJ/kg";
+	S.p = 60 * "bar";
+		
+	CO.K = 0.5;
+	CO.A_1 = 3.1415926 * (0.2 * "m")^2 / 4;
+	
+	CO.UA = 140 *  "kW/K";
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="all";
+
+end

@@ -53,6 +53,40 @@ Model Rankine2
 		
 end
 
+Model Rankine3
+	
+	VARIABLES
+	S1 as Stream_pT;
+	BO as BoilerWithLoss;
+	TU as Turbine;
+	CO as Condenser;
+	PU as Pump;
+	
+	CONNECTIONS
+	S1 to BO.In;
+	BO.Out to TU.In;
+	TU.Out to CO.In;
+	CO.Out to PU.In;
+
+end
+
+Model Rankine4
+	
+	VARIABLES
+	S1 as Stream_pT;
+	BO as BoilerWithLoss;
+	TU as Turbine;
+	CO as CondenserWithLoss;
+	PU as Pump;
+	
+	CONNECTIONS
+	S1 to BO.In;
+	BO.Out to TU.In;
+	TU.Out to CO.In;
+	CO.Out to PU.In;
+
+end
+
 Model RankineClosedLoop
 	
 	PARAMETERS

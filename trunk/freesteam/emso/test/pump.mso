@@ -39,7 +39,7 @@ Model Pump as SteamEquipment_ph # 8 + 3 - 4 = 7
     "Mass balance"
     Out.mdot = In.mdot;
     
-    v = freesteam_v.v_ps(In.p, In.s);
+    v = freesteam_v.v_ph(In.p, In.h);
     
     # "Energy balance"
     P * eta = In.mdot * Dp * v;

@@ -51,7 +51,7 @@ Model Turbine as SteamEquipment_ph # 8 + 4 - 5 = 7 DF
 
 	PARAMETERS
 	freesteam as CalcObject(File="emsofreesteam");
-    
+	
     VARIABLES # DF = 4
     eta as Efficiency(Brief="Turbine efficiency"); # DF = 1
 	h_es as SpecificEnthalpy(Default = 3000, Lower=150, Upper = 4300);
@@ -79,7 +79,7 @@ Model Turbine as SteamEquipment_ph # 8 + 4 - 5 = 7 DF
 	Dp = Out.p - In.p;
 	
 	"Outlet quality"
-	x = Out.freesteam.x_ps(Out.p,Out.s);	
+	x = Out.freesteam.x_ph(Out.p,Out.h);	
 end
 
 #* 
@@ -95,6 +95,7 @@ Model Turbine_ps as SteamEquipment_ps # 8 + 4 - 5 = 7 DF
 	h_es as SpecificEnthalpy(Default = 3000, Lower=150, Upper = 4300);
     P as Power(Brief="Turbine Power (thermal)", Lower = 0);
     Dp as PressureDifference(Upper = 0);
+	x as Quality(Brief="Outlet quality");
     
     EQUATIONS #DF = -5
     "Mass Balance"
@@ -111,4 +112,7 @@ Model Turbine_ps as SteamEquipment_ps # 8 + 4 - 5 = 7 DF
 
 	"Pressure drop"
 	Dp = In.p - Out.p;
+
+	"Outlet quality"
+	x = Out.freesteam.x_ps(Out.p,Out.s);	
 end
