@@ -32,7 +32,7 @@ end
 Model Steam_ps as Steam # 6 - 4 = 2 DF
 
 	PARAMETERS
-	ext freesteam as CalcObject(Brief="Freesteam IAPWS calculator");
+	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
 		
 	EQUATIONS
 	"Steam properties"
@@ -44,7 +44,7 @@ end
 Model Steam_ph as Steam # 6 - 4 = 2 DF
 
 	PARAMETERS
-	ext freesteam as CalcObject(Brief="Freesteam IAPWS calculator");
+	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
 		
 	EQUATIONS
 	"Steam properties"
@@ -55,7 +55,7 @@ end
 Model Steam_pu as Steam # 6 - 4 = 2 DF
 
 	PARAMETERS
-	ext freesteam as CalcObject(Brief="Freesteam IAPWS calculator");
+	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
 	
 	VARIABLES
 	u as SpecificInternalEnergy;
@@ -70,7 +70,7 @@ end
 Model Steam_waterT as Steam # 6 - 5 = 1 DF
 
 	PARAMETERS
-	ext freesteam as CalcObject(Brief="Freesteam IAPWS calculator");
+	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
 		
 	EQUATIONS
 	"Steam properties"
@@ -81,7 +81,7 @@ end
 Model Steam_steamT as Steam # 6 - 5 = 1 DF
 
 	PARAMETERS
-	ext freesteam as CalcObject(Brief="Freesteam IAPWS calculator");
+	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
 		
 	EQUATIONS
 	"Steam properties"
@@ -92,7 +92,7 @@ end
 Model Steam_pT as Steam
 
 	PARAMETERS
-	ext freesteam as CalcObject(Brief="Freesteam IAPWS calculator");
+	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
 		
 	EQUATIONS
 	"Steam properties"
@@ -103,7 +103,7 @@ end
 Model Steam_Ts as Steam
 
 	PARAMETERS
-	ext freesteam as CalcObject(Brief="Freesteam IAPWS calculator");
+	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
 	
 	EQUATIONS
 	"Steam properties"

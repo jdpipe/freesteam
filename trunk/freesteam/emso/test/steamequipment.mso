@@ -18,9 +18,6 @@ using "streams";
 *#
 Model SteamEquipment # DF = 10
 
-    PARAMETERS
-    ext freesteam as CalcObject(Brief="Steam Physical Properties");
-
     VARIABLES
 	in  In  as Stream;
 	out Out as Stream;   
@@ -28,9 +25,6 @@ Model SteamEquipment # DF = 10
 end
 
 Model SteamEquipment_ph # DF = 8
-
-    PARAMETERS
-    ext freesteam as CalcObject(Brief="Steam Physical Properties");
 
     VARIABLES
 	in  In  as Stream;
@@ -40,9 +34,6 @@ end
 
 Model SteamEquipment_ps # DF = 8
 
-    PARAMETERS
-    ext freesteam as CalcObject(Brief="Steam Physical Properties");
-
     VARIABLES
 	in  In  as Stream;
 	out Out as Stream_ps;   
@@ -50,9 +41,6 @@ Model SteamEquipment_ps # DF = 8
 end
 
 Model SteamEquipment_Ts # DF = 8
-
-    PARAMETERS
-    ext freesteam as CalcObject(Brief="Steam Physical Properties");
 
     VARIABLES
 	in  In  as Stream;

@@ -17,7 +17,7 @@ using "steamequipment";
 
     Specify outlet pressure plus q or outlet temperature
 *#
-Model Boiler as SteamEquipment_Ts # 7
+Model Boiler as SteamEquipment_ph # 7
     
     VARIABLES
     q   as HeatRate;

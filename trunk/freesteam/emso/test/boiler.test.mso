@@ -14,10 +14,7 @@ using "streams";
 using "boiler";
 
 FlowSheet BoilerTest # 0
-	
-	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam");
-	
+		
 	DEVICES
 	s as Stream_pT; # 3
 	BO as Boiler; # 7
@@ -36,5 +33,6 @@ FlowSheet BoilerTest # 0
 	OPTIONS
 	mode = "steady";
 	outputLevel = "all";
+	relativeAccuracy = 1e-15;
 end
 
