@@ -419,7 +419,7 @@ Journal of Engineering for Gas Turbines and Power</a><br>
   <dd>ChemicaLogic, USA: <span style="font-style: italic;">SteamTab SDK</span><br></dd>
   <dd>University of Applied Sciences Zittau/G&ouml;rlitz, Germany: <i>FluidEXL</i></dd>
   <dd>Edward Throm: <i>ASTEM97</i></dd>
-  <dd>G&amp;P Engineering: <i>>StmProps</i></dd>
+  <dd>G&amp;P Engineering: <i>StmProps</i></dd>
   <dd>Wagner, Wolfgang, Kretzschmar, Hans-Joachim, <i>International Steam Tables - The
 Industrial Standard IAPWS-IF97 for the Thermodynamic Properties and
 Supplemetary Equations for Other Properties: Tables, Algorithms,
@@ -427,7 +427,7 @@ Diagrams, Software</i>, 2nd ed., 2006 (!),
 Springer, Germany.</dd>
   <dd>MegaWatSoft: <i>Steam97</i></dd>
   <dd>ARC Engineering plc: <i>arcSteam</i></dd>
-  <dd>GP International: <i>GPSteam </i>("ASME
+  <dd>GP International: <i>GPSteam</i> ("ASME
 97" formulation)</dd>
   <dd>Rudjer Boskovic Institute: <i>ISANO
 Iapwsif97</i></dd>
