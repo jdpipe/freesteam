@@ -86,7 +86,7 @@ cleansubdirs:
 distclean: distcleanhere distcleansubdirs
 
 distcleanhere: cleanhere
-	@-rm example$(EXE_SUFFIX) $(LIB) libcheck.txt *.d DOCS *.tar.bz2
+	@-rm example$(EXE_SUFFIX) $(LIB) libcheck*.txt *.d DOCS *.tar.bz2
 	@-rm -rf doc
 
 distcleansubdirs:

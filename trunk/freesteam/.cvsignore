@@ -22,3 +22,5 @@ diagram.m
 *.dll
 *.bz2
 *.gz
+libcheck.txt
+libcheck2.txt
