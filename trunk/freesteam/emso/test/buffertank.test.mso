@@ -5,6 +5,12 @@
 using "buffertank";
 using "exitloss";
 
+#*
+	Simulation of buffer take with fixed outlet flow rate = inlet flowrate.
+	Volume of tank is varying.
+	
+	THIS FLOWSHEET WORKS
+*#
 FlowSheet BufferTankTest1
 	
 	DEVICES
@@ -88,7 +94,9 @@ FlowSheet BufferTankTest2
 	time = [0 : 0.05 : 2] * "s";
 end
 
-	
+#*
+	FAILS: initial condition singular
+*#
 FlowSheet BufferTankTest3
 	
 	DEVICES
