@@ -112,7 +112,7 @@ EMSO = $(EMSO_NAME)$(SO_SUFFIX)
 emso: $(LIB) $(EMSO)
 
 $(EMSO): emsohooks.o Makefile
-	g++ -shared -o $@ $< $(LIB) $(LDFLAGS) $(EMSO_LD_SONAME)
+	$(LD) -shared -o $@ $< $(LIB) $(LDFLAGS) $(EMSO_LD_SONAME)
 
 #-------------------------
 # CLEAN
