@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef SOLVER2_H
 #define SOLVER2_H
 
+#define SOLVER2_DEBUG
+
 #include "steamproperty.h"
 #include "units.h"
 #include "satcurve.h"
@@ -45,6 +47,7 @@ class Solver2Base{
 	protected:
 
 		Solver2Base(){}
+
 		virtual ~Solver2Base(){}
 
 		virtual int whichRegion(const FirstProp &fp,const SecondProp &sp) = 0;
@@ -231,7 +234,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 			try{
 				region = whichRegion(fp,sp);
 
-				if(!firstguess.isSet() || region!=firstguess.whichRegion()){
+				if(!firstguess.isSet() || firstguess.whichRegion()!=region){
 					return solve(fp,sp);
 				}
 
@@ -245,11 +248,18 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 					case 4:
 						return solveRegion4(fp,sp,firstguess);
 				}
+
 			}catch(Exception *E){
-				stringstream s;
-				s << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::solve (given first guess; found region="<< region<<"): " << E->what();
+				stringstream ss;
+
+				ss << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::solve (" << SteamProperty<FirstProp,FirstPropAlt>::name() << "=" << fp << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << "=" << sp;
+
+				ss <<  "; found region="<< region;
+
+				ss << "; given first guess with " << SteamProperty<FirstProp,FirstPropAlt>::name() << "=" << SteamProperty<FirstProp,FirstPropAlt>::get(firstguess) << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << "=" << SteamProperty<SecondProp,SecondPropAlt>::get(firstguess) << "): " << E->what();
+
 				delete E;
-				throw new Exception(s.str());
+				throw new Exception(ss.str());
 			}
 		}
 
@@ -730,7 +740,10 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 			// Most of this is the same as for solveRegion1:
 
-			//cerr << endl << "---------------------------------" << endl << "SOLVE REGION 2";
+			#ifdef SOLVER2_DEBUG
+				cerr << endl << "---------------------------------" << endl << "SOLVE REGION 2";
+			#endif
+
 			SteamCalculator guess = firstguess;
 
 			if(firstguess.whichRegion()!=2){
@@ -751,13 +764,17 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				T = guess.temp();
 				p = guess.pres();
 
-				//cerr << endl << "Iter " << niter << ": p = " << p / MPa << " MPa, T = " << T << " (" << tocelsius(T) << "°C)";
+				#ifdef SOLVER2_DEBUG
+					cerr << endl << "Iter " << niter << ": p = " << p / MPa << " MPa, T = " << T << " (" << tocelsius(T) << "°C)";
+				#endif
 
 				f = SteamProperty<FirstProp,FirstPropAlt>::get(guess);
 				s = SteamProperty<SecondProp,SecondPropAlt>::get(guess);
 
-				//cerr << ": " << SteamProperty<FirstProp,FirstPropAlt>::name() << " = " << f;
-				//cerr << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << " = " << s;
+				#ifdef SOLVER2_DEBUG
+					cerr << ": " << SteamProperty<FirstProp,FirstPropAlt>::name() << " = " << f;
+					cerr << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << " = " << s;
+				#endif
 
 				Df = f1 - f;
 				Ds = s1 - s;
@@ -799,7 +816,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 				// Regulate maximum change in temperature
 
-				Temperature dTMax = 0.1 * T;
+				Temperature dTMax = 0.2 * T;
 				Temperature dTAbs = fabs(dT);
 				if(dTAbs > dTMax){
 					//cerr << endl << "      ... limiting dT, too great";
