@@ -22,10 +22,12 @@ FlowSheet TurbineTest_Ideal # DF = 11 - 7 - 4 = 0
 	
 	DEVICES
 	S1 as Stream_ph;      # DF = 3
+	S2 as Stream_ps;
 	TU as Turbine_Ideal;  # DF = 8
 	
 	CONNECTIONS
 	S1 to TU.In;          # DF - 7
+	TU.Out to S2;
 	
 	SPECIFY
 	"Inlet flowrate"

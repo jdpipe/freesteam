@@ -29,7 +29,7 @@ Volume as Positive (Brief = "Volume", Default=10, Lower=0, Upper=1E6, Unit = "m^
 # TIME
 
 Time as Real (Brief = "Time", Default = 1, Upper=1e8, Unit="s");
-Fequency as Positive(Brief = "Frequency", Default=1,Lower=0,Upper=100, Unit="1/s");
+Frequency as Positive(Brief = "Frequency", Default=1,Lower=0,Upper=100, Unit="1/s");
 
 # TEMPERATURE
 

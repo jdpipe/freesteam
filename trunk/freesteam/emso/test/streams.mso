@@ -26,6 +26,13 @@ Model Stream_Base as Steam_Base # DF = 6 + 1 = 7
 
 end
 
+Model Stream as Steam
+	
+	VARIABLES
+	mdot as MassFlowRate;
+	
+end
+
 Model Stream_ps as Steam_ps # DF = 2 + 1 = 3
     
     VARIABLES

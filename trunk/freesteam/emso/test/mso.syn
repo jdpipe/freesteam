@@ -19,7 +19,7 @@ C=1
 ; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 [Syntax]
-Namespace1=4
+Namespace1=5
 IgnoreCase=No
 BracketChars=()[]
 OperatorChars=+-*/^=
@@ -74,7 +74,7 @@ Length
 LengthDifference
 Volume
 Time
-Fequency
+Frequency
 Temperature
 AbsoluteTemperature
 RelativeTemperature
