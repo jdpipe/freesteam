@@ -146,6 +146,9 @@ class SteamCalculator:public DesignByContract {
 		DynamicViscosity dynvisc() const;       // Dynamic viscosity, mu            [Pa.s]
 		Conductivity conductivity() const;      // Conductivity
 
+		// Design by contract stuff...
+		virtual bool isValid(void) const;
+
 	protected:
 		/// Copy operation, virtual
 		virtual void copy(const SteamCalculator & original);
@@ -193,9 +196,6 @@ class SteamCalculator:public DesignByContract {
 		void changeState(SteamState * state);
 
 		void destroy();
-
-		// Design by contract stuff...
-		virtual bool isValid(void) const;
 
 		SteamState *_state;
 
