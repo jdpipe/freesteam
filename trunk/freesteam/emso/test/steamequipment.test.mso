@@ -7,11 +7,13 @@ using "steamequipment";
 using "newtypes";
 using "streams";
 
-FlowSheet SteamEquipment_Test # 0
-
-	PARAMETERS
-	freesteam as CalcObject(File = "emsofreesteam");
+#*
+	Simple steady-state GIGO system!
 	
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet SteamEquipmentTest # 0
+
 	DEVICES 
 	S1 as Stream_pT; # 5
 	S2 as Stream; # 5
@@ -38,5 +40,49 @@ FlowSheet SteamEquipment_Test # 0
 	mode = "steady";
 	outputLevel = "all";
 	LASolver = "dense";
+
+end
+
+#*
+	First try at a trivial transient simulation
+	
+	DOESN'T WORK
+*#
+FlowSheet SteamEquipmentTest2
+
+	DEVICES
+	S1 as Stream_pT;
+	S2 as Stream;
+	EQ as SteamEquipment;
+	
+	CONNECTIONS # -10
+	S1 to EQ.In;
+	EQ.Out to S2;
+	
+	EQUATIONS
+	#*if time < 10 then
+		S1.p = 10 * "bar";
+	else
+		S1.p = 20 * "bar";
+	end
+	*#
+	S1.p = 10* "bar";
+
+	SPECIFY
+	S1.T = 300 * "K";
+	S1.mdot = 0.1 * "kg/s";
+
+	EQ.In.p = EQ.Out.p;
+	EQ.In.s = EQ.Out.s;
+	EQ.In.T = EQ.Out.T;
+	EQ.In.mdot= EQ.Out.mdot;
+	EQ.Qdot = 100 * "kJ/kg" * 0.1 * "kg/s";
+	EQ.Wdot = 0 * "W";
+	EQ.H = 0 * "J";
+	
+	OPTIONS
+	outputLevel = "all";
+	LASolver = "dense";	
+	differentiation="numeric";
 
 end
