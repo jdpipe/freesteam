@@ -25,7 +25,6 @@ Model Pump as SteamEquipment_ph # 8 + 3 - 4 = 7
 	freesteam_es as CalcObject(File="emsofreesteam");
 	
     VARIABLES
-    P   as Power(Brief="Nominal power");
     eta as Efficiency(Brief="Pump efficiency");
     v   as SpecificVolume(Brief="Inlet specific volume", Default=0.001);
 	h_es as SpecificEnthalpy(Brief = "Isentropic output enthalpy");
@@ -41,7 +40,7 @@ Model Pump as SteamEquipment_ph # 8 + 3 - 4 = 7
     v = In.freesteam.v_ph(In.p, In.h);
     
     # "Energy balance"
-    P * eta = In.mdot * Dp * v;
+    Wdot * eta = In.mdot * Dp * v;
     
     # FIXME: Volume at In or Out conditions ?
 	
@@ -52,7 +51,11 @@ Model Pump as SteamEquipment_ph # 8 + 3 - 4 = 7
     (Out.h - In.h) = eta * (h_es - In.h);
 	
     "Pressure difference"
-    Dp = Out.p - In.p;        
+    Dp = Out.p - In.p;
+	
+	"Zero Volume"
+	H = 0 * "J";
+	
 end
 
 Model PumpWithCurve as Pump

@@ -82,7 +82,10 @@ end
 #*
 	Test of a pump with a pump curve.
 
-	Inlet state is specified, then pump speed, flow rate and pump pressure rise; the pumping power remains to be calculated.
+	Inlet state is specified, then pump speed, flow rate and pump pressure rise; 
+	the pumping power remains to be calculated.
+
+	THIS FLOWSHEET WORKS
 *#
 FlowSheet PumpTest3
 
@@ -137,7 +140,7 @@ FlowSheet PumpTest4
 	
 	PU.N = 3000 * "1/min";
 	PU.Out.p = 80 * "bar";
-	PU.P = 5000 * "W";
+	PU.Wdot = 5000 * "W";
 	
 	OPTIONS
 	mode="steady";
@@ -170,7 +173,7 @@ FlowSheet PumpTest5
 	PU.eta = 0.65;
 	
 	PU.N = 3000 * "1/min";
-	PU.P = 5000 * "W";
+	PU.Wdot = 5000 * "W";
 
 	OPTIONS
 	mode="steady";

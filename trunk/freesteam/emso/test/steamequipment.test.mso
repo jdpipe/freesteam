@@ -27,11 +27,13 @@ FlowSheet SteamEquipment_Test # 0
 	S1.mdot = 5 * "kg/s";
 	
 	EQ.In.p = EQ.Out.p;
-	EQ.In.h = EQ.Out.h;
 	EQ.In.s = EQ.Out.s;
 	EQ.In.T = EQ.Out.T;
 	EQ.In.mdot= EQ.Out.mdot;
-
+	EQ.H = 0 * "J";
+	EQ.Qdot = 0 * "W";
+	EQ.Wdot = 0 * "W";
+	
 	OPTIONS
 	mode = "steady";
 	outputLevel = "all";

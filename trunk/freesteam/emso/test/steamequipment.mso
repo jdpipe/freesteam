@@ -14,13 +14,21 @@ using "streams";
 
 #** 
     Basic steam equipment item with one inlet and outlet stream.
+
+	Now with added first law...
 *#
 Model SteamEquipment # DF = 10
 
     VARIABLES
 	in  In  as Stream;
 	out Out as Stream;
-		
+	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
+	Wdot as Power(Brief = "Work done by fluid on environment");
+	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
+	
+	SPECIFY
+	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
+	
 end
 
 Model SteamEquipment_ph # DF = 8
@@ -28,6 +36,12 @@ Model SteamEquipment_ph # DF = 8
     VARIABLES
 	in  In  as Stream;
 	out Out as Stream_ph;   
+	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
+	Wdot as Power(Brief = "Work done by fluid on environment");
+	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
+	
+	SPECIFY
+	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
 
 end
 
@@ -36,6 +50,12 @@ Model SteamEquipment_ps # DF = 8
     VARIABLES
 	in  In  as Stream;
 	out Out as Stream_ps;   
+	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
+	Wdot as Power(Brief = "Work done by fluid on environment");
+	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
+	
+	SPECIFY
+	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
 
 end
 
@@ -44,6 +64,12 @@ Model SteamEquipment_Ts # DF = 8
     VARIABLES
 	in  In  as Stream;
 	out Out as Stream_Ts;   
+	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
+	Wdot as Power(Brief = "Work done by fluid on environment");
+	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
+	
+	SPECIFY
+	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
 
 end
 
@@ -52,6 +78,12 @@ Model SteamEquipment_Th # DF = 8
     VARIABLES
 	in  In  as Stream;
 	out Out as Stream_Th;   
+	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
+	Wdot as Power(Brief = "Work done by fluid on environment");
+	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
+	
+	SPECIFY
+	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
 
 end
 
@@ -60,5 +92,11 @@ Model SteamEquipment_pT # DF = 8
     VARIABLES
 	in  In  as Stream;
 	out Out as Stream_pT;   
+	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
+	Wdot as Power(Brief = "Work done by fluid on environment");
+	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
+	
+	SPECIFY
+	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
 
 end

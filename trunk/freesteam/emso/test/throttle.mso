@@ -10,7 +10,7 @@
     included in any modification or adaptation of this Model.
 *#
 
-using "steamequipment"
+using "steamequipment";
 
 #*
     Isenthalpic throttle
@@ -24,5 +24,11 @@ Model Throttle as SteamEquipment_ph # 8 - 2 = 6
 	EQUATIONS
 	In.h = Out.h;
 	In.mdot = Out.mdot;
+	
+	"Zero volume"
+	H = 0  *"J";
+	
+	"Zero work"
+	Wdot = 0 * "W";
 	
 end
