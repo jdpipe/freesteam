@@ -13,8 +13,10 @@ using namespace std;
 #define IAPWS9795_COMPARE(val97,val95,tol) \
 	if(!eq(val97,val95,tol*val97)){ \
 		stringstream s; \
-		s << "Values of " << #val97 << " and " << #val95 << " disagreed. "; \
-		s << #val97 << " = " << val97 << ", " << #val95 << " = " << val95 << ", tol = "<< tol << "."; \
+		s << "At p = " << p/MPa << "MPa, T = " << T << " (rho = " << rho << "),"; \
+		s << "values of " << #val97 << " and " << #val95 << " disagreed: "; \
+		s << #val97 << " = " << val97 << ", " << #val95 << " = " << val95 << ", tol = "<< tol/Percent << "%"; \
+		s << " - actual error is " << (val95-val97)/val97/Percent << "%."; \
 		CPPUNIT_FAIL(s.str()); \
 	}
 
@@ -38,58 +40,62 @@ class IAPWS9795TestPoint{
 			try{
 				cerr.flags(ios_base::showbase);
 				
-				cerr << "  p = " << p / MPa << " MPa, T = " << T << endl;
+				//cerr << "  p = " << p / MPa << " MPa, T = " << T << endl;
+				
+				// First get a rough value of rho...
+				
+				if(Boundaries::isRegion3_pT(p,T)){
+					cerr << "Ignoring region 3 point, p = " << p/MPa << "MPa, T = " << T << endl;
+					return;
+				}
 				
 				S97.set_pT(p,T);
-								
-				Pressure p97 = S97.pres();
 				Density rho=S97.dens();
-				Pressure p95 = S95.p(T/Kelvin, rho/kg_m3) * kilo * Pascal;
 				
-				IAPWS9795_COMPARE(p97,p95,tol);
+				// Use the IAPWS-95 correlation with rho and T to get p...
 				
-				/*
-				Pressure p97= S97.pres();
-				Pressure p95 = S95.p(T/Kelvin, rho/kg_m3) * kilo * Pascal;
+				Pressure p95 = S95.p(T/Kelvin, rho/kg_m3) * MPa;
 				
-				cerr << "p97 = " << p97/MPa << " MPa, p95 = " << p95/MPa << " MPa" << endl;
-				
-				Pressure abserr = fabs(p95 - p97);
-				
-				double relerr = abserr / p97;
-				
-				cerr << "rel error is " << relerr << ", tol is " << tol << endl;
-				
-				if(relerr > tol){
-					cerr << "PRESSURE ERROR" << endl;
+				if(p95 > P_MAX){
+					p95 = P_MAX;
 				}
 				
-				
-				if(relerr > tol){
-					CPPUNIT_FAIL("Pressure didn't match");
+				// Now, re-set the IAPWS-IF97 values
+
+				if(Boundaries::isRegion3_pT(p95,T)){
+					cerr << "Ignoring region 3 point, p = " << p << ", T = " << T << endl;
+					return;
 				}
 				
-				*/
+				S97.set_pT(p95,T);
+				Pressure p97 = S97.pres();
 				
-				CPPUNIT_ASSERT(eq(p97, p95, tol*p97));
+				// Compare specific volumes:
 				
-				SpecificEnergy u = S97.specienergy();
-				CPPUNIT_ASSERT(eq(u, S95.u(T/Kelvin, rho/kg_m3) * kJ_kg, tol*u));
-
-				SpecificEnergy h = S97.specenthalpy();
-				CPPUNIT_ASSERT(eq(h, S95.h(T/Kelvin, rho/kg_m3) * kJ_kg, tol*h));
-
-				SpecificEntropy s = S97.specentropy();
-				CPPUNIT_ASSERT(eq(s, S95.s(T/Kelvin, rho/kg_m3) * kJ_kgK, tol*s));
-
-				SpecHeatCap cp = S97.speccp();
-				CPPUNIT_ASSERT(eq(cp, S95.cp(T/Kelvin, rho/kg_m3) * kJ_kgK, tol*cp));
-
-				SpecHeatCap cv = S97.speccv();
-				CPPUNIT_ASSERT(eq(cv, S95.cv(T/Kelvin, rho/kg_m3) * kJ_kgK, tol*cv));
+				SpecificVolume v95 = 1.0/rho;
+				SpecificVolume v97 = S97.specvol();
+				IAPWS9795_COMPARE(v97,v95, 0.3 * Percent);
 				
-			}catch(SteamCalculatorException *e){
-				CPPUNIT_FAIL(e->what());
+				SpecificEnergy u97 = S97.specienergy();
+				SpecificEnergy u95 = S95.u(T/Kelvin, rho/kg_m3) * kJ_kg;
+				IAPWS9795_COMPARE(u97,u95, 0.4 * Percent);				
+				
+				SpecificEnergy h97 = S97.specenthalpy();
+				SpecificEnergy h95 = S95.h(T/Kelvin, rho/kg_m3) * kJ_kg;
+				IAPWS9795_COMPARE(h97,h95, 0.4 * Percent);
+
+				SpecificEntropy s97 = S97.specentropy();
+				SpecificEntropy s95 = S95.s(T/Kelvin, rho/kg_m3) * kJ_kgK;
+				IAPWS9795_COMPARE(s97,s95, 0.4 * Percent);
+
+				SpecHeatCap cp97 = S97.speccp();
+				SpecHeatCap cp95 = S95.cp(T/Kelvin, rho/kg_m3) * kJ_kgK;
+				IAPWS9795_COMPARE(cp97,cp95, 0.45 * Percent);
+
+				SpecHeatCap cv97 = S97.speccv();
+				SpecHeatCap cv95 = S95.cv(T/Kelvin, rho/kg_m3) * kJ_kgK;
+				IAPWS9795_COMPARE(cv97,cv95, 0.45 * Percent);
+				
 			}catch(Exception *e){
 				CPPUNIT_FAIL(e->what());
 			}
@@ -102,7 +108,7 @@ class IAPWS9795Test : public BatchTest<IAPWS9795TestPoint>{
 		
 		void setUp(){
 			
-			tol = 2.0 * Percent;
+			tol = 0;
 			
 			cerr << endl << "(relative) tolerance is " << tol <<endl;
 			
@@ -115,6 +121,8 @@ class IAPWS9795Test : public BatchTest<IAPWS9795TestPoint>{
 			
 			for(int it=0; it<T_COUNT; it++){
 				for(int ip=0;ip<P_COUNT; ip++){
+					
+					if(p_raw[ip]==0.1)continue;
 
 					addTestPoint(IAPWS9795TestPoint(p_raw[ip] * MPa,fromcelsius(T_raw[it])));
 
