@@ -62,7 +62,7 @@ class Diagram{
 			s << std::endl << getMatlabPlotType() << "(TMIN(:,1),TMIN(:,2),'w:');";
 			s << std::endl << getMatlabPlotType() << "(TMAX(:,1),TMAX(:,2),'w-.');";
 
-			s << std::endl << "legend('Sat Steam','Sat Water','B23','B13','Pmin','Pmax','Tmin','Tmax');";
+			s << std::endl << "legend('Sat Water','Sat Steam','B23','B13','Pmin','Pmax','Tmin','Tmax');";
 
 			s << std::endl << "xlabel('" << SteamProperty<Abscissa,AbsAlt>::name() << "')";
 			s << std::endl << "ylabel('" << SteamProperty<Ordinate,OrdAlt>::name() << "')";
