@@ -242,14 +242,14 @@ class Solver<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>
 
 		Solver(Pressure p, OtherProp op)
 			: SolverBase<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>(p,op){
-			lowerbound = T_MIN;
-			upperbound = T_MAX;
+			SolverBase<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>::lowerbound = T_MIN;
+			SolverBase<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>::upperbound = T_MAX;
 		}
 
 	protected:
 
 		virtual void setVaryProp(const Temperature &T){
-			S.set_pT(mp,T);
+			SolverBase<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>::S.set_pT(SolverBase<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>::mp,T);
 		}
 };
 
