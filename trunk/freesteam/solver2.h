@@ -268,7 +268,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 					Density drhoMax = 0.4 * rho;
 					Density drhoAbs = fabs(drho);
 					if(drhoAbs > drhoMax){
-						cerr << endl << "      ... limiting drho, too great";
+						//cerr << endl << "      ... limiting drho, too great";
 						drho = drho * drhoMax/drhoAbs;
 					}
 
@@ -277,12 +277,14 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 					rho = rho + drho;
 
 					if(T > T_MAX){
-						cerr << endl << "     .... Applying T_MAX limit";
+						// Strange, this test never seems to be used...
+
+						//cerr << endl << "     .... Applying T_MAX limit";
 						T = T_MAX;
 					}
 
 					if(T < T_REG1_REG3){
-						cerr << endl << "     .... Applying T_REG1_REG3 limit";
+						//cerr << endl << "     .... Applying T_REG1_REG3 limit";
 						T = T_REG1_REG3;
 					}
 
@@ -294,11 +296,13 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 						if(rho < RHO_CRIT){
 							Density rho_g = Boundaries::getSatDensSteam_T(T);
 							if(rho > rho_g){
+								//cerr << endl << "     ... Applying rho_g limit";
 								rho = rho_g;
 							}
 						}else if(rho > RHO_CRIT){
 							Density rho_f = Boundaries::getSatDensWater_T(T);
 							if(rho <  rho_f){
+								//cerr << endl << "     ... Applying rho_f limit";
 								rho = rho_f;
 							}
 						}

@@ -124,14 +124,14 @@ class Solver2Test : public CppUnit::TestFixture{
 			Tmax = T_REG1_REG3;
 			Tstep = (Tmax - Tmin) / double(50);
 			int i = 1;
-			for(Temperature T = Tmin; T <= Tmax ; T += Tstep){
+			for(Temperature T = Tmin + Tstep * 0.5; T <= Tmax - Tstep * 0.5; T += Tstep){
 
 				xmin = 0.0;
 				xmax = 1.0;
 
 				xstep = (xmax - xmin) / double(50 - i / 2);
 
-				for(Num x = xmin; x <= xmax; x +=xstep){
+				for(Num x = xmin + xstep * 0.5; x <= xmax - xstep * 0.5; x +=xstep){
 					SteamCalculator S;
 					S.setRegion4_Tx(T,x);
 					testUV(S,4);
@@ -168,9 +168,9 @@ class Solver2Test : public CppUnit::TestFixture{
 
 					Density rhomax = 380.0 * kg_m3 + ( T - 855.0 * Kelvin) / (T_REG1_REG3 - 855.0 * Kelvin) * (750.0 * kg_m3 -  380.0 * kg_m3);
 
-					cerr << endl << "Solver2Test::testRegion3: With T = " << T << " (" << tocelsius(T) << "°C), rhomax = " << rhomax;
+					//cerr << endl << "Solver2Test::testRegion3: With T = " << T << " (" << tocelsius(T) << "°C), rhomax = " << rhomax;
 
-					rhostep = (rhomax - rhomin) / double(30);
+					rhostep = (rhomax - rhomin) / double(50);
 					for(Density rho=rhomin + rhostep * 0.5; rho<=rhomax - rhostep*0.5; rho+=rhostep){
 
 						if(T < T_CRIT){
@@ -183,13 +183,13 @@ class Solver2Test : public CppUnit::TestFixture{
 							Density rho_f = S.dens();
 
 							if(rho >= rho_g && rho <= rho_f){
-								cerr << endl << "Solver2Test:testRegion3: skipping with rho = " << rho;
+								//cerr << endl << "Solver2Test:testRegion3: skipping with rho = " << rho;
 								continue;
 							}
 						}
 
 						S.setRegion3_rhoT(rho,T);
-						cerr << endl << "Solver2Test::testRegion3: rho = " << rho << ", T = " << T << " (" << tocelsius(T) << ";°C)";
+						//cerr << endl << "Solver2Test::testRegion3: rho = " << rho << ", T = " << T << " (" << tocelsius(T) << ";°C)";
 
 						testUV(S,3);
 					}
@@ -217,5 +217,4 @@ class Solver2Test : public CppUnit::TestFixture{
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(Solver2Test);
-
 

@@ -19,9 +19,9 @@ CXX = g++
 
 CPPFLAGS = -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -W -DNDEBUG
 CXXFLAGS = -fmessage-length=170 -O3 -Wall
-LDFLAGS = -lncurses -lc -lm -L/lib/ -L/usr/local/lib/ -O3
+LDFLAGS = -lncurses -lc -lm -O3
 
-CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
+CPPUNIT_CONFIG = cppunit-config
 
 CXXFLAGS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --cflags)
 LIBS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --libs)

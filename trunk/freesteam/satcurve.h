@@ -107,7 +107,7 @@ class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 				z.setUpperBound(getUpperBound(flags));
 				//z.setUpperBound(fromcelsius(3.984));
 
-				z.setTolerance(4e-7 * Kelvin);
+				z.setTolerance(1e-10 * Kelvin);
 
 				if(flags & SAT_STEAM){
 					z.setMethod(&SatCurve::getAbscissaErrorSteam_T);
@@ -136,7 +136,7 @@ class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 
 			}catch(Exception *e){
 				stringstream s;
-				s << "SatCurve<" << SteamProperty<Ordinate,OrdinateAlt>::name() << "," << SteamProperty<Abscissa,AbscissaAlt>::name() << ">::solve: " << e->what();
+				s << "SatCurve<" << SteamProperty<Ordinate,OrdinateAlt>::name() << "," << SteamProperty<Abscissa,AbscissaAlt>::name() << ">::solve(" << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << target << "," << (flags & SAT_STEAM ? "SAT_STEAM" : "SAT_WATER") << "): " << e->what();
 				throw new Exception(s.str());
 			}
 		}
