@@ -12,7 +12,7 @@
 
 using "streams";
 
-FlowSheet TestStreams_ps
+FlowSheet Test_Stream_ps
 	
 	PARAMETERS
 	freesteam as CalcObject(File="emsofreesteam");

@@ -10,6 +10,8 @@
 	included in any modification or adaptation of this Model.
 *#
 
+using "newtypes";
+
 #*
 	Properties of steam
 
@@ -62,4 +64,15 @@ Model Steam_Base
 	);
 	*#
 	
+end
+
+Model Steam_ps as Steam_Base
+
+	PARAMETERS
+	ext freesteam as CalcObject(Brief="Steam Physical Properties");
+	
+	EQUATIONS
+	"Steam properties"
+	[T, s, v, x] = freesteam.Tsvx_ph(p, h);	
+
 end
