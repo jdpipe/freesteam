@@ -29,766 +29,816 @@
 00022 <span class="preprocessor">#ifndef SOLVER2_H</span>
 00023 <span class="preprocessor"></span><span class="preprocessor">#define SOLVER2_H</span>
 00024 <span class="preprocessor"></span>
-00025 <span class="preprocessor">#include "steamproperty.h"</span>
-00026 <span class="preprocessor">#include "units.h"</span>
-00027 <span class="preprocessor">#include "satcurve.h"</span>
-00028 <span class="preprocessor">#include "exception.h"</span>
-00029 <span class="preprocessor">#include "convergencetest.h"</span>
-00030 <span class="preprocessor">#include "b23curve.h"</span>
-00031 <span class="preprocessor">#include "boundaries.h"</span>
-00032 
-00034 
-00042 <span class="keyword">template</span>&lt;<span class="keyword">class</span> FirstProp,<span class="keyword">class</span> SecondProp,<span class="keywordtype">int</span> FirstPropAlt=0, <span class="keywordtype">int</span> SecondPropAlt=0&gt;
-<a name="l00043"></a><a class="code" href="class_solver2_base.html">00043</a> <span class="keyword">class </span><a class="code" href="class_solver2_base.html">Solver2Base</a>{
-00044 
-00045         <span class="keyword">protected</span>:
-00046 
-00047                 <a class="code" href="class_solver2_base.html">Solver2Base</a>(){}
-00048                 <span class="keyword">virtual</span> ~<a class="code" href="class_solver2_base.html">Solver2Base</a>(){}
+00025 <span class="preprocessor">#define SOLVER2_DEBUG</span>
+00026 <span class="preprocessor"></span><span class="preprocessor">#define SOLVER2BASE_DEBUG Solver2Base&lt;FirstProp,SecondProp,FirstPropAlt,SecondPropAlt&gt;::debug</span>
+00027 <span class="preprocessor"></span>
+00028 <span class="preprocessor">#include "steamproperty.h"</span>
+00029 <span class="preprocessor">#include "units.h"</span>
+00030 <span class="preprocessor">#include "satcurve.h"</span>
+00031 <span class="preprocessor">#include "exception.h"</span>
+00032 <span class="preprocessor">#include "convergencetest.h"</span>
+00033 <span class="preprocessor">#include "b23curve.h"</span>
+00034 <span class="preprocessor">#include "boundaries.h"</span>
+00035 
+00037 
+00045 <span class="keyword">template</span>&lt;<span class="keyword">class</span> FirstProp,<span class="keyword">class</span> SecondProp,<span class="keywordtype">int</span> FirstPropAlt=0, <span class="keywordtype">int</span> SecondPropAlt=0&gt;
+<a name="l00046"></a><a class="code" href="class_solver2_base.html">00046</a> <span class="keyword">class </span><a class="code" href="class_solver2_base.html">Solver2Base</a>{
+00047 
+00048         <span class="keyword">protected</span>:
 00049 
-00050                 <span class="keyword">virtual</span> <span class="keywordtype">int</span> whichRegion(<span class="keyword">const</span> FirstProp &amp;fp,<span class="keyword">const</span> SecondProp &amp;sp) = 0;
-00051 
-00052                 <span class="keyword">virtual</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> solve(<span class="keyword">const</span> FirstProp &amp;fp, <span class="keyword">const</span> SecondProp &amp;sp) = 0;
-00053 
-00054                 FirstProp getFirstProp(<a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
-00055                         <span class="keywordflow">return</span> <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(S);
-00056                 }
-00057 
-00058                 SecondProp getSecondProp(<a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
-00059                         <span class="keywordflow">return</span> <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(S);
-00060                 }
+00050 <span class="preprocessor">                #ifdef SOLVER2_DEBUG</span>
+00051 <span class="preprocessor"></span>                        <a class="code" href="class_solver2_base.html">Solver2Base</a>(<span class="keyword">const</span> <span class="keywordtype">bool</span> debug=<span class="keyword">false</span>){
+00052                                 this-&gt;debug=debug;
+00053                         }
+00054 <span class="preprocessor">                #else</span>
+00055 <span class="preprocessor"></span>                        <a class="code" href="class_solver2_base.html">Solver2Base</a>(){}
+00056 <span class="preprocessor">                #endif</span>
+00057 <span class="preprocessor"></span>
+00058                 <span class="keyword">virtual</span> ~<a class="code" href="class_solver2_base.html">Solver2Base</a>(){}
+00059 
+00060                 <span class="keyword">virtual</span> <span class="keywordtype">int</span> whichRegion(<span class="keyword">const</span> FirstProp &amp;fp,<span class="keyword">const</span> SecondProp &amp;sp) = 0;
 00061 
-00062 };
+00062                 <span class="keyword">virtual</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> solve(<span class="keyword">const</span> FirstProp &amp;fp, <span class="keyword">const</span> SecondProp &amp;sp) = 0;
 00063 
-00065 
-00092 <span class="keyword">template</span>&lt;<span class="keyword">class</span> FirstProp,<span class="keyword">class</span> SecondProp,<span class="keywordtype">int</span> FirstPropAlt=0, <span class="keywordtype">int</span> SecondPropAlt=0&gt;
-<a name="l00093"></a><a class="code" href="class_solver2.html">00093</a> <span class="keyword">class </span><a class="code" href="class_solver2.html">Solver2</a>
-00094         : <span class="keyword">public</span> <a class="code" href="class_solver2_base.html">Solver2Base</a>&lt;FirstProp,SecondProp,FirstPropAlt,SecondPropAlt&gt;{
-00095 
-00096         <span class="keyword">private</span>:
-00097                 <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span> maxiter=30;
-00098 
-00100 
-00103                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> makeRegion1Guess(<span class="keyword">const</span> FirstProp&amp; f, <span class="keyword">const</span> SecondProp &amp;s){
-00104                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> S;
-00105                         S.<a class="code" href="class_steam_calculator.html#a4">set_pT</a>(10.0 * bar, fromcelsius(100));
-00106                         <span class="keywordflow">return</span> S;
-00107                 }
-00108 
+00064                 FirstProp getFirstProp(<a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
+00065                         <span class="keywordflow">return</span> <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(S);
+00066                 }
+00067 
+00068                 SecondProp getSecondProp(<a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
+00069                         <span class="keywordflow">return</span> <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(S);
+00070                 }
+00071 
+00072 <span class="preprocessor">                #ifdef SOLVER2_DEBUG</span>
+00073 <span class="preprocessor"></span>                        <span class="keywordtype">bool</span> debug;
+00074 <span class="preprocessor">                #endif</span>
+00075 <span class="preprocessor"></span>
+00076 };
+00077 
+00079 
+00106 <span class="keyword">template</span>&lt;<span class="keyword">class</span> FirstProp,<span class="keyword">class</span> SecondProp,<span class="keywordtype">int</span> FirstPropAlt=0, <span class="keywordtype">int</span> SecondPropAlt=0&gt;
+<a name="l00107"></a><a class="code" href="class_solver2.html">00107</a> <span class="keyword">class </span><a class="code" href="class_solver2.html">Solver2</a>
+00108         : <span class="keyword">public</span> <a class="code" href="class_solver2_base.html">Solver2Base</a>&lt;FirstProp,SecondProp,FirstPropAlt,SecondPropAlt&gt;{
 00109 
-00111 
-00116                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> makeRegion2Guess(<span class="keyword">const</span> FirstProp&amp; f, <span class="keyword">const</span> SecondProp &amp;s){
-00117                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> S;
-00118                         S.<a class="code" href="class_steam_calculator.html#a4">set_pT</a>(6.0 * MPa, fromcelsius(400));
-00119                         <span class="keywordflow">return</span> S;
-00120                 }
-00121 
+00110         <span class="keyword">private</span>:
+00111                 <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span> maxiter=30;
+00112 
+00114 
+00117                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> makeRegion1Guess(<span class="keyword">const</span> FirstProp&amp; f, <span class="keyword">const</span> SecondProp &amp;s){
+00118                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> S;
+00119                         S.<a class="code" href="class_steam_calculator.html#a4">set_pT</a>(10.0 * bar, fromcelsius(100));
+00120                         <span class="keywordflow">return</span> S;
+00121                 }
+00122 
 00123 
-00128                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> makeRegion3Guess(<span class="keyword">const</span> FirstProp&amp; f, <span class="keyword">const</span> SecondProp &amp;s){
-00129                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> S;
-00130                         S.<a class="code" href="class_steam_calculator.html#a15">setRegion3_rhoT</a>(1 / 0.00317 * kg_m3, fromcelsius(400));
-00131                         <span class="keywordflow">return</span> S;
-00132                 }
-00133 
+00125 
+00130                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> makeRegion2Guess(<span class="keyword">const</span> FirstProp&amp; f, <span class="keyword">const</span> SecondProp &amp;s){
+00131                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> S;
+00132                         S.<a class="code" href="class_steam_calculator.html#a4">set_pT</a>(6.0 * MPa, fromcelsius(400));
+00133                         <span class="keywordflow">return</span> S;
+00134                 }
 00135 
-00140                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> makeRegion4Guess(<span class="keyword">const</span> FirstProp&amp; f, <span class="keyword">const</span> SecondProp &amp;s){
-00141                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> S;
-00142                         S.<a class="code" href="class_steam_calculator.html#a14">setRegion4_Tx</a>(fromcelsius(263.9),0.5);
-00143                         <span class="keywordflow">return</span> S;
-00144                 }
-00145 
-00146         <span class="keyword">public</span>:
+00137 
+00142                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> makeRegion3Guess(<span class="keyword">const</span> FirstProp&amp; f, <span class="keyword">const</span> SecondProp &amp;s){
+00143                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> S;
+00144                         S.<a class="code" href="class_steam_calculator.html#a15">setRegion3_rhoT</a>(1 / 0.00317 * kg_m3, fromcelsius(400));
+00145                         <span class="keywordflow">return</span> S;
+00146                 }
 00147 
-00148                 <a class="code" href="class_solver2.html">Solver2</a>() : <a class="code" href="class_solver2_base.html">Solver2Base&lt;FirstProp,SecondProp,FirstPropAlt,SecondPropAlt&gt;</a>(){
-00149                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt;"Solver2&lt;" &lt;&lt; SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name() &lt;&lt; "," &lt;&lt; SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name() &lt;&lt; "&gt;::Solver2()";</span>
-00150                 }
-00151 
-00153 
-00166                 <span class="keywordtype">int</span> <a class="code" href="class_solver2.html#a1">whichRegion</a>(<span class="keyword">const</span> FirstProp &amp;fp, <span class="keyword">const</span> SecondProp &amp;sp);
-00167 
-00169 
-<a name="l00175"></a><a class="code" href="class_solver2.html#a2">00175</a>                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> <a class="code" href="class_solver2.html#a2">solve</a>(<span class="keyword">const</span> FirstProp &amp;fp, <span class="keyword">const</span> SecondProp &amp;sp){
-00176                         <span class="keywordtype">int</span> region = 0;
-00177                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> S,S2;
-00178 
-00179                         <span class="keywordflow">try</span>{
-00180                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Solver2: solving for " &lt;&lt; SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt; fp &lt;&lt; ", " &lt;&lt; SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt;  sp;</span>
-00181 
-00182                                 region = <a class="code" href="class_solver2.html#a1">whichRegion</a>(fp,sp);
-00183 
-00184                         }<span class="keywordflow">catch</span>(Exception *E){
-00185                                 stringstream ss;
-00186                                 ss &lt;&lt; <span class="stringliteral">"Solver2&lt;"</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">","</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">"&gt;::solve (no first guess): "</span> &lt;&lt; E-&gt;what();
-00187                                 <span class="keyword">delete</span> E;
-00188                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(ss.str());
-00189                         }
-00190 
-00191                         <span class="keywordflow">try</span>{
-00192                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Solver2: solving in region " &lt;&lt; region;</span>
-00193                                 <span class="keywordflow">switch</span>(region){
-00194                                         <span class="keywordflow">case</span> 1:
-00195                                                 S2 = solveRegion1(fp,sp,makeRegion1Guess(fp,sp));
-00196                                                 <span class="keywordflow">break</span>;
-00197                                         <span class="keywordflow">case</span> 2:
-00198                                                 S2 = solveRegion2(fp,sp,makeRegion2Guess(fp,sp));
-00199                                                 <span class="keywordflow">break</span>;
-00200                                         <span class="keywordflow">case</span> 3:
-00201                                                 S2 = solveRegion3(fp,sp,makeRegion3Guess(fp,sp));
-00202                                                 <span class="keywordflow">break</span>;
-00203                                         <span class="keywordflow">case</span> 4:
-00204                                                 S2 = solveRegion4(fp,sp,makeRegion4Guess(fp,sp));
-00205                                                 <span class="keywordflow">break</span>;
-00206                                         <span class="keywordflow">default</span>:
-00207                                                 stringstream ss;
-00208                                                 ss &lt;&lt; <span class="stringliteral">"Invalid return from whichRegion("</span> &lt;&lt; fp &lt;&lt; <span class="stringliteral">","</span> &lt;&lt; sp &lt;&lt; <span class="stringliteral">"): region = "</span> &lt;&lt; region;
-00209                                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(ss.str());
-00210                                 }
-00211                         }<span class="keywordflow">catch</span>(Exception *E){
-00212                                 stringstream s;
-00213                                 s &lt;&lt; <span class="stringliteral">"Solver2&lt;"</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">","</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">"&gt;::solve (no first guess; found region="</span> &lt;&lt; region &lt;&lt; <span class="stringliteral">"): "</span> &lt;&lt; E-&gt;what();
-00214                                 <span class="keyword">delete</span> E;
-00215                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(s.str());
-00216                         }
-00217 
-00218                         <span class="keywordflow">return</span> S2;
-00219                 }
-00220 
-00222 
-<a name="l00229"></a><a class="code" href="class_solver2.html#a3">00229</a>                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> <a class="code" href="class_solver2.html#a2">solve</a>(<span class="keyword">const</span> FirstProp &amp;fp, <span class="keyword">const</span> SecondProp &amp;sp, <span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;firstguess){
-00230                         <span class="keywordtype">int</span> region=0;
-00231                         <span class="keywordflow">try</span>{
-00232                                 region = <a class="code" href="class_solver2.html#a1">whichRegion</a>(fp,sp);
-00233                                 <span class="keywordflow">switch</span>(region){
-00234                                         <span class="keywordflow">case</span> 1:
-00235                                                 <span class="keywordflow">return</span> solveRegion1(fp,sp,firstguess);
-00236                                         <span class="keywordflow">case</span> 2:
-00237                                                 <span class="keywordflow">return</span> solveRegion2(fp,sp,firstguess);
-00238                                         <span class="keywordflow">case</span> 3:
-00239                                                 <span class="keywordflow">return</span> solveRegion3(fp,sp,firstguess);
-00240                                         <span class="keywordflow">case</span> 4:
-00241                                                 <span class="keywordflow">return</span> solveRegion4(fp,sp,firstguess);
-00242                                 }
-00243                         }<span class="keywordflow">catch</span>(Exception *E){
-00244                                 stringstream s;
-00245                                 s &lt;&lt; <span class="stringliteral">"Solver2&lt;"</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">","</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">"&gt;::solve (given first guess; found region="</span>&lt;&lt; region&lt;&lt;<span class="stringliteral">"): "</span> &lt;&lt; E-&gt;what();
-00246                                 <span class="keyword">delete</span> E;
-00247                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(s.str());
-00248                         }
-00249                 }
-00250 
-00251         <span class="keyword">private</span>:
-00252 
-00254                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> solveRegion3(<span class="keyword">const</span> FirstProp &amp;f1, <span class="keyword">const</span> SecondProp &amp;s1,<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;firstguess){
-00255                         <span class="keywordflow">try</span>{
-00256                                 <span class="comment">// Iterate on rho, T</span>
+00149 
+00154                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> makeRegion4Guess(<span class="keyword">const</span> FirstProp&amp; f, <span class="keyword">const</span> SecondProp &amp;s){
+00155                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> S;
+00156                         S.<a class="code" href="class_steam_calculator.html#a14">setRegion4_Tx</a>(fromcelsius(263.9),0.5);
+00157                         <span class="keywordflow">return</span> S;
+00158                 }
+00159 
+00160         <span class="keyword">public</span>:
+00161 
+00162 <span class="preprocessor">                #ifdef SOLVER2_DEBUG</span>
+00163 <span class="preprocessor"></span>                        <a class="code" href="class_solver2.html">Solver2</a>(<span class="keyword">const</span> <span class="keywordtype">bool</span> debug=<span class="keyword">false</span>)
+00164                                 : <a class="code" href="class_solver2_base.html">Solver2Base&lt;FirstProp,SecondProp,FirstPropAlt,SecondPropAlt&gt;</a>(debug){
+00165 <span class="preprocessor">                #else</span>
+00166 <span class="preprocessor"></span>                        <a class="code" href="class_solver2.html">Solver2</a>()
+00167                                 : <a class="code" href="class_solver2_base.html">Solver2Base&lt;FirstProp,SecondProp,FirstPropAlt,SecondPropAlt&gt;</a>(){
+00168 <span class="preprocessor">                #endif</span>
+00169 <span class="preprocessor"></span>                        <span class="comment">//cerr &lt;&lt; endl &lt;&lt;"Solver2&lt;" &lt;&lt; SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name() &lt;&lt; "," &lt;&lt; SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name() &lt;&lt; "&gt;::Solver2()";</span>
+00170                 }
+00171 
+00173 
+00186                 <span class="keywordtype">int</span> <a class="code" href="class_solver2.html#a1">whichRegion</a>(<span class="keyword">const</span> FirstProp &amp;fp, <span class="keyword">const</span> SecondProp &amp;sp);
+00187 
+00189 
+<a name="l00195"></a><a class="code" href="class_solver2.html#a2">00195</a>                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> <a class="code" href="class_solver2.html#a2">solve</a>(<span class="keyword">const</span> FirstProp &amp;fp, <span class="keyword">const</span> SecondProp &amp;sp){
+00196                         <span class="keywordtype">int</span> region = 0;
+00197                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> S,S2;
+00198 
+00199                         <span class="keywordflow">try</span>{
+00200                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Solver2: solving for " &lt;&lt; SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt; fp &lt;&lt; ", " &lt;&lt; SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt;  sp;</span>
+00201 
+00202                                 region = <a class="code" href="class_solver2.html#a1">whichRegion</a>(fp,sp);
+00203 
+00204                         }<span class="keywordflow">catch</span>(Exception *E){
+00205                                 stringstream ss;
+00206                                 ss &lt;&lt; <span class="stringliteral">"Solver2&lt;"</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">","</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">"&gt;::solve (no first guess): "</span> &lt;&lt; E-&gt;what();
+00207                                 <span class="keyword">delete</span> E;
+00208                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(ss.str());
+00209                         }
+00210 
+00211                         <span class="keywordflow">try</span>{
+00212                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Solver2: solving in region " &lt;&lt; region;</span>
+00213                                 <span class="keywordflow">switch</span>(region){
+00214                                         <span class="keywordflow">case</span> 1:
+00215                                                 S2 = solveRegion1(fp,sp,makeRegion1Guess(fp,sp));
+00216                                                 <span class="keywordflow">break</span>;
+00217                                         <span class="keywordflow">case</span> 2:
+00218                                                 S2 = solveRegion2(fp,sp,makeRegion2Guess(fp,sp));
+00219                                                 <span class="keywordflow">break</span>;
+00220                                         <span class="keywordflow">case</span> 3:
+00221                                                 S2 = solveRegion3(fp,sp,makeRegion3Guess(fp,sp));
+00222                                                 <span class="keywordflow">break</span>;
+00223                                         <span class="keywordflow">case</span> 4:
+00224                                                 S2 = solveRegion4(fp,sp,makeRegion4Guess(fp,sp));
+00225                                                 <span class="keywordflow">break</span>;
+00226                                         <span class="keywordflow">default</span>:
+00227                                                 stringstream ss;
+00228                                                 ss &lt;&lt; <span class="stringliteral">"Invalid return from whichRegion("</span> &lt;&lt; fp &lt;&lt; <span class="stringliteral">","</span> &lt;&lt; sp &lt;&lt; <span class="stringliteral">"): region = "</span> &lt;&lt; region;
+00229                                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(ss.str());
+00230                                 }
+00231                         }<span class="keywordflow">catch</span>(Exception *E){
+00232                                 stringstream s;
+00233                                 s &lt;&lt; <span class="stringliteral">"Solver2&lt;"</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">","</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">"&gt;::solve (no first guess; found region="</span> &lt;&lt; region &lt;&lt; <span class="stringliteral">"): "</span> &lt;&lt; E-&gt;what();
+00234                                 <span class="keyword">delete</span> E;
+00235                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(s.str());
+00236                         }
+00237 
+00238                         <span class="keywordflow">return</span> S2;
+00239                 }
+00240 
+00242 
+<a name="l00249"></a><a class="code" href="class_solver2.html#a3">00249</a>                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> <a class="code" href="class_solver2.html#a2">solve</a>(<span class="keyword">const</span> FirstProp &amp;fp, <span class="keyword">const</span> SecondProp &amp;sp, <span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;firstguess){
+00250                         <span class="keywordtype">int</span> region=0;
+00251                         <span class="keywordflow">try</span>{
+00252                                 region = <a class="code" href="class_solver2.html#a1">whichRegion</a>(fp,sp);
+00253 
+00254                                 <span class="keywordflow">if</span>(!firstguess.<a class="code" href="class_steam_calculator.html#a16">isSet</a>() || firstguess.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()!=region){
+00255                                         <span class="keywordflow">return</span> <a class="code" href="class_solver2.html#a2">solve</a>(fp,sp);
+00256                                 }
 00257 
-00258                                 <span class="comment">// Just like region 1, except for it's T,x</span>
-00259 
-00260                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Solver2&lt;" &lt;&lt; SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name() &lt;&lt; "," &lt;&lt; SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name() &lt;&lt; "&gt;::solveRegion3:";</span>
-00261 
-00262                                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> guess = firstguess;
-00263 
-00264                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Solver2::solveRegion4: firstguess copied to guess OK";</span>
-00265 
-00266                                 <span class="keywordflow">if</span>(firstguess.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()!=3){
-00267                                         <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion3: First guess is not region3"</span>);
-00268                                 }
-00269 
-00270                                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> petT, petrho;
-00271                                 <a class="code" href="class_units.html">Temperature</a> T,dT;
-00272                                 <a class="code" href="class_units.html">Density</a> rho,drho;
-00273                                 FirstProp f,Df, DfT, Dfrho;
-00274                                 SecondProp s,Ds,DsT, Dsrho;
-00275                                 <a class="code" href="class_units.html">Pressure</a> p;
-00276 
-00277                                 <span class="comment">// cerr &lt;&lt; endl &lt;&lt; "Solver2::solveRegion3: Starting iterations";</span>
-00278 
-00279 
-00280                                 <span class="keywordtype">int</span> niter=0;
-00281                                 <span class="keywordflow">while</span>(1){
-00282 
-00283                                         T = guess.<a class="code" href="class_steam_calculator.html#a20">temp</a>();
-00284                                         rho = guess.<a class="code" href="class_steam_calculator.html#a22">dens</a>();
-00285                                         p = guess.<a class="code" href="class_steam_calculator.html#a21">pres</a>();
-00286 
-00287                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Iter " &lt;&lt; niter &lt;&lt; ": T = " &lt;&lt; T &lt;&lt; ", rho = " &lt;&lt; rho;</span>
+00258                                 <span class="keywordflow">switch</span>(region){
+00259                                         <span class="keywordflow">case</span> 1:
+00260                                                 <span class="keywordflow">return</span> solveRegion1(fp,sp,firstguess);
+00261                                         <span class="keywordflow">case</span> 2:
+00262                                                 <span class="keywordflow">return</span> solveRegion2(fp,sp,firstguess);
+00263                                         <span class="keywordflow">case</span> 3:
+00264                                                 <span class="keywordflow">return</span> solveRegion3(fp,sp,firstguess);
+00265                                         <span class="keywordflow">case</span> 4:
+00266                                                 <span class="keywordflow">return</span> solveRegion4(fp,sp,firstguess);
+00267                                 }
+00268 
+00269                         }<span class="keywordflow">catch</span>(Exception *E){
+00270                                 stringstream ss;
+00271 
+00272                                 ss &lt;&lt; <span class="stringliteral">"Solver2&lt;"</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">","</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">"&gt;::solve ("</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">"="</span> &lt;&lt; fp &lt;&lt; <span class="stringliteral">", "</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">"="</span> &lt;&lt; sp;
+00273 
+00274                                 ss &lt;&lt;  <span class="stringliteral">"; found region="</span>&lt;&lt; region;
+00275 
+00276                                 <span class="keywordflow">if</span>(firstguess.<a class="code" href="class_steam_calculator.html#a16">isSet</a>()){
+00277                                         ss &lt;&lt; <span class="stringliteral">"; given first guess with "</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">"="</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(firstguess) &lt;&lt; <span class="stringliteral">", "</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">"="</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(firstguess);
+00278                                 }<span class="keywordflow">else</span>{
+00279                                         ss &lt;&lt; <span class="stringliteral">"; given uninitialised first guess"</span>;
+00280                                 }
+00281 
+00282                                 ss &lt;&lt; <span class="stringliteral">"): "</span> &lt;&lt; E-&gt;what();
+00283 
+00284                                 <span class="keyword">delete</span> E;
+00285                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(ss.str());
+00286                         }
+00287                 }
 00288 
-00289                                         f = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(guess);
-00290                                         s = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(guess);
-00291 
-00292                                         <span class="comment">//cerr &lt;&lt; ": " &lt;&lt; SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt; f;</span>
-00293                                         <span class="comment">//cerr &lt;&lt; ", " &lt;&lt; SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt; s;</span>
-00294 
-00295                                         Df = f1 - f;
-00296                                         Ds = s1 - s;
+00289         <span class="keyword">private</span>:
+00290 
+00292                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> solveRegion3(<span class="keyword">const</span> FirstProp &amp;f1, <span class="keyword">const</span> SecondProp &amp;s1,<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;firstguess){
+00293                         <span class="keywordflow">try</span>{
+00294                                 <span class="comment">// Iterate on rho, T</span>
+00295 
+00296                                 <span class="comment">// Just like region 1, except for it's T,x</span>
 00297 
-00298                                         <span class="comment">// In this template it's hard to know the units of the convergence test, so make it as a new, separate, template:</span>
-00299                                         <span class="keywordflow">if</span>(
-00300                                                 ConvergenceTest&lt;FirstProp,FirstPropAlt&gt;::test(Df,p,T)
-00301                                                 &amp;&amp; ConvergenceTest&lt;SecondProp,SecondPropAlt&gt;::test(Ds,p,T)
-00302                                         ){
-00303                                                 <span class="comment">// cerr &lt;&lt; endl &lt;&lt; "     ... SOLUTION OK (" &lt;&lt; niter &lt;&lt; " iterations)" &lt;&lt; endl;</span>
-00304                                                 <span class="keywordflow">return</span> guess;
-00305                                         }
-00306 
-00307                                         dT = T * 0.001;
-00308 
-00309                                         <span class="keywordflow">if</span>(T + dT &gt; T_MAX){
-00310                                                 dT = -dT;
-00311                                         }
-00312 
-00313                                         petT.<a class="code" href="class_steam_calculator.html#a15">setRegion3_rhoT</a>(rho, T + dT);
-00314                                         ASSERT(petT.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==3);
-00315 
-00316                                         <span class="comment">// ensure we don't go over rho limits</span>
-00317                                         drho = rho * 0.001;
-00318                                         <span class="keywordflow">if</span>(rho + drho &gt; 50.0 * kg_m3){
-00319                                                 drho = -drho;
-00320                                         }
-00321 
-00322                                         petrho.<a class="code" href="class_steam_calculator.html#a15">setRegion3_rhoT</a>(rho + drho, T);
-00323                                         ASSERT(petrho.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==3);
+00298                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Solver2&lt;" &lt;&lt; SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name() &lt;&lt; "," &lt;&lt; SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name() &lt;&lt; "&gt;::solveRegion3:";</span>
+00299 
+00300                                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> guess = firstguess;
+00301 
+00302                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Solver2::solveRegion4: firstguess copied to guess OK";</span>
+00303 
+00304                                 <span class="keywordflow">if</span>(firstguess.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()!=3){
+00305                                         <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion3: First guess is not region3"</span>);
+00306                                 }
+00307 
+00308                                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> petT, petrho;
+00309                                 <a class="code" href="class_units.html">Temperature</a> T,dT;
+00310                                 <a class="code" href="class_units.html">Density</a> rho,drho;
+00311                                 FirstProp f,Df, DfT, Dfrho;
+00312                                 SecondProp s,Ds,DsT, Dsrho;
+00313                                 <a class="code" href="class_units.html">Pressure</a> p;
+00314 
+00315                                 <span class="comment">// cerr &lt;&lt; endl &lt;&lt; "Solver2::solveRegion3: Starting iterations";</span>
+00316 
+00317 
+00318                                 <span class="keywordtype">int</span> niter=0;
+00319                                 <span class="keywordflow">while</span>(1){
+00320 
+00321                                         T = guess.<a class="code" href="class_steam_calculator.html#a20">temp</a>();
+00322                                         rho = guess.<a class="code" href="class_steam_calculator.html#a22">dens</a>();
+00323                                         p = guess.<a class="code" href="class_steam_calculator.html#a21">pres</a>();
 00324 
-00325                                         DfT = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(petT) - f;
-00326                                         DsT = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(petT) - s;
-00327 
-00328                                         Dfrho = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(petrho) - f;
-00329                                         Dsrho = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(petrho) - s;
-00330 
-00331                                         ASSERT(DfT * Dsrho != DsT * Dfrho);
+00325                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Iter " &lt;&lt; niter &lt;&lt; ": T = " &lt;&lt; T &lt;&lt; ", rho = " &lt;&lt; rho;</span>
+00326 
+00327                                         f = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(guess);
+00328                                         s = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(guess);
+00329 
+00330                                         <span class="comment">//cerr &lt;&lt; ": " &lt;&lt; SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt; f;</span>
+00331                                         <span class="comment">//cerr &lt;&lt; ", " &lt;&lt; SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt; s;</span>
 00332 
-00333                                         <span class="comment">// Solve new peturbations</span>
-00334                                         dT = dT * (Df*Dsrho - Ds*Dfrho) / (DfT*Dsrho - DsT*Dfrho);
-00335                                         drho = drho * (DfT*Ds - DsT*Df) / (DfT*Dsrho - DsT*Dfrho);
-00336 
-00337                                         ASSERT(!isnan(dT));
-00338                                         ASSERT(!isnan(drho));
-00339 
-00340                                         <span class="comment">// Regulate maximum change in temperature</span>
-00341 
-00342                                         <a class="code" href="class_units.html">Temperature</a> dTMax = 0.1 * T;
-00343                                         <a class="code" href="class_units.html">Temperature</a> dTAbs = fabs(dT);
-00344                                         <span class="keywordflow">if</span>(dTAbs &gt; dTMax){
-00345                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "      ... limiting dT, too great";</span>
-00346                                                 dT = dT * dTMax/dTAbs;
-00347                                         }
-00348 
-00349                                         <span class="comment">// Regulate max change in pressure</span>
+00333                                         Df = f1 - f;
+00334                                         Ds = s1 - s;
+00335 
+00336                                         <span class="comment">// In this template it's hard to know the units of the convergence test, so make it as a new, separate, template:</span>
+00337                                         <span class="keywordflow">if</span>(
+00338                                                 ConvergenceTest&lt;FirstProp,FirstPropAlt&gt;::test(Df,p,T)
+00339                                                 &amp;&amp; ConvergenceTest&lt;SecondProp,SecondPropAlt&gt;::test(Ds,p,T)
+00340                                         ){
+00341                                                 <span class="comment">// cerr &lt;&lt; endl &lt;&lt; "     ... SOLUTION OK (" &lt;&lt; niter &lt;&lt; " iterations)" &lt;&lt; endl;</span>
+00342                                                 <span class="keywordflow">return</span> guess;
+00343                                         }
+00344 
+00345                                         dT = T * 0.001;
+00346 
+00347                                         <span class="keywordflow">if</span>(T + dT &gt; T_MAX){
+00348                                                 dT = -dT;
+00349                                         }
 00350 
-00351                                         <a class="code" href="class_units.html">Density</a> drhoMax = 0.4 * rho;
-00352                                         <a class="code" href="class_units.html">Density</a> drhoAbs = fabs(drho);
-00353                                         <span class="keywordflow">if</span>(drhoAbs &gt; drhoMax){
-00354                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "      ... limiting drho, too great";</span>
-00355                                                 drho = drho * drhoMax/drhoAbs;
-00356                                         }
-00357 
-00358                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... calculated dT = " &lt;&lt; dT &lt;&lt; ", drho = " &lt;&lt; drho;</span>
-00359                                         T = T + dT;
-00360                                         rho = rho + drho;
-00361 
-00362                                         <span class="keywordflow">if</span>(T &gt; T_MAX){
-00363                                                 <span class="comment">// Strange, this test never seems to be used...</span>
-00364 
-00365                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     .... Applying T_MAX limit";</span>
-00366                                                 T = T_MAX;
-00367                                         }
+00351                                         petT.<a class="code" href="class_steam_calculator.html#a15">setRegion3_rhoT</a>(rho, T + dT);
+00352                                         ASSERT(petT.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==3);
+00353 
+00354                                         <span class="comment">// ensure we don't go over rho limits</span>
+00355                                         drho = rho * 0.001;
+00356                                         <span class="keywordflow">if</span>(rho + drho &gt; 50.0 * kg_m3){
+00357                                                 drho = -drho;
+00358                                         }
+00359 
+00360                                         petrho.<a class="code" href="class_steam_calculator.html#a15">setRegion3_rhoT</a>(rho + drho, T);
+00361                                         ASSERT(petrho.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==3);
+00362 
+00363                                         DfT = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(petT) - f;
+00364                                         DsT = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(petT) - s;
+00365 
+00366                                         Dfrho = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(petrho) - f;
+00367                                         Dsrho = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(petrho) - s;
 00368 
-00369                                         <span class="keywordflow">if</span>(T &lt; T_REG1_REG3){
-00370                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     .... Applying T_REG1_REG3 limit";</span>
-00371                                                 T = T_REG1_REG3;
-00372                                         }
-00373 
-00374                                         <a class="code" href="class_units.html">Density</a> rho_b134;
-00375                                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> S;
-00376                                         S.<a class="code" href="class_steam_calculator.html#a8">setSatWater_T</a>(T_REG1_REG3);
-00377                                         rho_b134 = S.<a class="code" href="class_steam_calculator.html#a22">dens</a>();
-00378                                         <span class="keywordflow">if</span>(rho &lt; rho_b134 &amp;&amp; T &lt; T_CRIT){
-00379                                                 <span class="keywordflow">if</span>(rho &lt; RHO_CRIT){
-00380                                                         <a class="code" href="class_units.html">Density</a> rho_g = Boundaries::getSatDensSteam_T(T);
-00381                                                         <span class="keywordflow">if</span>(rho &gt; rho_g){
-00382                                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... Applying rho_g limit";</span>
-00383                                                                 rho = rho_g;
-00384                                                         }
-00385                                                 }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(rho &gt; RHO_CRIT){
-00386                                                         <a class="code" href="class_units.html">Density</a> rho_f = Boundaries::getSatDensWater_T(T);
-00387                                                         <span class="keywordflow">if</span>(rho &lt;  rho_f){
-00388                                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... Applying rho_f limit";</span>
-00389                                                                 rho = rho_f;
-00390                                                         }
-00391                                                 }
-00392 
-00393                                         }
-00394 
-00395                                         <a class="code" href="class_b23_curve.html">B23Curve&lt;Density,Temperature&gt;</a> B23;
-00396                                         <a class="code" href="class_units.html">Density</a> rho_b23 = B23.<a class="code" href="class_b23_curve.html#a2">solve</a>(T);
-00397                                         <span class="keywordflow">if</span>(rho &lt; rho_b23){
-00398                                                 rho = rho_b23;
-00399                                         }
-00400 
-00401                                         S.<a class="code" href="class_steam_calculator.html#a15">setRegion3_rhoT</a>(rho,T);
-00402                                         <span class="keywordtype">int</span> pmaxiter = 0;
-00403                                         <span class="keywordflow">if</span>(S.<a class="code" href="class_steam_calculator.html#a21">pres</a>() &gt; P_MAX){
-00404                                                 <span class="keywordflow">do</span>{
-00405                                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "    ... found p = " &lt;&lt; S.pres() / MPa &lt;&lt; " MPa";</span>
+00369                                         ASSERT(DfT * Dsrho != DsT * Dfrho);
+00370 
+00371                                         <span class="comment">// Solve new peturbations</span>
+00372                                         dT = dT * (Df*Dsrho - Ds*Dfrho) / (DfT*Dsrho - DsT*Dfrho);
+00373                                         drho = drho * (DfT*Ds - DsT*Df) / (DfT*Dsrho - DsT*Dfrho);
+00374 
+00375                                         ASSERT(!isnan(dT));
+00376                                         ASSERT(!isnan(drho));
+00377 
+00378                                         <span class="comment">// Regulate maximum change in temperature</span>
+00379 
+00380                                         <a class="code" href="class_units.html">Temperature</a> dTMax = 0.1 * T;
+00381                                         <a class="code" href="class_units.html">Temperature</a> dTAbs = fabs(dT);
+00382                                         <span class="keywordflow">if</span>(dTAbs &gt; dTMax){
+00383                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "      ... limiting dT, too great";</span>
+00384                                                 dT = dT * dTMax/dTAbs;
+00385                                         }
+00386 
+00387                                         <span class="comment">// Regulate max change in pressure</span>
+00388 
+00389                                         <a class="code" href="class_units.html">Density</a> drhoMax = 0.4 * rho;
+00390                                         <a class="code" href="class_units.html">Density</a> drhoAbs = fabs(drho);
+00391                                         <span class="keywordflow">if</span>(drhoAbs &gt; drhoMax){
+00392                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "      ... limiting drho, too great";</span>
+00393                                                 drho = drho * drhoMax/drhoAbs;
+00394                                         }
+00395 
+00396                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... calculated dT = " &lt;&lt; dT &lt;&lt; ", drho = " &lt;&lt; drho;</span>
+00397                                         T = T + dT;
+00398                                         rho = rho + drho;
+00399 
+00400                                         <span class="keywordflow">if</span>(T &gt; T_MAX){
+00401                                                 <span class="comment">// Strange, this test never seems to be used...</span>
+00402 
+00403                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     .... Applying T_MAX limit";</span>
+00404                                                 T = T_MAX;
+00405                                         }
 00406 
-00407                                                         drho *= 0.5001;
-00408                                                         <span class="comment">//dT *= 0.5001;</span>
-00409                                                         rho -= drho;
-00410                                                         <span class="comment">//T -= dT;</span>
-00411                                                         S.<a class="code" href="class_steam_calculator.html#a15">setRegion3_rhoT</a>(rho,T);
-00412                                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... Applying P_MAX limit at T = " &lt;&lt; T &lt;&lt; ": rho = " &lt;&lt; rho;</span>
-00413                                                         <span class="keywordflow">if</span>(++pmaxiter &gt; 20){
-00414                                                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion3: Failed to find rho of P_MAX"</span>);
-00415                                                         }
-00416 
-00417                                                 }<span class="keywordflow">while</span>(S.<a class="code" href="class_steam_calculator.html#a21">pres</a>() &gt; P_MAX);
-00418                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... pressure capped to " &lt;&lt; S.pres();</span>
-00419                                         }
-00420 
-00421                                         guess.<a class="code" href="class_steam_calculator.html#a15">setRegion3_rhoT</a>(rho,T);
-00422 
-00423                                         niter++;
-00424 
-00425                                         <span class="keywordflow">if</span>(niter &gt; maxiter){
-00426                                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion3: Exceeded maximum iterations"</span>);
-00427                                         }
-00428                                 }
-00429 
-00430                         }<span class="keywordflow">catch</span>(Exception *E){
-00431                                 stringstream s;
-00432                                 s &lt;&lt; <span class="stringliteral">"Solver2&lt;"</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">","</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">"&gt;:solveRegion3: "</span> &lt;&lt; E-&gt;what();
-00433                                 <span class="keyword">delete</span> E;
-00434                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(s.str());
-00435                         }
-00436                 }
-00437 
-00439                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> solveRegion4(<span class="keyword">const</span> FirstProp &amp;f1, <span class="keyword">const</span> SecondProp &amp;s1,<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;firstguess){
-00440 
-00441                         <span class="keywordflow">try</span>{
-00442                                 <span class="comment">// Just like region 1, except for it's T,x</span>
-00443 
-00444                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Solver2::solveRegion4: ";</span>
-00445 
-00446                                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> guess = firstguess;
-00447 
-00448                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Solver2::solveRegion4: firstguess copied to guess OK";</span>
-00449 
-00450                                 <span class="keywordflow">if</span>(firstguess.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()!=4){
-00451                                         <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion4: First guess is not region 4"</span>);
-00452                                 }
-00453 
-00454                                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> petT, petx;
-00455                                 <a class="code" href="class_units.html">Temperature</a> T,dT;
-00456                                 Num x,dx;
-00457                                 FirstProp f,Df, DfT, Dfx;
-00458                                 SecondProp s,Ds,DsT, Dsx;
-00459                                 <a class="code" href="class_units.html">Pressure</a> p;
+00407                                         <span class="keywordflow">if</span>(T &lt; T_REG1_REG3){
+00408                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     .... Applying T_REG1_REG3 limit";</span>
+00409                                                 T = T_REG1_REG3;
+00410                                         }
+00411 
+00412                                         <a class="code" href="class_units.html">Density</a> rho_b134;
+00413                                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> S;
+00414                                         S.<a class="code" href="class_steam_calculator.html#a8">setSatWater_T</a>(T_REG1_REG3);
+00415                                         rho_b134 = S.<a class="code" href="class_steam_calculator.html#a22">dens</a>();
+00416                                         <span class="keywordflow">if</span>(rho &lt; rho_b134 &amp;&amp; T &lt; T_CRIT){
+00417                                                 <span class="keywordflow">if</span>(rho &lt; RHO_CRIT){
+00418                                                         <a class="code" href="class_units.html">Density</a> rho_g = Boundaries::getSatDensSteam_T(T);
+00419                                                         <span class="keywordflow">if</span>(rho &gt; rho_g){
+00420                                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... Applying rho_g limit";</span>
+00421                                                                 rho = rho_g;
+00422                                                         }
+00423                                                 }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(rho &gt; RHO_CRIT){
+00424                                                         <a class="code" href="class_units.html">Density</a> rho_f = Boundaries::getSatDensWater_T(T);
+00425                                                         <span class="keywordflow">if</span>(rho &lt;  rho_f){
+00426                                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... Applying rho_f limit";</span>
+00427                                                                 rho = rho_f;
+00428                                                         }
+00429                                                 }
+00430 
+00431                                         }
+00432 
+00433                                         <a class="code" href="class_b23_curve.html">B23Curve&lt;Density,Temperature&gt;</a> B23;
+00434                                         <a class="code" href="class_units.html">Density</a> rho_b23 = B23.<a class="code" href="class_b23_curve.html#a2">solve</a>(T);
+00435                                         <span class="keywordflow">if</span>(rho &lt; rho_b23){
+00436                                                 rho = rho_b23;
+00437                                         }
+00438 
+00439                                         S.<a class="code" href="class_steam_calculator.html#a15">setRegion3_rhoT</a>(rho,T);
+00440                                         <span class="keywordtype">int</span> pmaxiter = 0;
+00441                                         <span class="keywordflow">if</span>(S.<a class="code" href="class_steam_calculator.html#a21">pres</a>() &gt; P_MAX){
+00442                                                 <span class="keywordflow">do</span>{
+00443                                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "    ... found p = " &lt;&lt; S.pres() / MPa &lt;&lt; " MPa";</span>
+00444 
+00445                                                         drho *= 0.5001;
+00446                                                         <span class="comment">//dT *= 0.5001;</span>
+00447                                                         rho -= drho;
+00448                                                         <span class="comment">//T -= dT;</span>
+00449                                                         S.<a class="code" href="class_steam_calculator.html#a15">setRegion3_rhoT</a>(rho,T);
+00450                                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... Applying P_MAX limit at T = " &lt;&lt; T &lt;&lt; ": rho = " &lt;&lt; rho;</span>
+00451                                                         <span class="keywordflow">if</span>(++pmaxiter &gt; 20){
+00452                                                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion3: Failed to find rho of P_MAX"</span>);
+00453                                                         }
+00454 
+00455                                                 }<span class="keywordflow">while</span>(S.<a class="code" href="class_steam_calculator.html#a21">pres</a>() &gt; P_MAX);
+00456                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... pressure capped to " &lt;&lt; S.pres();</span>
+00457                                         }
+00458 
+00459                                         guess.<a class="code" href="class_steam_calculator.html#a15">setRegion3_rhoT</a>(rho,T);
 00460 
-00461                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Solver2::solveRegion4: Starting iterations";</span>
+00461                                         niter++;
 00462 
-00463                                 <span class="keywordtype">int</span> niter=0;
-00464                                 <span class="keywordflow">while</span>(1){
-00465 
-00466                                         T = guess.<a class="code" href="class_steam_calculator.html#a20">temp</a>();
-00467                                         x = guess.<a class="code" href="class_steam_calculator.html#a29">quality</a>();
-00468                                         p = guess.<a class="code" href="class_steam_calculator.html#a21">pres</a>();
-00469 
-00470                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Iter " &lt;&lt; niter &lt;&lt; ": x = " &lt;&lt; x &lt;&lt; ", T = " &lt;&lt; T;</span>
-00471 
-00472                                         f = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(guess);
-00473                                         s = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(guess);
-00474 
-00475                                         <span class="comment">//cerr &lt;&lt; ": " &lt;&lt; SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt; f;</span>
-00476                                         <span class="comment">//cerr &lt;&lt; ", " &lt;&lt; SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt; s;</span>
-00477 
-00478                                         Df = f1 - f;
-00479                                         Ds = s1 - s;
-00480 
-00481                                         <span class="comment">// In this template it's hard to know the units of the convergence test, so make it as a new, separate, template:</span>
-00482                                         <span class="keywordflow">if</span>(
-00483                                                 ConvergenceTest&lt;FirstProp,FirstPropAlt&gt;::test(Df,p,T)
-00484                                                 &amp;&amp; ConvergenceTest&lt;SecondProp,SecondPropAlt&gt;::test(Ds,p,T)
-00485                                         ){
-00486                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... SOLUTION OK" &lt;&lt; endl;</span>
-00487                                                 <span class="keywordflow">return</span> guess;
-00488                                         }
-00489 
-00490                                         dT = -T * 0.001;
-00491                                         <span class="comment">// ensure we don't go over the T limits with our peturbation</span>
-00492                                         <span class="keywordflow">if</span>(T + dT &lt; T_TRIPLE){
-00493                                                 dT = -dT;
-00494                                         }
-00495 
-00496                                         Boundaries::isSat_Tx(T+dT,x, <span class="keyword">true</span>);
-00497 
-00498                                         petT.<a class="code" href="class_steam_calculator.html#a14">setRegion4_Tx</a>(T + dT, x);
-00499                                         ASSERT(petT.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==4);
+00463                                         <span class="keywordflow">if</span>(niter &gt; maxiter){
+00464                                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion3: Exceeded maximum iterations"</span>);
+00465                                         }
+00466                                 }
+00467 
+00468                         }<span class="keywordflow">catch</span>(Exception *E){
+00469                                 stringstream s;
+00470                                 s &lt;&lt; <span class="stringliteral">"Solver2&lt;"</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">","</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">"&gt;:solveRegion3: "</span> &lt;&lt; E-&gt;what();
+00471                                 <span class="keyword">delete</span> E;
+00472                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(s.str());
+00473                         }
+00474                 }
+00475 
+00477                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> solveRegion4(<span class="keyword">const</span> FirstProp &amp;f1, <span class="keyword">const</span> SecondProp &amp;s1,<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;firstguess){
+00478 
+00479                         <span class="keywordflow">try</span>{
+00480                                 <span class="comment">// Just like region 1, except for it's T,x</span>
+00481 
+00482                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Solver2::solveRegion4: ";</span>
+00483 
+00484                                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> guess = firstguess;
+00485 
+00486                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Solver2::solveRegion4: firstguess copied to guess OK";</span>
+00487 
+00488                                 <span class="keywordflow">if</span>(firstguess.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()!=4){
+00489                                         <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion4: First guess is not region 4"</span>);
+00490                                 }
+00491 
+00492                                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> petT, petx;
+00493                                 <a class="code" href="class_units.html">Temperature</a> T,dT;
+00494                                 Num x,dx;
+00495                                 FirstProp f,Df, DfT, Dfx;
+00496                                 SecondProp s,Ds,DsT, Dsx;
+00497                                 <a class="code" href="class_units.html">Pressure</a> p;
+00498 
+00499                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Solver2::solveRegion4: Starting iterations";</span>
 00500 
-00501                                         <span class="comment">// ensure we don't go over x limits</span>
-00502                                         dx = 0.001;
-00503                                         <span class="keywordflow">if</span>(x + dx &gt; 1.0){
-00504                                                 dx = -dx;
-00505                                         }
-00506 
-00507                                         Boundaries::isSat_Tx(T, x+dx, <span class="keyword">true</span>);
-00508 
-00509                                         petx.<a class="code" href="class_steam_calculator.html#a14">setRegion4_Tx</a>(T, x + dx);
-00510                                         ASSERT(petx.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==4);
-00511 
-00512                                         DfT = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(petT) - f;
-00513                                         DsT = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(petT) - s;
-00514 
-00515                                         Dfx = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(petx) - f;
-00516                                         Dsx = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(petx) - s;
-00517 
-00518                                         <span class="comment">//ASSERT(!(DfT == 0.0 * FirstProp() &amp;&amp; Dfx == 0.0 * FirstProp()));</span>
-00519                                         <span class="comment">//ASSERT(!(DsT == 0.0 * SecondProp() &amp;&amp; Dsx == 0.0 * SecondProp()));</span>
-00520                                         <span class="comment">//ASSERT(!(DsT == 0.0 * SecondProp() &amp;&amp; DfT == 0.0 * FirstProp()));</span>
-00521                                         <span class="comment">//ASSERT(!(Dsx == 0.0 * SecondProp() &amp;&amp; Dfx == 0.0 * FirstProp()));</span>
-00522                                         ASSERT(DfT * Dsx != DsT * Dfx);
-00523 
-00524                                         <span class="comment">//ASSERT(0.0 * FirstProp() * SecondProp() != DfT * Dsx - DsT *Dfx);</span>
-00525 
-00526                                         <span class="comment">//ASSERT(!((DfT==0.0 * FirstProp() || Dsx==0.0 * SecondProp()) &amp;&amp; (Dfx==0.0 * FirstProp() || DsT==0.0 * SecondProp())));</span>
+00501                                 <span class="keywordtype">int</span> niter=0;
+00502                                 <span class="keywordflow">while</span>(1){
+00503 
+00504                                         T = guess.<a class="code" href="class_steam_calculator.html#a20">temp</a>();
+00505                                         x = guess.<a class="code" href="class_steam_calculator.html#a29">quality</a>();
+00506                                         p = guess.<a class="code" href="class_steam_calculator.html#a21">pres</a>();
+00507 
+00508                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Iter " &lt;&lt; niter &lt;&lt; ": x = " &lt;&lt; x &lt;&lt; ", T = " &lt;&lt; T;</span>
+00509 
+00510                                         f = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(guess);
+00511                                         s = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(guess);
+00512 
+00513                                         <span class="comment">//cerr &lt;&lt; ": " &lt;&lt; SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt; f;</span>
+00514                                         <span class="comment">//cerr &lt;&lt; ", " &lt;&lt; SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt; s;</span>
+00515 
+00516                                         Df = f1 - f;
+00517                                         Ds = s1 - s;
+00518 
+00519                                         <span class="comment">// In this template it's hard to know the units of the convergence test, so make it as a new, separate, template:</span>
+00520                                         <span class="keywordflow">if</span>(
+00521                                                 ConvergenceTest&lt;FirstProp,FirstPropAlt&gt;::test(Df,p,T)
+00522                                                 &amp;&amp; ConvergenceTest&lt;SecondProp,SecondPropAlt&gt;::test(Ds,p,T)
+00523                                         ){
+00524                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... SOLUTION OK" &lt;&lt; endl;</span>
+00525                                                 <span class="keywordflow">return</span> guess;
+00526                                         }
 00527 
-00528 
-00529                                         <span class="comment">// Solve new peturbations</span>
-00530                                         dT = dT * (Df*Dsx - Ds*Dfx) / (DfT*Dsx - DsT*Dfx);
-00531                                         dx = dx * (DfT*Ds - DsT*Df) / (DfT*Dsx - DsT*Dfx);
-00532 
-00533                                         ASSERT(!isnan(dT));
-00534                                         ASSERT(!isnan(dx));
+00528                                         dT = -T * 0.001;
+00529                                         <span class="comment">// ensure we don't go over the T limits with our peturbation</span>
+00530                                         <span class="keywordflow">if</span>(T + dT &lt; T_TRIPLE){
+00531                                                 dT = -dT;
+00532                                         }
+00533 
+00534                                         Boundaries::isSat_Tx(T+dT,x, <span class="keyword">true</span>);
 00535 
-00536                                         <span class="comment">// Regulate maximum change in temperature</span>
-00537 
-00538                                         <a class="code" href="class_units.html">Temperature</a> dTMax = 0.1 * T;
-00539                                         <a class="code" href="class_units.html">Temperature</a> dTAbs = fabs(dT);
-00540                                         <span class="keywordflow">if</span>(dTAbs &gt; dTMax){
-00541                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "      ... limiting dT, too great";</span>
-00542                                                 dT = dT * dTMax/dTAbs;
+00536                                         petT.<a class="code" href="class_steam_calculator.html#a14">setRegion4_Tx</a>(T + dT, x);
+00537                                         ASSERT(petT.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==4);
+00538 
+00539                                         <span class="comment">// ensure we don't go over x limits</span>
+00540                                         dx = 0.001;
+00541                                         <span class="keywordflow">if</span>(x + dx &gt; 1.0){
+00542                                                 dx = -dx;
 00543                                         }
 00544 
-00545                                         <span class="comment">// Regulate max change in pressure</span>
+00545                                         Boundaries::isSat_Tx(T, x+dx, <span class="keyword">true</span>);
 00546 
-00547                                         Num dxMax = 0.2;
-00548                                         Num dxAbs = fabs(dx);
-00549                                         <span class="keywordflow">if</span>(dxAbs &gt; dxMax){
-00550                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "      ... limiting dx, too great";</span>
-00551                                                 dx = dx * dxMax/dxAbs;
-00552                                         }
-00553 
-00554                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... calculated dT = " &lt;&lt; dT &lt;&lt; ", dx = " &lt;&lt; dx;</span>
-00555                                         T = T + dT;
-00556                                         x = x + dx;
-00557 
-00558                                         <span class="comment">// Keep new temperature in limits</span>
-00559                                         <span class="keywordflow">if</span>(T &gt; T_CRIT){
-00560                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying T_CRIT limit";</span>
-00561                                                 T = T_CRIT;
-00562                                         }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(T &lt; T_TRIPLE){
-00563                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying T_TRIPLE limit";</span>
-00564                                                 T = T_TRIPLE;
-00565                                         }
+00547                                         petx.<a class="code" href="class_steam_calculator.html#a14">setRegion4_Tx</a>(T, x + dx);
+00548                                         ASSERT(petx.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==4);
+00549 
+00550                                         DfT = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(petT) - f;
+00551                                         DsT = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(petT) - s;
+00552 
+00553                                         Dfx = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(petx) - f;
+00554                                         Dsx = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(petx) - s;
+00555 
+00556                                         <span class="comment">//ASSERT(!(DfT == 0.0 * FirstProp() &amp;&amp; Dfx == 0.0 * FirstProp()));</span>
+00557                                         <span class="comment">//ASSERT(!(DsT == 0.0 * SecondProp() &amp;&amp; Dsx == 0.0 * SecondProp()));</span>
+00558                                         <span class="comment">//ASSERT(!(DsT == 0.0 * SecondProp() &amp;&amp; DfT == 0.0 * FirstProp()));</span>
+00559                                         <span class="comment">//ASSERT(!(Dsx == 0.0 * SecondProp() &amp;&amp; Dfx == 0.0 * FirstProp()));</span>
+00560                                         ASSERT(DfT * Dsx != DsT * Dfx);
+00561 
+00562                                         <span class="comment">//ASSERT(0.0 * FirstProp() * SecondProp() != DfT * Dsx - DsT *Dfx);</span>
+00563 
+00564                                         <span class="comment">//ASSERT(!((DfT==0.0 * FirstProp() || Dsx==0.0 * SecondProp()) &amp;&amp; (Dfx==0.0 * FirstProp() || DsT==0.0 * SecondProp())));</span>
+00565 
 00566 
-00567                                         <span class="comment">// Keep pressure in limits</span>
-00568                                         <span class="keywordflow">if</span>(x &gt; 1){
-00569                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying upper x limit";</span>
-00570                                                 x = 1;
-00571                                         }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(x &lt; 0){
-00572                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying lower x limit";</span>
-00573                                                 x = 0;
-00574                                         }
+00567                                         <span class="comment">// Solve new peturbations</span>
+00568                                         dT = dT * (Df*Dsx - Ds*Dfx) / (DfT*Dsx - DsT*Dfx);
+00569                                         dx = dx * (DfT*Ds - DsT*Df) / (DfT*Dsx - DsT*Dfx);
+00570 
+00571                                         ASSERT(!isnan(dT));
+00572                                         ASSERT(!isnan(dx));
+00573 
+00574                                         <span class="comment">// Regulate maximum change in temperature</span>
 00575 
-00576                                         Boundaries::isSat_Tx(T, x, <span class="keyword">true</span>);
-00577                                         guess.<a class="code" href="class_steam_calculator.html#a14">setRegion4_Tx</a>(T,x);
-00578 
-00579                                         niter++;
-00580 
-00581                                         <span class="keywordflow">if</span>(niter &gt; maxiter){
-00582                                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion4: Exceeded maximum iterations"</span>);
-00583                                         }
-00584                                 }
-00585                         }<span class="keywordflow">catch</span>(Exception *E){
-00586                                 stringstream s;
-00587                                 s&lt;&lt; <span class="stringliteral">"Solver2::solveRegion4: "</span> &lt;&lt; E-&gt;what();
-00588                                 <span class="keyword">delete</span> E;
-00589                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(s.str());
-00590                         }
-00591                 }
-00592 
-00594                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> solveRegion1(<span class="keyword">const</span> FirstProp &amp;f1, <span class="keyword">const</span> SecondProp &amp;s1,<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;firstguess){
+00576                                         <a class="code" href="class_units.html">Temperature</a> dTMax = 0.1 * T;
+00577                                         <a class="code" href="class_units.html">Temperature</a> dTAbs = fabs(dT);
+00578                                         <span class="keywordflow">if</span>(dTAbs &gt; dTMax){
+00579                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "      ... limiting dT, too great";</span>
+00580                                                 dT = dT * dTMax/dTAbs;
+00581                                         }
+00582 
+00583                                         <span class="comment">// Regulate max change in pressure</span>
+00584 
+00585                                         Num dxMax = 0.2;
+00586                                         Num dxAbs = fabs(dx);
+00587                                         <span class="keywordflow">if</span>(dxAbs &gt; dxMax){
+00588                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "      ... limiting dx, too great";</span>
+00589                                                 dx = dx * dxMax/dxAbs;
+00590                                         }
+00591 
+00592                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... calculated dT = " &lt;&lt; dT &lt;&lt; ", dx = " &lt;&lt; dx;</span>
+00593                                         T = T + dT;
+00594                                         x = x + dx;
 00595 
-00596                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> guess = firstguess;
-00597 
-00598                         <span class="keywordflow">if</span>(firstguess.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()!=1){
-00599                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion1: First guess is not region 1"</span>);
-00600                         }
-00601 
-00602                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> petT, petp;
-00603                         <a class="code" href="class_units.html">Temperature</a> T,dT;
-00604                         <a class="code" href="class_units.html">Pressure</a> p,dp;
-00605                         FirstProp f,Df, DfT, Dfp;
-00606                         SecondProp s,Ds,DsT, Dsp;
-00607 
-00608                         <span class="keywordtype">int</span> niter=0;
-00609                         <span class="comment">// If we are in region 1, then we will be iterating with pressure and temperature</span>
-00610 
-00611                         <span class="keywordflow">while</span>(1){
-00612 
-00613                                 T = guess.<a class="code" href="class_steam_calculator.html#a20">temp</a>();
-00614                                 p = guess.<a class="code" href="class_steam_calculator.html#a21">pres</a>();
-00615 
-00616                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Iter " &lt;&lt; niter &lt;&lt; ": p = " &lt;&lt; p &lt;&lt; ", T = " &lt;&lt; T;</span>
-00617 
-00618                                 f = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(guess);
-00619                                 s = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(guess);
-00620 
-00621                                 <span class="comment">//cerr &lt;&lt; ": " &lt;&lt; SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt; f;</span>
-00622                                 <span class="comment">//cerr &lt;&lt; ", " &lt;&lt; SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt; s;</span>
-00623 
-00624                                 Df = f1 - f;
-00625                                 Ds = s1 - s;
-00626 
-00627                                 <span class="comment">// In this template it's hard to know the units of the convergence test, so make it as a new, separate, template:</span>
-00628                                 <span class="keywordflow">if</span>(
-00629                                         ConvergenceTest&lt;FirstProp,FirstPropAlt&gt;::test(Df,p,T)
-00630                                         &amp;&amp; ConvergenceTest&lt;SecondProp,SecondPropAlt&gt;::test(Ds,p,T)
-00631                                 ){
-00632                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... SOLUTION OK" &lt;&lt; endl;</span>
-00633                                         <span class="keywordflow">return</span> guess;
-00634                                 }
+00596                                         <span class="comment">// Keep new temperature in limits</span>
+00597                                         <span class="keywordflow">if</span>(T &gt; T_CRIT){
+00598                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying T_CRIT limit";</span>
+00599                                                 T = T_CRIT;
+00600                                         }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(T &lt; T_TRIPLE){
+00601                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying T_TRIPLE limit";</span>
+00602                                                 T = T_TRIPLE;
+00603                                         }
+00604 
+00605                                         <span class="comment">// Keep pressure in limits</span>
+00606                                         <span class="keywordflow">if</span>(x &gt; 1){
+00607                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying upper x limit";</span>
+00608                                                 x = 1;
+00609                                         }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(x &lt; 0){
+00610                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying lower x limit";</span>
+00611                                                 x = 0;
+00612                                         }
+00613 
+00614                                         Boundaries::isSat_Tx(T, x, <span class="keyword">true</span>);
+00615                                         guess.<a class="code" href="class_steam_calculator.html#a14">setRegion4_Tx</a>(T,x);
+00616 
+00617                                         niter++;
+00618 
+00619                                         <span class="keywordflow">if</span>(niter &gt; maxiter){
+00620                                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion4: Exceeded maximum iterations"</span>);
+00621                                         }
+00622                                 }
+00623                         }<span class="keywordflow">catch</span>(Exception *E){
+00624                                 stringstream s;
+00625                                 s&lt;&lt; <span class="stringliteral">"Solver2::solveRegion4: "</span> &lt;&lt; E-&gt;what();
+00626                                 <span class="keyword">delete</span> E;
+00627                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(s.str());
+00628                         }
+00629                 }
+00630 
+00632                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> solveRegion1(<span class="keyword">const</span> FirstProp &amp;f1, <span class="keyword">const</span> SecondProp &amp;s1,<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;firstguess){
+00633 
+00634                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> guess = firstguess;
 00635 
-00636                                 dT = -T * 0.001;
-00637                                 <span class="comment">// ensure we don't go over the T limits with our peturbation</span>
-00638                                 <span class="keywordflow">if</span>(T + dT &lt; T_TRIPLE){
-00639                                         dT = -dT;
-00640                                 }
-00641 
-00642                                 petT.<a class="code" href="class_steam_calculator.html#a4">set_pT</a>(p,T + dT);
-00643                                 ASSERT(petT.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==1);
-00644 
-00645                                 <span class="comment">// ensure we don't go over p limits</span>
-00646                                 dp = p * 0.001;
-00647                                 <span class="keywordflow">if</span>(p &gt; 99.0 * MPa){
-00648                                         dp = -dp;
-00649                                 }
+00636                         <span class="keywordflow">if</span>(firstguess.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()!=1){
+00637                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion1: First guess is not region 1"</span>);
+00638                         }
+00639 
+00640                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> petT, petp;
+00641                         <a class="code" href="class_units.html">Temperature</a> T,dT;
+00642                         <a class="code" href="class_units.html">Pressure</a> p,dp;
+00643                         FirstProp f,Df, DfT, Dfp;
+00644                         SecondProp s,Ds,DsT, Dsp;
+00645 
+00646                         <span class="keywordtype">int</span> niter=0;
+00647                         <span class="comment">// If we are in region 1, then we will be iterating with pressure and temperature</span>
+00648 
+00649                         <span class="keywordflow">while</span>(1){
 00650 
-00651                                 petp.<a class="code" href="class_steam_calculator.html#a4">set_pT</a>(p + dp, T);
-00652                                 ASSERT(petp.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==1);
+00651                                 T = guess.<a class="code" href="class_steam_calculator.html#a20">temp</a>();
+00652                                 p = guess.<a class="code" href="class_steam_calculator.html#a21">pres</a>();
 00653 
-00654                                 DfT = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(petT) - f;
-00655                                 DsT = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(petT) - s;
-00656 
-00657                                 Dfp = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(petp) - f;
-00658                                 Dsp = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(petp) - s;
-00659 
-00660                                 <span class="comment">// Solve new peturbations</span>
-00661                                 dT = dT * (Df*Dsp - Ds*Dfp) / (DfT*Dsp - DsT*Dfp);
-00662                                 dp = dp * (DfT*Ds - DsT*Df) / (DfT*Dsp - DsT*Dfp);
-00663 
-00664                                 <span class="comment">// Regulate maximum change in temperature</span>
-00665 
-00666                                 <a class="code" href="class_units.html">Temperature</a> dTMax = 0.1 * T;
-00667                                 <a class="code" href="class_units.html">Temperature</a> dTAbs = fabs(dT);
-00668                                 <span class="keywordflow">if</span>(dTAbs &gt; dTMax){
-00669                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "      ... limiting dT, too great";</span>
-00670                                         dT = dT * dTMax/dTAbs;
-00671                                 }
-00672 
-00673                                 <span class="comment">// Regulate max change in pressure</span>
-00674 
-00675                                 <a class="code" href="class_units.html">Pressure</a> dpMax = 0.4 * p;
-00676                                 <a class="code" href="class_units.html">Pressure</a> dpAbs = fabs(dp);
-00677                                 <span class="keywordflow">if</span>(dpAbs &gt; dpMax){
-00678                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "      ... limiting dp, too great";</span>
-00679                                         dp = dp * dpMax/dpAbs;
-00680                                 }
-00681 
-00682                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... calculated dT = " &lt;&lt; dT &lt;&lt; ", dp = " &lt;&lt; dp;</span>
-00683                                 T = T + dT;
-00684                                 p = p + dp;
-00685 
-00686                                 <span class="comment">// Keep new temperature in limits</span>
-00687                                 <span class="keywordflow">if</span>(T &gt; T_REG1_REG3){
-00688                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying upper T limit";</span>
-00689                                         T = T_REG1_REG3;
-00690                                 }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(T &lt; T_TRIPLE){
-00691                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying lower T limit";</span>
-00692                                         T = T_TRIPLE;
-00693                                 }
+00654                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Iter " &lt;&lt; niter &lt;&lt; ": p = " &lt;&lt; p &lt;&lt; ", T = " &lt;&lt; T;</span>
+00655 
+00656                                 f = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(guess);
+00657                                 s = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(guess);
+00658 
+00659                                 <span class="comment">//cerr &lt;&lt; ": " &lt;&lt; SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt; f;</span>
+00660                                 <span class="comment">//cerr &lt;&lt; ", " &lt;&lt; SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt; s;</span>
+00661 
+00662                                 Df = f1 - f;
+00663                                 Ds = s1 - s;
+00664 
+00665                                 <span class="comment">// In this template it's hard to know the units of the convergence test, so make it as a new, separate, template:</span>
+00666                                 <span class="keywordflow">if</span>(
+00667                                         ConvergenceTest&lt;FirstProp,FirstPropAlt&gt;::test(Df,p,T)
+00668                                         &amp;&amp; ConvergenceTest&lt;SecondProp,SecondPropAlt&gt;::test(Ds,p,T)
+00669                                 ){
+00670                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... SOLUTION OK" &lt;&lt; endl;</span>
+00671                                         <span class="keywordflow">return</span> guess;
+00672                                 }
+00673 
+00674                                 dT = -T * 0.001;
+00675                                 <span class="comment">// ensure we don't go over the T limits with our peturbation</span>
+00676                                 <span class="keywordflow">if</span>(T + dT &lt; T_TRIPLE){
+00677                                         dT = -dT;
+00678                                 }
+00679 
+00680                                 petT.<a class="code" href="class_steam_calculator.html#a4">set_pT</a>(p,T + dT);
+00681                                 ASSERT(petT.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==1);
+00682 
+00683                                 <span class="comment">// ensure we don't go over p limits</span>
+00684                                 dp = p * 0.001;
+00685                                 <span class="keywordflow">if</span>(p &gt; 99.0 * MPa){
+00686                                         dp = -dp;
+00687                                 }
+00688 
+00689                                 petp.<a class="code" href="class_steam_calculator.html#a4">set_pT</a>(p + dp, T);
+00690                                 ASSERT(petp.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==1);
+00691 
+00692                                 DfT = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(petT) - f;
+00693                                 DsT = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(petT) - s;
 00694 
-00695                                 <span class="comment">// Keep pressure in limits</span>
-00696                                 <span class="keywordflow">if</span>(p &gt; P_MAX){
-00697                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying upper p limit";</span>
-00698                                         p = P_MAX;
-00699                                 }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(p &lt; P_TRIPLE){
-00700                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying lower p_triple limit";</span>
-00701                                         p = P_TRIPLE;
-00702                                 }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(p &lt; PB_LOW){
-00703                                         <a class="code" href="class_units.html">Pressure</a> p_sat = Boundaries::getSatPres_T(T);
-00704                                         <span class="keywordflow">if</span>(p &lt; p_sat){
-00705                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying saturation limit to p";</span>
-00706                                                 p = p_sat;
-00707                                         }
-00708                                 }
-00709 
-00710                                 ASSERT(guess.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==1);
-00711                                 ASSERT(Boundaries::isRegion1_pT(p,T));
+00695                                 Dfp = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(petp) - f;
+00696                                 Dsp = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(petp) - s;
+00697 
+00698                                 <span class="comment">// Solve new peturbations</span>
+00699                                 dT = dT * (Df*Dsp - Ds*Dfp) / (DfT*Dsp - DsT*Dfp);
+00700                                 dp = dp * (DfT*Ds - DsT*Df) / (DfT*Dsp - DsT*Dfp);
+00701 
+00702                                 <span class="comment">// Regulate maximum change in temperature</span>
+00703 
+00704                                 <a class="code" href="class_units.html">Temperature</a> dTMax = 0.1 * T;
+00705                                 <a class="code" href="class_units.html">Temperature</a> dTAbs = fabs(dT);
+00706                                 <span class="keywordflow">if</span>(dTAbs &gt; dTMax){
+00707                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "      ... limiting dT, too great";</span>
+00708                                         dT = dT * dTMax/dTAbs;
+00709                                 }
+00710 
+00711                                 <span class="comment">// Regulate max change in pressure</span>
 00712 
-00713                                 guess.<a class="code" href="class_steam_calculator.html#a12">setRegion1_pT</a>(p,T);
-00714 
-00715                                 niter++;
-00716 
-00717                                 <span class="keywordflow">if</span>(niter &gt; maxiter){
-00718                                         <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion1: Exceeded maximum iterations"</span>);
-00719                                 }
-00720                         }
-00721                 }
-00722 
-00724                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> solveRegion2(<span class="keyword">const</span> FirstProp &amp;f1, <span class="keyword">const</span> SecondProp &amp;s1,<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;firstguess){
-00725 
-00726                         <span class="comment">// Most of this is the same as for solveRegion1:</span>
-00727 
-00728                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "---------------------------------" &lt;&lt; endl &lt;&lt; "SOLVE REGION 2";</span>
-00729                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> guess = firstguess;
-00730 
-00731                         <span class="keywordflow">if</span>(firstguess.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()!=2){
-00732                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion2: First guess is not region 2"</span>);
-00733                         }
-00734 
-00735                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> petT, petp;
-00736                         <a class="code" href="class_units.html">Temperature</a> T,dT;
-00737                         <a class="code" href="class_units.html">Pressure</a> p,dp;
-00738                         FirstProp f,Df, DfT, Dfp;
-00739                         SecondProp s,Ds,DsT, Dsp;
-00740 
-00741                         <span class="keywordtype">int</span> niter=0;
-00742                         <span class="comment">// If we are in region 1, then we will be iterating with pressure and temperature</span>
-00743 
-00744                         <span class="keywordflow">while</span>(1){
-00745 
-00746                                 T = guess.<a class="code" href="class_steam_calculator.html#a20">temp</a>();
-00747                                 p = guess.<a class="code" href="class_steam_calculator.html#a21">pres</a>();
-00748 
-00749                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "Iter " &lt;&lt; niter &lt;&lt; ": p = " &lt;&lt; p / MPa &lt;&lt; " MPa, T = " &lt;&lt; T &lt;&lt; " (" &lt;&lt; tocelsius(T) &lt;&lt; "°C)";</span>
+00713                                 <a class="code" href="class_units.html">Pressure</a> dpMax = 0.4 * p;
+00714                                 <a class="code" href="class_units.html">Pressure</a> dpAbs = fabs(dp);
+00715                                 <span class="keywordflow">if</span>(dpAbs &gt; dpMax){
+00716                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "      ... limiting dp, too great";</span>
+00717                                         dp = dp * dpMax/dpAbs;
+00718                                 }
+00719 
+00720                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... calculated dT = " &lt;&lt; dT &lt;&lt; ", dp = " &lt;&lt; dp;</span>
+00721                                 T = T + dT;
+00722                                 p = p + dp;
+00723 
+00724                                 <span class="comment">// Keep new temperature in limits</span>
+00725                                 <span class="keywordflow">if</span>(T &gt; T_REG1_REG3){
+00726                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying upper T limit";</span>
+00727                                         T = T_REG1_REG3;
+00728                                 }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(T &lt; T_TRIPLE){
+00729                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying lower T limit";</span>
+00730                                         T = T_TRIPLE;
+00731                                 }
+00732 
+00733                                 <span class="comment">// Keep pressure in limits</span>
+00734                                 <span class="keywordflow">if</span>(p &gt; P_MAX){
+00735                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying upper p limit";</span>
+00736                                         p = P_MAX;
+00737                                 }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(p &lt; P_TRIPLE){
+00738                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying lower p_triple limit";</span>
+00739                                         p = P_TRIPLE;
+00740                                 }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(p &lt; PB_LOW){
+00741                                         <a class="code" href="class_units.html">Pressure</a> p_sat = Boundaries::getSatPres_T(T);
+00742                                         <span class="keywordflow">if</span>(p &lt; p_sat){
+00743                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying saturation limit to p";</span>
+00744                                                 p = p_sat;
+00745                                         }
+00746                                 }
+00747 
+00748                                 ASSERT(guess.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==1);
+00749                                 ASSERT(Boundaries::isRegion1_pT(p,T));
 00750 
-00751                                 f = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(guess);
-00752                                 s = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(guess);
-00753 
-00754                                 <span class="comment">//cerr &lt;&lt; ": " &lt;&lt; SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt; f;</span>
-00755                                 <span class="comment">//cerr &lt;&lt; ", " &lt;&lt; SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name() &lt;&lt; " = " &lt;&lt; s;</span>
-00756 
-00757                                 Df = f1 - f;
-00758                                 Ds = s1 - s;
-00759 
-00760                                 <span class="keywordflow">if</span>(
-00761                                         ConvergenceTest&lt;FirstProp,FirstPropAlt&gt;::test(Df,p,T)
-00762                                         &amp;&amp; ConvergenceTest&lt;SecondProp,SecondPropAlt&gt;::test(Ds,p,T)
-00763                                 ){
-00764                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... SOLUTION OK" &lt;&lt; endl;</span>
-00765                                         <span class="keywordflow">return</span> guess;
-00766                                 }
-00767 
-00768                                 <span class="comment">// Peturb T but keep inside T_MAX</span>
-00769                                 dT = T * 0.001;
-00770                                 <span class="keywordflow">if</span>(T + dT &gt; T_MAX){
-00771                                         dT = -dT;
-00772                                 }
+00751                                 guess.<a class="code" href="class_steam_calculator.html#a12">setRegion1_pT</a>(p,T);
+00752 
+00753                                 niter++;
+00754 
+00755                                 <span class="keywordflow">if</span>(niter &gt; maxiter){
+00756                                         <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion1: Exceeded maximum iterations"</span>);
+00757                                 }
+00758                         }
+00759                 }
+00760 
+00762                 <a class="code" href="class_steam_calculator.html">SteamCalculator</a> solveRegion2(<span class="keyword">const</span> FirstProp &amp;f1, <span class="keyword">const</span> SecondProp &amp;s1,<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;firstguess){
+00763 
+00764                         <span class="comment">// Most of this is the same as for solveRegion1:</span>
+00765 
+00766 <span class="preprocessor">                        #ifdef SOLVER2_DEBUG</span>
+00767 <span class="preprocessor"></span>                                <span class="keywordflow">if</span>(SOLVER2BASE_DEBUG){
+00768                                         cerr &lt;&lt; endl &lt;&lt; <span class="stringliteral">"---------------------------------"</span> &lt;&lt; endl &lt;&lt; <span class="stringliteral">"SOLVE REGION 2"</span>;
+00769                                 }
+00770 <span class="preprocessor">                        #endif</span>
+00771 <span class="preprocessor"></span>
+00772                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> guess = firstguess;
 00773 
-00774                                 petT.<a class="code" href="class_steam_calculator.html#a4">set_pT</a>(p,T+ dT);
-00775                                 ASSERT(petT.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==2);
-00776 
-00777                                 <span class="comment">// Peturb p but keep above P_TRIPLE</span>
-00778                                 dp = -p * 0.001;
-00779                                 <span class="keywordflow">if</span>(p + dp &lt; P_TRIPLE){
-00780                                         dp = -dp;
-00781                                 }
-00782                                 petp.<a class="code" href="class_steam_calculator.html#a4">set_pT</a>(p + dp, T);
-00783                                 ASSERT(petp.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==2);
-00784 
-00785                                 DfT = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(petT) - f;
-00786                                 DsT = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(petT) - s;
-00787 
-00788                                 Dfp = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(petp) - f;
-00789                                 Dsp = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(petp) - s;
-00790 
-00791                                 <span class="comment">// Solve new peturbations</span>
-00792                                 dT = dT * (Df*Dsp - Ds*Dfp) / (DfT*Dsp - DsT*Dfp);
-00793                                 dp = dp * (DfT*Ds - DsT*Df) / (DfT*Dsp - DsT*Dfp);
-00794 
-00795                                 <span class="comment">// Regulate maximum change in temperature</span>
-00796 
-00797                                 <a class="code" href="class_units.html">Temperature</a> dTMax = 0.1 * T;
-00798                                 <a class="code" href="class_units.html">Temperature</a> dTAbs = fabs(dT);
-00799                                 <span class="keywordflow">if</span>(dTAbs &gt; dTMax){
-00800                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "      ... limiting dT, too great";</span>
-00801                                         dT = dT * dTMax/dTAbs;
-00802                                 }
-00803 
-00804                                 <span class="comment">// Regulate max change in pressure</span>
-00805 
-00806                                 <a class="code" href="class_units.html">Pressure</a> dpMax = 0.5 * p;
-00807                                 <a class="code" href="class_units.html">Pressure</a> dpAbs = fabs(dp);
-00808                                 <span class="keywordflow">if</span>(dpAbs &gt; dpMax){
-00809                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "      ... limiting dp, too great";</span>
-00810                                         dp = dp * dpMax/dpAbs;
-00811                                 }
-00812 
-00813                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... calculated dT = " &lt;&lt; dT &lt;&lt; ", dp = " &lt;&lt; dp;</span>
-00814                                 T = T + dT;
-00815                                 p = p + dp;
-00816 
-00817                                 <span class="comment">// Keep new temperature in limits</span>
-00818                                 <span class="keywordflow">if</span>(T &gt; T_MAX){
-00819                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying T_MAXlimit";</span>
-00820                                         T = T_MAX;
-00821                                 }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(T &lt; T_TRIPLE){
-00822                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying T_TRIPLE limit";</span>
-00823                                         T = T_TRIPLE;
-00824                                 }
-00825 
-00826                                 <span class="comment">// Keep pressure in limits</span>
-00827                                 <span class="keywordflow">if</span>(p &lt; P_TRIPLE){
-00828                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying P_TRIPLE limit";</span>
-00829                                         p = P_TRIPLE;
-00830                                 }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(T &gt; TB_LOW){
-00831                                         <a class="code" href="class_units.html">Pressure</a> pbound = Boundaries::getpbound_T(T);
-00832                                         <span class="keywordflow">if</span>(p &gt; pbound){
-00833                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying pbound limit";</span>
-00834                                                 p = pbound;
-00835                                         }
-00836                                 }<span class="keywordflow">else</span>{
-00837                                         <a class="code" href="class_units.html">Pressure</a> psat = Boundaries::getSatPres_T(T);
-00838                                         <span class="keywordflow">if</span>(p &gt; psat){
-00839                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying psat limit";</span>
-00840                                                 p = psat;
-00841                                         }
-00842                                 }
-00843 
-00844                                 ASSERT(guess.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==2);
-00845                                 ASSERT(Boundaries::isRegion2_pT(p,T));
-00846 
-00847                                 guess.<a class="code" href="class_steam_calculator.html#a13">setRegion2_pT</a>(p,T);
-00848 
-00849                                 niter++;
-00850 
-00851                                 <span class="keywordflow">if</span>(niter &gt; maxiter){
-00852                                         <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion2: Exceeded maximum iterations"</span>);
+00774                         <span class="keywordflow">if</span>(firstguess.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()!=2){
+00775                                 <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion2: First guess is not region 2"</span>);
+00776                         }
+00777 
+00778                         <a class="code" href="class_steam_calculator.html">SteamCalculator</a> petT, petp;
+00779                         <a class="code" href="class_units.html">Temperature</a> T,dT;
+00780                         <a class="code" href="class_units.html">Pressure</a> p,dp;
+00781                         FirstProp f,Df, DfT, Dfp;
+00782                         SecondProp s,Ds,DsT, Dsp;
+00783 
+00784                         <span class="keywordtype">int</span> niter=0;
+00785                         <span class="comment">// If we are in region 1, then we will be iterating with pressure and temperature</span>
+00786 
+00787                         <span class="keywordflow">while</span>(1){
+00788 
+00789                                 T = guess.<a class="code" href="class_steam_calculator.html#a20">temp</a>();
+00790                                 p = guess.<a class="code" href="class_steam_calculator.html#a21">pres</a>();
+00791 
+00792 <span class="preprocessor">                                #ifdef SOLVER2_DEBUG</span>
+00793 <span class="preprocessor"></span>                                        <span class="keywordflow">if</span>(SOLVER2BASE_DEBUG){
+00794                                                 cerr &lt;&lt; endl &lt;&lt; <span class="stringliteral">"Iter "</span> &lt;&lt; niter &lt;&lt; <span class="stringliteral">": p = "</span> &lt;&lt; p / MPa &lt;&lt; <span class="stringliteral">" MPa, T = "</span> &lt;&lt; T &lt;&lt; <span class="stringliteral">" ("</span> &lt;&lt; tocelsius(T) &lt;&lt; <span class="stringliteral">"°C)"</span>;
+00795                                         }
+00796 <span class="preprocessor">                                #endif</span>
+00797 <span class="preprocessor"></span>
+00798                                 f = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(guess);
+00799                                 s = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(guess);
+00800 
+00801 <span class="preprocessor">                                #ifdef SOLVER2_DEBUG</span>
+00802 <span class="preprocessor"></span>                                        <span class="keywordflow">if</span>(SOLVER2BASE_DEBUG){
+00803                                                 cerr &lt;&lt; <span class="stringliteral">": "</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">" = "</span> &lt;&lt; f;
+00804                                                 cerr &lt;&lt; <span class="stringliteral">", "</span> &lt;&lt; <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::name</a>() &lt;&lt; <span class="stringliteral">" = "</span> &lt;&lt; s;
+00805                                         }
+00806 <span class="preprocessor">                                #endif</span>
+00807 <span class="preprocessor"></span>
+00808                                 Df = f1 - f;
+00809                                 Ds = s1 - s;
+00810 
+00811                                 <span class="keywordflow">if</span>(
+00812                                         ConvergenceTest&lt;FirstProp,FirstPropAlt&gt;::test(Df,p,T)
+00813                                         &amp;&amp; ConvergenceTest&lt;SecondProp,SecondPropAlt&gt;::test(Ds,p,T)
+00814                                 ){
+00815                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... SOLUTION OK" &lt;&lt; endl;</span>
+00816                                         <span class="keywordflow">return</span> guess;
+00817                                 }
+00818 
+00819                                 <span class="comment">// Peturb T but keep inside T_MAX</span>
+00820                                 dT = T * 0.001;
+00821                                 <span class="keywordflow">if</span>(T + dT &gt; T_MAX){
+00822                                         dT = -dT;
+00823                                 }
+00824 
+00825                                 petT.<a class="code" href="class_steam_calculator.html#a4">set_pT</a>(p,T+ dT);
+00826                                 ASSERT(petT.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==2);
+00827 
+00828                                 <span class="comment">// Peturb p but keep above P_TRIPLE</span>
+00829                                 dp = -p * 0.001;
+00830                                 <span class="keywordflow">if</span>(p + dp &lt; P_TRIPLE){
+00831                                         dp = -dp;
+00832                                 }
+00833                                 petp.<a class="code" href="class_steam_calculator.html#a4">set_pT</a>(p + dp, T);
+00834                                 ASSERT(petp.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==2);
+00835 
+00836                                 DfT = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(petT) - f;
+00837                                 DsT = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(petT) - s;
+00838 
+00839                                 Dfp = <a class="code" href="class_steam_property.html">SteamProperty&lt;FirstProp,FirstPropAlt&gt;::get</a>(petp) - f;
+00840                                 Dsp = <a class="code" href="class_steam_property.html">SteamProperty&lt;SecondProp,SecondPropAlt&gt;::get</a>(petp) - s;
+00841 
+00842                                 <span class="comment">// Solve new peturbations</span>
+00843                                 dT = dT * (Df*Dsp - Ds*Dfp) / (DfT*Dsp - DsT*Dfp);
+00844                                 dp = dp * (DfT*Ds - DsT*Df) / (DfT*Dsp - DsT*Dfp);
+00845 
+00846                                 <span class="comment">// Regulate maximum change in temperature</span>
+00847 
+00848                                 <a class="code" href="class_units.html">Temperature</a> dTMax = 0.2 * T;
+00849                                 <a class="code" href="class_units.html">Temperature</a> dTAbs = fabs(dT);
+00850                                 <span class="keywordflow">if</span>(dTAbs &gt; dTMax){
+00851                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "      ... limiting dT, too great";</span>
+00852                                         dT = dT * dTMax/dTAbs;
 00853                                 }
-00854                         }
-00855 
-00856                 }
-00857 };
-00858 
-00859 <span class="keyword">template</span>&lt;&gt;
-00860 <a class="code" href="class_steam_calculator.html">SteamCalculator</a>
-00861 <a class="code" href="class_solver2.html">Solver2&lt;Pressure,Temperature,0,0&gt;::solveRegion3</a>(
-00862         <span class="keyword">const</span> <a class="code" href="class_units.html">Pressure</a> &amp;p, <span class="keyword">const</span> <a class="code" href="class_units.html">Temperature</a> &amp;T, <span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;firstguess
-00863 );
-00864 
-00865 
-00866 <span class="preprocessor">#endif</span>
-</div></pre><hr size="1"><address style="align: right;"><small>Generated on Tue Mar 8 14:05:28 2005 for freesteam by
+00854 
+00855                                 <span class="comment">// Regulate max change in pressure</span>
+00856 
+00857                                 <a class="code" href="class_units.html">Pressure</a> dpMax = 0.5 * p;
+00858                                 <a class="code" href="class_units.html">Pressure</a> dpAbs = fabs(dp);
+00859                                 <span class="keywordflow">if</span>(dpAbs &gt; dpMax){
+00860                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "      ... limiting dp, too great";</span>
+00861                                         dp = dp * dpMax/dpAbs;
+00862                                 }
+00863 
+00864                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... calculated dT = " &lt;&lt; dT &lt;&lt; ", dp = " &lt;&lt; dp;</span>
+00865                                 T = T + dT;
+00866                                 p = p + dp;
+00867 
+00868                                 <span class="comment">// Keep new temperature in limits</span>
+00869                                 <span class="keywordflow">if</span>(T &gt; T_MAX){
+00870                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying T_MAXlimit";</span>
+00871                                         T = T_MAX;
+00872                                 }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(T &lt; T_TRIPLE){
+00873                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying T_TRIPLE limit";</span>
+00874                                         T = T_TRIPLE;
+00875                                 }
+00876 
+00877                                 <span class="comment">// Keep pressure in limits</span>
+00878                                 <span class="keywordflow">if</span>(p &lt; P_TRIPLE){
+00879                                         <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying P_TRIPLE limit";</span>
+00880                                         p = P_TRIPLE;
+00881                                 }<span class="keywordflow">else</span> <span class="keywordflow">if</span>(T &gt; TB_LOW){
+00882                                         <a class="code" href="class_units.html">Pressure</a> pbound = Boundaries::getpbound_T(T);
+00883                                         <span class="keywordflow">if</span>(p &gt; pbound){
+00884                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying pbound limit";</span>
+00885                                                 p = pbound;
+00886                                         }
+00887                                 }<span class="keywordflow">else</span>{
+00888                                         <a class="code" href="class_units.html">Pressure</a> psat = Boundaries::getSatPres_T(T);
+00889                                         <span class="keywordflow">if</span>(p &gt; psat){
+00890                                                 <span class="comment">//cerr &lt;&lt; endl &lt;&lt; "     ... applying psat limit";</span>
+00891                                                 p = psat;
+00892                                         }
+00893                                 }
+00894 
+00895                                 ASSERT(guess.<a class="code" href="class_steam_calculator.html#a17">whichRegion</a>()==2);
+00896                                 ASSERT(Boundaries::isRegion2_pT(p,T));
+00897 
+00898                                 guess.<a class="code" href="class_steam_calculator.html#a13">setRegion2_pT</a>(p,T);
+00899 
+00900                                 niter++;
+00901 
+00902                                 <span class="keywordflow">if</span>(niter &gt; maxiter){
+00903                                         <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(<span class="stringliteral">"Solver2::solveRegion2: Exceeded maximum iterations"</span>);
+00904                                 }
+00905                         }
+00906 
+00907                 }
+00908 };
+00909 
+00910 <span class="keyword">template</span>&lt;&gt;
+00911 <a class="code" href="class_steam_calculator.html">SteamCalculator</a>
+00912 <a class="code" href="class_solver2.html">Solver2&lt;Pressure,Temperature,0,0&gt;::solveRegion3</a>(
+00913         <span class="keyword">const</span> <a class="code" href="class_units.html">Pressure</a> &amp;p, <span class="keyword">const</span> <a class="code" href="class_units.html">Temperature</a> &amp;T, <span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;firstguess
+00914 );
+00915 
+00916 <span class="preprocessor">#endif</span>
+</div></pre><hr size="1"><address style="align: right;"><small>Generated on Tue Mar 22 19:07:05 2005 for freesteam by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 ></a> 1.3.8 </small></address>
 </body>

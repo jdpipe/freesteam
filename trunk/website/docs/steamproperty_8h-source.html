@@ -42,75 +42,91 @@
 00040         <span class="keyword">public</span>:
 00041                 <span class="keyword">static</span> <span class="keyword">inline</span> Property get(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S);
 00042                 <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> *name();
-00043 };
-00044 
-00045 <span class="comment">// 'getProperty' hooks</span>
-00046 
-00047 <span class="keyword">inline</span> <a class="code" href="class_units.html">SpecificEnergy</a>
-00048 <a class="code" href="class_steam_property.html">SteamProperty&lt;SpecificEnergy,SOLVE_IENERGY&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
-00049         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a24">specienergy</a>();
-00050 }
-00051 
-00052 <span class="keyword">inline</span> <a class="code" href="class_units.html">SpecificEnergy</a>
-00053 <a class="code" href="class_steam_property.html">SteamProperty&lt;SpecificEnergy,SOLVE_ENTHALPY&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
-00054         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a26">specenthalpy</a>();
-00055 }
-00056 
-00057 <span class="keyword">inline</span> <a class="code" href="class_units.html">Density</a>
-00058 <a class="code" href="class_steam_property.html">SteamProperty&lt;Density,0&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
-00059         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a22">dens</a>();
-00060 }
-00061 
-00062 <span class="keyword">inline</span> <a class="code" href="class_units.html">SpecificVolume</a>
-00063 <a class="code" href="class_steam_property.html">SteamProperty&lt;SpecificVolume,0&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
-00064         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a23">specvol</a>();
-00065 }
-00066 
-00067 <span class="keyword">inline</span> <a class="code" href="class_units.html">Temperature</a>
-00068 <a class="code" href="class_steam_property.html">SteamProperty&lt;Temperature,0&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
-00069         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a20">temp</a>();
-00070 }
-00071 
-00072 <span class="keyword">inline</span> <a class="code" href="class_units.html">Pressure</a>
-00073 <a class="code" href="class_steam_property.html">SteamProperty&lt;Pressure,0&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
-00074         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a21">pres</a>();
-00075 }
-00076 
-00077 <span class="keyword">inline</span> <a class="code" href="class_units.html">SpecificEntropy</a>
-00078 <a class="code" href="class_steam_property.html">SteamProperty&lt;SpecificEntropy,SOLVE_ENTROPY&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
-00079 <span class="preprocessor">        #ifndef NDEBUG</span>
-00080 <span class="preprocessor"></span>                <span class="keywordflow">try</span>{
-00081 <span class="preprocessor">        #endif</span>
-00082 <span class="preprocessor"></span>
-00083         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a25">specentropy</a>();
-00084 
-00085 <span class="preprocessor">        #ifndef NDEBUG</span>
-00086 <span class="preprocessor"></span>                }<span class="keywordflow">catch</span>(Exception *E){
-00087                         std::stringstream s;
-00088                         s &lt;&lt; <span class="stringliteral">"SteamProperty&lt;s&gt;::get: "</span> &lt;&lt; E-&gt;what();
-00089                         <span class="keyword">delete</span> E;
-00090                         <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(s.str());
-00091                 }
-00092 <span class="preprocessor">        #endif</span>
-00093 <span class="preprocessor"></span>}
-00094 
-00095 <span class="keyword">inline</span> <a class="code" href="class_units.html">SpecHeatCap</a>
-00096 <a class="code" href="class_steam_property.html">SteamProperty&lt;SpecHeatCap,SOLVE_CP&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
-00097         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a27">speccp</a>();
-00098 }
-00099 
-00100 <span class="keyword">inline</span> <a class="code" href="class_units.html">SpecHeatCap</a>
-00101 <a class="code" href="class_steam_property.html">SteamProperty&lt;SpecHeatCap,SOLVE_CV&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
-00102         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a28">speccv</a>();
-00103 }
-00104 
-00105 <span class="keyword">inline</span> Num
-00106 <a class="code" href="class_steam_property.html">SteamProperty&lt;Num,0&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
-00107         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a29">quality</a>();
-00108 }
-00109 
-00110 <span class="preprocessor">#endif</span>
-</div></pre><hr size="1"><address style="align: right;"><small>Generated on Tue Mar 8 14:05:29 2005 for freesteam by
+00043 
+00044                 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">const</span> <span class="keywordtype">bool</span> plotOnLogAxis(){
+00045                         <span class="keywordflow">return</span> <span class="keyword">false</span>;
+00046                 }
+00047 };
+00048 
+00049 <span class="comment">// 'getProperty' hooks</span>
+00050 
+00051 <span class="keyword">inline</span> <a class="code" href="class_units.html">SpecificEnergy</a>
+00052 <a class="code" href="class_steam_property.html">SteamProperty&lt;SpecificEnergy,SOLVE_IENERGY&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
+00053         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a24">specienergy</a>();
+00054 }
+00055 
+00056 <span class="keyword">inline</span> <a class="code" href="class_units.html">SpecificEnergy</a>
+00057 <a class="code" href="class_steam_property.html">SteamProperty&lt;SpecificEnergy,SOLVE_ENTHALPY&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
+00058         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a26">specenthalpy</a>();
+00059 }
+00060 
+00061 <span class="keyword">inline</span> <a class="code" href="class_units.html">Density</a>
+00062 <a class="code" href="class_steam_property.html">SteamProperty&lt;Density,0&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
+00063         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a22">dens</a>();
+00064 }
+00065 
+00066 <span class="keyword">inline</span> <a class="code" href="class_units.html">SpecificVolume</a>
+00067 <a class="code" href="class_steam_property.html">SteamProperty&lt;SpecificVolume,0&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
+00068         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a23">specvol</a>();
+00069 }
+00070 
+00071 <span class="keyword">inline</span> <a class="code" href="class_units.html">Temperature</a>
+00072 <a class="code" href="class_steam_property.html">SteamProperty&lt;Temperature,0&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
+00073         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a20">temp</a>();
+00074 }
+00075 
+00076 <span class="keyword">inline</span> <a class="code" href="class_units.html">Pressure</a>
+00077 <a class="code" href="class_steam_property.html">SteamProperty&lt;Pressure,0&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
+00078         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a21">pres</a>();
+00079 }
+00080 
+00081 <span class="keyword">inline</span> <a class="code" href="class_units.html">SpecificEntropy</a>
+00082 <a class="code" href="class_steam_property.html">SteamProperty&lt;SpecificEntropy,SOLVE_ENTROPY&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
+00083 <span class="preprocessor">        #ifndef NDEBUG</span>
+00084 <span class="preprocessor"></span>                <span class="keywordflow">try</span>{
+00085 <span class="preprocessor">        #endif</span>
+00086 <span class="preprocessor"></span>
+00087         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a25">specentropy</a>();
+00088 
+00089 <span class="preprocessor">        #ifndef NDEBUG</span>
+00090 <span class="preprocessor"></span>                }<span class="keywordflow">catch</span>(Exception *E){
+00091                         std::stringstream s;
+00092                         s &lt;&lt; <span class="stringliteral">"SteamProperty&lt;s&gt;::get: "</span> &lt;&lt; E-&gt;what();
+00093                         <span class="keyword">delete</span> E;
+00094                         <span class="keywordflow">throw</span> <span class="keyword">new</span> Exception(s.str());
+00095                 }
+00096 <span class="preprocessor">        #endif</span>
+00097 <span class="preprocessor"></span>}
+00098 
+00099 <span class="keyword">inline</span> <a class="code" href="class_units.html">SpecHeatCap</a>
+00100 <a class="code" href="class_steam_property.html">SteamProperty&lt;SpecHeatCap,SOLVE_CP&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
+00101         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a27">speccp</a>();
+00102 }
+00103 
+00104 <span class="keyword">inline</span> <a class="code" href="class_units.html">SpecHeatCap</a>
+00105 <a class="code" href="class_steam_property.html">SteamProperty&lt;SpecHeatCap,SOLVE_CV&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
+00106         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a28">speccv</a>();
+00107 }
+00108 
+00109 <span class="keyword">inline</span> Num
+00110 <a class="code" href="class_steam_property.html">SteamProperty&lt;Num,0&gt;::get</a>(<span class="keyword">const</span> <a class="code" href="class_steam_calculator.html">SteamCalculator</a> &amp;S){
+00111         <span class="keywordflow">return</span> S.<a class="code" href="class_steam_calculator.html#a29">quality</a>();
+00112 }
+00113 
+00114 <span class="keyword">inline</span>
+00115 <span class="keyword">const</span> <span class="keywordtype">bool</span>
+00116 <a class="code" href="class_steam_property.html">SteamProperty&lt;SpecificVolume,0&gt;::plotOnLogAxis</a>(){
+00117         <span class="keywordflow">return</span> <span class="keyword">true</span>;
+00118 }
+00119 
+00120 <span class="keyword">inline</span>
+00121 <span class="keyword">const</span> <span class="keywordtype">bool</span>
+00122 <a class="code" href="class_steam_property.html">SteamProperty&lt;Pressure,0&gt;::plotOnLogAxis</a>(){
+00123         <span class="keywordflow">return</span> <span class="keyword">true</span>;
+00124 }
+00125 
+00126 <span class="preprocessor">#endif</span>
+</div></pre><hr size="1"><address style="align: right;"><small>Generated on Tue Mar 22 19:07:05 2005 for freesteam by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 ></a> 1.3.8 </small></address>
 </body>
