@@ -39,7 +39,7 @@ $system=new System();
 // (alternatively you can replace this section with just $variables=array();
 // and the variables will be left un-named.)
 
-$res =& readResults("RankineTest.rlt");
+$res =& readResults("RankineClosedLoopTest.rlt");
 
 $connections=array(
 #	array("PU.Out","BO.In")

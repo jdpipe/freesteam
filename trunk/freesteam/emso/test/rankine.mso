@@ -14,8 +14,46 @@ using "pump";
 using "condenser";
 using "throttle";
 
+#*
+	Very simple model for the Rankine cycle:
+	No constraint on outlet state==inlet state here
+	No energy balance
+*#
+Model Rankine1
+	
+    VARIABLES
+	S1 as Stream_pT;
+    BO	as Boiler_pT;
+	TU	as Turbine_ideal;
+	CO	as Condenser;
+	PU 	as Pump;
+	
+	CONNECTIONS
+	S1 to BO.In;
+	BO.Out	to	TU.In;
+	TU.Out	to  CO.In;
+	CO.Out	to  PU.In;
+		
+end
 
-Model RankineOnceThrough
+Model Rankine2
+	
+    VARIABLES
+	S1 as Stream_pT;
+    BO	as Boiler_pT;
+	TU	as Turbine;
+	CO	as Condenser;
+	PU 	as Pump;
+	
+	CONNECTIONS
+	S1 to BO.In;
+	BO.Out	to	TU.In;
+	TU.Out	to  CO.In;
+	CO.Out	to  PU.In;
+		
+end
+
+Model RankineClosedLoop
 	
 	PARAMETERS
 	freesteam as CalcObject(File="emsofreesteam");
@@ -36,45 +74,13 @@ Model RankineOnceThrough
 	SPECIFY
 	BO.In.mdot = mdot;
 	
-	# PU.Out.p = BO.In.p;
-	# PU.Out.h = BO.In.h;
-	# PU.Out.mdot = BO.In.mdot; # <-- this is redundant since all the mess flows are already equated!
+	PU.Out.p = BO.In.p;
+	PU.Out.h = BO.In.h;
+	# PU.Out.mdot = BO.In.mdot; # <-- this is redundant since all the mass flows are already equated!
 	
 	[BO.In.T, BO.In.s]=freesteam.Ts_ph(BO.In.p,BO.In.h);
 
 	#"System-wide energy conservation"
-	# BO.q + PU.P = CO.q + TU.P;
-	
-end
-
-Model RankineClosedLoop
-	
-	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam");
-	
-    VARIABLES
-	mdot as MassFlowRate;
-	
-    BO	as BoilerWithLoss;
-	TU	as Turbine;
-	CO	as Condenser;
-	# PU 	as Pump;
-	
-	CONNECTIONS
-	BO.Out	to	TU.In;
-	TU.Out	to  CO.In;
-	# CO.Out	to  PU.In;
-	
-	SPECIFY
-	BO.In.mdot = mdot;
-	
-	# PU.Out.p = BO.In.p;
-	# PU.Out.h = BO.In.h;
-	# PU.Out.mdot = BO.In.mdot; # <-- this is redundant since all the mess flows are already equated!
-	
-	[BO.In.T, BO.In.s]=freesteam.Ts_ph(BO.In.p,BO.In.h);
-
-	#"System-wide energy conservation"
-	# BO.q + PU.P = CO.q + TU.P;
+	BO.q + PU.P = CO.q + TU.P;
 	
 end
