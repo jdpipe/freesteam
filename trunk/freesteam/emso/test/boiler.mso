@@ -1,13 +1,8 @@
 #* 
     freesteam stream integration for use in steam system calculations
     
-    Based on steam.mso by Rafael de Pelegrini Soares,
-
-    Copyright 2002-2005 Rafael de Pelegrini Soares.
+    Originally based on steam.mso by Rafael de Pelegrini Soares.
     Modified by John Pye 2005 http://freesteam.sf.net
-    
-    This copyright statement must not be deleted and must be
-    included in any modification or adaptation of this Model.
 *#
 
 using "steamequipment";
@@ -21,24 +16,13 @@ using "steamequipment";
 *#
 Model Boiler as SteamEquipment_ph # 7
     
-    VARIABLES
-    q   as HeatRate;
-	Dp  as PressureDifference;
-	
-	CONNECTIONS
-	# In.mdot to Out.mdot;
-	
     EQUATIONS   
+	# Zero contained volume
+	m = 0 * "kg";
+	H = 0 * "J";
 	
-	"Mass flow"
-	In.mdot = Out.mdot;
-	
-    "Energy balance"
-    q = Out.mdot * Out.h - In.mdot * In.h;
-    
-    "Pressure difference"
-    Dp = Out.p - In.p;
-    
+	# No work
+	Wdot = 0 * "W";
 end
 
 #*
@@ -48,23 +32,12 @@ end
 *#
 Model Boiler_pT as SteamEquipment_pT # 7
     
-    VARIABLES
-    q   as HeatRate;
-	Dp  as PressureDifference;
+	EQUATIONS
+	m = 0 * "kg";
+	H = 0 * "J";
 	
-	CONNECTIONS
-	# In.mdot to Out.mdot;
-	
-    EQUATIONS
-	"Mass flow"
-	In.mdot = Out.mdot;
-	
-    "Energy balance"
-    q = In.mdot * Out.h - In.mdot * In.h;
-    
-    "Pressure difference"
-    Dp = Out.p - In.p;
-    
+	# No work
+	Wdot = 0 * "W";
 end
 
 #*
@@ -80,6 +53,6 @@ Model BoilerWithLoss as Boiler # 7
 		
     EQUATIONS
 	"Pressure drop"
-	Dp = K * In.mdot^2 / In.freesteam.rho_ph(In.p,In.h) / A_1^2;
+	Dp = -K * In.mdot^2 / In.freesteam.rho_ph(In.p,In.h) / A_1^2;
     
 end

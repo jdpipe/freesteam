@@ -1,18 +1,19 @@
 #* 
 	freesteam stream integration for use in steam system calculations
 	
-	Based on steam.mso by Rafael de Pelegrini Soares,
-
-	Copyright 2002-2005 Rafael de Pelegrini Soares.
+	Originally based on code by Rafael de Pelegrini Soares.
 	Modified by John Pye 2005 http://freesteam.sf.net
-	
-	This copyright statement must not be deleted and must be
-	included in any modification or adaptation of this Model.
 *#
 
 using "streams";
 using "boiler";
 
+#*
+	Boiler inlet outlet states are given then
+	heat supplied is determined from that.
+
+	THIS FLOWSHEET WORKS
+*#
 FlowSheet BoilerTest # 0
 		
 	DEVICES
@@ -36,6 +37,12 @@ FlowSheet BoilerTest # 0
 	
 end
 
+#*
+	Boiler inlet state and supplier heat / pressure drop
+	are specified. Then outlet state is calculated.
+
+	THIS FLOWSHEET WORKS
+*#
 FlowSheet BoilerTest2 # 0
 		
 	DEVICES
@@ -51,7 +58,7 @@ FlowSheet BoilerTest2 # 0
 	S1.T = (121 + 273.15) * "K";	
 
 	BO.Dp = -2 * "bar";
-	BO.q = 120 * "MW";
+	BO.Qdot = 120 * "MW";
 	
 	OPTIONS
 	mode = "steady";
@@ -59,7 +66,14 @@ FlowSheet BoilerTest2 # 0
 	
 end
 
-
+#*
+	Boiler with minor loss coefficient is tested. Inlet
+	state plus boiler minor loss coefficient and area
+	are specified, as well as heat supplied. Outlet state
+	is then calculated.
+	
+	THIS FLOWSHEET WORKS
+*#
 FlowSheet BoilerWithLossTest
 	
 	DEVICES
@@ -77,7 +91,7 @@ FlowSheet BoilerWithLossTest
 	BO.A_1 = 3.1415926 * (0.2 * "m")^2 / 4;
 	BO.K = 20;
 	
-	BO.q = 120 * "MW";
+	BO.Qdot = 120 * "MW";
 	
 	OPTIONS
 	mode = "steady";
