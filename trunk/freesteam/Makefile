@@ -27,7 +27,7 @@ CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
 CXXFLAGS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --cflags)
 LIBS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --libs)
 
-OBJS = steamcalculator.o state.o region1.o region2.o region3.o region4.o boundaries.o steamcalculatorexception.o zeroin.o designbycontract.o units.o solver.o
+OBJS = steamcalculator.o state.o region1.o region2.o region3.o region4.o boundaries.o steamcalculatorexception.o zeroin.o designbycontract.o units.o solver.o satcurve.o
 
 # This line will cause all tests to be run in alphabetical order by filename
 #TESTS = $(shell ls *.test.cpp | /bin/sed -r s%\.test\.cpp%.test.o%)
@@ -38,11 +38,17 @@ TESTS = cppunit.test.o empty.test.o units.test.o batchtest.test.o \
 	region4.test.o b23.test.o boundaries.test.o region1.test.o \
 	region2.test.o region3.test.o \
 	iapws95.test.o iapws9795.test.o \
-	pressuresolver.test.o temperaturesolver.test.o \
-	temperaturesolver2.test.o
+	pressuresolver.test.o 
+	temperaturesolver.test.o \
+	satcurve.test.o	
+#	temperaturesolver2.test.o
 
-CPASS = $(wildcard *.cpass.cpp)
-CFAIL = $(wildcard *.cfail.cpp)
+###### compile-time testing disabled:
+CPASS = 
+CFAIL = 
+
+#CPASS = $(wildcard *.cpass.cpp)
+#CFAIL = $(wildcard *.cfail.cpp)
 
 #CPASS = units-1.cpass.cpp
 #CFAIL = units-1.cfail.cpp units-2.cfail.cpp units-

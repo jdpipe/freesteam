@@ -87,37 +87,40 @@ Boundaries::isSat_pT(Pressure p, Temperature T,
 		return false;
 	}
 
+	// Try the backwards equation:
 	Temperature Tsat = Boundaries::getSatTemp_p(p);
-	Temperature dT = T - Tsat;
-
-	if (dT == 0.0 * Kelvin) {
+	if (Tsat == T) {
 		
-		MESSAGE("EXACTLY SATURATED");
+		// MESSAGE("EXACTLY SATURATED");
 		
 		return true;
-
-	}else{
-
-		/*
-		if( fabs(dT)/Tsat < STM_SATURATION_TOL) {
-			if (throw_me)
-				throw new SteamAlmostSaturatedException(p, T);
-			
-			MESSAGE("APPROXIMATELY SATURATED");
-			
-			return true;
-		}
-		*/
-		
-		if (throw_me) {
-			stringstream s;
-			s << "Steam not saturated @ p = " << p/bar << "bar: T=" << 	T/Kelvin << "K != Tsat=" << Tsat/Kelvin << "K (rel err " << (dT / Tsat) << ")";
-			throw new Exception(s.str());
-		}
-		//cerr << "Point is not saturated" << endl;
-		return false;
+	}
+	
+	// try the forwards equation
+	Pressure psat = Boundaries::getSatPres_T(T);
+	if(psat == p){
+		return true;	
 	}
 
+	// Allow almost-saturated -- this tolerates use of the backward equation
+
+	if( fabs(T-Tsat)/Tsat < STM_SATURATION_TOL) {
+		if (throw_me)
+			throw new SteamAlmostSaturatedException(p, T);
+
+		// MESSAGE("APPROXIMATELY SATURATED");
+
+		return true;
+	}
+
+	if (throw_me) {
+		stringstream s;
+		s << "Steam not saturated @ p = " << p/bar << "bar: T=" << 	T/Kelvin << "K != Tsat=" << Tsat/Kelvin << "K (rel err " << ((Tsat-T) / Tsat) << ")";
+		throw new Exception(s.str());
+	}
+
+	//cerr << "Point is not saturated" << endl;
+	return false;
 
 }
 

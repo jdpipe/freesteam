@@ -2,6 +2,7 @@
 #include "exception.h"
 #include "batchtest.h"
 #include "solver.h"
+#include "iapws95.h"
 
 #include <sstream>
 #include <iostream>
@@ -41,6 +42,11 @@ class TemperatureSolverTest2Point{
 				SpecificEntropy s = S.specentropy();
 				SpecificVolume v = S.specvol();
 
+		/*
+			Need to skip some values here because along the p_bound(T) line there are some errors evaluating T(p,v), eg in "Failed to solve v = 0.00166487, p = 2e+07: expected T = 623.15K but got 623.152K (error was 0.00246728, max is 5e-05)"
+			
+			See criticalsurface.cli.cpp and pboundt.cli.cpp which generate further diagnostic info
+		*/		
 				if(
 					p/MPa >= 20.0
 					&& tocelsius(T) >= 325.0 
@@ -49,7 +55,7 @@ class TemperatureSolverTest2Point{
 					//cerr << "(SKIPPED)" << endl;
 					return;
 				}
-				
+								
 				//cerr << "p = " << p/MPa << "MPa, T = " << T << " (" << tocelsius(T) << "°C; region " << S.whichRegion() <<")" << endl;
 				
 				Temperature maxerror = 5e-5 * Kelvin;
@@ -102,7 +108,7 @@ class TemperatureSolverTest2 : public BatchTest<TemperatureSolverTest2Point>{
 			for(int it=0; it<T_COUNT; it++){
 				for(int ip=0;ip<P_COUNT; ip++){
 					
-					if(p_raw[ip]==0.1)continue;
+					//if(p_raw[ip]==0.1)continue;
 
 					addTestPoint(TemperatureSolverTest2Point(p_raw[ip] * MPa,fromcelsius(T_raw[it])));
 

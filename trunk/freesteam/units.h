@@ -416,6 +416,7 @@ const HeatTransferCoefficient W_m2K = Watt / metre2 / Kelvin;
 const Conductivity W_mK = Watt / metre / Kelvin;
 const Conductivity mW_mK = milli * W_mK;
 const Density kg_m3 = kilogram / metre3;
+const SpecificVolume m3_kg = metre3 / kilogram;
 
 //------------------------------------
 // HANDLING TEMPERATURE CONVERSIONS

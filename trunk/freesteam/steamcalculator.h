@@ -88,10 +88,10 @@ class SteamCalculator:public DesignByContract {
 
 		METHOD_SC(specvol,       SpecificVolume);	// Specific volume                  [m³/kg]
 		METHOD_SC(specienergy,   SpecificEnergy);	// Specific internal energy         [kJ/kg]
-		METHOD_SC(specentropy,   SpecificEntropy);	// Specific entropy                 [kJ/kg]
+		METHOD_SC(specentropy,   SpecificEntropy);	// Specific entropy                 [kJ/kgK]
 		METHOD_SC(specenthalpy,  SpecificEnergy);	// Specific enthalpy                [kJ/kg]
-		METHOD_SC(speccp,        SpecHeatCap);	    // Sepcific isobaric hear capacity  [kJ/kg]
-		METHOD_SC(speccv,        SpecHeatCap);	    // Specific isochoric heat capacity [kJ/kg]
+		METHOD_SC(speccp,        SpecHeatCap);	    // Sepcific isobaric heat capacity  [kJ/kgK]
+		METHOD_SC(speccv,        SpecHeatCap);	    // Specific isochoric heat capacity [kJ/kgK]
 		METHOD_SC(quality,       Num);	            // Steam quality
 		METHOD_SC(dynvisc,       DynamicViscosity);	// Dynamic viscosity, mu            [Pa.s]
 		METHOD_SC(conductivity,  Conductivity);	    // Conductivity

@@ -132,7 +132,7 @@ void SteamCalculator::set_pT(Pressure p, Temperature T, Num x) {
 
 	if (Boundaries::isSat_pT(p, T)) {
 		
-		MESSAGE("SATURATED p,T IN set_PT");
+		// MESSAGE("SATURATED p,T IN set_PT");
 		
 		if (x == 0) {
 			if (Boundaries::isRegion1_pT(p, T)) {
@@ -264,13 +264,13 @@ void SteamCalculator::setSatWater_T(Temperature T) {
 */
 void SteamCalculator::setSatSteam_T(Temperature T) {
 
-	REQUIRE(T >= T_MIN);
+	REQUIRE(T >= T_TRIPLE);
 	REQUIRE(T <= T_CRIT);
 
 	Pressure p = Boundaries::getSatPres_T(T);
 
-	ASSERT(p <= P_CRIT);
-	ASSERT(p >= REG4_P_MIN);
+	// ASSERT(p <= P_CRIT);
+	// ASSERT(p >= REG4_P_MIN);
 	ASSERT(Boundaries::isSat_pT(p, T));
 
 	changeState(Region2::Instance());

@@ -8,9 +8,12 @@
 using namespace std;
 
 /**
-	This class will solve for temperature plus another variable in SteamCalculator, by varying pressure
-*/
+	This class will solve for 
+	
 
+	temperature | or plus another variable in SteamCalculator, by varying | pressure
+	pressure    |                                                         | temperature
+*/
 template<class MainQuantity, class OtherQuantity, class VaryingQuantity>
 class Solver : public DesignByContract {
 	
@@ -24,10 +27,10 @@ class Solver : public DesignByContract {
 		}
 	
 		void setTarget(OtherQuantity oq){
-			this->pq=pq;
+			this->oq=oq;
 		}
 
-		void setMainQuantity(MainQuantity p){
+		void setMainQuantity(MainQuantity mq){
 			this->mq=mq;
 		}
 		

@@ -12,6 +12,8 @@ using namespace std;
 /**
 	Whacko, this class does root finding with units intact!
 	
+	We will be varying the x (Abscissa) value until the y (Ordinate) value is zero.
+	
 	@param Subject class on which solving of a function like y(x)=0 is to be done
 	@param Ordinate y-value type
 	@param Abscissa x-value type
@@ -43,7 +45,7 @@ class ZeroIn : public DesignByContract {
     }
     
     /// Set the lower bound of the range that will be searched for a solution
-    void setLowerBound(Abscissa ax) {
+    void setLowerBound(const Abscissa& ax) {
 	    this->ax = ax;
     }
 
@@ -53,7 +55,7 @@ class ZeroIn : public DesignByContract {
     }
 
     /// Set the upper bound of the range that will be searched for a solution
-    void setUpperBound(Abscissa bx) {
+    void setUpperBound(const Abscissa bx) {
 	    this->bx = bx;
     }
 
@@ -63,7 +65,7 @@ class ZeroIn : public DesignByContract {
     }
 
     /// set tolerance of the solution
-    void setTolerance(Abscissa tol) {
+    void setTolerance(const Abscissa tol) {
 	    this->tol = tol;
     }
 
