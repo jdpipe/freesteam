@@ -33,6 +33,17 @@ Region4::temp(const SteamCalculator &c) const{
 	return c.T;
 }
 
+/**
+	Set properties in region 4
+
+	@param c SteamCalculator object to contain the properties defining the current state
+	@param p Pressure (redundant, does nothing)
+	@param T Saturation temperature
+	@param x Quality
+
+	@todo
+		Work out a way to do this without using a redundant parameter 'p'
+*/
 void Region4::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T,
                           Num x) {
 	// SteamCalculator will already have checked that these are saturated values:
@@ -51,17 +62,6 @@ void Region4::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T
 	c.isset = true;
 
 	ENSURE(c.whichRegion() == 4);
-}
-
-
-Num
-Region4::pitau_iaps85(const SteamCalculator &c) const{
-	throw new Exception("Invalid call to Region4::pitau_iaps85");
-}
-
-Num
-Region4::delpi_iaps85(const SteamCalculator &c) const{
-	throw new Exception("Invalid call to Region4::delpi_iaps85");
 }
 
 //--------
@@ -90,4 +90,15 @@ INTERP_REGION4(dens,         Density);
 Pressure
 Region4::pres(const SteamCalculator &c) const{
 	return c.gas->pres();
+}
+
+Num
+Region4::pitau_iaps85(const SteamCalculator &c) const{
+	throw new Exception("Invalid call to Region4::pitau_iaps85: not implemented");
+	return 0;
+}
+
+Num
+Region4::delpi_iaps85(const SteamCalculator &c) const{
+	throw new Exception("Invalid call to Region4::delpi_iaps85: not implemented");
 }

@@ -1,24 +1,19 @@
 #include "test.h"
 
-#include <cppunit/extensions/TestFactoryRegistry.h>
-#include <cppunit/ui/text/TestRunner.h>
 #include <cppunit/TestFixture.h>
-#include <cppunit/CompilerOutputter.h>
-#include <cppunit/TestCase.h>
-#include <cppunit/extensions/HelperMacros.h>
 
-template<class TestPoint> 
+template<class TestPoint>
 class BatchTest : public CppUnit::TestFixture {
 
 	typedef typename vector<TestPoint>::iterator TestPointIterator;
-	
+
 	protected:
 		vector < TestPoint > data;
 
 		double tol;
 
-		void testAllPoints(){	
-			
+		void testAllPoints(){
+
 			//cerr << endl;
 			//cerr << " Testing " << data.size() << " points." << endl;
 
@@ -28,7 +23,7 @@ class BatchTest : public CppUnit::TestFixture {
 		}
 
 		void testOnePoint(const TestPoint testpoint) {
-			
+
 			testpoint.test(tol);
 
 		}
@@ -42,12 +37,6 @@ class BatchTest : public CppUnit::TestFixture {
 		}
 
 	public:
-		virtual void setUp(){
-			throw new Exception("'setUp' not implemented");
-		}
-		
-		virtual void tearDown(){
-			throw new Exception("'tearDown' not implemented");
-		}
-	
+		virtual void setUp(){}
+		virtual void tearDown(){}
 };

@@ -196,7 +196,13 @@ LOOP_REG2I(gamtautau0,
            REGION2_N0[i] * REGION2_J0[i] * (REGION2_J0[i] -
                                             1) * pow(c.tau,
                                                      REGION2_J0[i] - 2));
+/**
+	@todo
+		Make gampitau0 not require a steamcalculator argument
 
+	@todo
+		Convert LOOP_REG2I etc etc to expression template format a la Blitz++ etc
+*/
 LOOP_REG2I(gampitau0, 0);
 
 // residual parts

@@ -1,4 +1,5 @@
 #include "boundaries.h"
+#include "exception.h"
 
 #include <sstream>
 

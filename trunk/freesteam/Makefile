@@ -26,7 +26,7 @@ CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
 CXXFLAGS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --cflags)
 LIBS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --libs)
 
-OBJS = steamcalculator.o state.o region1.o region2.o region3.o region4.o boundaries.o \
+OBJS = exception.o steamcalculator.o state.o region1.o region2.o region3.o region4.o boundaries.o \
 	steamcalculatorexception.o zeroin.o designbycontract.o units.o solver.o steamproperty.o \
 	satcurve.o b23curve.o b13curve.o convergencetest.o solver2.o
 

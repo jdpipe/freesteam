@@ -13,56 +13,61 @@ using namespace std;
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
 
+/**
+	@todo
+		Rewrite B13CurveTest to use internally-generated test data
+*/
+
 class B13CurveTest: public CppUnit::TestFixture{
 
 	public:
 		void tearDown() {
 		}
-		
+
 		void setUP(){
 		}
-		
+
 	protected:
-		
+
 
 		/**
 			Tests B13 curve solver for
-			
+
 				      T_b13(p)
 				      u_b13(s)
 				      u_p13(v)
 				      h_b13(v)
-		*/				
+		*/
 		void testB13(
 			Temperature T, Pressure p
 			,SpecificEnergy u, SpecificEnergy h, SpecificEntropy s
 			, SpecificVolume v, SpecHeatCap cp, SpecHeatCap cv
 		){
-			
+
 			try{
-						
+
 				B13Curve<Temperature,Pressure> BTp;
 				Temperature T_solved = BTp.solve(p);
-	
+
 				if(fabs(T_solved - T)/T > 0.001 * Percent){
 					stringstream s;
 					s << "Expected T = " << T << ", got T_b13 = " << T_solved << " with p = " << p;
 					CPPUNIT_FAIL(s.str());
 				}
-				
+
 				B13Curve<SpecificEnergy,SpecificEntropy,SOLVE_IENERGY,SOLVE_ENTROPY> Bus;
 				SpecificEnergy u_solved = Bus.solve(s);
-	
+
 				if(fabs(u_solved - u)/u > 0.001 * Percent){
 					stringstream s;
 					s << "Expected u = " << u << ", got u_b13 = " << u_solved << " with s = " << s;
 					CPPUNIT_FAIL(s.str());
 				}
-			
+
 				/*
 				B13Curve<SpecificEnergy,SpecificVolume,SOLVE_IENERGY> Buv;
 				u_solved = Buv.solve(v);
-	
+
 				if(fabs(u_solved - u)/u > 0.001 * Percent){
 					stringstream s;
 					s << "Expected u = " << u << ", got u_b13 = " << u_solved << " with v = " << v;
@@ -71,7 +76,7 @@ class B13CurveTest: public CppUnit::TestFixture{
 
 				B13Curve<SpecificEnergy,SpecificVolume,SOLVE_ENTHALPY> Bhv;
 				SpecificEnergy h_solved = Bhv.solve(v);
-	
+
 				if(fabs(h_solved - h)/h > 0.001 * Percent){
 					stringstream s;
 					s << "Expected h = " << h << ", got h_b13 = " << h_solved << " with v = " << v;
@@ -83,11 +88,11 @@ class B13CurveTest: public CppUnit::TestFixture{
 				s << "B13CurveTest::testB13: " << E->what();
 				CPPUNIT_FAIL(s.str());
 			}
-	
-		}	
-	
+
+		}
+
 	public:
-	
+
 
 		void test1(){
 			testB13(
@@ -99,7 +104,7 @@ class B13CurveTest: public CppUnit::TestFixture{
 				, 1.73718499e-03 * m3_kg
 				, 1.00078132e+04 * J_kgK
 				, 3.14699407e+03 * J_kgK
-				
+
 			);
 		}
 
@@ -135,7 +140,7 @@ class B13CurveTest: public CppUnit::TestFixture{
 		void test28(){testB13(6.23150000e+02 * Kelvin, 9.16629200e+07 * Pascal, 1.43325200e+06 * J_kg, 1.55493662e+06 * J_kg, 3.41706408e+03 * J_kgK, 1.32752281e-03 * m3_kg, 4.68021573e+03 * J_kgK, 2.87933441e+03 * J_kgK);}
 		void test29(){testB13(6.23150000e+02 * Kelvin, 9.44419467e+07 * Pascal, 1.42965913e+06 * J_kg, 1.55452088e+06 * J_kg, 3.41048880e+03 * J_kgK, 1.32210056e-03 * m3_kg, 4.65384384e+03 * J_kgK, 2.87869609e+03 * J_kgK);}
 		void test30(){testB13(6.23150000e+02 * Kelvin, 9.72209733e+07 * Pascal, 1.42615889e+06 * J_kg, 1.55418434e+06 * J_kg, 3.40406442e+03 * J_kgK, 1.31685010e-03 * m3_kg, 4.62874216e+03 * J_kgK, 2.87843487e+03 * J_kgK);}
-		
+
 	public:
 
 		// Invoke CPPUNIT macros to add tests to a suite:
@@ -173,7 +178,7 @@ class B13CurveTest: public CppUnit::TestFixture{
 		CPPUNIT_TEST(test30);
 
 		CPPUNIT_TEST_SUITE_END();
-		
+
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION(B13CurveTest);		
+CPPUNIT_TEST_SUITE_REGISTRATION(B13CurveTest);
