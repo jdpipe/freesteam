@@ -495,14 +495,14 @@ class EMSOfreesteam : public ExternalObjectBase {
 						#ifdef EMSO_DEBUG
 							cerr << "p=" << inputValues[0] * MPa << ", h=" << inputValues[1] * kJ_kg;
 						#endif
-						S = SS_PH.solve(inputValues[0] * MPa, inputValues[1] * kJ_kg);
+						S = SS_PH.solve(inputValues[0] * MPa, inputValues[1] * kJ_kg, lastState);
 						break;
 
 					case given_ps:
 						#ifdef EMSO_DEBUG
 							cerr << "p=" << inputValues[0] * MPa << ", s=" << inputValues[1] * kJ_kgK;
 						#endif
-						S = SS_PS.solve(inputValues[0] * MPa, inputValues[1] * kJ_kgK);
+						S = SS_PS.solve(inputValues[0] * MPa, inputValues[1] * kJ_kgK, lastState);
 
 						break;
 
@@ -510,21 +510,21 @@ class EMSOfreesteam : public ExternalObjectBase {
 						#ifdef EMSO_DEBUG
 							cerr << "p=" << inputValues[0] * MPa << ", u=" << inputValues[1] * kJ_kg;
 						#endif
-						S = SS_PU.solve(inputValues[0] * MPa, inputValues[1] * kJ_kg);
+						S = SS_PU.solve(inputValues[0] * MPa, inputValues[1] * kJ_kg, lastState);
 						break;
 
 					case given_uv:
 						#ifdef EMSO_DEBUG
 							cerr << "u=" << inputValues[0] * kJ_kg << ", u=" << inputValues[1] * m3_kg;
 						#endif
-						S = SS_UV.solve(inputValues[0] * kJ_kg, inputValues[1] * m3_kg);
+						S = SS_UV.solve(inputValues[0] * kJ_kg, inputValues[1] * m3_kg, lastState);
 						break;
 
 					case given_Ts:
 						#ifdef EMSO_DEBUG
 							cerr << "T=" << inputValues[0] * Kelvin << ", s=" << inputValues[1] * kJ_kgK;
 						#endif
-						S = SS_TS.solve(inputValues[0] * Kelvin, inputValues[1] * kJ_kgK);
+						S = SS_TS.solve(inputValues[0] * Kelvin, inputValues[1] * kJ_kgK, lastState);
 						break;
 
 					default:
@@ -675,6 +675,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 					}
 				#endif
 				*retval = emso_ok;
+				lastState = S;
 
 			}catch(Exception *E){
 				stringstream s;
@@ -687,6 +688,8 @@ class EMSOfreesteam : public ExternalObjectBase {
 		}
 
 	private:
+
+		SteamCalculator lastState;
 
 		/// The current number of created EMSOfreesteam objects.
 		static int_t numOfPackages;
