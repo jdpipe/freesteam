@@ -74,6 +74,7 @@ TESTS = cppunit.test.o empty.test.o units.test.o batchtest.test.o \
 CPASS = $(wildcard *.cpass.cpp)
 CFAIL = $(wildcard *.cfail.cpp)
 
+TESTEXE = runtest$(EXE_SUFFIX)
 TESTOBJS = steamtestpoint.o iapws95.o
 
 HOOKOBJS = emsohooks.o
@@ -212,7 +213,7 @@ ctestheading:
 %.cpass$(EXE_SUFFIX): %.cpass.cpp $(LIB) Makefile
 	@echo "ctest $< (expect pass)..."
 	@echo $(CXX) -DCTEST $< $(LIB) -o $@ $(LDFLAGS);
-	@if $(CXX) -DCTEST $< $(LIB) -o $@ $(LDFLAGS); then \
+	@if $(CXX) -DCTEST $< $(LIB) -o $@ $(LDFLAGS); then 0 \
 	else \
 	  echo; \
 	  echo "$<:1: CTEST FAIL: Expected to compile, but did not."; \
@@ -237,10 +238,10 @@ ctestheading:
 
 .PHONY:	test testheading
 
-test: ctest testheading test$(EXE_SUFFIX) $(TESTS)
-	./$@
+test: ctest testheading $(TEXT_EXE) $(TESTS)
+	./$(TEST_EXE)
 
-test$(EXE_SUFFIX): test.o $(TESTS) $(TESTOBJS) $(LIB)
+$(TEST_EXE): test.o $(TESTS) $(TESTOBJS) $(LIB)
 	@echo
 	@echo "CppUnit libs flag: " $(LIBS_CPPUNIT)
 	@echo
