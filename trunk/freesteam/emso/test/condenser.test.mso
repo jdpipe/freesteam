@@ -13,7 +13,7 @@ using "condenser";
 #*
 	Simple condenser test: specify inlet andoutlet conditions
 
-	THIS FLOWSHEET WORKS
+	DOESN'T WORK
 *#
 FlowSheet CondenserTest
 	
@@ -41,6 +41,9 @@ FlowSheet CondenserTest
 	outputLevel = "all";
 end
 
+#*
+	DOESN'T WORK
+*#
 FlowSheet CondenserTest1
 	
 	PARAMETERS
@@ -48,7 +51,7 @@ FlowSheet CondenserTest1
 	
 	DEVICES
 	S as Stream_pT;
-	CO as Condenser_pT;
+	CO as Condenser;
 	#CO as Condenser;
 	
 	CONNECTIONS
@@ -56,15 +59,13 @@ FlowSheet CondenserTest1
 	
 	SPECIFY
 	S.mdot = 1 * "kg/s";
-	S.p = 2.0 * "bar";
-	S.T = (150 + 273.15) * "K";
+	S.p = 60.0 * "bar";
+	S.T = (300 + 273.15) * "K";
 	
-	CO.Qdot = -4.2 * "kW";
-	CO.Dp = - 1.0 * "bar";
+	CO.Qdot = 0 * "W";
+	CO.Dp = 0 * "bar";
 		
-	GUESS 
-	CO.Out.T=(151 + 273.15) * "K";
-	
+
 	# FIXME: [rafael] this is required when DT is specified instead of q:
 	# CO.Out.h = 300 * "kJ/kg";
 	
@@ -76,13 +77,13 @@ end
 #*
 	Condenser specified in terms of UA and outlet pressure
 
-	THIS FLOWSHEET WORKS
+	DOESN'T WORK
 *#
 FlowSheet CondenserTest2
 	
 	DEVICES
 	S as Stream_pT; # 5 - 2       = 3
-	CO as Condenser_pT; # 14 - 5 - 2 = 7
+	CO as Condenser; # 14 - 5 - 2 = 7
 	#CO as Condenser;
 	
 	CONNECTIONS
@@ -98,6 +99,8 @@ FlowSheet CondenserTest2
 	
 	GUESS 
 	CO.Out.h = 500 * "kJ/kg";
+	CO.Out.T = (50 + 273.15) * "K";
+	
 	# FIXME: [rafael] this is required when DT is specified instead of q:
 	# CO.Out.h = 300 * "kJ/kg";
 	
