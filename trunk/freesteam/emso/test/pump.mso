@@ -55,3 +55,36 @@ Model Pump as SteamEquipment_ph # 8 + 3 - 4 = 7
     "Pressure difference"
     Dp = Out.p - In.p;        
 end
+
+Model PumpWithCurve as Pump
+	
+	PARAMETERS
+
+	VARIABLES
+	# constants that define the pump curve:
+	H_max as Length(Brief="Zero-Flow Head");
+	Q_max as VolumeFlowRate(Brief="Zero-Head Flow Rate (vol)");
+	N_1 as Frequency(Brief="Reference Speed", Unit="1/min");
+	
+	# variables that define the operating point:
+	N as Frequency(Brief="Pump speed (RPM)", Unit="1/min", Default=100);
+	H as Length(Brief="Pump head");
+	Q as VolumeFlowRate(Brief="Pump flow rate (vol)");
+	Dp as PressureDifference(Brief="Pump pressure rise");
+	
+	# internal variables
+	H_1 as Length(Brief="Pump head");
+	A as Real(Unit="m/(m^6/s^2)");
+	Q_1 as VolumeFlowRate(Brief="Pump flow rate (vol)");
+	
+	EQUATIONS
+	A = H_max / Q_max^2;
+	H_1 = A * (Q_1-Q_max) * (Q_1-Q_max);
+	
+	Q = Q_1 * N / N_1;
+	H = H_1 * (N/N_1)^2;
+	# P = P_1 * (N/N_1)^3; # if we have a P_1(Q) curve, then we will be able to imply eta(Q,N) but at the moment, this is not implemented.
+	
+	Dp = 9.81 * "N/kg" * H / v;
+
+end

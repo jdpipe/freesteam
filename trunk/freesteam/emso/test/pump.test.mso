@@ -13,7 +13,7 @@
 using "streams";
 using "pump";
 
-FlowSheet TestPump
+FlowSheet PumpTest
 	
 	DEVICES
 	S1 as Stream_pT;
@@ -45,7 +45,7 @@ FlowSheet TestPump
 	outputLevel = "all";
 end
 
-FlowSheet TestPump2
+FlowSheet PumpTest2
 	
 	DEVICES
 	S1 as Stream_pT;
@@ -77,3 +77,15 @@ FlowSheet TestPump2
 	outputLevel = "all";
 end
 
+FlowSheet PumpWithCurveTest
+
+	DEVICES
+	S1 as Stream_pT;
+	PU as PumpWithCurve;
+	
+	CONNECTIONS
+	S1 to PU.In;
+
+	SPECIFY
+
+end

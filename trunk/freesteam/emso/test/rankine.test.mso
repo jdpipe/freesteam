@@ -1,8 +1,6 @@
 #* 
-	Open loop cycle model
-	with all component model specified in terms of intrinsic parameters, 
-	rather than intermediatate steam properties
-	
+	Rankine cycle simulation, closed loop
+
 	John Pye 2005 http://freesteam.sf.net
 *#
 
@@ -21,17 +19,23 @@ FlowSheet RankineTest
 	# Intrinsic properties of equipment:
 	cyc.TU.eta = 0.85;
 	cyc.PU.eta = 0.65;
+	cyc.PU.H_max = 100 * "bar" / (9.8 * "N/kg" * 1000 * "kg/m^3");
+	cyc.PU.Q_max = 30 * "kg/s" / (1000 * "kg/m^3");
+	cyc.PU.N_1 = 2000 * "1/min";
 	
 	# Some chosen operating point constraints:
-	cyc.mdot = 1 * "kg/s";
-	cyc.BO.In.p = 60 * "bar";
+	cyc.PU.N = 1000 * "1/min";
+	
+	# cyc.BO.In.p = 60 * "bar";
 	cyc.BO.Dp = -2 * "bar";
 	
 	cyc.BO.Out.T = (300 + 273.15) * "K";
 	
-	cyc.TU.Dp = -56 * "bar";
+	#cyc.TU.Dp = -56 * "bar";
+	cyc.TU.x = 0.95;
+	# cyc.TU.Out.p = 0.05 * "bar";
 	
-	cyc.CO.Dp = -0.5 * "bar";
+	cyc.CO.Dp = 0 * "bar";
 	cyc.CO.x = 0.00001;
 
 OPTIONS

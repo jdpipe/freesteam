@@ -25,7 +25,7 @@ Model Rankine
     BO	as Boiler_pT;
 	TU	as Turbine;
 	CO	as Condenser;
-	PU 	as Pump;
+	PU 	as PumpWithCurve;
 	
 	CONNECTIONS
 	BO.Out	to	TU.In;
