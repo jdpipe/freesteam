@@ -154,6 +154,28 @@ class EMSOfreesteam : public ExternalObjectBase {
 
 				// Number of output parameters:
 				switch(output){
+					case T:
+					case p:
+					case h:
+					case s:
+					case u:
+					case v:
+					case x:
+					case cp:
+					case cv:
+					case k:
+					case rho:
+					case mu:
+					case region:
+						*numOfOutputs = 1;
+						break;
+
+					case Th:
+					case Ts:
+					case hs:
+						*numOfOutputs = 2;
+						break;
+
 					case Tsvx:
 					case Tuvx:
 					case Thvx:
@@ -161,13 +183,17 @@ class EMSOfreesteam : public ExternalObjectBase {
 						*numOfOutputs = 4;
 						break;
 
+					case psh:
+						*numOfOutputs = 3;
+						break;
+
 					case psvhx:
 						*numOfOutputs = 5;
 						break;
 
+
 					default:
-						*numOfOutputs = 1;
-						break;
+						throw new Exception("Invalid output parameter combo");
 				}
 
 				*retval = emso_ok;
@@ -257,6 +283,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 				// the outputs
 				switch(output){
 
+					// One output:
 					case T:
 						strcpy(outputUnits[0], "K");
 						break;
@@ -293,6 +320,30 @@ class EMSOfreesteam : public ExternalObjectBase {
 						strcpy(outputUnits[0], "kg/m^3");
 						break;
 
+					// Two outputs
+					case Th:
+						strcpy(outputUnits[0], "K");
+						strcpy(outputUnits[1], "kJ/kg");
+						break;
+
+					case Ts:
+						strcpy(outputUnits[0], "K");
+						strcpy(outputUnits[1], "kJ/kg/K");
+						break;
+
+					case hs:
+						strcpy(outputUnits[0], "kJ/kg");
+						strcpy(outputUnits[1], "kJ/kg/K");
+						break;
+
+					// Three outputs
+					case psh:
+						strcpy(outputUnits[0], "MPa");
+						strcpy(outputUnits[1], "kJ/kg/K");
+						strcpy(outputUnits[2], "kJ/kg");
+						break;
+
+					// Four outputs
 					case Tsvx:
 						strcpy(outputUnits[0], "K");
 						strcpy(outputUnits[1], "kJ/kg/K");
@@ -317,6 +368,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 						strcpy(outputUnits[2], "m^3/kg");
 						break;
 
+					// Five outputs:
 					case psvhx:
 						strcpy(outputUnits[0], "MPa");
 						strcpy(outputUnits[1], "kJ/kg/K");
@@ -471,6 +523,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 				#endif
 
 				switch(output){
+					// One output
 					case T:
 						outputValues[0] = S.temp() / Kelvin;
 						break;
@@ -504,6 +557,31 @@ class EMSOfreesteam : public ExternalObjectBase {
 					case x:
 						outputValues[0] = S.quality();
 						break;
+
+					// Two outputs
+					case Th:
+						outputValues[0] = S.temp() / Kelvin;
+						outputValues[1] = S.specenthalpy() / kJ_kg;
+						break;
+
+					case Ts:
+						outputValues[0] = S.temp() / Kelvin;
+						outputValues[1] = S.specentropy() / kJ_kgK;
+						break;
+
+					case hs:
+						outputValues[0] = S.specenthalpy() / kJ_kg;
+						outputValues[1] = S.specentropy() / kJ_kgK;
+						break;
+
+					// Three outputs
+					case psh:
+						outputValues[0] = S.pres() / MPa;
+						outputValues[1] = S.specentropy() / kJ_kgK;
+						outputValues[2] = S.specenthalpy() / kJ_kg;
+						break;
+
+					// Four outputs
 					case Tsvx:
 						outputValues[0] = S.temp() / Kelvin;
 						outputValues[1] = S.specentropy() / kJ_kgK;
@@ -534,6 +612,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 						#endif
 						break;
 
+					// Five outputs
 					case psvhx:
 						outputValues[0] = S.pres() / MPa;
 						outputValues[1] = S.specentropy() / kJ_kgK;
@@ -619,6 +698,10 @@ class EMSOfreesteam : public ExternalObjectBase {
 			,psvx   = 0x03000000
 			,psvhx  = 0x04000000
 			,Thvx   = 0x05000000
+			,Th     = 0x06000000
+			,Ts     = 0x07000000
+			,hs     = 0x08000000
+			,psh	= 0x09000000
 			,region = 0x10000000
 
 			,OutputMask = 0xffff0000
@@ -640,6 +723,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			, EF_DECLARE(rho,waterT)
 			, EF_DECLARE(region,waterT)
 			, EF_DECLARE(psvhx,waterT)
+			, EF_DECLARE(psh,waterT)
 			, EF_DECLARE(p,steamT)
 			, EF_DECLARE(x,steamT)
 			, EF_DECLARE(v,steamT)
@@ -653,6 +737,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			, EF_DECLARE(rho,steamT)
 			, EF_DECLARE(region,steamT)
 			, EF_DECLARE(psvhx,steamT)
+			, EF_DECLARE(psh,steamT)
 			, EF_DECLARE(x,pT)
 			, EF_DECLARE(v,pT)
 			, EF_DECLARE(u,pT)
@@ -664,6 +749,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			, EF_DECLARE(mu,pT)
 			, EF_DECLARE(rho,pT)
 			, EF_DECLARE(region,pT)
+			, EF_DECLARE(hs,pT)
 			, EF_DECLARE(T,ph)
 			, EF_DECLARE(x,ph)
 			, EF_DECLARE(v,ph)
@@ -675,6 +761,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			, EF_DECLARE(mu,ph)
 			, EF_DECLARE(rho,ph)
 			, EF_DECLARE(region,ph)
+			, EF_DECLARE(Ts,ph)
 			, EF_DECLARE(T,ps)
 			, EF_DECLARE(x,ps)
 			, EF_DECLARE(v,ps)
@@ -686,6 +773,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			, EF_DECLARE(mu,ps)
 			, EF_DECLARE(rho,ps)
 			, EF_DECLARE(region,ps)
+			, EF_DECLARE(Th,ps)
 			, EF_DECLARE(T,pu)
 			, EF_DECLARE(x,pu)
 			, EF_DECLARE(v,pu)
@@ -697,6 +785,9 @@ class EMSOfreesteam : public ExternalObjectBase {
 			, EF_DECLARE(mu,pu)
 			, EF_DECLARE(rho,pu)
 			, EF_DECLARE(region,pu)
+			, EF_DECLARE(Th,pu)
+			, EF_DECLARE(Ts,pu)
+			, EF_DECLARE(hs,pu)
 			, EF_DECLARE(T,uv)
 			, EF_DECLARE(p,uv)
 			, EF_DECLARE(x,uv)
@@ -708,6 +799,10 @@ class EMSOfreesteam : public ExternalObjectBase {
 			, EF_DECLARE(mu,uv)
 			, EF_DECLARE(rho,uv)
 			, EF_DECLARE(region,uv)
+			, EF_DECLARE(Th,uv)
+			, EF_DECLARE(Ts,uv)
+			, EF_DECLARE(hs,uv)
+			, EF_DECLARE(psh,uv)
 			, EF_DECLARE(Tsvx,ph)
 			, EF_DECLARE(Tsvx,pu)
 			, EF_DECLARE(Tuvx,ps)
@@ -738,6 +833,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			EF_ASSIGN(rho,waterT);
 			EF_ASSIGN(region,waterT);
 			EF_ASSIGN(psvhx,waterT);
+			EF_ASSIGN(psh,waterT);
 			EF_ASSIGN(p,steamT);
 			EF_ASSIGN(x,steamT);
 			EF_ASSIGN(v,steamT);
@@ -751,6 +847,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			EF_ASSIGN(rho,steamT);
 			EF_ASSIGN(region,steamT);
 			EF_ASSIGN(psvhx,steamT);
+			EF_ASSIGN(psh,steamT);
 			EF_ASSIGN(x,pT);
 			EF_ASSIGN(v,pT);
 			EF_ASSIGN(u,pT);
@@ -762,6 +859,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			EF_ASSIGN(mu,pT);
 			EF_ASSIGN(rho,pT);
 			EF_ASSIGN(region,pT);
+			EF_ASSIGN(hs,pT);
 			EF_ASSIGN(T,ph);
 			EF_ASSIGN(x,ph);
 			EF_ASSIGN(v,ph);
@@ -773,6 +871,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			EF_ASSIGN(mu,ph);
 			EF_ASSIGN(rho,ph);
 			EF_ASSIGN(region,ph);
+			EF_ASSIGN(Ts,ph);
 			EF_ASSIGN(T,ps);
 			EF_ASSIGN(x,ps);
 			EF_ASSIGN(v,ps);
@@ -784,6 +883,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			EF_ASSIGN(mu,ps);
 			EF_ASSIGN(rho,ps);
 			EF_ASSIGN(region,ps);
+			EF_ASSIGN(Th,ps);
 			EF_ASSIGN(T,pu);
 			EF_ASSIGN(x,pu);
 			EF_ASSIGN(v,pu);
@@ -795,6 +895,9 @@ class EMSOfreesteam : public ExternalObjectBase {
 			EF_ASSIGN(mu,pu);
 			EF_ASSIGN(rho,pu);
 			EF_ASSIGN(region,pu);
+			EF_ASSIGN(Th,pu);
+			EF_ASSIGN(Ts,pu);
+			EF_ASSIGN(hs,pu);
 			EF_ASSIGN(T,uv);
 			EF_ASSIGN(p,uv);
 			EF_ASSIGN(x,uv);
@@ -806,6 +909,10 @@ class EMSOfreesteam : public ExternalObjectBase {
 			EF_ASSIGN(mu,uv);
 			EF_ASSIGN(rho,uv);
 			EF_ASSIGN(region,uv);
+			EF_ASSIGN(Th,uv);
+			EF_ASSIGN(Ts,uv);
+			EF_ASSIGN(hs,uv);
+			EF_ASSIGN(psh,uv);
 			EF_ASSIGN(Tsvx,ph);
 			EF_ASSIGN(Tsvx,pu);
 			EF_ASSIGN(Tuvx,ps);

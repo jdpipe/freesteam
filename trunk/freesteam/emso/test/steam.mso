@@ -18,7 +18,7 @@ using "newtypes";
 	The properties are defined here, but they are all remaining to be related,
 	according to the requirements of whatever model is derived from this one.
 *#
-Model Steam_Base # 6 DF
+Model Steam # 4 DF
 	
 	VARIABLES
 
@@ -26,19 +26,7 @@ Model Steam_Base # 6 DF
 	p as Pressure(               Lower=0,      Upper=100,    Default = 10,   Unit = "MPa");
 	h as SpecificEnthalpy(       Lower=0,      Upper=1e4,    Default=4000 );
 	s as SpecificEntropy(        Lower=0,      Upper=10,     Default=7 );
-	v as SpecificVolume(         Lower=0,      Upper=1100,   Default=0.1 );
-	x as Quality;
 
-end
-
-Model Steam as Steam_Base # 6 + 1 -1 = 6 DF
-
-	VARIABLES	
-	u as SpecificInternalEnergy( Lower=0,      Upper=3800,   Default = 2200);
-
-	EQUATIONS
-	u = h + p * v;
-	
 end
 
 Model Steam_ps as Steam # 6 - 4 = 2 DF
@@ -48,7 +36,7 @@ Model Steam_ps as Steam # 6 - 4 = 2 DF
 		
 	EQUATIONS
 	"Steam properties"
-	[T, h, v, x] = freesteam.Thvx_ps(p, s);	
+	[T, h] = freesteam.Th_ps(p, s);	
 
 end
 
@@ -60,7 +48,7 @@ Model Steam_ph as Steam # 6 - 4 = 2 DF
 		
 	EQUATIONS
 	"Steam properties"
-	[T, s, v, x] = freesteam.Tsvx_ph(p, h);	
+	[T, s] = freesteam.Ts_ph(p, h);	
 
 end
 
@@ -71,7 +59,7 @@ Model Steam_pu as Steam # 6 - 4 = 2 DF
 		
 	EQUATIONS
 	"Steam properties"
-	[T, s, v, x] = freesteam.Tsvx_pu(p,u);
+	[T, s] = freesteam.Ts_pu(p,u);
 	
 end
 
@@ -82,7 +70,7 @@ Model Steam_waterT as Steam # 6 - 5 = 1 DF
 		
 	EQUATIONS
 	"Steam properties"
-	[p, s, v, h, x] = freesteam.psvhx_waterT(T);
+	[p, s, h] = freesteam.psh_waterT(T);
 	
 end
 
@@ -93,6 +81,6 @@ Model Steam_steamT as Steam # 6 - 5 = 1 DF
 		
 	EQUATIONS
 	"Steam properties"
-	[p, s, v, h, x] = freesteam.psvhx_steamT(T);
+	[p, s, h] = freesteam.psvhx_steamT(T);
 	
 end

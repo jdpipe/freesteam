@@ -19,13 +19,6 @@ using "steam";
     This model only defines the variables of a stream.
     It can be extended for use with any models where at least the following variables are required.
 *#
-Model Stream_Base as Steam_Base # DF = 6 + 1 = 7
-    
-    VARIABLES
-    mdot as MassFlowRate;
-
-end
-
 Model Stream as Steam
 	
 	VARIABLES

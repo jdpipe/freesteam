@@ -16,7 +16,7 @@ using "streams";
 #** 
     Basic steam equipment item with one inlet and outlet stream.
 *#
-Model SteamEquipment # DF = 7 + 7 = 14
+Model SteamEquipment # DF = 10
 
     PARAMETERS
     ext freesteam as CalcObject(Brief="Steam Physical Properties");
