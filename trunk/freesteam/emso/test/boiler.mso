@@ -16,6 +16,8 @@ using "steamequipment";
     Boiler
 
     Specify outlet pressure plus q or outlet temperature
+
+	THIS FLOWSHEET WORKS
 *#
 Model Boiler as SteamEquipment_ph # 7
     
@@ -41,6 +43,8 @@ end
 
 #*
     Boiler
+
+	THIS FLOWSHEET WORKS
 *#
 Model Boiler_pT as SteamEquipment_pT # 7
     
@@ -63,16 +67,19 @@ Model Boiler_pT as SteamEquipment_pT # 7
     
 end
 
+#*
+	Test of boiler with minor loss coefficient used to express pressure drop
+	
+	THIS FLOW SHEET WORKS
+*#
 Model BoilerWithLoss as Boiler # 7
 		
-	PARAMETERS freesteam as CalcObject(File="emsofreesteam");
-	
-    VARIABLES
+	VARIABLES
     K as Positive(Brief="Minor loss coefficient for boiler");
 	A_1 as Area(Brief="Boiler inlet pipe area");
 		
     EQUATIONS
 	"Pressure drop"
-	Dp = K * In.mdot^2 / freesteam.rho_ph(In.p,In.h) / A_1^2;
+	Dp = K * In.mdot^2 / In.freesteam.rho_ph(In.p,In.h) / A_1^2;
     
 end

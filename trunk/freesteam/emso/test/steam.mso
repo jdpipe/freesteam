@@ -19,6 +19,9 @@ using "newtypes";
 	according to the requirements of whatever model is derived from this one.
 *#
 Model Steam # 4 DF
+
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
 	
 	VARIABLES
 	
@@ -35,9 +38,6 @@ end
 
 Model Steam_ps as Steam # 6 - 4 = 2 DF
 
-	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
-		
 	EQUATIONS
 	"Steam properties"
 	[T, h] = freesteam.Th_ps(p, s);	
@@ -47,9 +47,6 @@ end
 
 Model Steam_ph as Steam # 6 - 4 = 2 DF
 
-	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
-		
 	EQUATIONS
 	"Steam properties"
 	[T, s] = freesteam.Ts_ph(p, h);	
@@ -72,9 +69,6 @@ Model Steam_pu as Steam # 6 - 4 = 2 DF
 end
 
 Model Steam_waterT as Steam # 6 - 5 = 1 DF
-
-	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
 		
 	EQUATIONS
 	"Steam properties"
@@ -83,9 +77,6 @@ Model Steam_waterT as Steam # 6 - 5 = 1 DF
 end
 
 Model Steam_steamT as Steam # 6 - 5 = 1 DF
-
-	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
 		
 	EQUATIONS
 	"Steam properties"
@@ -105,9 +96,6 @@ Model Steam_pT as Steam
 end
 
 Model Steam_Ts as Steam
-
-	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
 	
 	EQUATIONS
 	"Steam properties"
@@ -116,9 +104,6 @@ Model Steam_Ts as Steam
 end
 
 Model Steam_Th as Steam
-
-	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
 	
 	EQUATIONS
 	"Steam properties"

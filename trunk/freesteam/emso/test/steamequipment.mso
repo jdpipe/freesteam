@@ -16,11 +16,14 @@ using "streams";
     Basic steam equipment item with one inlet and outlet stream.
 *#
 Model SteamEquipment # DF = 10
-
+	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
     VARIABLES
 	in  In  as Stream;
-	out Out as Stream;   
-	
+	out Out as Stream;
+		
 end
 
 Model SteamEquipment_ph # DF = 8

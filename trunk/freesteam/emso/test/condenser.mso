@@ -85,15 +85,13 @@ end
 
 Model CondenserWithLoss as Condenser
 
-	PARAMETERS freesteam as CalcObject(File="emsofreesteam");
-	
-    VARIABLES
+	VARIABLES
     K as Positive(Brief="Minor loss coefficient for boiler");
 	A_1 as Area(Brief="Boiler inlet pipe area");
 		
     EQUATIONS
 	"Pressure drop"
-	Dp = - K * In.mdot^2 / freesteam.rho_ph(In.p,In.h) / A_1^2;
+	Dp = - K * In.mdot^2 / In.freesteam.rho_ph(In.p,In.h) / A_1^2;
     
 end
 	

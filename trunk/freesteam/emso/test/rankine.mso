@@ -89,10 +89,7 @@ end
 
 Model RankineClosedLoop
 	
-	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam");
-	
-    VARIABLES
+	VARIABLES
 	mdot as MassFlowRate;
 	
     BO	as BoilerWithLoss;
@@ -112,7 +109,7 @@ Model RankineClosedLoop
 	PU.Out.h = BO.In.h;
 	# PU.Out.mdot = BO.In.mdot; # <-- this is redundant since all the mass flows are already equated!
 	
-	[BO.In.T, BO.In.s]=freesteam.Ts_ph(BO.In.p,BO.In.h);
+	[BO.In.T, BO.In.s]=BO.In.freesteam.Ts_ph(BO.In.p,BO.In.h);
 
 	#"System-wide energy conservation"
 	BO.q + PU.P = CO.q + TU.P;
