@@ -15,8 +15,10 @@ using "turbine";
 
 #*
 	Test of an ideal (isentropic) turbine
+
+	THIS FLOWSHEET WORKS
 *#
-FlowSheet TurbineTest_ideal # DF = 0 ?
+FlowSheet TurbineIdealTest # DF = 0 ?
 		
 	DEVICES # DF = 11
 	S1 as Stream_pT;      # DF = 3
@@ -49,6 +51,8 @@ end
 
 #*
 	Turbine output in terms of efficiency and pressures
+
+	THIS FLOWSHEET WORKS
 *#
 FlowSheet TurbineTest 
 	
@@ -109,7 +113,8 @@ end
 #*
 	Turbine output in terms of required output power and efficiency
 
-	NOT WORKING
+	NOT WORKING *****************
+	Doesn't converge in 25 iterations, x at lower bound 0, Dp at upper bound 0... too much power output?
 *#
 FlowSheet TurbineTest3
 	

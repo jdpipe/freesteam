@@ -13,9 +13,13 @@
 
 using "streams";
 
+#*
+	Test specifying steam state in terms of p, s.
+
+	THIS FLOWSHEET WORKS
+*#
 FlowSheet Test_Stream_ps
-    # fails to run properly
-    
+	
     PARAMETERS
     freesteam as CalcObject(File="emsofreesteam");
     
@@ -38,10 +42,13 @@ FlowSheet Test_Stream_ps
     outputLevel = "all";
 end
 
+#*
+	Test specifying steam state in terms of p, h
 
+	THIS FLOWSHEET WORKS
+*#
 FlowSheet Test_Stream_ph
-    # tested, runs OK.
-    
+   
     PARAMETERS
     freesteam as CalcObject(File="emsofreesteam");
     
@@ -64,6 +71,11 @@ FlowSheet Test_Stream_ph
     outputLevel = "all";
 end
 
+#*
+	Test of specifying saturated water at a given temperature
+	
+	THIS FLOWSHEET WORKS
+*#
 FlowSheet Test_Stream_waterT
     
     PARAMETERS

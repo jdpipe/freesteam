@@ -50,7 +50,7 @@ end
 Model Turbine as SteamEquipment_ph # 8 + 4 - 5 = 7 DF
 
 	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam");
+	freesteam_es as CalcObject(File="emsofreesteam");
 	
     VARIABLES # DF = 4
     eta as Efficiency(Brief="Turbine efficiency"); # DF = 1
@@ -70,7 +70,7 @@ Model Turbine as SteamEquipment_ph # 8 + 4 - 5 = 7 DF
     P = In.mdot * In.h - Out.mdot * Out.h;
     
     "Isentropic output enthalpy"
-    h_es = freesteam.h_ps(Out.p, In.s);
+    h_es = freesteam_es.h_ps(Out.p, In.s);
     
     "Efficiency"
     (Out.h - In.h) = eta * (h_es - In.h);
@@ -88,7 +88,7 @@ end
 Model Turbine_ps as SteamEquipment_ps # 8 + 4 - 5 = 7 DF
 
 	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam");
+	freesteam_es as CalcObject(File="emsofreesteam");
     
     VARIABLES # DF = 4
     eta as Efficiency(Brief="Turbine efficiency");
@@ -105,7 +105,7 @@ Model Turbine_ps as SteamEquipment_ps # 8 + 4 - 5 = 7 DF
     P = In.mdot * In.h - Out.mdot * Out.h;
     
     "Isentropic output enthalpy"
-    h_es = freesteam.h_ps(Out.p, In.s);
+    h_es = freesteam_es.h_ps(Out.p, In.s);
     
     "Isentropic Efficiency"
     (Out.h - In.h) = eta * (h_es - In.h);
