@@ -145,6 +145,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 					case given_pu:
 					case given_uv:
 					case given_ps:
+					case given_Ts:
 						*numOfInputs = 2;
 						break;
 
@@ -173,6 +174,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 					case Th:
 					case Ts:
 					case hs:
+					case ph:
 						*numOfOutputs = 2;
 						break;
 
@@ -271,6 +273,10 @@ class EMSOfreesteam : public ExternalObjectBase {
 						strcpy(inputUnits[1], "m^3/kg");
 						break;
 
+					case given_Ts:
+						strcpy(inputunits[0], "K");
+						strcpy(inputunits[1], "kJ/kgK");
+
 					case given_waterT:
 					case given_steamT:
 						strcpy(inputUnits[0], "K");
@@ -335,6 +341,10 @@ class EMSOfreesteam : public ExternalObjectBase {
 						strcpy(outputUnits[0], "kJ/kg");
 						strcpy(outputUnits[1], "kJ/kg/K");
 						break;
+
+					case ph:
+						strcpy(outputunits[0], "MPa");
+						strcpy(outputunits[1], "kJ/kg");
 
 					// Three outputs
 					case psh:
@@ -432,6 +442,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			Solver2<Pressure,SpecificEnergy,0,SOLVE_IENERGY> SS_PU;
 			Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0> SS_UV;
 			Solver2<Pressure,SpecificEntropy,0,SOLVE_ENTROPY> SS_PS;
+			Solver2<Temperature,SpecificEntropy,0,SOLVE_ENTROPY> SS_TS;
 
 			try{
 
@@ -508,6 +519,13 @@ class EMSOfreesteam : public ExternalObjectBase {
 						S = SS_UV.solve(inputValues[0] * kJ_kg, inputValues[1] * m3_kg);
 						break;
 
+					case given_Ts:
+						#ifdef EMSO_DEBUG
+							cerr << "T=" << inputvalues[0] * Kelvin << ", s=" << inputValues[1] * kJ_kgK;
+						#endif
+						S = SS_TS.solve(inputValues[0] * Kelvin, inputValues[1] * kJ_kgK);
+						break;
+
 					default:
 						throw new Exception("EMSOfreesteam::calc: Un-handled input option (may be not yet implemented)");
 				}
@@ -562,16 +580,25 @@ class EMSOfreesteam : public ExternalObjectBase {
 					case Th:
 						outputValues[0] = S.temp() / Kelvin;
 						outputValues[1] = S.specenthalpy() / kJ_kg;
+						#ifdef EMSO_DEBUG
+							cerr << " => T=" << S.temp() << ", h=" << S.specenthalpy() << endl;
+						#endif
 						break;
 
 					case Ts:
 						outputValues[0] = S.temp() / Kelvin;
 						outputValues[1] = S.specentropy() / kJ_kgK;
+						#ifdef EMSO_DEBUG
+							cerr << " => T=" << S.temp() << ", s=" << S.specentropy() << endl;
+						#endif
 						break;
 
 					case hs:
 						outputValues[0] = S.specenthalpy() / kJ_kg;
 						outputValues[1] = S.specentropy() / kJ_kgK;
+						#ifdef EMSO_DEBUG
+							cerr << " => h=" << S.specenthalpy() << ", s=" << S.specentropy() << endl;
+						#endif
 						break;
 
 					// Three outputs
@@ -579,6 +606,9 @@ class EMSOfreesteam : public ExternalObjectBase {
 						outputValues[0] = S.pres() / MPa;
 						outputValues[1] = S.specentropy() / kJ_kgK;
 						outputValues[2] = S.specenthalpy() / kJ_kg;
+						#ifdef EMSO_DEBUG
+							cerr << " => p=" << S.pres() << ", s=" << S.specentropy() << ", h=" << S.specenthalpy() << endl;
+						#endif
 						break;
 
 					// Four outputs
@@ -669,6 +699,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			, given_pu
 			, given_uv
 			, given_ps
+			, given_Ts
 			, given_waterT
 			, given_steamT
 
@@ -702,6 +733,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			,Ts     = 0x07000000
 			,hs     = 0x08000000
 			,psh	= 0x09000000
+			,ph     = 0x0A000000
 			,region = 0x10000000
 
 			,OutputMask = 0xffff0000
@@ -803,6 +835,18 @@ class EMSOfreesteam : public ExternalObjectBase {
 			, EF_DECLARE(Ts,uv)
 			, EF_DECLARE(hs,uv)
 			, EF_DECLARE(psh,uv)
+			, EF_DECLARE(p,Ts)
+			, EF_DECLARE(x,Ts)
+			, EF_DECLARE(v,Ts)
+			, EF_DECLARE(u,Ts)
+			, EF_DECLARE(h,Ts)
+			, EF_DECLARE(cp,Ts)
+			, EF_DECLARE(cv,Ts)
+			, EF_DECLARE(k,Ts)
+			, EF_DECLARE(mu,Ts)
+			, EF_DECLARE(rho,Ts)
+			, EF_DECLARE(region,Ts)
+			, EF_DECLARE(ph,Ts)
 			, EF_DECLARE(Tsvx,ph)
 			, EF_DECLARE(Tsvx,pu)
 			, EF_DECLARE(Tuvx,ps)
@@ -913,6 +957,18 @@ class EMSOfreesteam : public ExternalObjectBase {
 			EF_ASSIGN(Ts,uv);
 			EF_ASSIGN(hs,uv);
 			EF_ASSIGN(psh,uv);
+			EF_ASSIGN(p,Ts);
+			EF_ASSIGN(x,Ts);
+			EF_ASSIGN(v,Ts);
+			EF_ASSIGN(u,Ts);
+			EF_ASSIGN(h,Ts);
+			EF_ASSIGN(cp,Ts);
+			EF_ASSIGN(cv,Ts);
+			EF_ASSIGN(k,Ts);
+			EF_ASSIGN(mu,Ts);
+			EF_ASSIGN(rho,Ts);
+			EF_ASSIGN(region,Ts);
+			EF_ASSIGN(ph,Ts);
 			EF_ASSIGN(Tsvx,ph);
 			EF_ASSIGN(Tsvx,pu);
 			EF_ASSIGN(Tuvx,ps);

@@ -33,7 +33,7 @@ endif
 	
 emso: $(LIB) $(OBJS) $(EMSO)
 
-$(EMSO): emsohooks.o
+$(EMSO): $(LIB) emsohooks.o
 	$(CXX) -shared -o $@ emsohooks.o $(LIB) $(LDFLAGS)
 
 #--------------------------

@@ -58,12 +58,71 @@ Solver2<Pressure,Temperature,0,0>::solveRegion3(const Pressure &p, const Tempera
 	}
 }
 
+/**
+	which region given T,s
+*/
+int
+Solver2<Temperature,SpecificEntropy,0,SOLVE_ENTROPY>::whichRegion(const Temperature &T, const SpecificEntropy &s){
+
+	SteamCalculator S;
+
+	try{
+
+		S.set_pT(P_MAX,T);
+		SpecificEntropy s_min = S.specentropy();
+		if(s < s_min){
+			stringstream ss;
+			ss << "Specific entropy out of range, too low: s = " << s << " (min at T = " << T << " is " << s_min << ")";
+			throw new Exception(ss.str());
+		}
+
+		if(T <= T_CRIT){
+			SatCurve<SpecificEntropy,Temperature> SC;
+			SpecificEntropy s_f = SC.solve(T,SAT_WATER);
+
+			SpecificEntropy s_g = SC.solve(T,SAT_STEAM);
+
+			if(T < T_REG1_REG3){
+				if(s <= s_f){
+				return 1;
+				}
+
+				if(s >= s_g){
+					return 2;
+				}
+			}
+
+			if(s > s_f && s < s_g){
+				return 4;
+			}
+		}
+
+		if(T > TB_HIGH){
+			return 2;
+		}
+
+		B23Curve<SpecificEntropy,Temperature> B23;
+		SpecificEntropy s_b23 = B23.solve(T);
+
+		if(s < s_b23){
+			return 3;
+		}
+
+		return 2;
+
+	}catch(Exception *E){
+		stringstream ss;
+		ss << "Solver2<T,s>::whichRegion: " << E->what();
+		delete E;
+		throw new Exception(ss.str());
+	}
+}
 
 /**
 	whichRegion given p, s
 */
 int
-Solver2<Pressure,SpecificEntropy,0,SOLVE_IENERGY>::whichRegion(const Pressure &p, const SpecificEntropy &s){
+Solver2<Pressure,SpecificEntropy,0,SOLVE_ENTROPY>::whichRegion(const Pressure &p, const SpecificEntropy &s){
 
 	try{
 
@@ -218,6 +277,13 @@ Solver2<Pressure, SpecificEnergy, 0, SOLVE_ENTHALPY>::whichRegion(const Pressure
 	B23Curve<SpecificEnergy,Pressure,SOLVE_ENTHALPY> B23;
 	SpecificEnergy h_b23 = B23.solve(p);
 	if(h >= h_b23){
+		SpecificEnergy h_max;
+		S.set_pT(p,T_MAX);
+		h_max = S.specenthalpy();
+		if(h > h_max){
+			throw new Exception("Solver2<p,h>: h exceeds h(p,T_MAX), out of bounds.");
+		}
+
 		return 2;
 	}
 

@@ -22,7 +22,7 @@ BUILD_PLATFORM := $(shell $(PACKAGE_ROOT)/config.guess)
 include $(PACKAGE_ROOT)/make-$(BUILD_PLATFORM).mak
 
 NAME = freesteam
-VERSION = 0.4.1
+VERSION = 0.5
 
 EMSO_NAME = emsofreesteam
 EES_NAME = eesfreesteam-$(VERSION)
