@@ -1,0 +1,40 @@
+#* 
+	freesteam stream integration for use in steam system calculations
+	
+	Based on steam.mso by Rafael de Pelegrini Soares,
+
+	Copyright 2002-2005 Rafael de Pelegrini Soares.
+	Modified by John Pye 2005 http://freesteam.sf.net
+	
+	This copyright statement must not be deleted and must be
+	included in any modification or adaptation of this Model.
+*#
+
+using "newtypes";
+using "steam";
+
+#*
+	Basic model for a water/steam stream.
+
+	This model only defines the variables of a stream.
+	It can be extended for use with any models where at least the following variables are required.
+*#
+Model SteamStream_Base as Steam_Base
+	
+	VARIABLES
+	mdot as MassFlowRate;
+
+end
+
+
+#** 
+	General steam stream model
+
+	If you specify parameters in terms other than p,s then solver will work out what p,s are by solving
+*#
+Model SteamStream_ps as SteamStream_Base
+	
+	PARAMETERS
+	ext freesteam as CalcObject(Brief="Steam Physical Properties");
+	
+end

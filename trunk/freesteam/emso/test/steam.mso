@@ -1,0 +1,65 @@
+#* 
+	freesteam stream integration for use in steam system calculations
+	
+	Based on steam.mso by Rafael de Pelegrini Soares,
+
+	Copyright 2002-2005 Rafael de Pelegrini Soares.
+	Modified by John Pye 2005 http://freesteam.sf.net
+	
+	This copyright statement must not be deleted and must be
+	included in any modification or adaptation of this Model.
+*#
+
+#*
+	Properties of steam
+
+	The properties are defined here, but they are all remaining to be related,
+	according to the requirements of whatever model is derived from this one.
+*#
+Model Steam_Base
+	
+	PARAMETERS
+
+	T as AbsoluteTemperature(
+		Unit = "K"
+		, Default = 600
+		, Lower   = 273.15
+		, Upper   = 1073.15
+	);
+
+	p as Pressure( # Pa
+		Lower   = 0
+		, Upper = 100
+		, Default = 10
+	);
+	
+	x as Quality;
+	
+	h as SpecificEnthalpy(
+		Lower=0
+		, Upper=1e4
+		, Default=4000
+	);
+	
+	s as SpecificEntropy(
+		Lower=0
+		, Upper=10
+		, Default=7
+	);
+	
+	v as SpecificVolume(
+	    Lower=0
+		, Upper=1100
+		, Default=0.1
+	);
+	
+	
+	#*u as SpecificInternalEnergy(
+		Lower=0
+		, Upper = 3800
+	    , Default = 2200
+		, Unit = "kJ/kg"
+	);
+	*#
+	
+end
