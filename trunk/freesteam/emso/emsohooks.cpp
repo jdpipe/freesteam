@@ -9,7 +9,7 @@
 	#warning EMSO DEBUG MODE IS SET - START EMSO FROM A CONSOLE TO SEE DEBUG OUTPUT
 #endif
 
-#include "external_object.h"
+#include <emso/external_object.h>
 
 #include <sstream>
 #include <cstring>
@@ -49,63 +49,65 @@ class EMSOfreesteam : public ExternalObjectBase {
 		/**
 			Create object. Anything risking should go here and throw an exception if necessary
 		*/
-		virtual int_t create(char *msg){
+		virtual void create(int_t *retval, char *msg){
 			try{
 
 				#ifdef EMSO_DEBUG
 					cerr << "EMSOfreesteam::create(): instance " << instanceNumber << endl;
 				#endif
 
-				return emso_ok;
+				*retval = emso_ok;
 
 			}catch(Exception *E){
 				stringstream ss;
 				ss << "EMSOfreesteam::create: " << E->what();
 				delete E;
 				report_error(msg, ss.str());
-				return emso_error;
+				*retval = emso_error;
 			}
 		}
 
 		/**
 			Destroyes an instance of this object in EMSO
 		*/
-		virtual int_t destroy(char *msg){
+		virtual void destroy(int_t *retval, char *msg){
 			try{
 
 				#ifdef EMSO_DEBUG
 					cerr << "EMSOfreesteam::destroy(): instance " << instanceNumber << endl;
 				#endif
 
-				return emso_ok;
+				*retval = emso_ok;
 
 			}catch(Exception *E){
 				stringstream ss;
 				ss << "EMSOfreesteam::destroy: " << E->what();
 				delete E;
 				report_error(msg, ss.str());
-				return emso_error;
+				*retval = emso_error;
 			}
 		}
 
 		/// Set a parameter for the instance.
-		virtual int_t setParameter(const char *parameterName,
-				const int_t *valueType,
-				const int_t *valueLength,
-				const real_t *values,
-				const char *valuesText[],
-				char *msg
+		virtual void setParameter(
+				const char *parameterName
+				,const int_t *valueType
+				,const int_t *valueLength
+				,const real_t *values
+				,const char *valuesText[]
+				,int_t *retval, char *msg
 		){
 			snprintf(msg, EMSO_MESSAGE_LENGTH, "EMSOfreesteam has no parameters");
-			return emso_error;
+			*retval = emso_error;
 		}
 
 		/// Check method.
-		virtual int_t checkMethod(const char *methodName,
-				int_t *methodID,
-				int_t *numOfInputs,
-				int_t *numOfOutputs,
-				char *msg
+		virtual void checkMethod(
+				const char *methodName
+				,int_t *methodID
+				,int_t *numOfInputs
+				,int_t *numOfOutputs
+				,int_t *retval, char *msg
 		){
 
 			try{
@@ -167,14 +169,14 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 				}
 
-				return emso_ok;
+				*retval = emso_ok;
 
 			}catch(Exception *E){
 				stringstream s;
 				s << "EMSOfreesteam::checkMethod: " << E->what();
 				delete E;
 				report_error(msg, s.str());
-				return emso_error;
+				*retval = emso_error;
 			}
 		}
 
@@ -182,21 +184,22 @@ class EMSOfreesteam : public ExternalObjectBase {
 		/**
 			Relate information about the available methods in this component back to EMSO
 		*/
-		virtual int_t methodDetails(const char *methodName,
-				const int_t *methodID,
+		virtual void methodDetails(
+				const char *methodName
+				,const int_t *methodID
 
-				const int_t *numOfInputs,
-				int_t *inputLengths,
-				int_t *inputTypes,
-				char *inputUnits[],
+				,const int_t *numOfInputs
+				,int_t *inputLengths
+				,int_t *inputTypes
+				,char *inputUnits[]
 
-				const int_t *numOfOutputs,
-				int_t *outputLengths,
-				int_t *outputTypes,
-				char *outputUnits[],
-				int_t *derivativeMatrix,
+				,const int_t *numOfOutputs
+				,int_t *outputLengths
+				,int_t *outputTypes
+				,char *outputUnits[]
+				,int_t *derivativeMatrix
 
-				char *msg
+				,int_t *retval, char *msg
 		){
 
 			try{
@@ -327,14 +330,14 @@ class EMSOfreesteam : public ExternalObjectBase {
 						throw new Exception("Invalid output param combination");
 				}
 
-				return emso_ok;
+				*retval = emso_ok;
 
 			}catch(Exception *E){
 				stringstream s;
 				s << "EMSOfreesteam::calc: " << E->what();
 				delete E;
 				report_error(msg, s.str());
-				return emso_error;
+				*retval = emso_error;
 			}
 		}
 
@@ -352,24 +355,24 @@ class EMSOfreesteam : public ExternalObjectBase {
 			@param msg A place to put an error message
 			@return EMSO status code (see emso_types.h)
 		*/
-		virtual int_t calc(
-				const char *methodName,
-				const int_t *methodID,
+		virtual void calc(
+				const char *methodName
+				,const int_t *methodID
 
-				const int_t *numOfInputs,
-				const int_t *inputLengths,
-				const int_t *totalInputLength,
-				const real_t *inputValues,
+				,const int_t *numOfInputs
+				,const int_t *inputLengths
+				,const int_t *totalInputLength
+				,const real_t *inputValues
 
-				const int_t *numOfOutputs,
-				const int_t *outputLengths,
-				const int_t *totalOutputLength,
-				real_t *outputValues,
+				,const int_t *numOfOutputs
+				,const int_t *outputLengths
+				,const int_t *totalOutputLength
+				,real_t *outputValues
 
-				const int_t *calculateDerivatives,
-				real_t *outputDerivatives,
+				,const int_t *calculateDerivatives
+				,real_t *outputDerivatives
 
-				char *msg
+				,int_t *retval, char *msg
 		){
 			SteamCalculator S;
 			Solver2<Pressure,SpecificEnergy,0,SOLVE_ENTHALPY> SS_PH;
@@ -539,14 +542,14 @@ class EMSOfreesteam : public ExternalObjectBase {
 						throw new Exception("Invalid output option (should never happen)");
 				}
 
-				return emso_ok;
+				*retval = emso_ok;
 
 			}catch(Exception *E){
 				stringstream s;
 				s << "EMSOfreesteam::calc: " << E->what();
 				delete E;
 				report_error(msg, s.str());
-				return emso_error;
+				*retval = emso_error;
 			}
 		}
 
@@ -841,7 +844,7 @@ void eo_create_ (int_t *objectHandler,
 	ExternalObjectBase *obj = ExternalObjectFactory();
 
 	// Call the correspounding c++ function.
-	*retval = obj->create(msg);
+	obj->create(retval, msg);
 
 	// Return our object address.
 	*objectHandler = (int_t)obj;
@@ -856,7 +859,7 @@ void eo_destroy_ (const int_t *objectHandler,
 	ExternalObjectBase *obj = (ExternalObjectBase*) *objectHandler;
 
 	// Call the correspounding c++ function.
-	*retval = obj->destroy(msg);
+	obj->destroy(retval, msg);
 	// Delete the object instance.
 	delete obj;
 }
@@ -873,8 +876,8 @@ void eo_set_parameter_ (const int_t *objectHandler,
 	ExternalObjectBase *obj = (ExternalObjectBase*) *objectHandler;
 
 	// Call the correspounding c++ function.
-	*retval = obj->setParameter(parameterName, valueType, valueLength,
-		values, valuesText, msg);
+	obj->setParameter(parameterName, valueType, valueLength,
+		values, valuesText, retval, msg);
 }
 
 // Keep this function as is.
@@ -889,8 +892,8 @@ void eo_check_method_(const int_t *objectHandler,
 	ExternalObjectBase *obj = (ExternalObjectBase *)*objectHandler;
 
 	// Call the correspounding c++ function.
-	*retval = obj->checkMethod(methodName, methodID,
-		numOfInputs, numOfOutputs, msg);
+	obj->checkMethod(methodName, methodID,
+		numOfInputs, numOfOutputs, retval, msg);
 }
 
 // Keep this function as is.
@@ -916,10 +919,10 @@ void eo_method_details_(const int_t *objectHandler,
 	ExternalObjectBase *obj = (ExternalObjectBase *)*objectHandler;
 
 	// Call the correspounding c++ function.
-	*retval = obj->methodDetails(methodName, methodID,
+	obj->methodDetails(methodName, methodID,
 		numOfInputs, inputLengths, inputTypes, inputUnits,
 		numOfOutputs, outputLengths, outputTypes, outputUnits,
-		derivativeMatrix, msg);
+		derivativeMatrix, retval, msg);
 }
 
 // Keep this function as is.
@@ -946,10 +949,10 @@ void eo_calc_(const int_t *objectHandler,
 	ExternalObjectBase *obj = (ExternalObjectBase *)*objectHandler;
 
 	// Call the correspounding c++ function.
-	*retval = obj->calc(methodName, methodID,
+	obj->calc(methodName, methodID,
 		numOfInputs, inputLengths, totalInputLength, inputValues,
 		numOfOutputs, outputLengths, totalOutputLength, outputValues,
-		calculateDerivatives, outputDerivatives, msg);
+		calculateDerivatives, outputDerivatives, retval, msg);
 }
 
 
