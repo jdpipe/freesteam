@@ -12,8 +12,8 @@
 <body>
 <h1>freesteam<br>
 </h1>
-<div class="nav"><span style="font-weight: bold;">Current version: </span>0.5.1<br>
-<span style="font-weight: bold;">Released: </span>8 Mar 2005<br>
+<div class="nav"><span style="font-weight: bold;">Current version: </span>0.5.2<br>
+<span style="font-weight: bold;">Released: </span>12 Mar 2005<br>
 <br>
 Quick links
 <ul>
@@ -55,8 +55,10 @@ and
 Steam (IAPWS):</p>
 <ul>
   <li>IAPWS-IF97 Industrial formulation (high speed, but complex code) </li>
-  <li>IAPWS-95 Scientific formulation (low speed, but simple code) </li>
+  <li>IAPWS-95 Scientific formulation (low speed, but simple code)</li>
 </ul>
+A plug-in to allow freesteam to be used from the EMSO simulation
+package has been developed; stay tuned for more of these plug-ins.<br>
 <p>If you find <b>freesteam</b> useful, or you have some comments, or
 you think you might be able
 to help with its development, please <span style="font-weight: bold;">contact
@@ -80,12 +82,9 @@ using one of the following combinations of variables:<br>
 (T,x) for saturated steam<br>
 (p,T,x) anywhere<br>
 (p) plus one of (s,h,u,v,cp,cv,rho)<br>
-(T) plus one of (s,h,u,v,cp,cv,rho)<br>
-(u,v) anywhere, by two-way iteration<br>
-(p,h) anywhere, by two-way iteration<br>
-(p,u) anywhere, by two-way iteration<br>
-(p,s) anywhere, by two-way iteration<br>
-(T,s) anywhere, by two-way iteration<br>
+(T) plus one of (s,h,u,v,cp,cv,rho)</p>
+      <p>By two-way iteration, state can be solved for:<br>
+(u,v) (p,h) (p,u) (p,s) (T,s) (T,h)<br>
       </p>
       <p>Alternatively, you can specify:</p>
       <p>saturated water at T<br>
@@ -286,16 +285,16 @@ bug</a> for more information.</li>
 </ul>
 <h2><a name="futuredirections"></a>5. Future directions</h2>
 <ul>
-  <li>Significant work has been done on building a <span
- style="font-weight: bold;">hook library </span>to allow the <a
- href="http://www.rps.eng.br/emso.html">EMSO</a> system modelling
-program to use the freesteam library. Use of this DLL or shared object
-requires a non-GPL license, which we are currently preparing.</li>
+  <li>Use of the <span style="font-weight: bold;">hook library </span>which
+allows the <a href="http://www.rps.eng.br/emso.html">EMSO</a> system
+modelling
+program to use the freesteam library requires a non-GPL license, which
+we are currently preparing.</li>
   <li>Preliminary work on another <span style="font-weight: bold;">hook
 library</span> to integrate freesteam with the <a
  href="http://www.fchart.com/ees/ees.shtml">EES</a>
 equation solver has also been performed; this will likewise require
-some special licensing agreement.<br>
+some special license agreement.<br>
   </li>
   <li>Saturation properties for region 3 are currently implemented used
 the rho_sat(T) correlations from the IAPWS <a
@@ -463,7 +462,7 @@ document.write('<a href="mailto:'+e+m+a+i+l+'">'+e+m+a+i+l+'</a>');
 </p>
 <p>You can also take a look at my homepage about the <a
  href="http://pye.dyndns.org/">CLFR</a> if you want...</p>
-<address>Tuesday, 8 March 2005<br>
+<address>Saturday, 12 March 2005<br>
 </address>
 </body>
 </html>

@@ -1,5 +1,12 @@
 CHANGELOG
 
+0.5.2
+Saturday, 12 March 2005
+-----------------------
+Added two-way T,h solver
+Minor bug fixes
+
+
 0.5.1
 Tuesday, 8 March 2005
 ---------------------
