@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 PROJECT_NAME           = freesteam
 PROJECT_NUMBER         = 0.4
-OUTPUT_DIRECTORY       = C:/cygwin/home/john/dsg-transient/freesteam/docs
+OUTPUT_DIRECTORY       = C:/cygwin/home/john/dsg-transient/freesteam/doc
 CREATE_SUBDIRS         = NO
 OUTPUT_LANGUAGE        = English
 USE_WINDOWS_ENCODING   = YES
@@ -136,7 +136,7 @@ HTML_OUTPUT            = html
 HTML_FILE_EXTENSION    = .html
 HTML_HEADER            = 
 HTML_FOOTER            = 
-HTML_STYLESHEET        = C:/cygwin/home/john/dsg-transient/freesteam/docs/doxy-freesteam.css
+HTML_STYLESHEET        = C:/cygwin/home/john/dsg-transient/freesteam/doc/doxy-freesteam.css
 HTML_ALIGN_MEMBERS     = YES
 GENERATE_HTMLHELP      = NO
 CHM_FILE               = 

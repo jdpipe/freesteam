@@ -78,6 +78,7 @@ clean:
 
 distclean: clean
 	@-rm $(TEST_EXE) *.d
+
 #---------------------------------------------------------
 # DEPENDENCIES
 

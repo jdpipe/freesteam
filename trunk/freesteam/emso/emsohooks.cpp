@@ -1,6 +1,10 @@
 #include "../steamcalculator.h"
 #include "../solver2.h"
 
+#ifndef HAVE_EMSO
+	#error EMSO not configured on your system, check CPPFLAGS in the file PACKAGE_ROOT/make-xxxxx.mak for your system.
+#endif
+
 #include <emso/external_object.h>
 
 #include <sstream>

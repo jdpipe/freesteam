@@ -1,7 +1,7 @@
 #include "../steamcalculator.h"
-#include "../batchtest.h"
-#include "../steamtestpoint.h"
 #include "../exception.h"
+#include "batchtest.h"
+#include "steamtestpoint.h"
 
 #include <cmath>
 #include <vector>

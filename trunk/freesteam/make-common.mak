@@ -52,6 +52,8 @@ LIBNAME = steam
 
 LIB = $(PACKAGE_ROOT)/lib$(LIBNAME).a
 
+DOXYGEN = doxygen
+
 #-----------------------------
 # MAKE DEPEND
 

@@ -20,9 +20,9 @@
 
 EMSO = $(SO_PREFIX)$(EMSO_NAME)$(SO_SUFFIX)
 
-emso: $(LIB) $(EMSO)
+emso: $(EMSO)
 
-$(EMSO): emsohooks.o
+$(EMSO): emsohooks.o  $(LIB)
 	$(CXX) -shared -o $@ emsohooks.o $(LIB) $(LDFLAGS)
 
 OBJS = emsohooks.o

@@ -77,10 +77,32 @@ cleansubdirs:
 distclean: distcleanhere distcleansubdirs
 
 distcleanhere: cleanhere
-	@-rm example$(EXE_SUFFIX) $(LIB) *.d
+	@-rm example$(EXE_SUFFIX) $(LIB) *.d DOCS *.tar.bz2
+	@-rm -rf doc
 
 distcleansubdirs:
 	-$(foreach dir,$(CLEANDIRS),make -C $(dir) distclean;)
+
+#--------------------------
+# DOCUMENTATION
+
+.PHONY: doc
+
+doc: DOCS README
+
+DOCS: docs.doxy $(OBJS:.o=.d)
+	$(DOXYGEN) docs.doxy;
+	ln -fs doc/html/index.html "DOCS";
+	touch DOCS;
+
+
+#---------------------------
+# README file is always bundled with the package, it's the latest version from the website
+
+.PHONY: README
+
+README:
+	wget -N -O README.html http://pye.dyndns.org/freesteam/
 
 
 # .PHONY: clean mostlyclean cleanobjs cleantests cleanctests
@@ -114,36 +136,13 @@ DISTFILE = $(NAME)-$(VERSION).tar.bz2
 
 .PHONY: dist
 
-dist: 
+dist: distclean doc $(DISTFILE)
 
 $(DISTFILE): # tags
 	mkdir /tmp/$(NAME)-$(VERSION)
-	-rm ./$(NAME)-$(VERSION).tar
 	cp -R * /tmp/$(NAME)-$(VERSION)
-	-rm /tmp/$(NAME)-$(VERSION)/*.o
-	-rm /tmp/$(NAME)-$(VERSION)/*.d
-	-rm /tmp/$(NAME)-$(VERSION)/*.ok
-	-rm /tmp/$(NAME)-$(VERSION)/*.a
-	-rm /tmp/$(NAME)-$(VERSION)/*$(EXE_SUFFIX)
-	-rm /tmp/$(NAME)-$(VERSION)/*.log
-	-rm /tmp/$(NAME)-$(VERSION)/core
-	-rm /tmp/$(NAME)-$(VERSION)/*.stackdump
-	-rm /tmp/$(NAME)-$(VERSION)/*.tar
-	-rm /tmp/$(NAME)-$(VERSION)/*.tar.bz2
-	-rm /tmp/$(NAME)-$(VERSION)/*.tar.gz
-	-rm /tmp/$(NAME)-$(VERSION)/*.
-	-rm /tmp/$(NAME)-$(VERSION)/ctest.skip
 	-rm -Rf /tmp/$(NAME)-$(VERSION)/CVS/
+	-rm -Rf /tmp/$(NAME)-$(VERSION)/*/CVS/
+	-rm -Rf /tmp/$(NAME)-$(VERSION)/*/*/CVS/
 	tar -C /tmp -cjvf ./$(DISTFILE) $(NAME)-$(VERSION)
 	-rm -rf /tmp/$(NAME)-$(VERSION)
-
-
-
-#-----------------------------
-# DOCUMENTATION
-
-.PHONY: README
-
-README:
-	wget -N -O README.html http://pye.dyndns.org/freesteam/
-
