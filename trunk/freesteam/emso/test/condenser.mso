@@ -17,7 +17,7 @@ using "steamequipment";
     Specification for this model can be q or dt. The specification of q
     should be prefered, once a bad specificafion of dt can lead singular
     systems (infinite solutions if the Out stream became saturated).
-*#h
+*#
 Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
     
     VARIABLES
@@ -25,6 +25,7 @@ Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
     DT  as Temperature(Brief="Temperature difference");
     Dp  as PressureDifference(Brief="Pressure difference", Upper=0);
 	UA  as HeatRatePerTemperature(Brief="Condenser UA value");
+	x   as Quality;
 	
     EQUATIONS
     "Mass balance"
@@ -41,7 +42,10 @@ Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
     
     "Pressure difference"
     Dp = Out.p - In.p;
-
+	
+	"Outlet quality"
+	x = Out.freesteam.x_ph(Out.p, Out.h);
+	
 #   GUESS # FIXME: implement GUESS on models!!
 #   Out.h = 300 * "kJ/kg";
 
