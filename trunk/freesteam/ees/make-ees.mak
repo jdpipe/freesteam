@@ -15,14 +15,23 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#
-# Platform-specific options for i686-pc-linux-gnu
-#
+#--------------------------
+# EES integration
 
-EXE_SUFFIX = 
-SO_SUFFIX = .dll
-SO_PREFIX = 
+EES = $(EES_NAME)$(SO_SUFFIX)
 
-PLATFORM_CXX_FLAGS =
-PLATFORM_LD_FLAGS =
-PLATFORM_CPP_FLAGS =
+ees: $(LIB) $(EES)
+
+$(EES): eeshooks.o eesparameterlist.o Makefile
+	$(CXX) -shared -o $@ eeshooks.o eesparameterlist.o ../$(LIB) $(LDFLAGS)
+
+OBJS = eeshooks.o eesparameterlist.o
+
+#---------------------------------------------------------
+# CLEAN
+
+clean:
+	@-rm *.o *.d.*
+
+distclean: clean
+	@-rm *.dll *.d

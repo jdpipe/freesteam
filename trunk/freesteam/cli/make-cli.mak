@@ -15,14 +15,33 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#
-# Platform-specific options for i686-pc-linux-gnu
-#
+CLIS = diagram.cli.cpp pboundt.cli.cpp
 
-EXE_SUFFIX = 
-SO_SUFFIX = .dll
-SO_PREFIX = 
+CLIOBJS = diagram.o
 
-PLATFORM_CXX_FLAGS =
-PLATFORM_LD_FLAGS =
-PLATFORM_CPP_FLAGS =
+-include $(CLIS:.cpp=.cli.d)
+-include $(CLIOBJS:.o=.d)
+
+#-----------------------------
+# LITTLE COMMANDLINE DIAGNOSTIC PROGRAMS
+
+%.cli$(EXE_SUFFIX): %.cli.o $(OBJS) $(CLIOBJS)
+	$(CXX) $< $(OBJS) $(CLIOBJS) -o $@ $(LDFLAGS)
+
+critsurf.m: criticalsurface.cli$(EXE_SUFFIX)
+	./$< > $@
+
+pboundt.m: pboundt.cli$(EXE_SUFFIX)
+	./$< > $@
+
+diagram.m: diagram.cli$(EXE_SUFFIX)
+	./$< > $@
+
+#---------------------------------------------------------
+# CLEAN
+
+clean:
+	@-rm *.o *.d.*
+
+distclean: clean
+	*.cli$(EXE_SUFFIX) critsurf.m pboundt.m diagram.m *.d

@@ -15,14 +15,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-#
-# Platform-specific options for i686-pc-linux-gnu
-#
+PACKAGE_ROOT = ..
 
-EXE_SUFFIX = 
-SO_SUFFIX = .dll
-SO_PREFIX = 
+include ../make-common.mak
+include make-cli.mak
 
-PLATFORM_CXX_FLAGS =
-PLATFORM_LD_FLAGS =
-PLATFORM_CPP_FLAGS =
+all: criticalsurface.cli$(EXE_SUFFIX) pboundt.cli$(EXE_SUFFIX) diagram.cli$(EXE_SUFFIX)
+
