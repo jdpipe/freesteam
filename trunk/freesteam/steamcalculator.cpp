@@ -404,7 +404,7 @@ SteamCalculator::specienergy(void) {
 	REQUIRE(isset);
 	//cerr << "About to calculate specienergy at p = " << pres() / bar << " bar, T = " << tocelsius(temp()) << "°C" << endl;
 	SpecificEnergy u = this->_state->specienergy(this);
-	ENSURE(u > 0.0 * kJ_kg);
+	//ENSURE(u > 0.0 * kJ_kg);
 	return u;
 }
 

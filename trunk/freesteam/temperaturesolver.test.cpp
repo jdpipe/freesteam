@@ -23,7 +23,6 @@ class TemperatureSolverTest: public CppUnit::TestFixture{
 
 	public:
 		void tearDown() {
-			cerr << " (Note: not all tests were OK, some are commented out)";
 		}
 		
 		void setUP(){
@@ -46,17 +45,17 @@ class TemperatureSolverTest: public CppUnit::TestFixture{
 
 				//Solving for T(u,p):
 				Solver<Pressure,SpecificEnergy,Temperature> PS1(p,u);
-				S = PS1.solve(0.00001 * kJ_kg, 1e-5 * Kelvin);				
+				S = PS1.solve(0.00001 * kJ_kg, 1e-6 * Kelvin);				
 				TSOLVE_COMPARE(u);
 
 				//Solving for T(s,p):
 				Solver<Pressure,SpecificEntropy,Temperature> PS2(p,s);
-				S = PS2.solve(0.00001 * kJ_kgK, 1e-5 * Kelvin);				
+				S = PS2.solve(0.00001 * kJ_kgK, 1e-6 * Kelvin);				
 				TSOLVE_COMPARE(s);
 
 				//Solving for T(v,p):
 				Solver<Pressure,SpecificVolume,Temperature> PS3(p,v);
-				S = PS3.solve(0.00001 * metre3 / kilogram, 1e-5 * Kelvin);				
+				S = PS3.solve(0.00001 * metre3 / kilogram, 1e-7 * Kelvin);				
 				TSOLVE_COMPARE(v);
 				
 			}catch(Exception *e){
@@ -70,10 +69,10 @@ class TemperatureSolverTest: public CppUnit::TestFixture{
 		void Test2(){ Test(261.39 * bar,		fromcelsius(400.0)); }
 		void Test3(){ Test(6.625945256E+04*kPa, fromcelsius(500.0)); }
 		void Test4(){ Test(50.0 * bar,			fromcelsius(110.0)); }
-		//void Test5(){ Test(1.554939222E+03*kPa,	fromcelsius(300.0)); }
+		void Test5(){ Test(1.554939222E+03*kPa,	fromcelsius(300.0)); }
 		void Test6(){ Test(3.489194196E+04*kPa,	fromcelsius(600.0)); }
-		//void Test7(){ Test(1.554939222E+03*kPa,	fromcelsius(201.0)); }
-		//void Test8(){ Test(1.554939222E+03*kPa,	fromcelsius(200.0)); }
+		void Test7(){ Test(1.554939222E+03*kPa,	fromcelsius(201.0)); }
+		void Test8(){ Test(1.554939222E+03*kPa,	fromcelsius(200.0)); }
 
 	public:
 
@@ -84,10 +83,10 @@ class TemperatureSolverTest: public CppUnit::TestFixture{
 		CPPUNIT_TEST(Test2);
 		CPPUNIT_TEST(Test3);
 		CPPUNIT_TEST(Test4);
-		//CPPUNIT_TEST(Test5);
+		CPPUNIT_TEST(Test5);
 		CPPUNIT_TEST(Test6);
-		//CPPUNIT_TEST(Test7);
-		//CPPUNIT_TEST(Test8);
+		CPPUNIT_TEST(Test7);
+		CPPUNIT_TEST(Test8);
 		CPPUNIT_TEST_SUITE_END();
 };
 

@@ -18,6 +18,7 @@ using namespace std;
 #define PSOLVER_MESSAGE(OTHERQUANTITY,METHOD) \
 	string Solver<Temperature,OTHERQUANTITY,Pressure>::getCouldntSolveMessage(Temperature T,OTHERQUANTITY oq){ \
 		stringstream s; \
+		s.flags(ios_base::showbase); \
 		s << "Couldn't solve p(" << #METHOD << " = " << oq << ", T = " << T << ")"; \
 		return s.str(); \
 	} 
@@ -59,7 +60,8 @@ PSOLVER_BOUNDS (SpecificVolume);
 #define TSOLVER_MESSAGE(OTHERQUANTITY,METHOD) \
 	string Solver<Pressure,OTHERQUANTITY,Temperature>::getCouldntSolveMessage(Pressure p,OTHERQUANTITY oq){ \
 		stringstream s; \
-		s << "Couldn't solve T(" << #METHOD << " = " << oq << ", p = " << p << ")"; \
+		s.flags(ios_base::showbase); \
+		s << "Couldn't solve T(" << #METHOD << " = " << oq << ", p = " << p/MPa << " MPa)"; \
 		return s.str(); \
 	} 
 

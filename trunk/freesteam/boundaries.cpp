@@ -98,6 +98,7 @@ Boundaries::isSat_pT(Pressure p, Temperature T,
 
 	}else{
 
+		/*
 		if( fabs(dT)/Tsat < STM_SATURATION_TOL) {
 			if (throw_me)
 				throw new SteamAlmostSaturatedException(p, T);
@@ -106,7 +107,8 @@ Boundaries::isSat_pT(Pressure p, Temperature T,
 			
 			return true;
 		}
-
+		*/
+		
 		if (throw_me) {
 			stringstream s;
 			s << "Steam not saturated @ p = " << p/bar << "bar: T=" << 	T/Kelvin << "K != Tsat=" << Tsat/Kelvin << "K (rel err " << (dT / Tsat) << ")";

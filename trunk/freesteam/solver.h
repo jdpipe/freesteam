@@ -57,6 +57,7 @@ class Solver : public DesignByContract {
 
 				if(!z.isSolved(maxerror)){	
 					stringstream s;
+					s.flags(ios_base::showbase);
 					s << "In Solver::solve, " << getCouldntSolveMessage(mq,oq);
 					s << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
 					throw new Exception(s.str());
