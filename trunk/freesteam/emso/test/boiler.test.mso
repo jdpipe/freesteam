@@ -33,6 +33,6 @@ FlowSheet BoilerTest # 0
 	OPTIONS
 	mode = "steady";
 	outputLevel = "all";
-	relativeAccuracy = 1e-15;
+	
 end
 
