@@ -63,9 +63,9 @@ Contents
 <h2>Introduction</h2>
 <p><b>freesteam</b> is an open source implementation of
 international-standard steam
-tables from the International Association for the Properties of Water
+tables from the <a href="http://www.iapws.org">International Association for the Properties of Water
 and
-Steam (IAPWS):</p>
+Steam</a> (IAPWS):</p>
 <ul>
   <li>IAPWS-IF97 Industrial formulation (high speed, but complex code) </li>
   <li>IAPWS-95 Scientific formulation (low speed, but simple code)</li>
@@ -178,7 +178,7 @@ following:</p>
 </table>
 <p>You can also create <a href="properties/">property diagrams</a>
 from the freesteam code for most of the above combinations of
-properties.<br>
+steam properties.<br>
 <span style="font-weight: bold;"></span></p>
 <h3><span style="font-weight: bold;">1.2 Example usage</span></h3>
 <span style="font-weight: bold;">Problem:</span><br>
@@ -413,28 +413,25 @@ Journal of Engineering for Gas Turbines and Power</a><br>
   </dd>
   <dd><br>
   </dd>
+
   <dt>Commercial IAPWS calculators</dt>
-  <dd>ChemicaLogic, USA: <span style="font-style: italic;">SteamTab SDK</span><br>
-  </dd>
-  <dd>University of Applied Sciences Zittau/G&ouml;rlitz, Germany: <span
- style="font-style: italic;">FluidEXL</span> <br>
-ASME: <span style="font-style: italic;">ASTEM97</span></dd>
-  <dd>G&amp;P Engineering: <span style="font-style: italic;">StmProps</span></dd>
-  <dd>Wagner, Wolfgang, Kretzschmar, Hans-Joachim, <span
- style="font-style: italic;">International Steam Tables - The
+
+  <dd>ChemicaLogic, USA: <span style="font-style: italic;">SteamTab SDK</span><br></dd>
+  <dd>University of Applied Sciences Zittau/G&ouml;rlitz, Germany: <i>FluidEXL</i></dd>
+  <dd>Edward Throm: <i>ASTEM97</i></dd>
+  <dd>G&amp;P Engineering: <i>>StmProps</i></dd>
+  <dd>Wagner, Wolfgang, Kretzschmar, Hans-Joachim, <i>International Steam Tables - The
 Industrial Standard IAPWS-IF97 for the Thermodynamic Properties and
 Supplemetary Equations for Other Properties: Tables, Algorithms,
-Diagrams, Software</span>, <span class="bodytext"> 2nd ed., 2006 (!),
-Springer, Germany.</span></dd>
-  <dd><span class="bodytext"></span>MegaWatSoft: <span
- style="font-style: italic;">Steam97</span><br>
-ARC Engineering plc: <span style="font-style: italic;">arcSteam</span></dd>
-  <dd>GP International: <span style="font-style: italic;">GPSteam </span>("ASME
+Diagrams, Software</i>, 2nd ed., 2006 (!),
+Springer, Germany.</dd>
+  <dd>MegaWatSoft: <i>Steam97</i></dd>
+  <dd>ARC Engineering plc: <i>arcSteam</i></dd>
+  <dd>GP International: <i>GPSteam </i>("ASME
 97" formulation)</dd>
-  <dd>Rudjer Boskovic Institute: <span style="font-style: italic;">ISANO
-Iapwsif97</span><br style="font-style: italic;">
-    <br style="font-style: italic;">
-  </dd>
+  <dd>Rudjer Boskovic Institute: <i>ISANO
+Iapwsif97</i></dd>
+
   <dt>Other steam calculators (Non IF97)</dt>
   <dd>WinSim <a href="http://www.winsim.com/steam/steam.html">STEAM67</a>
 (ASME 1967 Steam Tables, with source code in C)<br>
