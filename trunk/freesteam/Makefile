@@ -19,9 +19,6 @@
 # This is the GNU Makefile for freesteam. 
 # Use 'make test' or 'make example' on an GCC system such as Linux, mingw or cygwin to get started.
 
-#---------------------------
-# GET PLATFORM SPECIFIC SETTINGS
-
 PACKAGE_ROOT = .
 
 include make-common.mak
