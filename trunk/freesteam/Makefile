@@ -25,6 +25,8 @@
 NAME = freesteam
 VERSION = 0.4.1
 
+EMSO_NAME = emsofreesteam-$(VERSION)
+
 #---------------------------
 # GET PLATFORM SPECIFIC SETTINGS
 
@@ -105,13 +107,12 @@ example: example.o $(LIB)
 #--------------------------
 # EMSO
 
-EMSO_SONAME = emsofreesteam-$(VERSION)
+EMSO = $(EMSO_NAME)$(SO_SUFFIX)
 
-EMSO = $(EMSO_SONAME)$(SO_SUFFIX)
 emso: $(LIB) $(EMSO)
 
-$(EMSO): emsohooks.o
-	g++ -shared -o $@ $< $(LIB) $(LDFLAGS) -soname=$(EMSO_SONAME)
+$(EMSO): emsohooks.o Makefile
+	g++ -shared -o $@ $< $(LIB) $(LDFLAGS) $(EMSO_LD_SONAME)
 
 #-------------------------
 # CLEAN
