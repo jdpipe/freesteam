@@ -1,30 +1,38 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <title>freesteam</title>
+  <title>freesteam: Steam Tables, Open Source, IAPWS-IF97</title>
   <link rel="stylesheet" media="screen" href="freesteam.css"
  type="text/css">
+  <meta name="KEYWORDS"
+ content="steam tables, IAPWS, density, water, steam, IF97, saturated, superheated, subcooled, properties, enthalpy, entropy, specific heat, thermodynamics, thermo-fluids, IAPWS-95">
+  <meta name="DESCRIPTION"
+ content="Open source implementation of IAPWS-IF97 industry-standard steam tables in C++. IAPWS-95 (scientific use) correlations also included.">
 </head>
 <body>
 <h1>freesteam<br>
 </h1>
-<div class="nav"><span style="font-weight: bold;">Current version: </span>0.3.1<br>
-<span style="font-weight: bold;">Released: </span>10 Feb 2005<br>
+<div class="nav"><span style="font-weight: bold;">Current version: </span>0.4<br>
+<span style="font-weight: bold;">Released: </span>23 Feb 2005<br>
 <br>
 Quick links
 <ul>
-  <li><a href="http://sf.net/projects/freesteam">SourceForge</a></li>
-  <li><a
+  <li><a t="Project Page" href="http://sf.net/projects/freesteam">SourceForge</a></li>
+  <li><a title="Via ViewCVS on SourceForge"
  href="http://cvs.sourceforge.net/viewcvs.py/freesteam/freesteam/CHANGELOG.txt?only_with_tag=HEAD&amp;view=markup">Change
 log</a><br>
   </li>
-  <li><a
+  <li><a title="File releases at SourceForge"
  href="http://sourceforge.net/project/showfiles.php?group_id=120898">Download</a>
   </li>
-  <li><a href="/mantis/">Bug Tracker</a></li>
-  <li><a
+  <li><a title="Mantis bug tracker at pye.dyndns.org" href="/mantis/">Bug
+Tracker</a></li>
+  <li><a title="ViewCVS at SourceForge"
  href="http://cvs.sourceforge.net/viewcvs.py/freesteam/freesteam">Browse
-CVS</a> </li>
+CVS</a></li>
+  <li><a title="Code docs generated with Doxygen"
+ href="http://pye.dyndns.org/freesteam/docs/">Class Documentation</a><br>
+  </li>
 </ul>
 Contents
 <ul>
@@ -74,6 +82,8 @@ using one of the following combinations of variables:<br>
 (p) plus one of (s,h,u,v,cp,cv,rho)<br>
 (T) plus one of (s,h,u,v,cp,cv,rho)<br>
 (u,v) anywhere, by two-way iteration<br>
+(p,h) anywhere, by two-way iteration<br>
+(p,u) anywhere, by two-way iteration<br>
       </p>
       <p>Alternatively, you can specify:</p>
       <p>saturated water at T<br>
@@ -82,8 +92,7 @@ saturated steam at T<br>
       </td>
       <td style="vertical-align: top;" class="bord">
       <p> Then, you can obtain the value of any of <br>
-the following steam
-properties:</p>
+the following steam <span style="font-weight: bold;">properties</span>:</p>
       <table>
         <tbody>
           <tr>
@@ -126,6 +135,12 @@ properties:</p>
             <td>Internal energy<br>
             </td>
           </tr>
+          <tr>
+            <td style="vertical-align: top;">x<br>
+            </td>
+            <td style="vertical-align: top;">Quality (when saturated)<br>
+            </td>
+          </tr>
         </tbody>
       </table>
       </td>
@@ -150,7 +165,7 @@ following:</p>
 <h3><span style="font-weight: bold;">1.2 Example usage</span></h3>
 <span style="font-weight: bold;">Problem:</span><br>
 <ol>
-  <li>calculate the density of steam at 5 bar and 200°C</li>
+  <li>calculate the density of steam at 5 bar and 200&deg;C</li>
   <li>calculate the temperature if the steam from (1) is isentropically
 compressed to 10 bar.</li>
   <li>calculate the pressure and temperature of steam at the same
@@ -161,10 +176,10 @@ specific volume as (2) but with the specific internal energy raised by
 <span style="font-weight: bold;">Solution: </span>(included in
 distribution as example.cpp, use '<code>make example</code>' to compile
 it)<br>
-<pre>#include "steamcalculator.h"<br>#include "solver.h"<br>#include "solver2.h"<br>#include &lt;iostream&gt;<br>#include &lt;iomanip&gt;<br>using namespace std;<br><br>int main(){<br>	try{<br>		SteamCalculator S1, S2, S3;<br><br>		// turn on display of units<br>		cerr.flags(ios_base::showbase);<br><br>		// initialise T1, p1, p2<br>		Temperature T1 = fromcelsius(200.0);<br>		Pressure p1 = 5.0 * bar;<br>		Pressure p2 = 10.0 * bar;<br><br>		// Part 1<br>		cerr &lt;&lt; endl &lt;&lt; "Part (1) - density at 10 bar, 200°C" &lt;&lt; endl;<br>		cerr &lt;&lt; "p1 = " &lt;&lt; p1/bar &lt;&lt; " bar" &lt;&lt; endl;<br>		cerr &lt;&lt; "T1 = " &lt;&lt; T1;<br>		cerr &lt;&lt; " (" &lt;&lt; tocelsius(T1) &lt;&lt; "°C)" &lt;&lt; endl;<br>		S1.set_pT(p1, T1);<br>		Density rho1 = S1.dens();<br>		cerr &lt;&lt; "rho1 = " &lt;&lt; rho1 &lt;&lt; endl;<br><br>		// Part 2<br>		cerr &lt;&lt; endl &lt;&lt; "Part (2) - isentropic compression to 10 bar" &lt;&lt; endl;<br>		SpecificEntropy s1 = S1.specentropy();<br>		cerr &lt;&lt; "s1 = " &lt;&lt; s1 &lt;&lt; endl;<br>		cerr &lt;&lt; "p2 = " &lt;&lt; p2/bar &lt;&lt; " bar" &lt;&lt; endl;<br>		Solver&lt;Pressure,SpecificEntropy,Temperature&gt; PS(p2, s1);<br>		S2 = PS.solve(0.0001 * kJ_kgK, 0.0001 * Kelvin);<br>		Temperature T2 = S2.temp();<br>		cerr &lt;&lt; "T2 = " &lt;&lt; T2;<br>		cerr &lt;&lt; " (" &lt;&lt; tocelsius(T2) &lt;&lt; "°C)" &lt;&lt; endl;<br><br>		// part (3) - Finding p,T for v as above and u increased by 200 kJ_kg<br>		cerr &lt;&lt; endl &lt;&lt; "Part (3) - Finding p,T for v as above and u increased by 200 kJ_kg" &lt;&lt; endl;<br>		SpecificVolume v2 = S2.specvol();<br>		SpecificEnergy u2 = S2.specienergy();<br>		cerr &lt;&lt; "v2 = " &lt;&lt; v2 &lt;&lt; endl;<br>		cerr &lt;&lt; "u2 = " &lt;&lt; u2 &lt;&lt; endl;<br><br>		SpecificEnergy u3 = u2 + 200.0 * kJ_kg;<br>		cerr &lt;&lt; "u3 = " &lt;&lt; u3 &lt;&lt; endl;<br><br>		Solver2&lt;SpecificEnergy,SpecificVolume&gt; SUV;<br>		S3 = SUV.solve(u3,v2);<br>		Temperature T3 = S3.temp();<br>		Pressure p3 = S3.pres();<br>		cerr &lt;&lt; "p3 = " &lt;&lt; p3/bar &lt;&lt; " bar" &lt;&lt; endl;<br>		cerr &lt;&lt; "T3 = " &lt;&lt; T3;<br>		cerr &lt;&lt; " (" &lt;&lt; tocelsius(T3) &lt;&lt; "°C)" &lt;&lt; endl;<br><br>		exit(0);<br><br>	}catch(Exception *E){<br>		cerr &lt;&lt; "Error: " &lt;&lt; E-&gt;what();<br>		exit(1);<br>	}<br>}<br></pre>
+<pre>#include "steamcalculator.h"<br>#include "solver.h"<br>#include "solver2.h"<br>#include &lt;iostream&gt;<br>#include &lt;iomanip&gt;<br>using namespace std;<br><br>int main(){<br>	try{<br>		SteamCalculator S1, S2, S3;<br><br>		// turn on display of units<br>		cerr.flags(ios_base::showbase);<br><br>		// initialise T1, p1, p2<br>		Temperature T1 = fromcelsius(200.0);<br>		Pressure p1 = 5.0 * bar;<br>		Pressure p2 = 10.0 * bar;<br><br>		// Part 1<br>		cerr &lt;&lt; endl &lt;&lt; "Part (1) - density at 10 bar, 200&deg;C" &lt;&lt; endl;<br>		cerr &lt;&lt; "p1 = " &lt;&lt; p1/bar &lt;&lt; " bar" &lt;&lt; endl;<br>		cerr &lt;&lt; "T1 = " &lt;&lt; T1;<br>		cerr &lt;&lt; " (" &lt;&lt; tocelsius(T1) &lt;&lt; "&deg;C)" &lt;&lt; endl;<br>		S1.set_pT(p1, T1);<br>		Density rho1 = S1.dens();<br>		cerr &lt;&lt; "rho1 = " &lt;&lt; rho1 &lt;&lt; endl;<br><br>		// Part 2<br>		cerr &lt;&lt; endl &lt;&lt; "Part (2) - isentropic compression to 10 bar" &lt;&lt; endl;<br>		SpecificEntropy s1 = S1.specentropy();<br>		cerr &lt;&lt; "s1 = " &lt;&lt; s1 &lt;&lt; endl;<br>		cerr &lt;&lt; "p2 = " &lt;&lt; p2/bar &lt;&lt; " bar" &lt;&lt; endl;<br>		Solver&lt;Pressure,SpecificEntropy,Temperature&gt; PS(p2, s1);<br>		S2 = PS.solve(0.0001 * kJ_kgK, 0.0001 * Kelvin);<br>		Temperature T2 = S2.temp();<br>		cerr &lt;&lt; "T2 = " &lt;&lt; T2;<br>		cerr &lt;&lt; " (" &lt;&lt; tocelsius(T2) &lt;&lt; "&deg;C)" &lt;&lt; endl;<br><br>		// part (3) - Finding p,T for v as above and u increased by 200 kJ_kg<br>		cerr &lt;&lt; endl &lt;&lt; "Part (3) - Finding p,T for v as above and u increased by 200 kJ_kg" &lt;&lt; endl;<br>		SpecificVolume v2 = S2.specvol();<br>		SpecificEnergy u2 = S2.specienergy();<br>		cerr &lt;&lt; "v2 = " &lt;&lt; v2 &lt;&lt; endl;<br>		cerr &lt;&lt; "u2 = " &lt;&lt; u2 &lt;&lt; endl;<br><br>		SpecificEnergy u3 = u2 + 200.0 * kJ_kg;<br>		cerr &lt;&lt; "u3 = " &lt;&lt; u3 &lt;&lt; endl;<br><br>		Solver2&lt;SpecificEnergy,SpecificVolume&gt; SUV;<br>		S3 = SUV.solve(u3,v2);<br>		Temperature T3 = S3.temp();<br>		Pressure p3 = S3.pres();<br>		cerr &lt;&lt; "p3 = " &lt;&lt; p3/bar &lt;&lt; " bar" &lt;&lt; endl;<br>		cerr &lt;&lt; "T3 = " &lt;&lt; T3;<br>		cerr &lt;&lt; " (" &lt;&lt; tocelsius(T3) &lt;&lt; "&deg;C)" &lt;&lt; endl;<br><br>		exit(0);<br><br>	}catch(Exception *E){<br>		cerr &lt;&lt; "Error: " &lt;&lt; E-&gt;what();<br>		exit(1);<br>	}<br>}<br></pre>
 <p><span style="font-weight: bold;">Output:</span><br>
 </p>
-<pre>$ ./example<br><br>Part (1) - density at 10 bar, 200°C<br>p1 = 5 bar<br>T1 = 473.15 K (200°C)<br>rho1 = 2.35275 kg/m3<br><br>Part (2) - isentropic compression to 10 bar<br>s1 = 7061.07 J/kgK<br>p2 = 10 bar<br>T2 = 556.418 K (283.268°C)<br><br>Part (3) - Finding p,T for v as above and u increased by 200 kJ_kg<br>v2 = 0.249638 m3/kg<br>u2 = 2.76613e+06 J/kg<br>u3 = 2.96613e+06 J/kg<br>p3 = 12.372 bar<br>T3 = 679.854 K (406.704°C)<br></pre>
+<pre>$ ./example<br><br>Part (1) - density at 10 bar, 200&deg;C<br>p1 = 5 bar<br>T1 = 473.15 K (200&deg;C)<br>rho1 = 2.35275 kg/m3<br><br>Part (2) - isentropic compression to 10 bar<br>s1 = 7061.07 J/kgK<br>p2 = 10 bar<br>T2 = 556.418 K (283.268&deg;C)<br><br>Part (3) - Finding p,T for v as above and u increased by 200 kJ_kg<br>v2 = 0.249638 m3/kg<br>u2 = 2.76613e+06 J/kg<br>u3 = 2.96613e+06 J/kg<br>p3 = 12.372 bar<br>T3 = 679.854 K (406.704&deg;C)<br></pre>
 <h3>1.3 IAPWS-95 Scientific Formulation<br>
 </h3>
 <p>The code for calculating steam properties according to the IAPWS-95
@@ -181,7 +196,7 @@ when using IAPWS-IF97.<br>
   <li>You should be able to compile on any GNU GCC system: we have
 tested on cygwin and Red Hat, others should be ok too.<br>
   </li>
-  <li>Get the package <code>freesteam-0.3.tar.bz2</code> from <a
+  <li>Get the package <code>freesteam-0.4.tar.bz2</code> from <a
  href="http://sf.net/projects/freesteam">http://sf.net/projects/freesteam</a>.
     <br>
   </li>
@@ -189,10 +204,13 @@ tested on cygwin and Red Hat, others should be ok too.<br>
 You can get this at <a href="http://sourceforge.net/projects/cppunit">http://sourceforge.net/projects/cppunit</a>.
 It is easily built from source via '<code>./configure</code>' and '<code>make
 install</code>' using GCC. It is useful to copy the file '<code>cppunit-config</code>'
-to your path, for example to <code>/usr/local/bin</code>.<br>
+to your path, for example to <code>/usr/local/bin</code>. You can also
+just use a binary version of CppUnit but you might need to check the
+location for the file <code>cppunit-config</code> and modify the
+freesteam <code>Makefile</code> accordingly.<br>
   </li>
-  <li><code>tar jxvf freesteam-0.3.tar.bz2</code> and <code>cd
-freesteam-0.3</code>.<br>
+  <li><code>tar jxvf freesteam-0.4.tar.bz2</code> and <code>cd
+freesteam-0.4</code>.<br>
   </li>
   <li>Edit the <code>Makefile </code>if necessary, to reflect your
 C++ compiler command and CppUnit library locations.</li>
@@ -208,11 +226,9 @@ type '<code>./example</code>'<br>
 freesteam is known to compile and run under the following system setups:<br>
 <ul>
   <li>GCC 3.3.3.3 (cygwin special) </li>
-  <li>GCC 3.3.3 20040412 (Red Hat Linux 3.3.3-7)</li>
   <li>GCC 3.4 (Linx 2.6 Fedora Core 3 on AMD 64 Opteron in <a
- href="http://sf.net/docs/E02/">cf.net compile farm</a>). Not able to
-run tests yet at this stage but the example ran OK.<br>
-  </li>
+ href="http://sf.net/docs/E02/">cf.net compile farm</a>).</li>
+  <li>GCC 3.3.3 20040412 (Red Hat Linux 3.3.3-7)</li>
 </ul>
 <p>We intend to get freesteam working with other compilers, in
 particular
@@ -226,7 +242,8 @@ in the units-of-measurement class, 'units.h'.</p>
 so
 stay tuned for this.</p>
 <h2><a name="license"></a>4. License</h2>
-<p>freesteam is released under the GNU GPL, which is available online
+<p><span style="font-weight: bold;">freesteam </span>is released under
+the GNU GPL, which is available online
 at
 <a href="http://www.gnu.org/copyleft/gpl.html">http://www.gnu.org/copyleft/gpl.html</a>.
 It is also distributed with the source code distribution for freesteam,
@@ -263,17 +280,20 @@ bug</a> for more information.</li>
 </ul>
 <h2><a name="futuredirections"></a>5. Future directions</h2>
 <ul>
-  <li>Full <span style="font-weight: bold;">documentation </span>of
-the public methods in the library can be generated using <a
- href="http://www.doxygen.org/">doxygen</a>. This documentation needs
-to be put onto this website.</li>
-  <li>The <span style="font-weight: bold;">two-way Newton-Raphson</span>
-solver has been implemented using the approach of Reynolds (see Links).
-This currently functions for (u,v) in regions 1,2,4 but not region 3.
-As required, solvers will be added for other combinations of variables.
-The problem is that you need to be able to predict which region the the
-steam is in before you launch the solver, and this requires
-case-by-case coding up.</li>
+  <li>Saturation properties for region 3 are currently implemented used
+the rho_sat(T) correlations from the IAPWS <a
+ href="http://www.iapws.org/relguide/supsat.pdf">supsat</a> release.
+Need to change this to use the Region 3 <span
+ style="font-weight: bold;">Maxwell phase equilibrium condition</span>
+from the IF97 release, or some other better approach, since the current
+equations give slight inconsistencies with pure IAPWS data for
+pressures above about 16 MPa.<br>
+  </li>
+  <li>A <span style="font-weight: bold;">spreadsheet add-in</span>
+version, hopefully for both Excel and OpenOffice.</li>
+  <li><span style="font-weight: bold;">Backwards correlations</span>
+will massively reduce the amount of two-way iteration required when
+finding the state for unsual combinations of variables.</li>
   <li>Perhaps <span style="font-weight: bold;">develop a GUI </span>version
 using <a href="http://www.trolltech.com/">Qt</a> or <a
  href="http://www.wxwindows.org/">wxWindows</a> or similar. I have no
@@ -286,8 +306,8 @@ used from within <a style="font-weight: bold;"
 possibly using <a href="http://www.swig.org/">SWIG</a>. Ditto.<br>
   </li>
   <li>An <span style="font-weight: bold;">interactive </span>command-line
-steam tables program will be developed
-for easy demonstration/interactive testing.</li>
+steam tables program for easy demonstration/interactive testing.<br>
+  </li>
   <li>There have been contributions for the <span
  style="font-weight: bold;">reverse equations in Region 2</span> - I
 haven't incorporated these into the source code yet though.</li>
@@ -299,6 +319,10 @@ haven't incorporated these into the source code yet though.</li>
 the code is quite large at the moment, probably because of the large
 amount of debugging code and GDB symbols. However some of this might be
 to do with bad use of C++ templates, need to take a look at that.</li>
+  <li><span style="font-weight: bold;">Region 5</span> has not yet been
+implemented at all, but it's a low priority. Let us know if you'd need
+it.<br>
+  </li>
 </ul>
 <h2><a name="links"></a>6. Links</h2>
 <dl>
@@ -337,32 +361,52 @@ to do with bad use of C++ templates, need to take a look at that.</li>
   <dd><a href="http://www.library.cornell.edu/nr/bookcpdf.html">http://www.library.cornell.edu/nr/bookcpdf.html<br>
     <br>
     </a></dd>
-  <dt>Commercial IAPWS calculators</dt>
-  <dd>ChemicaLogic, USA: SteamTab SDK<br>
+  <dt><br>
+  </dt>
+  <dt>Free (in the OS sense) IAPWS calculators</dt>
+  <dd>Bernhard Spang's IF-97 Excel plug-in <a
+ href="http://www.cheresources.com/iapwsif97.shtml">http://www.cheresources.com/iapwsif97.shtml</a>
+(Visual Basic)<br>
   </dd>
-  <dd>University of Applied Sciences Zittau/Görlitz, Germany: FluidEXL <br>
-ASME: ASTEM97</dd>
-  <dd>G&amp;P Engineering: StmProps</dd>
+  <dd>Leon Kos, University of Ljubljana: <a
+ href="http://www.lecad.uni-lj.si/%7Eleon/research/iapws-if97/IAPWS97.html">http://www.lecad.uni-lj.si/~leon/research/iapws-if97/IAPWS97.html</a>
+(Javascript)<br>
+  </dd>
+  <dd><br>
+  </dd>
+  <dt>Commercial IAPWS calculators</dt>
+  <dd>ChemicaLogic, USA: <span style="font-style: italic;">SteamTab SDK</span><br>
+  </dd>
+  <dd>University of Applied Sciences Zittau/G&ouml;rlitz, Germany: <span
+ style="font-style: italic;">FluidEXL</span> <br>
+ASME: <span style="font-style: italic;">ASTEM97</span></dd>
+  <dd>G&amp;P Engineering: <span style="font-style: italic;">StmProps</span></dd>
   <dd>Wagner, Wolfgang, Kretzschmar, Hans-Joachim, <span
  style="font-style: italic;">International Steam Tables - The
 Industrial Standard IAPWS-IF97 for the Thermodynamic Properties and
 Supplemetary Equations for Other Properties: Tables, Algorithms,
 Diagrams, Software</span>, <span class="bodytext"> 2nd ed., 2006 (!),
 Springer, Germany.</span></dd>
-  <dd><span class="bodytext"></span>MegaWatSoft: Steam97<br>
-    <br>
+  <dd><span class="bodytext"></span>MegaWatSoft: <span
+ style="font-style: italic;">Steam97</span><br>
+ARC Engineering plc: <span style="font-style: italic;">arcSteam</span></dd>
+  <dd>GP International: <span style="font-style: italic;">GPSteam </span>("ASME
+97" formulation)</dd>
+  <dd>Rudjer Boskovic Institute: <span style="font-style: italic;">ISANO
+Iapwsif97</span><br style="font-style: italic;">
+    <br style="font-style: italic;">
   </dd>
-  <dt>Free (in the OS sense) IAPWS calculators</dt>
-  <dd>Bernhard Spang's IF-97 Excel plug-in <a
- href="http://www.cheresources.com/iapwsif97.shtml">http://www.cheresources.com/iapwsif97.shtml</a><br>
-  </dd>
-  <dd>PARVO95, PARVO67 <a href="http://fortraner.narod.ru/">http://fortraner.narod.ru/</a>
-(in Russian, not tested)<br>
-    <br>
-  </dd>
+  <dt>Other steam calculators (Non IF97)</dt>
+  <dd>WinSim <a href="http://www.winsim.com/steam/steam.html">STEAM67</a>
+(ASME 1967 Steam Tables, with source code in C)<br>
+PARVO95, PARVO67 <a href="http://fortraner.narod.ru/">http://fortraner.narod.ru/</a>
+(Fortran) In Russian, not tested.</dd>
+  <dt><br>
+  </dt>
   <dt>Some useful steam table charts</dt>
   <dd>Copied from Reynolds' <span style="font-style: italic;">Thermodynamic
-Properties in SI</span>, Stanford Univ, 1979: <a
+Properties in SI</span>, Stanford Univ, 1979:<br>
+    <a
  href="http://www.mhtl.uwaterloo.ca/old/courses/ece309/notes/properties/charts/hs.html">h-s</a>,
     <a
  href="http://www.mhtl.uwaterloo.ca/old/courses/ece309/notes/properties/charts/ph.html">p-h</a>,
@@ -370,11 +414,12 @@ Properties in SI</span>, Stanford Univ, 1979: <a
  href="http://www.mhtl.uwaterloo.ca/old/courses/ece309/notes/properties/charts/ts.html">T-s</a>,
     <a
  href="http://www.mhtl.uwaterloo.ca/old/courses/ece309/notes/properties/charts/vu.html">v-u</a></dd>
+  <dt><br>
+  </dt>
+  <dt>Generally of interest about water and steam:</dt>
+  <dd> <a href="http://www.lsbu.ac.uk/water/index.html">http://www.lsbu.ac.uk/water/index.html</a>
+  </dd>
 </dl>
-Generally of interest about water and steam:<br>
-<div style="margin-left: 40px;"><a
- href="http://www.lsbu.ac.uk/water/index.html">http://www.lsbu.ac.uk/water/index.html</a><br>
-</div>
 <h2><a name="contactdetails"></a>7. Contact details</h2>
 <p>You can contact us either via the email form on the
 <a href="http://sourceforge.net/projects/freesteam/">project page on
@@ -395,7 +440,8 @@ document.write('<a href="mailto:'+e+m+a+i+l+'">'+e+m+a+i+l+'</a>');
 <noscript>john DOT pye AT-SIGN student DOT unsw FULLSTOP edu POINT au
 (spam protection)</noscript>
 </p>
-<address>Friday, 11 February 2005<br>
+<p>You can also take a look at my homepage about the <a href="http://pye.dyndns.org/">CLFR</a> if you want...</p>
+<address>Wednesday, 23 February 2005<br>
 </address>
 </body>
 </html>
