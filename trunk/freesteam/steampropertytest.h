@@ -12,12 +12,12 @@ class SteamPropertyTest : public SteamProperty<Property,PropertyAlternative>{
 
 		static void test(SteamCalculator S,Property expected_value,Property tol){
 			try{
-				Property calculated_value = get(S);
+				Property calculated_value = SteamProperty<Property,PropertyAlternative>::get(S);
 				if(fabs(calculated_value - expected_value) > tol){
 					stringstream s;
 					s.flags(ios_base::showbase);
-					s << "Expected " << name() << " = " << expected_value;
-					s << ", got " << name() << " = " << calculated_value;
+					s << "Expected " << SteamProperty<Property,PropertyAlternative>::name() << " = " << expected_value;
+					s << ", got " << SteamProperty<Property,PropertyAlternative>::name() << " = " << calculated_value;
 					CPPUNIT_FAIL(s.str());
 				}
 			}catch(Exception *E){

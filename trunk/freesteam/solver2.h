@@ -139,8 +139,9 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 			@param firstguess SteamCalculator initialised with state to be used for first guess
 		*/
 		SteamCalculator solve(const FirstProp &fp, const SecondProp &sp, const SteamCalculator &firstguess){
+			int region=0;
 			try{
-				int region = whichRegion(fp,sp);
+				region = whichRegion(fp,sp);
 				switch(region){
 					case 1:
 						return solveRegion1(fp,sp,firstguess);

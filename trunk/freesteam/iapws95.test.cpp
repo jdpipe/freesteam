@@ -4,6 +4,9 @@
 #include "iapws95.h"
 using namespace IAPWS95;
 
+#include <cmath>
+using namespace std;
+
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
 #include <cppunit/TestFixture.h>
@@ -87,12 +90,12 @@ class IAPWS95Test : public CppUnit::TestFixture{
 			cv_e = values[i][3];
 			w_e  = values[i][4];
 			s_e  = values[i][5];
-			
+
 			if (T == 647.0)
 				eps = 0.2; // Precision at the critical point is much less
 			else
 				eps = 0.0002;
-			
+
 			CPPUNIT_ASSERT(PctDiff(w.p(T, rho), p_e) < eps);
 			CPPUNIT_ASSERT(PctDiff(w.cv(T, rho), cv_e) < eps);
 			CPPUNIT_ASSERT(PctDiff(w.w(T, rho), w_e) < eps);
@@ -129,10 +132,10 @@ class IAPWS95Test : public CppUnit::TestFixture{
 	public:
 		void setUp(){
 		}
-		
+
 		void tearDown(){
 		}
-	
+
 	public:
 
 		// Invoke CPPUNIT macros to add tests to a suite:
@@ -142,7 +145,7 @@ class IAPWS95Test : public CppUnit::TestFixture{
 		CPPUNIT_TEST(TestRealGasPart);
 		CPPUNIT_TEST(TestSinglePhaseRegion);
 		CPPUNIT_TEST_SUITE_END();
-	
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(IAPWS95Test);
