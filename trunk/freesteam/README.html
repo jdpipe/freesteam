@@ -1,0 +1,289 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>freesteam</title>
+  <link rel="stylesheet" media="screen" href="freesteam.css"
+ type="text/css">
+</head>
+<body>
+<h1>freesteam</h1>
+<div class="nav">
+Quick links
+<ul>
+  <li><a href="http://sf.net/projects/freesteam">SourceForge</a> </li>
+  <li><a
+ href="http://sourceforge.net/project/showfiles.php?group_id=120898">Download</a>
+  </li>
+  <li><a
+ href="http://cvs.sourceforge.net/viewcvs.py/freesteam/freesteam">Browse
+CVS</a> </li>
+</ul>
+Contents
+<ul>
+  <li><a href="#h1">What can I do with it?</a> </li>
+  <li><a href="#h2">Quick start</a> </li>
+  <li><a href="#h3">Other compilers</a> </li>
+  <li><a href="#h4">License</a> </li>
+  <li><a href="#h5">Future directions</a> </li>
+  <li><a href="#h6">Links</a> </li>
+  <li><a href="#h7">Contact details</a></li>
+</ul>
+</div>
+<h2>Introduction</h2>
+<p><b>freesteam</b> is an open source implementation of
+international-standard steam
+tables from the International Association for the Properties of Water
+and
+Steam (IAPWS):</p>
+<ul>
+  <li>IAPWS-IF97 Industrial formulation (high speed, but complex code) </li>
+  <li>IAPWS-95 Scientific formulation (low speed, but simple code) </li>
+</ul>
+<p>If you find <b>freesteam</b> useful, or you have some comments, or
+you think you might be able
+to help with its development, please <span style="font-weight: bold;">contact
+us</span> using the details below.</p>
+<h2><a name="h1"></a>1. What can I do with it?</h2>
+<h3>1.1 IAPWS-IF97 Industrial Formulation<br>
+</h3>
+<p>You can use freesteam to calculate the properties of steam and water
+given its state, using the IAPWS-IF97 equations.<br>
+</p>
+<table style="text-align: left;" cellspacing="10">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;" class="bord">
+      <p>First you must specify
+the STATE of the steam, <br>
+using one of the following combinations of
+properties:<br>
+      </p>
+      <table style="text-align: left;">
+        <tbody>
+          <tr>
+            <td style="vertical-align: top;">(p,T)<br>
+            </td>
+            <td style="vertical-align: top;">(p,u)<br>
+            </td>
+            <td style="vertical-align: top;">(p,s)<br>
+            </td>
+            <td style="vertical-align: top;">(p,v)<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><br>
+            </td>
+            <td style="vertical-align: top;">(T,u)<br>
+            </td>
+            <td style="vertical-align: top;">(T,s)<br>
+            </td>
+            <td style="vertical-align: top;">(T,v)</td>
+          </tr>
+        </tbody>
+      </table>
+      </td>
+      <td style="vertical-align: top;" class="bord">
+      <p> Then, you can obtain the value of any of <br>
+the following steam
+properties:</p>
+      <table>
+        <tbody>
+          <tr>
+            <td>p</td>
+            <td style="vertical-align: middle;">Pressure</td>
+          </tr>
+          <tr>
+            <td>T</td>
+            <td>Temperature</td>
+          </tr>
+          <tr>
+            <td>h</td>
+            <td>Enthalpy</td>
+          </tr>
+          <tr>
+            <td>s</td>
+            <td>Entropy</td>
+          </tr>
+          <tr>
+            <td>cp</td>
+            <td>Isobaric heat capacity<br>
+            </td>
+          </tr>
+          <tr>
+            <td>cv</td>
+            <td>Isochoric heat capacity<br>
+            </td>
+          </tr>
+          <tr>
+            <td>v</td>
+            <td>Specific volume<br>
+            </td>
+          </tr>
+          <tr>
+            <td>rho</td>
+            <td>Density</td>
+          </tr>
+          <tr>
+            <td>u</td>
+            <td>Internal energy<br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>Also available are functions which allow you to calculate the
+following:</p>
+<table>
+  <tbody>
+    <tr>
+      <td>Saturation pressure</td>
+      <td>psat(T)</td>
+    </tr>
+    <tr>
+      <td>Saturation temperature</td>
+      <td>Tsat(p)</td>
+    </tr>
+  </tbody>
+</table>
+<p><span style="font-weight: bold;">Example problem</span>: <br>
+</p>
+<ol>
+  <li>calculate the density of steam at 5 bar and 350 K</li>
+  <li>calculate the temperature if the steam from (1) is isentropically
+compressed to 10 bar.</li>
+</ol>
+<span style="font-weight: bold;">Solution:</span><br>
+<pre>#include "steamcalculator.h"<br>#include "solver.h"<br>#include &lt;iostream&gt;<br>using namespace std;<br><br>int main(void){<br>  // trun on display of units<br>  cerr.setflags(iosbase::showbase);<br><br>  // part (1)<br>  SteamCalculator S, S2;<br>  S.set_pT(5 * bar, 350.0 * Kelvin);<br>  Density rho = S.dens();<br>  cerr &lt;&lt; "rho = " &lt;&lt; rho;<br>  <br>  // part (2)<br>  SpecificEntropy s = S.specentropy();<br>  Solver&lt;Pressure,SpecificEntropy,Temperature&gt; PS(10 * bar, s);<br>  S2 = PS.solve(0.0001 * kJ_kgK, 0.0001 * Kelvin);<br>  Temperature T2 = S2.temp();<br>  cerr &lt;&lt; "T2 = " &lt;&lt; T2;<br>}<br></pre>
+<p>We are currently working on enhancing the freesteam code so that you
+will
+be able to calculate these parameters in terms of more different
+combinations of specified variables. This involves enhancing the
+rootsolving capabilities already packaged with the code.</p>
+<h3>1.2 IAPWS-97 Scientific Formulation<br>
+</h3>
+<p>The code for calculating steam properties according to the IAPWS-95
+equations, developed by Don Peterson, is include. In their present
+form, the formulation allows you to calculate the
+above properties but only in terms of <b>density</b> and <b>temperature</b>.</p>
+<h2><a name="h2"></a>2. Quick start</h2>
+If you haven't already, get the code from
+<a href="http://sf.net/projects/freesteam">http://sf.net/projects/freesteam</a>
+Download the source files then type 'make'. You might need to configure
+the
+location of your compiler etc. at the top of the Makefile.
+If you want to run the test methods, you'll need to get a copy of
+CppUnit.
+You can get this at
+<a href="http://sourceforge.net/projects/cppunit">http://sourceforge.net/projects/cppunit</a>.
+You will then be able to type
+'make test' and you should see a set of compiler-time and run-time test
+results.
+<p>The above steps will result in a file 'libsteam.a' which you can
+link to in
+your own code, along with steamcalculator.h.</p>
+<p>If you have trouble building CppUnit, you may possibly be able to
+use a
+binary version. Binary versions for cygwin are available via the cygwin
+installer.</p>
+<h2><a name="h3"></a>3. Other compilers</h2>
+freesteam is known to compile and complete all tests correctly with
+<ul>
+  <li>GCC 3.3.3.3 (cygwin special) </li>
+</ul>
+<p>We intend to get freesteam working with other compilers, in
+particular
+GCC/mingw, VC++ and the Intel C++ compiler. It might even work with
+those
+compilers already. It is anticipated that the code will not work in
+present
+form with VC++ 6.0 because of the complexity of the template methods
+used
+in the units-of-measurement class, 'units.h'.</p>
+<p>We are going to be regularly testing under MinGW as well as Cygwin,
+stay
+tuned for this
+</p>
+<h2><a name="h4"></a>4. License</h2>
+<p>freesteam is released un the GNU GPL, which is available online at
+<a href="http://www.gnu.org/copyleft/gpl.html">http://www.gnu.org/copyleft/gpl.html</a>
+It is also distributed with the source code distribution for freesteam,
+as
+LICENSE.txt.
+</p>
+<h2><a name="h5"></a>5. Future directions</h2>
+<ul>
+  <li>We will shortly be releasing extra test cases that confirm the
+consistency of values returned from the two correlations. </li>
+  <li>We will be developing full solvers to allow any pair of steam
+properties to be used to specify state, for example density and
+internal energy, p(rho,u), etc. </li>
+  <li>We plan to put in place hooks that will allow freesteam to be
+used from within python, possibly using SWIG. </li>
+  <li>An interactive commandline steam tables program will be developed
+for easy demonstration/interactive testing. </li>
+</ul>
+<h2><a name="h6"></a>6. Links</h2>
+<dl>
+  <dt>IAPWS-IF97 steam tables </dt>
+  <dd><a href="http://www.iapws.org/">http://www.iapws.org/</a> </dd>
+  <dd><a href="http://www.iapws.org/relguide/visc.pdf">http://www.iapws.org/relguide/visc.pdf</a>
+  </dd>
+  <dd><a href="http://www.iapws.org/relguide/thcond.pdf">http://www.iapws.org/relguide/thcond.pdf</a>
+  </dd>
+  <dd><a href="http://www.iapws.org/relguide/IF97.pdf">http://www.iapws.org/relguide/IF97.pdf</a>
+  </dd>
+  <dt>Bernhard Spang's summary of IF97 </dt>
+  <dd><a href="http://www.cheresources.com/iapwsif97.shtml">http://www.cheresources.com/iapwsif97.shtml</a>
+  </dd>
+  <dt>IAPWS-95 scientific formulation </dt>
+  <dd><a href="http://www.iapws.org/relguide/IAPWS95.pdf">http://www.iapws.org/relguide/IAPWS95.pdf</a>
+  </dd>
+  <dt>CppUnit </dt>
+  <dd><a href="http://cppunit.sourceforge.net/cgi-bin/moin.cgi">http://cppunit.sourceforge.net/cgi-bin/moin.cgi</a>
+  </dd>
+  <dd><a href="http://sourceforge.net/projects/cppunit">http://sourceforge.net/projects/cppunit</a>
+  </dd>
+  <dt>Rettig's units-of-measurement stuff </dt>
+  <dd><a
+ href="http://www.embedded.com/shared/printableArticle.jhtml?articleID=9900094">http://www.embedded.com/shared/printableArticle.jhtml?articleID=9900094</a>
+  </dd>
+  <dd><a href="http://www.embedded.com/code/2001code.htm">http://www.embedded.com/code/2001code.htm</a>
+  </dd>
+  <dt>Brent solver </dt>
+  <dd><a href="http://www.library.cornell.edu/nr/bookcpdf.html">http://www.library.cornell.edu/nr/bookcpdf.html</a></dd>
+  <dt>Commercial IAPWS calculators</dt>
+  <dd>SteamTab SDK<br>
+ASTEM97</dd>
+  <dt>Free IAPWS calculators</dt>
+  <dd>Bernhard Spang's IF-97 Excel plug in<br>
+  </dd>
+</dl>
+<h2><a name="h7"></a>7. contact details</h2>
+<p><a href="http://freesteam.sf.net/">http://freesteam.sf.net/</a>
+(takes you to) <a href="http://pye.dyndns.org/freesteam/">http://pye.dyndns.org/freesteam/</a><br>
+<br>
+<a href="http://sourceforge.net/projects/freesteam/">http://sourceforge.net/projects/freesteam/</a><br>
+<br>
+Email:
+<script><!--
+
+// 3m41L harvester protection
+
+m='hn.pye@stud';
+l='u.au';
+i='nsw.ed';
+e='jo';
+a='ent.u';
+
+document.write('<a href="mailto:'+e+m+a+i+l+'">'+e+m+a+i+l+'</a>');
+
+//--></script>
+<noscript>john DOT pye AT-SIGN student DOT unsw FULLSTOP edu POINT au
+(spam protection)</noscript>
+</p>
+<address>Monday, 29 November 2004</address>
+</body>
+</html>

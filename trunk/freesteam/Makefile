@@ -1,15 +1,14 @@
 #
 # Makefile for steam tables library
-# steam.a
+# libsteam.a
 #
 # by John Pye
-# $ Date $
 #
 
 #---------------------------
 # PROJECT
 
-NAME = steam
+NAME = freesteam
 VERSION = 0.2
 
 #---------------------------
@@ -56,7 +55,7 @@ MAKEDEPFLAG = -MM
 #--------------------------
 # BUILD
 
-all: $(LIB)
+all: $(LIB) example
 .PHONY: all
 
 again: clean all
@@ -69,6 +68,9 @@ cleanobjs:
 $(LIB): $(OBJS)
 	$(AR) -cr $@ $(OBJS)
 
+example: example.o $(LIB)
+	$(CXX) $^ -o $@ $(LDFLAGS)
+	
 #--------------------------
 # MAKEDEPEND
 
@@ -104,6 +106,9 @@ $(NAME)-$(VERSION).tar: # tags
 	-rm ./$(NAME)-$(VERSION).tar
 	cp -R * /tmp/$(NAME)-$(VERSION)
 	-rm /tmp/$(NAME)-$(VERSION)/*.o
+	-rm /tmp/$(NAME)-$(VERSION)/*.d
+	-rm /tmp/$(NAME)-$(VERSION)/*.ok
+	-rm /tmp/$(NAME)-$(VERSION)/*.a
 	-rm /tmp/$(NAME)-$(VERSION)/*.exe
 	-rm /tmp/$(NAME)-$(VERSION)/*.log
 	-rm /tmp/$(NAME)-$(VERSION)/core
