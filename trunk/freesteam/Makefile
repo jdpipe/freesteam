@@ -17,9 +17,9 @@ VERSION = 0.2
 #CXX = /usr/local/bin/gfilt
 CXX = g++
 
-CPPFLAGS = -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -W -O3
+CPPFLAGS = -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -W
 #CXXFLAGS = -fmessage-length=165 -ggdb
-CXXFLAGS = -fmessage-length=0 -ggdb
+CXXFLAGS = -fmessage-length=0 -O3
 LDFLAGS = -lncurses -lc -lm -L/lib/
 
 CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
@@ -38,17 +38,13 @@ TESTS = cppunit.test.o empty.test.o units.test.o batchtest.test.o \
 	region4.test.o b23.test.o boundaries.test.o region1.test.o \
 	region2.test.o region3.test.o \
 	iapws95.test.o iapws9795.test.o \
-	pressuresolver.test.o 
-	temperaturesolver.test.o \
+	pressuresolver.test.o temperaturesolver.test.o \
 	satcurve.test.o	
 #	temperaturesolver2.test.o
 
 ###### compile-time testing disabled:
-CPASS = 
-CFAIL = 
-
-#CPASS = $(wildcard *.cpass.cpp)
-#CFAIL = $(wildcard *.cfail.cpp)
+CPASS = $(wildcard *.cpass.cpp)
+CFAIL = $(wildcard *.cfail.cpp)
 
 #CPASS = units-1.cpass.cpp
 #CFAIL = units-1.cfail.cpp units-2.cfail.cpp units-
@@ -62,21 +58,38 @@ MAKEDEPFLAG = -MM
 #--------------------------
 # BUILD
 
+.PHONY: all again
+
 all: $(LIB) example
-.PHONY: all
 
-again: clean all
-	
-clean: cleanobjs cleantests cleanctests
-
-cleanobjs:
-	-rm *.o *.d *~ core *.stackdump *.a
+again: mostlyclean all
 
 $(LIB): $(OBJS)
 	$(AR) -cr $@ $(OBJS)
 
 example: example.o $(LIB)
 	$(CXX) $^ -o $@ $(LDFLAGS)
+
+#-------------------------
+# CLEAN
+
+.PHONY: clean mostlyclean cleanobjs cleantests cleanctests
+
+clean: mostlyclean
+	-rm *.d
+
+mostlyclean: cleanobjs cleantests cleanctests
+
+cleanobjs:
+	-rm *.o *~ core *.stackdump *.a
+
+cleantests:
+	@-rm *.test *.test.exe
+
+cleanctests:
+	@-rm *.cpass.exe
+	@-rm *.cfail.exe
+	@-rm &.cfail.cpp.ok
 	
 #--------------------------
 # MAKEDEPEND
@@ -95,6 +108,8 @@ example: example.o $(LIB)
 
 #--------------------------
 # DISTRIBUTION
+
+.PHONY: tar gz bz2
 
 tar: $(NAME)-$(VERSION).tar
 
@@ -131,11 +146,17 @@ $(NAME)-$(VERSION).tar: # tags
 #--------------------------
 # COMPILE-TIME TESTING
 
+.PHONY: ctest cpasstest cfailtest ctestheading do_ctest
+
 CPASSEXES = $(CPASS:.cpp=.exe )
 CFAILOKS = $(CFAIL:.cpp=.ok )
 
-ctest: $(LIB) ctestheading $(CPASSEXES) $(CFAILOKS)
-.PHONY: ctest cpasstest cfailtest ctestheading
+ctest: $(LIB) ctestheading do_ctest
+
+do_ctest:
+	@if [ -f ctest.skip ]; then echo "Skipping ('rm ctest.skip' to force compile-time tests)"; exit 0; fi; \
+	echo "Running compile-time tests... ('touch ctest.skip' to skip these tests)"; \
+	make $(CPASSEXES) $(CFAILOKS)
 
 ctestheading:
 	@echo
@@ -165,38 +186,21 @@ ctestheading:
 	fi; \
 	echo "$<" > $@;
 
-cleanctests:
-	@-rm *.cpass.exe
-	@-rm *.cfail.exe
-	@-rm &.cfail.cpp.ok
-
 #--------------------------
 # RUN-TIME TESTING
 
-test.exe: test.o $(TESTS) $(TESTOBJS) $(LIB)
-	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS_CPPUNIT)
-
-
-#	$(CXX) $^ -o $@ $(CPPFLAGS) $(CXXFLAGS_CPPUNIT) $(CXXFLAGS) $(LDFLAGS) $(LIBS_CPPUNIT) -DTEST
+.PHONY:	test testheading
 
 test: ctest testheading test.exe $(TESTS)
 	./$@
 
-.PHONY:	test testheading
+test.exe: test.o $(TESTS) $(TESTOBJS) $(LIB)
+	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS_CPPUNIT)
 
 testheading:
 	@echo
 	@echo "RUNTIME TESTING"
 	@echo
-
-
-cleantests:
-	@-rm *.test *.test.exe
-
-#
-#%.test.o %.test.d: %.test.cpp $(LIB)
-#	$(CXX) $^ -o $@ $(CPPFLAGS) $(CXXFLAGS_CPPUNIT) $(CXXFLAGS) -DTEST
-#
 
 #-----------------------------
 # LITTLE COMMANDLINE DIAGNOSTIC PROGRAMS
@@ -219,8 +223,10 @@ ASTYLEFLAGS = -c --style=kr -CNSL --indent=tab=4 -m8 --max-instatement-indent=4 
 ASTYLE_TARGETS_CXX = $(shell ls *.cpp | /bin/sed -r s%\.cpp$$%.cpp.asty%)
 ASTYLE_TARGETS_H = $(shell ls *.h | /bin/sed -r s%\.h$$%.h.asty%)
 
-beautiful: $(ASTYLE_TARGETS_CXX) $(ASTYLE_TARGETS_H)
+
 .PHONY: beautiful 
+
+beautiful: $(ASTYLE_TARGETS_CXX) $(ASTYLE_TARGETS_H)
 # (but a rose is still a rose)
 
 %.cpp.asty: %.cpp
