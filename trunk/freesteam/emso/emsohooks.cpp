@@ -276,6 +276,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 					case given_Ts:
 						strcpy(inputUnits[0], "K");
 						strcpy(inputUnits[1], "kJ/kg/K");
+						break;
 
 					case given_waterT:
 					case given_steamT:
@@ -503,7 +504,6 @@ class EMSOfreesteam : public ExternalObjectBase {
 							cerr << "p=" << inputValues[0] * MPa << ", s=" << inputValues[1] * kJ_kgK;
 						#endif
 						S = SS_PS.solve(inputValues[0] * MPa, inputValues[1] * kJ_kgK, lastState);
-
 						break;
 
 					case given_pu:
