@@ -265,3 +265,18 @@ class Solver2Test_PU: public Solver2Test<Pressure,SpecificEnergy,0,SOLVE_IENERGY
 		CPPUNIT_TEST_SUITE_END();
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(Solver2Test_PU);
+
+class Solver2Test_PS: public Solver2Test<Pressure,SpecificEntropy,0,SOLVE_ENTROPY>
+{
+	public:
+
+		CPPUNIT_TEST_SUITE(Solver2Test_PS);
+		CPPUNIT_TEST(testRegion4);
+		CPPUNIT_TEST(testRegion1);
+		CPPUNIT_TEST(testRegion2);
+		CPPUNIT_TEST(testRegion3);
+
+		CPPUNIT_TEST_SUITE_END();
+};
+
+CPPUNIT_TEST_SUITE_REGISTRATION(Solver2Test_PS);
