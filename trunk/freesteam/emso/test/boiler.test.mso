@@ -40,7 +40,7 @@ FlowSheet BoilerTest2 # 0
 		
 	DEVICES
 	S1 as Stream_pT; # 3
-	BO as Boiler_pT; # 7
+	BO as Boiler; # 7
 	
 	CONNECTIONS # -5
 	S1 to BO.In; 
@@ -51,7 +51,7 @@ FlowSheet BoilerTest2 # 0
 	S1.T = (121 + 273.15) * "K";	
 
 	BO.Dp = -2 * "bar";
-	BO.q = 140 * "MW";
+	BO.q = 120 * "MW";
 	
 	OPTIONS
 	mode = "steady";

@@ -76,7 +76,7 @@ FlowSheet Test_Stream_waterT
     "Flow rate"
     S.mdot = 10 * "kg/s";
     
-    "Pressure"
+    "Temperature"
     S.T = (273.15 + 250) * "K";
     
     OPTIONS

@@ -10,7 +10,6 @@
     included in any modification or adaptation of this Model.
 *#
 
-using "newtypes";
 using "streams";
 
 #** 

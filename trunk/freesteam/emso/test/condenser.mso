@@ -26,10 +26,13 @@ Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
     Dp  as PressureDifference(Brief="Pressure difference", Upper=0);
 	UA  as HeatRatePerTemperature(Brief="Condenser UA value");
 	x   as Quality;
-	
+
+	CONNECTIONS
+    #In.mdot to Out.mdot;
+
     EQUATIONS
-    "Mass balance"
-    Out.mdot = In.mdot;
+	"Mass balance"
+	Out.mdot = In.mdot;
     
     "Energy balance (q extracted > 0)"
     q = - (Out.mdot * Out.h - In.mdot * In.h);
@@ -59,9 +62,12 @@ Model Condenser_pT as SteamEquipment_pT # 8 + 4 - 5 = 7
     Dp  as PressureDifference(Brief="Pressure difference");
 	UA  as HeatRatePerTemperature(Brief="Condenser UA value");
 	
+    CONNECTIONS
+    # In.mdot to Out.mdot;
+
     EQUATIONS
-    "Mass balance"
-    Out.mdot = In.mdot;
+	"Mass balance"
+	Out.mdot = In.mdot;
     
     "Energy balance (q extracted > 0)"
     q = - (Out.mdot * Out.h - In.mdot * In.h);

@@ -23,10 +23,14 @@ Model Boiler as SteamEquipment_ph # 7
     q   as HeatRate;
 	Dp  as PressureDifference;
 	
-    EQUATIONS
-    "Mass balance"
-    Out.mdot = In.mdot;
-
+	CONNECTIONS
+	# In.mdot to Out.mdot;
+	
+    EQUATIONS   
+	
+	"Mass flow"
+	In.mdot = Out.mdot;
+	
     "Energy balance"
     q = Out.mdot * Out.h - In.mdot * In.h;
     
@@ -44,12 +48,15 @@ Model Boiler_pT as SteamEquipment_pT # 7
     q   as HeatRate;
 	Dp  as PressureDifference;
 	
+	CONNECTIONS
+	# In.mdot to Out.mdot;
+	
     EQUATIONS
-    "Mass balance"
-    Out.mdot = In.mdot;
-
+	"Mass flow"
+	In.mdot = Out.mdot;
+	
     "Energy balance"
-    q = Out.mdot * Out.h - In.mdot * In.h;
+    q = In.mdot * Out.h - In.mdot * In.h;
     
     "Pressure difference"
     Dp = Out.p - In.p;

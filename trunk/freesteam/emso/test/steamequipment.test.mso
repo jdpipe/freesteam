@@ -1,7 +1,6 @@
 #*
-	Test of SteamEquipment Model
-	
-	Really just tests how the SteamEquipment can be connected together with other streams
+	Test a totally trivial steam equipment connection: an equipment that is a zero-loss pipe, that passes through
+	its input state to its output.
 *#
 
 using "steamequipment";
@@ -26,6 +25,12 @@ FlowSheet SteamEquipment_Test # 0
 	S1.p = 10 * "bar";
 	S1.T = 300 * "K";
 	S1.mdot = 5 * "kg/s";
+	
+	EQ.In.p = EQ.Out.p;
+	EQ.In.h = EQ.Out.h;
+	EQ.In.s = EQ.Out.s;
+	EQ.In.T = EQ.Out.T;
+	EQ.In.mdot= EQ.Out.mdot;
 
 	OPTIONS
 	mode = "steady";

@@ -32,6 +32,9 @@ Model Pump as SteamEquipment_ph # 8 + 3 - 4 = 7
 	h_es as SpecificEnthalpy(Brief = "Isentropic output enthalpy");
 	Dp as PressureDifference;
     
+	CONNECTIONS
+	#In.mdot to Out.mdot;
+	
     EQUATIONS
     "Mass balance"
     Out.mdot = In.mdot;
