@@ -29,9 +29,9 @@ else
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
 endif
 	
-emso: $(EMSO)
+emso: libcheck $(LIB) $(EMSO)
 
-$(EMSO): emsohooks.o libcheck
+$(EMSO): emsohooks.o
 	$(CXX) -shared -o $@ emsohooks.o $(LIB) $(LDFLAGS)
 
 OBJS = emsohooks.o
@@ -47,7 +47,7 @@ $(LIB):
 libcheck: $(LIB)
 	make -C .. libcheck
 
-#---------------------------------------------------------
+#-----------------------------------------------------------
 # CLEAN
 
 clean:
@@ -56,4 +56,13 @@ clean:
 distclean: clean
 	@-rm *.dll *.d
 
+#-----------------------------------------------------------
+# INSTALL
 
+install: $(EMSO)
+ifdef EMSO_INTERFACE_DIR
+	cp $(EMSO) $(EMSO_INTERFACE_DIR)/$(EMSO);
+else
+	@echo "Can't install, you need to specify EMSO_INTERFACE_DIR"
+	exit 1;
+endif

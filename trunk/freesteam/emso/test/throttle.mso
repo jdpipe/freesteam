@@ -10,19 +10,14 @@
     included in any modification or adaptation of this Model.
 *#
 
-using "newtypes";
-using "streams";
+using "steamequipment"
 
-#** 
-    Basic steam equipment item with one inlet and outlet stream.
+#*
+    Isenthalpic throttle
 *#
-Model SteamEquipment # DF = 7 + 3 = 10
+Model Throttle as SteamEquipment
 
-    PARAMETERS
-    ext freesteam as CalcObject(Brief="Steam Physical Properties");
-
-    VARIABLES
-	in  In  as Stream_Base;
-	out Out as Stream_ps;   
-
+    EQUATIONS
+    Out.h = In.h;
+    
 end

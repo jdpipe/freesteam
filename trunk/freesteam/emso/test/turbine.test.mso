@@ -1,0 +1,79 @@
+#* 
+	freesteam stream integration for use in steam system calculations
+	
+	Based on steam.mso by Rafael de Pelegrini Soares,
+
+	Copyright 2002-2005 Rafael de Pelegrini Soares.
+	Modified by John Pye 2005 http://freesteam.sf.net
+	
+	This copyright statement must not be deleted and must be
+	included in any modification or adaptation of this Model.
+*#
+
+using "streams";
+using "turbine";
+
+
+
+FlowSheet TurbineTest_Ideal # DF = 11 - 7 - 4 = 0
+	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
+	DEVICES
+	S1 as Stream_ph;      # DF = 3
+	TU as Turbine_Ideal;  # DF = 8
+	
+	CONNECTIONS
+	S1 to TU.In;          # DF - 7
+	
+	SPECIFY
+	"Inlet flowrate"
+	S1.mdot = 20000 * "kg/h";
+	
+	"Inlet pressure"
+	S1.p = 4.32 * "MPa";
+	
+	"Inlet temperature"
+	S1.T = 670.65 * "K";
+		
+	"Outlet pressure"
+	TU.Out.p = 1.569 * "MPa";
+	
+	OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+end
+
+FlowSheet TurbineTest 
+	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
+		DEVICES
+	S1 as Stream_ps;
+	TU as Turbine;
+	
+	CONNECTIONS
+	S1 to TU.In;
+	
+	SPECIFY
+	"Inlet flowrate"
+	S1.mdot = 20000 * "kg/h";
+	
+	"Inlet pressure"
+	S1.p = 4.32 * "MPa";
+	
+	"Inlet temperature"
+	S1.T = 670.65 * "K";
+	
+	"Efficiency"
+	TU.eta = .83;
+	
+	"Outlet pressure"
+	TU.Out.p = 1.569 * "MPa";
+	
+	OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+end

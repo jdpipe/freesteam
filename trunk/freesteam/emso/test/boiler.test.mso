@@ -1,0 +1,42 @@
+#* 
+	freesteam stream integration for use in steam system calculations
+	
+	Based on steam.mso by Rafael de Pelegrini Soares,
+
+	Copyright 2002-2005 Rafael de Pelegrini Soares.
+	Modified by John Pye 2005 http://freesteam.sf.net
+	
+	This copyright statement must not be deleted and must be
+	included in any modification or adaptation of this Model.
+*#
+
+using "streams";
+using "turbine";
+
+FlowSheet BoilerTest
+	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
+	DEVICES
+	s as Stream_ps;
+	BO as Boiler;
+	
+	CONNECTIONS
+	s to BO.In;
+	
+	SPECIFY
+	s.mdot = 20000 * "kg/h";
+	s.T = 300 * "K";
+	s.p = 2 * "atm";
+	
+	BO.Out.p = 2 * "atm";
+	BO.Out.T = 400 * "K";
+	
+	# BO.q = 50 * "GJ/h";
+	
+	OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+end
+

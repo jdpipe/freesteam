@@ -10,19 +10,24 @@
     included in any modification or adaptation of this Model.
 *#
 
-using "newtypes";
-using "streams";
+using "steamequipment"
 
-#** 
-    Basic steam equipment item with one inlet and outlet stream.
+#*
+    Boiler
+
+    Specify outlet pressure plus q or outlet temperature
 *#
-Model SteamEquipment # DF = 7 + 3 = 10
-
-    PARAMETERS
-    ext freesteam as CalcObject(Brief="Steam Physical Properties");
-
+Model Boiler as SteamEquipment
+    
     VARIABLES
-	in  In  as Stream_Base;
-	out Out as Stream_ps;   
+    q   as HeatRate;
 
+    EQUATIONS
+    "Mass balance"
+    Out.mdot = In.mdot;
+
+    "Energy balance"
+    q = Out.mdot * Out.h - In.mdot * In.h;
+    
+    [Out.T, Out.s, Out.v, Out.x] = freesteam.Tsvx_ph(Out.p, Out.h);
 end

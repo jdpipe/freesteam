@@ -1,40 +1,48 @@
 #* 
-	freesteam stream integration for use in steam system calculations
-	
-	Based on steam.mso by Rafael de Pelegrini Soares,
+    freesteam stream integration for use in steam system calculations
+    
+    Based on steam.mso by Rafael de Pelegrini Soares,
 
-	Copyright 2002-2005 Rafael de Pelegrini Soares.
-	Modified by John Pye 2005 http://freesteam.sf.net
-	
-	This copyright statement must not be deleted and must be
-	included in any modification or adaptation of this Model.
+    Copyright 2002-2005 Rafael de Pelegrini Soares.
+    Modified by John Pye 2005 http://freesteam.sf.net
+    
+    This copyright statement must not be deleted and must be
+    included in any modification or adaptation of this Model.
 *#
 
 using "newtypes";
 using "steam";
 
 #*
-	Basic model for a water/steam stream.
+    Basic model for a water/steam stream.
 
-	This model only defines the variables of a stream.
-	It can be extended for use with any models where at least the following variables are required.
+    This model only defines the variables of a stream.
+    It can be extended for use with any models where at least the following variables are required.
 *#
-Model Stream_Base as Steam_Base
-	
-	VARIABLES
-	mdot as MassFlowRate;
+Model Stream_Base as Steam_Base # DF = 6 + 1 = 7
+    
+    VARIABLES
+    mdot as MassFlowRate;
 
 end
 
+Model Stream_ps as Steam_ps # DF = 2 + 1 = 3
+    
+    VARIABLES
+    mdot as MassFlowRate;
+    
+end
 
-#** 
-	General steam stream model
+Model Stream_ph as Steam_ph # DF = 2 + 1 = 3
+    
+    VARIABLES
+    mdot as MassFlowRate;
+    
+end
 
-	If you specify parameters in terms other than p,s then solver will work out what p,s are by solving
-*#
-Model Stream_ps as Steam_ps
-	
-	VARIABLES
-	mdot as MassFlowRate;
-	
+Model Stream_waterT as Steam_waterT # DF = 1 + 1 = 3
+    
+    VARIABLES
+    mdot as MassFlowRate;
+    
 end

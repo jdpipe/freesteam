@@ -1,0 +1,82 @@
+#* 
+	freesteam stream integration for use in steam system calculations
+	
+	Based on steam.mso by Rafael de Pelegrini Soares,
+
+	Copyright 2002-2005 Rafael de Pelegrini Soares.
+	Modified by John Pye 2005 http://freesteam.sf.net
+	
+	This copyright statement must not be deleted and must be
+	included in any modification or adaptation of this Model.
+*#
+
+using "streams";
+using "turbine";
+using "boiler";
+using "pump";
+using "condenser";
+using "throttle";
+
+FlowSheet CycleTest
+	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
+    DEVICES
+	TU	as Turbine;                  # 6, 8 = 2
+	CO	as Condenser;              # 6, 8 = 2
+	PU 	as Pump;                # 6, 8 = 2
+	BO	as Boiler; # 5, 7 = 2
+	TH  as Throttle;               # 6, 7 = 1
+	
+	CONNECTIONS # BO -> TU -> CO -> TH -> BO
+	BO.Out	to	TU.In;
+	TU.Out	to  CO.In;
+	CO.Out	to  PU.In;
+	PU.Out	to  TH.In;
+	TH.In	to	BO.In;
+	
+	SPECIFY
+	# Steam source
+	"Boiler mdot"
+	BO.In.mdot = 1 * "kg/s";
+	"Boiler T_in"
+	BO.In.T = 300 * "K";
+	"Boiler p_in"
+	BO.In.p = 2 * "atm";
+	
+	# Boiler
+	"BO p_out"
+	BO.Out.p = 11.3 * "MPa";
+	"BO T_out"
+	BO.Out.T = (530 + 273.15) * "K";
+	#GV.q = 230; # MJ/s
+
+	# Turbine
+	#Turb.Pot = 63 * "1000*kW";
+	"TU efficiency"
+	TU.eta = 0.8;
+	"TU p_out"
+	TU.Out.p = 0.007 * "MPa";
+	
+	# Condenser
+	"CO T_out"
+	CO.Out.T = 300 * "K";
+	"CO p_out"
+	CO.Out.p = TU.Out.p;
+
+	# Pump
+	"PU p_out"
+	PU.Out.p = 1 * "MPa";
+	#P.p = 0.9 * "1000*kW";
+	"PU efficiency"
+	PU.eta = 0.7;
+	
+	GUESS
+	#Cond.Out.h = 300 * "kJ/kg";
+	#Cond.Out.P = 1 * "atm";
+
+	OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+end

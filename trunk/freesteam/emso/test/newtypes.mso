@@ -1,8 +1,8 @@
 #*
-	This is a new collection of units for use with EMSO
+    This is a new collection of units for use with EMSO
 
-	It is modelled on, and aimed at consistency with, the units of measurement class given at
-	http://cvs.sourceforge.net/viewcvs.py/freesteam/freesteam/units.h?rev=1.18&view=auto
+    It is modelled on, and aimed at consistency with, the units of measurement class given at
+    http://cvs.sourceforge.net/viewcvs.py/freesteam/freesteam/units.h?rev=1.18&view=auto
 *#
 
 

@@ -1,0 +1,41 @@
+#* 
+    freesteam stream integration for use in steam system calculations
+    
+    Based on steam.mso by Rafael de Pelegrini Soares,
+
+    Copyright 2002-2005 Rafael de Pelegrini Soares.
+    Modified by John Pye 2005 http://freesteam.sf.net
+    
+    This copyright statement must not be deleted and must be
+    included in any modification or adaptation of this Model.
+*#
+
+using "steamequipment"
+
+#*
+    Steam pump
+
+    Includes isentropic efficiency
+
+    You can specify one of the pressures (In or Out) plus P or eta
+*#
+Model Pump as SteamEquipment
+
+    VARIABLES
+	out Out as Stream_ph;   
+
+    # P   as Power(Brief="Nominal power");
+    eta as Efficiency(Brief="Pump efficiency");
+    
+    EQUATIONS
+    "Mass balance"
+    Out.mdot = In.mdot;
+    
+    # "Energy balance"
+    # P * eta = In.mdot * (Out.p - In.p) * freesteam.v_ps(In.p, In.s);
+    
+    # FIXME: Volume at In or Out conditions ?
+    
+    "Efficiency"
+    (Out.h - In.h) = eta * (freesteam.h_ps(Out.p, In.s) - In.h);
+end

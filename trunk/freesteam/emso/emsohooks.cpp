@@ -9,7 +9,7 @@
 	#warning EMSO DEBUG MODE IS SET - START EMSO FROM A CONSOLE TO SEE DEBUG OUTPUT
 #endif
 
-#include <emso/external_object.h>
+#include "external_object.h"
 
 #include <sstream>
 #include <cstring>
@@ -38,7 +38,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			cerr.flags(ios_base::showbase);
 		};
 
-		~EMSOfreesteam(){
+		virtual ~EMSOfreesteam(){
 			#ifdef EMSO_DEBUG
 				numOfInstances--;
 
@@ -49,61 +49,63 @@ class EMSOfreesteam : public ExternalObjectBase {
 		/**
 			Create object. Anything risking should go here and throw an exception if necessary
 		*/
-		virtual void create(int_t *retval, char *msg){
+		virtual int_t create(char *msg){
 			try{
 
 				#ifdef EMSO_DEBUG
 					cerr << "EMSOfreesteam::create(): instance " << instanceNumber << endl;
 				#endif
 
-				*retval = emso_ok;
+				return emso_ok;
 
 			}catch(Exception *E){
 				stringstream ss;
 				ss << "EMSOfreesteam::create: " << E->what();
 				delete E;
-				report_error(retval, msg, ss.str());
+				report_error(msg, ss.str());
+				return emso_error;
 			}
 		}
 
 		/**
 			Destroyes an instance of this object in EMSO
 		*/
-		virtual void destroy(int_t *retval, char *msg){
+		virtual int_t destroy(char *msg){
 			try{
 
 				#ifdef EMSO_DEBUG
 					cerr << "EMSOfreesteam::destroy(): instance " << instanceNumber << endl;
 				#endif
 
-				*retval = emso_ok;
+				return emso_ok;
 
 			}catch(Exception *E){
 				stringstream ss;
 				ss << "EMSOfreesteam::destroy: " << E->what();
 				delete E;
-				report_error(retval, msg, ss.str());
+				report_error(msg, ss.str());
+				return emso_error;
 			}
 		}
 
 		/// Set a parameter for the instance.
-		virtual void setParameter(const char *parameterName,
+		virtual int_t setParameter(const char *parameterName,
 				const int_t *valueType,
 				const int_t *valueLength,
 				const real_t *values,
 				const char *valuesText[],
-				int_t *retval, char *msg
+				char *msg
 		){
-			*retval = emso_error;
 			snprintf(msg, EMSO_MESSAGE_LENGTH, "EMSOfreesteam has no parameters");
+			return emso_error;
 		}
 
 		/// Check method.
-		virtual void checkMethod(const char *methodName,
+		virtual int_t checkMethod(const char *methodName,
 				int_t *methodID,
 				int_t *numOfInputs,
 				int_t *numOfOutputs,
-				int_t *retval, char *msg
+				char *msg
 		){
 
 			try{
@@ -151,7 +153,13 @@ class EMSOfreesteam : public ExternalObjectBase {
 				switch(output){
 					case Tsvx:
 					case Tuvx:
+					case Thvx:
+					case psvx:
 						*numOfOutputs = 4;
+						break;
+
+					case psvhx:
+						*numOfOutputs = 5;
 						break;
 
 					default:
@@ -159,11 +167,14 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 				}
 
+				return emso_ok;
+
 			}catch(Exception *E){
 				stringstream s;
 				s << "EMSOfreesteam::checkMethod: " << E->what();
-				report_error(retval, msg, s.str());
 				delete E;
+				report_error(msg, s.str());
+				return emso_error;
 			}
 		}
 
@@ -171,7 +182,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 		/**
 			Relate information about the available methods in this component back to EMSO
 		*/
-		virtual void methodDetails(const char *methodName,
+		virtual int_t methodDetails(const char *methodName,
 				const int_t *methodID,
 
 				const int_t *numOfInputs,
@@ -185,7 +196,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 				char *outputUnits[],
 				int_t *derivativeMatrix,
 
-				int_t *retval, char *msg
+				char *msg
 		){
 
 			try{
@@ -199,7 +210,6 @@ class EMSOfreesteam : public ExternalObjectBase {
 					stringstream s;
 					s << "Method '" << methodName << "' not found.";
 					throw new Exception(s.str());
-					return;
 				}
 
 				input = method & InputMask;
@@ -281,13 +291,34 @@ class EMSOfreesteam : public ExternalObjectBase {
 
 					case Tsvx:
 						strcpy(outputUnits[0], "K");
-						strcpy(outputUnits[1], "kJ/kgK");
+						strcpy(outputUnits[1], "kJ/kg/K");
 						strcpy(outputUnits[2], "m^3/kg");
+						break;
 
 					case Tuvx:
 						strcpy(outputUnits[0], "K");
 						strcpy(outputUnits[1], "kJ/kg");
 						strcpy(outputUnits[2], "m^3/kg");
+						break;
+
+					case Thvx:
+						strcpy(outputUnits[0], "K");
+						strcpy(outputUnits[1], "kJ/kg");
+						strcpy(outputUnits[2], "m^3/kg");
+						break;
+
+					case psvx:
+						strcpy(outputUnits[0], "MPa");
+						strcpy(outputUnits[1], "kJ/kg/K");
+						strcpy(outputUnits[2], "m^3/kg");
+						break;
+
+					case psvhx:
+						strcpy(outputUnits[0], "MPa");
+						strcpy(outputUnits[1], "kJ/kg/K");
+						strcpy(outputUnits[2], "m^3/kg");
+						strcpy(outputUnits[3], "kJ/kg");
+						break;
 
 					case region:
 						break;
@@ -295,18 +326,34 @@ class EMSOfreesteam : public ExternalObjectBase {
 					default:
 						throw new Exception("Invalid output param combination");
 				}
+
+				return emso_ok;
+
 			}catch(Exception *E){
 				stringstream s;
 				s << "EMSOfreesteam::calc: " << E->what();
-				report_error(retval, msg, s.str());
 				delete E;
+				report_error(msg, s.str());
+				return emso_error;
 			}
 		}
 
 		/**
 			Calculation
+
+			@param methodID ID of method being called (@see checkMethod)
+			@param numOfInputs Not used here
+			@param totalInputLength Not used here
+			@param inputValues values of the parameters used for this function, see enum method_name
+			@param numOfOutputs Not used here
+			@param outputLengths Not used here
+			@param totalOutputLength Not used here
+			@param outputDerivatives Not used... yet
+			@param msg A place to put an error message
+			@return EMSO status code (see emso_types.h)
 		*/
-		virtual void calc(const char *methodName,
+		virtual int_t calc(
+				const char *methodName,
 				const int_t *methodID,
 
 				const int_t *numOfInputs,
@@ -319,10 +366,10 @@ class EMSOfreesteam : public ExternalObjectBase {
 				const int_t *totalOutputLength,
 				real_t *outputValues,
 
-				const int_t *calculeDerivatives,
+				const int_t *calculateDerivatives,
 				real_t *outputDerivatives,
 
-				int_t *retval, char *msg
+				char *msg
 		){
 			SteamCalculator S;
 			Solver2<Pressure,SpecificEnergy,0,SOLVE_ENTHALPY> SS_PH;
@@ -345,57 +392,79 @@ class EMSOfreesteam : public ExternalObjectBase {
 					stringstream s;
 					s << "Method '" << methodName << " not found";
 					throw new Exception(s.str());
-					return;
 				}
 				input = method & InputMask;
 				output = method & OutputMask;
 
+				#ifdef EMSO_DEBUG
+					cerr << "emsofreesteam[" << instanceNumber << "," << numOfCalcCalls << "]: ";
+				#endif
+
 				switch(input){
 					case given_waterT:
 						S.setSatWater_T(inputValues[0] * Kelvin);
+						#ifdef EMSO_DEBUG
+							cerr << "sat water T=" << inputValues[0] * Kelvin;
+						#endif
 						break;
 
 					case given_steamT:
 						S.setSatSteam_T(inputValues[0] * Kelvin);
+						#ifdef EMSO_DEBUG
+							cerr << "sat steam T=" << inputValues[0] * Kelvin;
+						#endif
 						break;
 
 					case given_pTx:
 						S.set_pT(inputValues[0] * MPa, inputValues[1] * Kelvin, inputValues[2]);
+						#ifdef EMSO_DEBUG
+							cerr << "p=" << inputValues[0] * MPa << ", T=" << inputValues[1] * Kelvin << ", x=" << inputValues[2];
+						#endif
 						break;
 
 					case given_ph:
 						S = SS_PH.solve(inputValues[0] * MPa, inputValues[1] * kJ_kg);
+						#ifdef EMSO_DEBUG
+							cerr << "p=" << inputValues[0] * MPa << ", h=" << inputValues[1] * kJ_kg;
+						#endif
 						break;
 
 					case given_ps:
 						S = SS_PS.solve(inputValues[0] * MPa, inputValues[1] * kJ_kgK);
 
 						#ifdef EMSO_DEBUG
-							cerr << "emsofreesteam: call#" << numOfCalcCalls << ": ";
-							cerr << "Set p = " << inputValues[0] * MPa << ", s = " << inputValues[1] * kJ_kgK;
-							cerr << " (region is " << S.whichRegion() << ")";
+							cerr << "p=" << inputValues[0] * MPa << ", s=" << inputValues[1] * kJ_kgK;
 						#endif
-
 						break;
 
 					case given_pu:
-						S = SS_PU.solve(inputValues[0] * Pascal, inputValues[1] * kJ_kg);
+						S = SS_PU.solve(inputValues[0] * MPa, inputValues[1] * kJ_kg);
+						#ifdef EMSO_DEBUG
+							cerr << "p=" << inputValues[0] * MPa << ", u=" << inputValues[1] * kJ_kg;
+						#endif
 						break;
 
 					case given_uv:
 						S = SS_UV.solve(inputValues[0] * kJ_kg, inputValues[1] * m3_kg);
+						#ifdef EMSO_DEBUG
+							cerr << "u=" << inputValues[0] * kJ_kg << ", u=" << inputValues[1] * m3_kg;
+						#endif
 						break;
 
 					default:
 						throw new Exception("EMSOfreesteam::calc: Un-handled input option (may be not yet implemented)");
 				}
 
+				#ifdef EMSO_DEBUG
+					cerr << " (region " << S.whichRegion() << ")";
+				#endif
+
 				switch(output){
 					case T:
 						outputValues[0] = S.temp() / Kelvin;
 						break;
 					case p:
-						outputValues[0] = S.pres() / Pascal;
+						outputValues[0] = S.pres() / MPa;
 						break;
 					case v:
 						outputValues[0] = S.specvol() / m3_kg;
@@ -429,26 +498,55 @@ class EMSOfreesteam : public ExternalObjectBase {
 						outputValues[1] = S.specentropy() / kJ_kgK;
 						outputValues[2] = S.specvol() / m3_kg;
 						outputValues[3] = S.quality();
+						#ifdef EMSO_DEBUG
+							cerr << " => T=" << S.temp() << ", s=" << S.specentropy() << ", v=" << S.specvol() << ", x=" << S.quality() << endl;
+						#endif
 						break;
+
 					case Tuvx:
 						outputValues[0] = S.temp() / Kelvin;
 						outputValues[1] = S.specienergy() / kJ_kg;
 						outputValues[2] = S.specvol() / m3_kg;
 						outputValues[3] = S.quality();
+						#ifdef EMSO_DEBUG
+							cerr << " => T=" << S.temp() << ", u=" << S.specienergy() << ", v=" << S.specvol() << ", x=" << S.quality() << endl;
+						#endif
+						break;
+
+					case Thvx:
+						outputValues[0] = S.temp() / Kelvin;
+						outputValues[1] = S.specenthalpy() / kJ_kg;
+						outputValues[2] = S.specvol() / m3_kg;
+						outputValues[3] = S.quality();
+						#ifdef EMSO_DEBUG
+							cerr << " => T=" << S.temp() << ", h=" << S.specenthalpy() << ", v=" << S.specvol() << ", x=" << S.quality() << endl;
+						#endif
+						break;
+
+					case psvhx:
+						outputValues[0] = S.pres() / MPa;
+						outputValues[1] = S.specentropy() / kJ_kgK;
+						outputValues[2] = S.specvol() / m3_kg;
+						outputValues[3] = S.specenthalpy() / kJ_kg;
+						outputValues[4] = S.quality();
 
 						#ifdef EMSO_DEBUG
-							cerr << "... found T = " << S.temp() << ", u = " << S.specienergy() << ", v = " << S.specvol() << ", x = " << S.quality() << endl;
+							cerr << " => p=" << S.pres() << ", s=" << S.specentropy() << ", v=" << S.specvol() << ", h=" << S.specentropy()<< ", x=" << S.quality() << endl;
 						#endif
 						break;
 
 					default:
 						throw new Exception("Invalid output option (should never happen)");
 				}
+
+				return emso_ok;
+
 			}catch(Exception *E){
 				stringstream s;
 				s << "EMSOfreesteam::calc: " << E->what();
-				report_error(retval, msg, s.str());
 				delete E;
+				report_error(msg, s.str());
+				return emso_error;
 			}
 		}
 
@@ -500,6 +598,9 @@ class EMSOfreesteam : public ExternalObjectBase {
 			,mu     = 0x00200000
 			,Tsvx   = 0x01000000
 			,Tuvx   = 0x02000000
+			,psvx   = 0x03000000
+			,psvhx  = 0x04000000
+			,Thvx   = 0x05000000
 			,region = 0x10000000
 
 			,OutputMask = 0xffff0000
@@ -520,6 +621,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			, EF_DECLARE(mu,waterT)
 			, EF_DECLARE(rho,waterT)
 			, EF_DECLARE(region,waterT)
+			, EF_DECLARE(psvhx,waterT)
 			, EF_DECLARE(p,steamT)
 			, EF_DECLARE(x,steamT)
 			, EF_DECLARE(v,steamT)
@@ -532,6 +634,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			, EF_DECLARE(mu,steamT)
 			, EF_DECLARE(rho,steamT)
 			, EF_DECLARE(region,steamT)
+			, EF_DECLARE(psvhx,steamT)
 			, EF_DECLARE(T,pTx)
 			, EF_DECLARE(p,pTx)
 			, EF_DECLARE(x,pTx)
@@ -592,6 +695,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			, EF_DECLARE(Tsvx,ph)
 			, EF_DECLARE(Tsvx,pu)
 			, EF_DECLARE(Tuvx,ps)
+			, EF_DECLARE(Thvx,ps)
 			, EF_DECLARE(Tuvx,ph)
 		};
 
@@ -617,6 +721,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			EF_ASSIGN(mu,waterT);
 			EF_ASSIGN(rho,waterT);
 			EF_ASSIGN(region,waterT);
+			EF_ASSIGN(psvhx,waterT);
 			EF_ASSIGN(p,steamT);
 			EF_ASSIGN(x,steamT);
 			EF_ASSIGN(v,steamT);
@@ -629,6 +734,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			EF_ASSIGN(mu,steamT);
 			EF_ASSIGN(rho,steamT);
 			EF_ASSIGN(region,steamT);
+			EF_ASSIGN(psvhx,steamT);
 			EF_ASSIGN(T,pTx);
 			EF_ASSIGN(p,pTx);
 			EF_ASSIGN(x,pTx);
@@ -689,6 +795,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			EF_ASSIGN(Tsvx,ph);
 			EF_ASSIGN(Tsvx,pu);
 			EF_ASSIGN(Tuvx,ps);
+			EF_ASSIGN(Thvx,ps);
 			EF_ASSIGN(Tuvx,ph);
 			// DON'T EDIT THOSE, EDIT method_name AND CREATE THESE USING SOME FIND/REPLACE:
 
@@ -704,8 +811,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 		/** check if we have an error and print it to the given msg
 		*
 		*/
-		void report_error(int_t *retval, char *msg, const string &error){
-			*retval = emso_error;
+		void report_error(char *msg, const string &error){
 			snprintf(msg, EMSO_MESSAGE_LENGTH, error.c_str());
 		}
 
@@ -735,7 +841,7 @@ void eo_create_ (int_t *objectHandler,
 	ExternalObjectBase *obj = ExternalObjectFactory();
 
 	// Call the correspounding c++ function.
-	obj->create(retval, msg);
+	*retval = obj->create(msg);
 
 	// Return our object address.
 	*objectHandler = (int_t)obj;
@@ -750,7 +856,7 @@ void eo_destroy_ (const int_t *objectHandler,
 	ExternalObjectBase *obj = (ExternalObjectBase*) *objectHandler;
 
 	// Call the correspounding c++ function.
-	obj->destroy(retval, msg);
+	*retval = obj->destroy(msg);
 	// Delete the object instance.
 	delete obj;
 }
@@ -767,8 +873,8 @@ void eo_set_parameter_ (const int_t *objectHandler,
 	ExternalObjectBase *obj = (ExternalObjectBase*) *objectHandler;
 
 	// Call the correspounding c++ function.
-	obj->setParameter(parameterName, valueType, valueLength,
-		values, valuesText, retval, msg);
+	*retval = obj->setParameter(parameterName, valueType, valueLength,
+		values, valuesText, msg);
 }
 
 // Keep this function as is.
@@ -777,13 +883,14 @@ void eo_check_method_(const int_t *objectHandler,
 					  int_t *methodID,
 					  int_t *numOfInputs,
 					  int_t *numOfOutputs,
-					  int_t *retval, char *msg){
+					  int_t *retval, char *msg
+){
 	// Cast back the object.
 	ExternalObjectBase *obj = (ExternalObjectBase *)*objectHandler;
 
 	// Call the correspounding c++ function.
-	obj->checkMethod(methodName, methodID,
-		numOfInputs, numOfOutputs, retval, msg);
+	*retval = obj->checkMethod(methodName, methodID,
+		numOfInputs, numOfOutputs, msg);
 }
 
 // Keep this function as is.
@@ -802,15 +909,17 @@ void eo_method_details_(const int_t *objectHandler,
 						char *outputUnits[],
 						int_t *derivativeMatrix,
 
-						int_t *retval, char *msg){
+						int_t *retval, char *msg
+){
+
 	// Cast back the object.
 	ExternalObjectBase *obj = (ExternalObjectBase *)*objectHandler;
 
 	// Call the correspounding c++ function.
-	obj->methodDetails(methodName, methodID,
+	*retval = obj->methodDetails(methodName, methodID,
 		numOfInputs, inputLengths, inputTypes, inputUnits,
 		numOfOutputs, outputLengths, outputTypes, outputUnits,
-		derivativeMatrix, retval, msg);
+		derivativeMatrix, msg);
 }
 
 // Keep this function as is.
@@ -828,19 +937,19 @@ void eo_calc_(const int_t *objectHandler,
 			  const int_t *totalOutputLength,
 			  real_t *outputValues,
 
-			  const int_t *calculeDerivatives,
+			  const int_t *calculateDerivatives,
 			  real_t *outputDerivatives,
 
-			  int_t *retval, char *msg){
+			  int_t *retval, char *msg
+){
     // Cast back the object.
 	ExternalObjectBase *obj = (ExternalObjectBase *)*objectHandler;
 
 	// Call the correspounding c++ function.
-	obj->calc(methodName, methodID,
+	*retval = obj->calc(methodName, methodID,
 		numOfInputs, inputLengths, totalInputLength, inputValues,
 		numOfOutputs, outputLengths, totalOutputLength, outputValues,
-		calculeDerivatives, outputDerivatives,
-		retval, msg);
+		calculateDerivatives, outputDerivatives, msg);
 }
 
 
