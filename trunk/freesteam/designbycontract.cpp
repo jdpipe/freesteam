@@ -45,7 +45,7 @@ void DesignByContract::__throw_error_(const char *file, const int line,
 
 	// Compiler-style error message for use in TextPad 'IDE':
 	std::stringstream s;
-	s << std::endl << file << ":" << line << ": " << type << " assertion failed: "<< expr;
+	s << file << ":" << line << ": " << type << " assertion failed: "<< expr;
 
 
 	//std::cerr << std::endl << std::endl << type << " FAILED" << std::endl;

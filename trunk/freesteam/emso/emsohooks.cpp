@@ -90,6 +90,7 @@ public:
 				case given_ph:
 				case given_pu:
 				case given_uv:
+				case given_ps:
 					*numOfInputs = 2;
 					break;
 
@@ -99,6 +100,10 @@ public:
 
 			// Number of output parameters:
 			switch(output){
+				case Tsvx:
+					*numOfOutputs = 4;
+					break;
+
 				default:
 					*numOfOutputs = 1;
 					break;
@@ -166,6 +171,11 @@ public:
 					strcpy(inputUnits[1], "kJ/kg");
 					break;
 
+				case given_ps:
+					strcpy(inputUnits[0], "Pa");
+					strcpy(inputUnits[1], "kJ/kg/K");
+					break;
+
 				case given_uv:
 					strcpy(inputUnits[0], "kJ/kg");
 					strcpy(inputUnits[1], "m^3/kg");
@@ -219,6 +229,12 @@ public:
 					strcpy(outputUnits[0], "kg/m^3");
 					break;
 
+				case Tsvx:
+					strcpy(outputUnits[0], "K");
+					strcpy(outputUnits[1], "kJ/kg");
+					strcpy(outputUnits[2], "m^3/kg");
+
+
 				case region:
 					break;
 
@@ -258,6 +274,7 @@ public:
 		Solver2<Pressure,SpecificEnergy,0,SOLVE_ENTHALPY> SS_PH;
 		Solver2<Pressure,SpecificEnergy,0,SOLVE_IENERGY> SS_PU;
 		Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0> SS_UV;
+		Solver2<Pressure,SpecificEntropy,0,SOLVE_ENTROPY> SS_PS;
 
 		try{
 			int_t method, input, output;
@@ -291,6 +308,10 @@ public:
 					S = SS_PH.solve(inputValues[0] * Pascal, inputValues[1] * kJ_kg);
 					break;
 
+				case given_ps:
+					S = SS_PS.solve(inputValues[0] * Pascal, inputValues[1] * kJ_kgK);
+					break;
+
 				case given_pu:
 					S = SS_PU.solve(inputValues[0] * Pascal, inputValues[1] * kJ_kg);
 					break;
@@ -305,7 +326,7 @@ public:
 
 			switch(output){
 				case T:
-					outputValues[0] = (S.temp()/Kelvin);
+					outputValues[0] = S.temp() / Kelvin;
 					break;
 				case p:
 					outputValues[0] = S.pres() / Pascal;
@@ -337,6 +358,12 @@ public:
 				case x:
 					outputValues[0] = S.quality();
 					break;
+				case Tsvx:
+					outputValues[0] = S.temp() / Kelvin;
+					outputValues[1] = S.specentropy() / kJ_kgK;
+					outputValues[2] = S.specvol() / m3_kg;
+					outputValues[3] = S.quality();
+					break;
 
 				default:
 					throw new Exception("Invalid output option (should never happen)");
@@ -360,6 +387,7 @@ private:
 		, given_ph
 		, given_pu
 		, given_uv
+		, given_ps
 		, given_waterT
 		, given_steamT
 
@@ -383,7 +411,8 @@ private:
 		,x      = 0x000a0000
 		,k      = 0x00100000
 		,mu     = 0x00200000
-		,region = 0x01000000
+		,Tsvx   = 0x01000000
+		,region = 0x10000000
 
 		,OutputMask = 0xffff0000
 	};
@@ -443,6 +472,19 @@ private:
 		,rho_ph = rho | given_ph
 		,region_ph = region | given_ph
 
+		,T_ps = T | given_ps
+		,x_ps = x | given_ps
+		,v_ps = v | given_ps
+		,u_ps = u | given_ps
+		,h_ps = h | given_ps
+		,cp_ps = cp | given_ps
+		,cv_ps = cv | given_ps
+		,k_ps = k | given_ps
+		,mu_ps = mu | given_ps
+		,rho_ps = rho | given_ps
+		,region_ps = region | given_ps
+
+
 		,T_pu = T | given_pu
 		,x_pu = x | given_pu
 		,v_pu = v | given_pu
@@ -466,6 +508,9 @@ private:
 		,mu_uv = mu | given_uv
 		,rho_uv = rho | given_uv
 		,region_uv = region | given_uv
+
+		,Tsvx_ph	= Tsvx | given_ph
+		,Tsvx_pu	= Tsvx | given_pu
 	};
 
 	/**
@@ -530,6 +575,18 @@ private:
 		EF_ASSIGN(rho_ph);
 		EF_ASSIGN(region_ph);
 
+		EF_ASSIGN(T_ps);
+		EF_ASSIGN(x_ps);
+		EF_ASSIGN(v_ps);
+		EF_ASSIGN(u_ps);
+		EF_ASSIGN(h_ps);
+		EF_ASSIGN(cp_ps);
+		EF_ASSIGN(cv_ps);
+		EF_ASSIGN(k_ps);
+		EF_ASSIGN(mu_ps);
+		EF_ASSIGN(rho_ps);
+		EF_ASSIGN(region_ps);
+
 		EF_ASSIGN(T_pu);
 		EF_ASSIGN(x_pu);
 		EF_ASSIGN(v_pu);
@@ -554,6 +611,8 @@ private:
 		EF_ASSIGN(rho_uv);
 		EF_ASSIGN(region_uv);
 
+		EF_ASSIGN(Tsvx_ph);
+		EF_ASSIGN(Tsvx_pu);
 
 		i = m.find(name);
 

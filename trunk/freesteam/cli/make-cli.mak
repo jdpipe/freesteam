@@ -25,8 +25,8 @@ CLIOBJS = diagram.o
 #-----------------------------
 # LITTLE COMMANDLINE DIAGNOSTIC PROGRAMS
 
-%.cli$(EXE_SUFFIX): %.cli.o libcheck
-	$(CXX) $(CXXFLAGS) -o $@ $< $(LIB) $(LDFLAGS)
+%.cli$(EXE_SUFFIX): %.cli.o $(CLIOBJS) libcheck
+	$(CXX) $(CXXFLAGS) -o $@ $< $(CLIOBJS) $(LIB) $(LDFLAGS)
 
 critsurf.m: criticalsurface.cli$(EXE_SUFFIX)
 	./$< > $@

@@ -30,7 +30,7 @@ class ConvergenceTest{
 	private:
 		static const double errorP = 1e-6;
 		static const double errorH = 1e-6;
-		static const double errorS = 0.0001;
+		static const double errorS = 1e-12;
 		static const double errorV = 1e-10;
 		static const double errorRHO = 0.0001;
 		static const double errorU = 1e-12;

@@ -24,6 +24,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "steamcalculator.h"
 
+#ifndef NDEBUG
+#include <sstream>
+#include "exception.h"
+#endif
+
 /// Return a particular property of steam in the given state
 /**
 	Allow evaluation of a desired steam property using template parameters. This is basicaly for internal use, but you may find it useful in your own code, perhaps.
@@ -71,7 +76,20 @@ SteamProperty<Pressure,0>::get(const SteamCalculator &S){
 
 inline SpecificEntropy
 SteamProperty<SpecificEntropy,SOLVE_ENTROPY>::get(const SteamCalculator &S){
+	#ifndef NDEBUG
+		try{
+	#endif
+
 	return S.specentropy();
+
+	#ifndef NDEBUG
+		}catch(Exception *E){
+			std::stringstream s;
+			s << "SteamProperty<s>::get: " << E->what();
+			delete E;
+			throw new Exception(s.str());
+		}
+	#endif
 }
 
 inline SpecHeatCap

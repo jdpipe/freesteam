@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../b13curve.h"
 
 #include <sstream>
+#include <iostream>
 #include <string>
 
 /// Steam tables diagrams to plot with MATLAB
@@ -80,8 +81,8 @@ class Diagram{
 			s << std::endl << getMatlabPlotType() << "(B13(:,1),B13(:,2),'y-');";
 			s << std::endl << getMatlabPlotType() << "(PMIN(:,1),PMIN(:,2),'c:');";
 			s << std::endl << getMatlabPlotType() << "(PMAX(:,1),PMAX(:,2),'c-.');";
-			s << std::endl << getMatlabPlotType() << "(TMIN(:,1),TMIN(:,2),'w:');";
-			s << std::endl << getMatlabPlotType() << "(TMAX(:,1),TMAX(:,2),'w-.');";
+			s << std::endl << getMatlabPlotType() << "(TMIN(:,1),TMIN(:,2),'m:');";
+			s << std::endl << getMatlabPlotType() << "(TMAX(:,1),TMAX(:,2),'m-.');";
 
 			s << std::endl << "legend('Sat Water','Sat Steam','B23','B13','Ptriple','Pmax','Ttriple','Tmax');";
 
@@ -157,75 +158,55 @@ class Diagram{
 		}
 
 		std::string plotTmin(){
-			std::stringstream s;
-			s << std::endl << "TMIN = [";
-
-			const Temperature &Tref = T_TRIPLE;
-
-			const Pressure &pmin = P_MIN;
-			const Pressure &pmax = P_MAX;
-			Pressure pstep = (pmax - pmin) / double(200);
-			for(Pressure p = pmin; p <= pmax; p += pstep){
-				SteamCalculator S;
-				S.set_pT(p,Tref);
-				s << std::endl << "\t" << SteamProperty<Abscissa,AbsAlt>::get(S) << "\t" << SteamProperty<Ordinate,OrdAlt>::get(S);
-			}
-			s << std::endl << "];" << std::endl;
-			return s.str();
+			return loopAlong<Temperature,Pressure>(T_TRIPLE,P_MIN,P_MAX,"TMIN");
 		}
 
 		std::string plotTmax(){
-			std::stringstream s;
-			s << std::endl << "TMAX = [";
-
-			const Temperature &Tref = T_MAX;
-
-			const Pressure &pmin = P_MIN;
-			const Pressure &pmax = P_MAX;
-			Pressure pstep = (pmax - pmin) / double(200);
-			for(Pressure p = pmin; p <= pmax; p += pstep){
-				SteamCalculator S;
-				S.set_pT(p,Tref);
-				s << std::endl << "\t" << SteamProperty<Abscissa,AbsAlt>::get(S) << "\t" << SteamProperty<Ordinate,OrdAlt>::get(S);
-			}
-			s << std::endl << "];" << std::endl;
-			return s.str();
+			return loopAlong<Temperature,Pressure>(T_MAX,P_MIN,P_MAX,"TMAX");
 		}
 
 		std::string plotpmin(){
-			std::stringstream s;
-			s << std::endl << "PMIN = [";
-
-			const Pressure &pref = P_TRIPLE;
-
-			const Temperature &Tmin = T_MIN;
-			const Temperature &Tmax = T_MAX;
-			Temperature Tstep = (Tmax - Tmin) / double(200);
-			for(Temperature T = Tmin; T <= Tmax; T += Tstep){
-				SteamCalculator S;
-				S.set_pT(pref,T);
-				s << std::endl << "\t" << SteamProperty<Abscissa,AbsAlt>::get(S) << "\t" << SteamProperty<Ordinate,OrdAlt>::get(S);
-			}
-			s << std::endl << "];" << std::endl;
-			return s.str();
+			return loopAlong<Pressure,Temperature>(P_TRIPLE,T_MIN,T_MAX,"PMIN");
 		}
 
 		std::string plotpmax(){
-			std::stringstream s;
-			s << std::endl << "PMAX = [";
+			return loopAlong<Pressure,Temperature>(P_MAX,T_MIN,T_MAX,"PMAX");
+		}
 
-			const Pressure &pref = P_MAX;
+		template<class F, class S>
+		std::string
+		loopAlong(const F &fref,const S &smin, const S &smax, const string &title){
+			std::stringstream ss;
+			S sstep = (smax - smin) / double(200);
 
-			const Temperature &Tmin = T_MIN;
-			const Temperature &Tmax = T_MAX;
-			Temperature Tstep = (Tmax - Tmin) / double(200);
-			for(Temperature T = Tmin; T <= Tmax; T += Tstep){
-				SteamCalculator S;
-				S.set_pT(pref,T);
-				s << std::endl << "\t" << SteamProperty<Abscissa,AbsAlt>::get(S) << "\t" << SteamProperty<Ordinate,OrdAlt>::get(S);
+			ss << std::endl << title << " = [";
+			for(S s=smin; s<= smax; s += sstep){
+				SteamCalculator SC;
+				SC.set<F,S>(fref,s);
+
+				ss << std::endl << "\t";
+
+				try{
+					Abscissa a = SteamProperty<Abscissa,AbsAlt>::get(SC);
+					ss << a;
+				}catch(Exception *E){
+					ss << "1.0e+1025";
+					delete E;
+				}
+
+				ss << "\t";
+
+				try{
+					Ordinate o = SteamProperty<Ordinate,OrdAlt>::get(SC);
+					ss << o;
+				}catch(Exception *E){
+					ss << "1.0e+1025";
+					std::cerr << E->what();
+					delete E;
+				}
 			}
-			s << std::endl << "];" << std::endl;
-			return s.str();
+			ss << std::endl << "];" << std::endl;
+			return ss.str();
 		}
 };
 
@@ -234,5 +215,11 @@ const std::string Diagram<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::getMat
 
 template<>
 const std::string Diagram<SpecificEnergy,Pressure,SOLVE_ENTHALPY,0>::getMatlabPlotType();
+
+template<>
+const std::string Diagram<SpecificEntropy,Pressure,SOLVE_ENTROPY,0>::getMatlabPlotType();
+
+template<>
+const std::string Diagram<Pressure,SpecificEntropy,0,SOLVE_ENTROPY>::getMatlabPlotType();
 
 #endif

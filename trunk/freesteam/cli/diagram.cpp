@@ -21,18 +21,34 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "diagram.h"
 
+#include <string>
+
 // Intentionally empty
 
 /*
 	This file is to be used for template method overrides where more detail is needed on particular plots, etc etc.
 */
 
+template<>
 const std::string
 Diagram<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::getMatlabPlotType(){
 	return "semilogy";
 }
 
+template<>
 const std::string
 Diagram<SpecificEnergy,Pressure,SOLVE_ENTHALPY,0>::getMatlabPlotType(){
 	return "semilogy";
+}
+
+template<>
+const std::string
+Diagram<SpecificEntropy,Pressure,SOLVE_ENTROPY,0>::getMatlabPlotType(){
+	return "semilogy";
+}
+
+template<>
+const std::string
+Diagram<Pressure,SpecificEntropy,0,SOLVE_ENTROPY>::getMatlabPlotType(){
+	return "semilogx";
 }

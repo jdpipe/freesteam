@@ -110,6 +110,9 @@ class SteamCalculator:public DesignByContract {
 
 		void set_pT(const Pressure &p, const Temperature &T, double x = 1.0);	// pressure [MPa]
 
+		template<class F,class S>
+		inline void set(const F &f, const S &s);
+
 		void setSatSteam_p(const Pressure &p);	// p Pressure [MPa]
 		void setSatWater_p(const Pressure &p);	// p Pressure [MPa]
 		void setSatWater_T(const Temperature &T);	// T Temperature [K]
@@ -204,5 +207,17 @@ class SteamCalculator:public DesignByContract {
 		SteamCalculator *liq;	// for use in two-phase calcs
 
 };
+
+template<>
+inline void
+SteamCalculator::set<Pressure,Temperature>(const Pressure &p, const Temperature &T){
+	set_pT(p,T);
+}
+
+template<>
+inline void
+SteamCalculator::set<Temperature,Pressure>(const Temperature &T, const Pressure &p){
+	set_pT(p,T);
+}
 
 #endif
