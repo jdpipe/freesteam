@@ -230,6 +230,11 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 			int region=0;
 			try{
 				region = whichRegion(fp,sp);
+
+				if(!firstguess.isSet() || region!=firstguess.whichRegion()){
+					return solve(fp,sp);
+				}
+
 				switch(region){
 					case 1:
 						return solveRegion1(fp,sp,firstguess);
