@@ -31,4 +31,8 @@ void DesignByContract::__abort_Program_(const char *file, const int line,
 	std::abort();
 }
 
+void DesignByContract::__report_Message_(const char *file, const int line, const char *msg){
+	std::cerr << std::endl << file << ":" << line << ": " << msg;
+}
+
 #endif

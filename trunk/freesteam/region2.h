@@ -1,10 +1,10 @@
 #include "state.h"
 
-class SteamRegion2:public SteamState {
+class Region2:public SteamState {
 
 	protected:
 		friend class SteamCalculator;
-		friend class SteamRegion4;
+		friend class Region4;
 
 		static SteamState *Instance();
 		int getRegion();
@@ -12,8 +12,8 @@ class SteamRegion2:public SteamState {
 		                    Num x);
 
 	private:
-		SteamRegion2();
-		static SteamRegion2 *_instance;
+		Region2();
+		static Region2 *_instance;
 
 		METHOD_STST_NUM(gam);
 		METHOD_STST_NUM(gampi);

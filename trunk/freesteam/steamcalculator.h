@@ -23,14 +23,22 @@ class SteamCalculator:public DesignByContract {
 
 	public:
 
-		// Initializing the SteamCalculator, setting conditions
-
+		//// Constructor
 		SteamCalculator();
+		
+		/// Copy constructor
 		SteamCalculator(const SteamCalculator & original);
+		
+		/// Copy operation, virtual
 		virtual void copy(const SteamCalculator & original);
+		
+		/// Assignment operator (assigns a copy)
 		SteamCalculator const &operator=(SteamCalculator const &original);
+		
+		// Destructor
 		~SteamCalculator();
-
+		
+		// Defining state, simple methods
 		void set_pT(Pressure p, Temperature T, double x = -1);	// pressure [MPa]
 		void set_rhou(Density rho, SpecificEnergy u);	// density [kg/m3], specific internal energy [kJ/kg]
 
@@ -68,7 +76,17 @@ class SteamCalculator:public DesignByContract {
 		METHOD_SC(conductivity,  Conductivity);	    // Conductivity
 
 		void setTarget(SteamPropertyCode p, Num value);
-
+		
+		/*
+		HOW TO IMPLEMENT THE SOLVER WITH THESE STRONGLY TYPED THINGOS?
+		
+		template<SteamPropertyCode prop>
+		Temperature 
+		solveTemperature(){
+		
+			ZeroIn<SteamCalculator,prop,
+		*/
+		
 		Temperature solveTemperature();
 
 		Pressure solvePressure();
@@ -86,10 +104,10 @@ class SteamCalculator:public DesignByContract {
 
 	protected:
 		friend class SteamState;
-		friend class SteamRegion1;
-		friend class SteamRegion2;
-		friend class SteamRegion3;
-		friend class SteamRegion4;
+		friend class Region1;
+		friend class Region2;
+		friend class Region3;
+		friend class Region4;
 		friend Pressure reg3_pres_err(double);
 		friend class ZeroIn < SteamCalculator, Density, Temperature >;
 		friend class ZeroIn < SteamCalculator, SpecificEnergy, Pressure >;

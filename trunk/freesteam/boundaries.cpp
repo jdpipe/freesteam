@@ -39,9 +39,9 @@ const Num REGION2_NB[6] = {
 /**
 	Check that the pressure and temperature are within limits, and optionally throw an error if they are out of bounds.
 */
-bool SteamRegionBoundaries::isValid_pT(Pressure p, Temperature T,
+bool Boundaries::isValid_pT(Pressure p, Temperature T,
                                        bool throw_me) {
-	//fprintf(stderr,"SteamRegionBoundaries::isValid_pT - testing point validity p=%.5f,T=%.5f\n",p,T);
+	//fprintf(stderr,"Boundaries::isValid_pT - testing point validity p=%.5f,T=%.5f\n",p,T);
 
 	bool isvalid = true;
 
@@ -75,7 +75,7 @@ bool SteamRegionBoundaries::isValid_pT(Pressure p, Temperature T,
 	@param p pressure / [MPa]
 	@param T temperature / [K]
 */
-bool SteamRegionBoundaries::isSat_pT(Pressure p, Temperature T,
+bool Boundaries::isSat_pT(Pressure p, Temperature T,
                                      bool throw_me) {
 
 	if (!isValid_pT(p, T, true)) {
@@ -89,19 +89,23 @@ bool SteamRegionBoundaries::isSat_pT(Pressure p, Temperature T,
 		return false;
 	}
 
-	Num Tsat = SteamRegionBoundaries::getSatTemp_p(p);
-	Num dT = T - Tsat;
+	Temperature Tsat = Boundaries::getSatTemp_p(p);
+	Temperature dT = T - Tsat;
 
 	if (dT == 0) {
+		
+		MESSAGE("EXACTLY SATURATED");
+		
 		return true;
-	} else {
-		if (dT < 0)
-			dT = -dT;
 
+	}else{
 
-		if (dT / Tsat < STM_SATURATION_TOL) {
+		if( fabs(dT)/Tsat < STM_SATURATION_TOL) {
 			if (throw_me)
 				throw new SteamAlmostSaturatedException(p, T);
+			
+			MESSAGE("APPROXIMATELY SATURATED");
+			
 			return true;
 		}
 
@@ -124,15 +128,12 @@ bool SteamRegionBoundaries::isSat_pT(Pressure p, Temperature T,
 	This is based on the 'Backward equation' for Region 4
 	@see IF-97 p 34
 */
-Temperature SteamRegionBoundaries::getSatTemp_p(Pressure p) {
+Temperature Boundaries::getSatTemp_p(Pressure p) {
 
 	Num b = beta(p);
 	Num d = D(E(b), F(b), G(b));
 
-	return (REGION4_N[10] + d -
-	        pow(sq(REGION4_N[10] + d) -
-	            4 * (REGION4_N[9] + REGION4_N[10] * d),
-	            (Num) 0.5)) / 2;
+	return Kelvin * (REGION4_N[10] + d - pow(sq(REGION4_N[10] + d) - 4 * (REGION4_N[9] + REGION4_N[10] * d), (Num) 0.5)) / 2;
 
 }
 
@@ -141,19 +142,19 @@ Temperature SteamRegionBoundaries::getSatTemp_p(Pressure p) {
 	This the 'Basic equation' for Region 4,
 	@see IF-97 p 33
 */
-Pressure SteamRegionBoundaries::getSatPres_T(Temperature T) {
+Pressure Boundaries::getSatPres_T(Temperature T) {
 
 	//cerr << "getSatPres_T: T = " << K_TO_C(T) << "°C" << endl;
 
 	REQUIRE(T <= T_CRIT);
 	REQUIRE(T >= T_MIN);
 
-	Num u = SteamRegionBoundaries::upsilon(T);
+	Num u = Boundaries::upsilon(T);
 	Num a = A(u);
 	Num b = B(u);
 	Num c = C(u);
 
-	Num psat =
+	Pressure psat = MPa * 
 	    pow(2 * c / (-b + pow(sq(b) - 4 * a * c, (Num) 0.5)),
 	        (Num) 4);
 
@@ -172,19 +173,27 @@ Pressure SteamRegionBoundaries::getSatPres_T(Temperature T) {
 	@param T temperature / [K]]
 	@param throw_me Throw an error if point is not in Region 1
 */
-bool SteamRegionBoundaries::isRegion1_pT(Pressure p, Temperature T,
+bool Boundaries::isRegion1_pT(Pressure p, Temperature T,
         bool throw_me) {
-
+	
+	MESSAGE("TESTING POING FOR REGION 1");
+	
 	if (!isValid_pT(p, T, throw_me)) {
 		return false;
 	}
 
-	if (T > REG1_T_HIGH) {
+	if (T > T_REG1_REG3) {
+
+		MESSAGE("TEMPERATURE IS ABOVE T_REG1_REG3");
+	
 		if (throw_me)
 			throw new SteamCalculatorException(p, T, REG1_RANGE_T_HIGH);
 		return false;
 
 	} else if (T > getSatTemp_p(p) + STM_SATURATION_TOL * T) {
+
+		MESSAGE("TEMPERATURE IS TO RIGHT OF SATURATION CURVE");
+
 		if (throw_me) {
 			cerr << "Temperature is too high, by " << (T - getSatTemp_p(p)) << endl;
 			throw new SteamCalculatorException(p, T, REG1_RANGE_P_LOW);
@@ -201,14 +210,14 @@ bool SteamRegionBoundaries::isRegion1_pT(Pressure p, Temperature T,
 	@param T temperature / [K]]
 	@param throw_me Throw an error if point is not in Region 2
 */
-bool SteamRegionBoundaries::isRegion2_pT(Pressure p, Temperature T,
+bool Boundaries::isRegion2_pT(Pressure p, Temperature T,
         bool throw_me) {
 
 	if (!isValid_pT(p, T, throw_me)) {
 		return false;
 	}
 	// check region 2 under region 1/4
-	if (T <= TB_LOW) {
+	if (T <= T_REG1_REG3) {
 		if (T < getSatTemp_p(p) - STM_SATURATION_TOL * T) {
 			if (throw_me)
 				throw new SteamCalculatorException(p, T,
@@ -234,7 +243,7 @@ bool SteamRegionBoundaries::isRegion2_pT(Pressure p, Temperature T,
 	@param T temperature / [K]]
 	@param throw_me Throw an error if point is not in Region 3
 */
-bool SteamRegionBoundaries::isRegion3_pT(Pressure p, Temperature T,
+bool Boundaries::isRegion3_pT(Pressure p, Temperature T,
         bool throw_me) {
 
 	// if scanning to see what region you're in, scan region 3 last 'cause it's less slick (just a little)
@@ -243,7 +252,7 @@ bool SteamRegionBoundaries::isRegion3_pT(Pressure p, Temperature T,
 		return false;
 	}
 
-	if (T < TB_LOW) {
+	if (T < T_REG1_REG3) {
 		if (throw_me)
 			throw new SteamCalculatorException(p, T, REG3_RANGE_T_LOW_TB);
 		return false;
@@ -266,28 +275,28 @@ bool SteamRegionBoundaries::isRegion3_pT(Pressure p, Temperature T,
 /**
 	@see IF-97, p 33, Eqn 29a
 */
-Num SteamRegionBoundaries::beta(Pressure p) {
+Num Boundaries::beta(Pressure p) {
 	return pow(p, (Num) 0.25);
 }
 
 /**
 	@see IF-97, p 34, Eqn 31
 */
-Num SteamRegionBoundaries::E(Num bet) {
+Num Boundaries::E(Num bet) {
 	return sq(bet) + REGION4_N[3] * bet + REGION4_N[6];
 }
 
 /**
 	@see IF-97, p 34, Eqn 31
 */
-Num SteamRegionBoundaries::F(Num bet) {
+Num Boundaries::F(Num bet) {
 	return REGION4_N[1] * sq(bet) + REGION4_N[4] * bet + REGION4_N[7];
 }
 
 /**
 	@see IF-97, p 34, Eqn 31
 */
-Num SteamRegionBoundaries::G(Num bet) {
+Num Boundaries::G(Num bet) {
 	return REGION4_N[2] * sq(bet) + REGION4_N[5] * bet + REGION4_N[8];
 }
 
@@ -295,7 +304,7 @@ Num SteamRegionBoundaries::G(Num bet) {
 	@see IF-97, p 34, Eqn 31
 */
 Num
-SteamRegionBoundaries::D(Num E, Num F, Num G) {
+Boundaries::D(Num E, Num F, Num G) {
 	return 2 * G / (-F - pow(sq(F) - 4 * E * G, (Num) 0.5));
 }
 
@@ -305,14 +314,14 @@ SteamRegionBoundaries::D(Num E, Num F, Num G) {
 /**
 	@see IF-97, p 33, Eqn 29b
 */
-Num SteamRegionBoundaries::upsilon(Temperature T) {
+Num Boundaries::upsilon(Temperature T) {
 	return T + REGION4_N[9] / (T - REGION4_N[10]);
 }
 
 /**
 	@see IF-97, p 33, Eqn 30
 */
-Num SteamRegionBoundaries::A(Num ups) {
+Num Boundaries::A(Num ups) {
 
 	return sq(ups) + REGION4_N[1] * ups + REGION4_N[2];
 }
@@ -320,7 +329,7 @@ Num SteamRegionBoundaries::A(Num ups) {
 /**
 	@see IF-97, p 33, Eqn 30
 */
-Num SteamRegionBoundaries::B(Num ups) {
+Num Boundaries::B(Num ups) {
 
 	return REGION4_N[3] * sq(ups) + REGION4_N[4] * ups + REGION4_N[5];
 }
@@ -328,7 +337,7 @@ Num SteamRegionBoundaries::B(Num ups) {
 /**
 	@see IF-97, p 33, Eqn 30
 */
-Num SteamRegionBoundaries::C(Num ups) {
+Num Boundaries::C(Num ups) {
 
 	return REGION4_N[6] * sq(ups) + REGION4_N[7] * ups + REGION4_N[8];
 }
@@ -336,15 +345,15 @@ Num SteamRegionBoundaries::C(Num ups) {
 //---------------
 // For B23:
 
-Pressure SteamRegionBoundaries::getpbound_T(Temperature T, bool throw_me) {
+Pressure Boundaries::getpbound_T(Temperature T, bool throw_me) {
 
-	if (T < TB_LOW) {
+	if (T < T_REG1_REG3) {
 		if (throw_me) {
-			throw new SteamCalculatorException(-1, T, REG2_RANGE_TB_LOW);
+			throw new SteamCalculatorException(-1* MPa, T, REG2_RANGE_TB_LOW);
 		}
 	} else if (T > TB_HIGH) {
 		if (throw_me) {
-			throw new SteamCalculatorException(-1, T, REG2_RANGE_TB_HIGH);
+			throw new SteamCalculatorException(-1* MPa, T, REG2_RANGE_TB_HIGH);
 		}
 	}
 
@@ -355,27 +364,25 @@ Pressure SteamRegionBoundaries::getpbound_T(Temperature T, bool throw_me) {
 
 	//SHOW_VALUE(pi);
 
-	return pi * 1;
+	return pi * MPa;
 
 }
 
-Temperature SteamRegionBoundaries::getTbound_p(Pressure p, bool throw_me) {
+Temperature Boundaries::getTbound_p(Pressure p, bool throw_me) {
 
 	if (p < PB_LOW) {
 		if (throw_me) {
-			throw new SteamCalculatorException(p, -1, REG2_RANGE_PB_LOW);
+			throw new SteamCalculatorException(p, -1 * Kelvin, REG2_RANGE_PB_LOW);
 		}
 	} else if (p > REG2_P_HIGH) {
 		if (throw_me) {
-			throw new SteamCalculatorException(p, -1, REG2_RANGE_PB_HIGH);
+			throw new SteamCalculatorException(p, -1 * Kelvin, REG2_RANGE_PB_HIGH);
 		}
 	}
 
-	Num pi = p;
+	Num pi = p / MPa;
 
-	Num thet =
-	    REGION2_NB[4] + pow((pi - REGION2_NB[5]) / REGION2_NB[3],
-	                        (Num) 0.5);
+	Temperature thet = Kelvin * ( REGION2_NB[4] + pow((pi - REGION2_NB[5]) / REGION2_NB[3], (Num) 0.5) );
 
 	return thet * 1;
 }

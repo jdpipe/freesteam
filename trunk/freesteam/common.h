@@ -13,7 +13,6 @@ const SpecificGasConstant R=0.461526E-3 * kJ_kgK; // Specific gas constant for w
 
 #define REG4_TOL 0.001		// relative err on pressures considerd to be equal to psat.
 
-const Temperature TB_LOW = 623.15 * Kelvin;
 const Temperature TB_HIGH = 863.15 * Kelvin;
 const Temperature T_0DEGC = 273.15 * Kelvin;
 const Temperature T_MIN = T_0DEGC;
@@ -23,15 +22,15 @@ const Temperature T_TRIPLE = 273.16 * Kelvin;	// triple-point temperature
 const Temperature REG2_TEMP_REF = 540 * Kelvin;
 const Temperature REG1_TEMP_REF = 1386 * Kelvin;
 const Temperature REG1_T_LOW = T_0DEGC;
-const Temperature REG1_T_HIGH = TB_LOW;
 const Temperature REG2_T_LOW = T_0DEGC;
 const Temperature REG2_T_HIGH = T_MAX;
 
+const Temperature T_REG1_REG3 = 623.15 * Kelvin;
 
 
 const Pressure P_MAX = 100 * MPa;
 const Pressure PB_LOW = 16.5292 * MPa;
-const Pressure P_MIN = Pressure(0);
+const Pressure P_MIN = 0 * Pascal;
 const Pressure P_CRIT = 22.064 * MPa;	// critical-point pressure
 const Pressure P_TRIPLE = 611.657 * Pascal;	// triple-point pressure
 const Pressure REG4_P_MIN = 611.213 * Pascal;	// minimum pressure for region 4 (IF-97 eq 31 & p 35) / [MPa]
@@ -66,7 +65,7 @@ const Temperature T_CRIT_PLUS=(T_CRIT + STEAM_T_EPS);
 
 const Density REG3_ZEROIN_DENS_MAX = 765 * kg_m3;
 
-#define REG3_ZEROIN_TOL 0.00005
+const Density REG3_ZEROIN_TOL= 0.00005 * kg_m3;
 
 //#define K_TO_C(TEMP) (((Num)(TEMP))-T_0DEGC)
 //#define C_TO_K(TEMP) (((Num)(TEMP))+T_0DEGC)

@@ -4,7 +4,7 @@
 
 #include "steamcalculator.h"
 
-class SteamRegionBoundaries:public DesignByContract {
+class Boundaries:public DesignByContract {
 
 	public:
 

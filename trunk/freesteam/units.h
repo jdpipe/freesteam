@@ -41,18 +41,11 @@
 		. Linux -- gcc version 3.2.2 20030222 (Red Hat Linux 3.2.2-5)
 */
 template < int M, int L = 0, int T = 0, int K = 0, int I = 0 > class Units {
-
+	
 	public:
 
-		Units() {
-			val = 0;
-		}
-
-		/// Initialiser
-		Units(double v) {
-			setValue(v);
-		}
-
+		Units();
+		
 		/// Copy constructor
 		Units(const Units & u):val(u.getValue()) {}
 
@@ -121,16 +114,32 @@ template < int M, int L = 0, int T = 0, int K = 0, int I = 0 > class Units {
 
 };
 
-#ifndef NDEBUG
+Units<1,0,0,0,0>::Units<1,0,0,0,0>() : val(1.0){}
+Units<0,1>::Units<0,1>(): val(1.0){}
+
+Units<0,0,1>::Units<0,0,1>(){
+	val = 1.0;
+}
+Units<0,0,0,1>::Units<0,0,0,1>(){
+	val = 1.0;
+}
+Units<0,0,0,0,1>::Units<0,0,0,0,1>(){
+	val = 1.0;
+}
+
+#ifdef NDEBUG
+#ifndef CTEST
 /// Casting to double
 /**
-	Debug version - throw an error if it gets through
+	Allow casting to double during debug builds (throw a runtime error) unless compile-time testing
 */
 template < int m, int l, int t, int k, int i >
 inline Units<m,l,t,k,i>::operator double() const{
 	std::stringstream s;
+	s << "Illegal cast to Units<" << m << l << t << k << i << ">";
 	throw new Exception(s.str());
 }
+#endif
 #endif
 
 /// Casting to double
@@ -144,40 +153,49 @@ inline Units < 0, 0, 0, 0, 0 >::operator double ()const {
 
 // MULTIPLICATION
 
-template < int M, int L, int T, int K, int I, int m, int l,
-int t, int k, int i > inline Units < M + m, L + l, T + t,
-K + k, I + i > operator *(const Units < M, L, T, K, I > u,
-                          const Units < m, l, t, k, i > v) {
-	return Units < M + m, L + l, T + t, K + k,
-	       I + i > (u.getValue() * v.getValue());
+template < int M, int L, int T, int K, int I, int m, int l, int t, int k, int i > 
+inline Units < M + m, L + l, T + t, K + k, I + i > 
+operator *(const Units < M, L, T, K, I > u,  const Units < m, l, t, k, i > v){
+
+	Units <M + m, L + l, T + t, K + k,I + i > r;
+	*reinterpret_cast<double*>(&r) = u.getValue() * v.getValue();
+	return r;
 }
 
 template < int m, int l, int t, int k, int i >
 inline
 Units < m, l, t, k, i >
 operator *(double u, const Units < m, l, t, k, i > v) {
-	return Units < m, l, t, k, i > (u * v.getValue());
+	Units < m, l, t, k, i > r;
+	*reinterpret_cast<double*>(&r) = u * v.getValue();
+	return r;
 }
 
 template < int M, int L, int T, int K, int I >
 inline
 Units < M, L, T, K, I >
 operator *(const Units < M, L, T, K, I > u, double v) {
-	return Units < M, L, T, K, I > (u.getValue() * v);
+	Units < M, L, T, K, I > r;
+	*reinterpret_cast<double*>(&r) = *reinterpret_cast<const double*>(&u) / v;
+	return r ;
 }
 
 template < int m, int l, int t, int k, int i >
 inline
 Units < m, l, t, k, i >
 operator *(int u, const Units < m, l, t, k, i > v) {
-	return Units < m, l, t, k, i > (u * v.getValue());
+	Units < m, l, t, k, i > r;
+	*reinterpret_cast<double*>(&r) = u * v.getValue();
+	return r;
 }
 
 template < int M, int L, int T, int K, int I >
 inline
 Units < M, L, T, K, I >
 operator *(const Units < M, L, T, K, I > u, int v) {
-	return Units < M, L, T, K, I > (u.getValue() * v);
+	Units < M, L, T, K, I > r;
+	*reinterpret_cast<double*>(&r) = u.getValue() * v;
+	return r;
 }
 
 // DIVISION
@@ -194,37 +212,47 @@ operator/(const Units < M, L, T, K, I > u, const Units < m, l, t, k, i > v) {
 		
 		throw new Exception(s.str());
 	}
-	
-	return Units < M - m, L - l, T - t, K - k,
-	       I - i > (u.getValue() / v.getValue());
+	Units < M - m, L - l, T - t, K - k, I - i > r;
+	*reinterpret_cast<double*>(&r) = u.getValue() / v.getValue();
+	return r;
 }
 
 template < int M, int L, int T, int K, int I >
 inline
 Units < M, L, T, K, I >
 operator/(const Units < M, L, T, K, I > u, double v) {
-	return Units < M, L, T, K, I > (u.getValue() / v);
+	Units < M, L, T, K, I > r;
+	*reinterpret_cast<double*>(&r) = u.getValue() / v;
+	return r;
 }
 
 template < int m, int l, int t, int k, int i >
 inline
 Units < -m, -l, -t, -k, -i >
 operator/(double u, const Units < m, l, t, k, i > v) {
-	return Units < -m, -l, -t, -k, -i > (u / v.getValue());
+	
+	
+	Units < -m, -l, -t, -k, -i > r;
+	*reinterpret_cast<double*>(&r) = u / v.getValue();
+	return r;
 }
 
 template < int m, int l, int t, int k, int i >
 inline
 Units < -m, -l, -t, -k, -i >
 operator/(int u, const Units < m, l, t, k, i > v) {
-	return Units < -m, -l, -t, -k, -i > (u / v.getValue());
+	 Units < -m, -l, -t, -k, -i > r;
+	 *reinterpret_cast<double*>(&r) = u / v.getValue();
+	 return r;
 }
 
 template < int M, int L, int T, int K, int I >
 inline
 Units < M, L, T, K, I >
 operator/(const Units < M, L, T, K, I > u, int v) {
-	return Units < M, L, T, K, I > (u.getValue() / v);
+	Units < M, L, T, K, I > r;
+	*reinterpret_cast<double*>(&r) = u.getValue() / v;
+	return r;
 }
 
 
@@ -296,20 +324,26 @@ template < int M, int L, int T, int K, int I >
 Units < M, L, T, K, I >
 operator+(const Units < M, L, T, K, I > u, const Units < M, L,
           T, K, I > v) {
-	return Units < M, L, T, K, I > (u.getValue() + v.getValue());
+	Units < M, L, T, K, I > r;
+	*reinterpret_cast<double*>(&r) = u.getValue() + v.getValue();
+	return r;
 }
 
 template < int M, int L, int T, int K, int I >
 Units < M, L, T, K, I >
 operator-(const Units < M, L, T, K, I > u, const Units < M, L,
           T, K, I > v) {
-	return Units < M, L, T, K, I > (u.getValue() - v.getValue());
+	Units < M, L, T, K, I > r;
+	*reinterpret_cast<double*>(&r) = u.getValue() - v.getValue();
+	return r;
 }
 
 template < int M, int L, int T, int K, int I >
 Units < M, L, T, K, I >
 operator-(const Units < M, L, T, K, I > u) {
-	return Units < M, L, T, K, I > (-u.getValue());
+	Units < M, L, T, K, I > r;
+	*reinterpret_cast<double*>(&r) = -u.getValue();
+	return r;
 }
 
 // Absolute Values
@@ -318,9 +352,11 @@ template < int M, int L, int T, int K, int I >
 inline Units < M, L, T, K, I >
 fabs(const Units < M, L, T, K, I > u) {
 	if (u.getValue() < 0) {
-		return Units < M, L, T, K, I > (-u.getValue());
+		Units < M, L, T, K, I > r;
+		*reinterpret_cast<double*>(&r) = -u.getValue();
+		return r;
 	} else {
-		return Units < M, L, T, K, I > (u.getValue());
+		return u;
 	}
 }
 
@@ -329,7 +365,9 @@ fabs(const Units < M, L, T, K, I > u) {
 template < int M, int L, int T, int K, int I >
 inline Units<2*M, 2*L, 2*T, 2*K, 2*I>
 sq(const Units < M, L, T, K, I > u) {
-	return Units<2*M, 2*L, 2*T, 2*K, 2*I>(sq(u.getValue()));
+	 Units<2*M, 2*L, 2*T, 2*K, 2*I> r;
+	*reinterpret_cast<double*>(&r) = sq(u.getValue());
+	return r;
 }
 	
 // OUTPUT
@@ -362,7 +400,7 @@ DEFINE_OUTPUT_METHOD(0, 0, 1, 0, 0, "s");
 DEFINE_OUTPUT_METHOD(0, 1, -1, 0, 0, "m/s");
 DEFINE_OUTPUT_METHOD(1, 0, 0, 0, 0, "kg");
 DEFINE_OUTPUT_METHOD(0, 0, 0, 1, 0, "K");
-DEFINE_OUTPUT_METHOD(1,-1,-2, 0, 0, "MPa");
+DEFINE_OUTPUT_METHOD(1,-1,-2, 0, 0, "Pa");
 
 //--------------------------------
 // BASE MEASURES
@@ -447,12 +485,11 @@ typedef Units Conductance;
 //----------------------------------------------
 // BASE UNITS FOR BASE MEASURES
 
-const Mass kilogram = Mass
-                      (1.0);
-const Length metre = Length(1.0);
-const Time second = Time(1.0);
-const Temperature Kelvin = Temperature(1.0);
-const Current ampere = Current(1.0);
+const Mass kilogram = Mass();
+const Length metre = Length();
+const Time second = Time();
+const Temperature Kelvin = Temperature();
+const Current ampere = Current();
 
 //------------------------------------
 // SOME ALTERNATIVE NAMES
@@ -538,13 +575,13 @@ const Density kg_m3 = kilogram / metre3;
 
 inline double
 tocelsius(const Temperature& T){
-	return(T.getValue() - 273.15);
+	return T.getValue() - 273.15;
 }
 
 
 inline Temperature
 fromcelsius(double T_C){
-	return Temperature(T_C + 273.15);
+	return Kelvin * (T_C + 273.15);
 }
 
 

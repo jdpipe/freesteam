@@ -1,5 +1,6 @@
 #include "steamcalculator.h"
-#include "test.h"
+#include "batchtest.h"
+#include "steamtestpoint.h"
 
 #include <cmath>
 #include <vector>
@@ -7,24 +8,36 @@
 
 using namespace std;
 
-class Region1RefDataTest:public BatchTest<SteamTestPoint > {
+class Region1TestPoint : public SteamTestPoint{
+	
+	public:
+	
+	Region1TestPoint(double t, double p, double v, double h, double u, double s, double cp, double w)
+		: SteamTestPoint(t,p,v,h,u,s,cp,w){}
+	
+	void test(double tol) const{
+		SteamCalculator *S = new SteamCalculator();
 
-	private:
+		cerr.flags(ios_base::showbase);
+		cerr << "    p = " << pres << ", T = " << temp << endl;
+		
+		S->set_pT(pres, temp);
+		
+		CPPUNIT_ASSERT_EQUAL(1, S->whichRegion());
 
-		SteamCalculator * S;
+		CHECK_RESULT(specvol,      v);
+		CHECK_RESULT(specenthalpy, h);
+		CHECK_RESULT(specienergy,  u);
+		CHECK_RESULT(specentropy,  s);
+		CHECK_RESULT(speccp,       cp);
+		
+		delete S;
+	}
 
-		void testOnePoint(SteamTestPoint p) {
-
-			S->set_pT(p.pres, p.temp);
-
-			CPPUNIT_ASSERT(S->whichRegion() == 1);
-			
-			CHECK_RESULT(specvol,      p.v);
-			CHECK_RESULT(specenthalpy, p.h);
-			CHECK_RESULT(specienergy,  p.u);
-			CHECK_RESULT(specentropy,  p.s);
-			CHECK_RESULT(speccp,       p.cp);
-		}
+};
+	
+	
+class Region1RefDataTest : public BatchTest<Region1TestPoint > {
 		
 	public:
 
@@ -37,8 +50,6 @@ class Region1RefDataTest:public BatchTest<SteamTestPoint > {
 	public:
 
 		void setUp(){
-
-			S = new SteamCalculator();
 
 			setTolerance(0.0000005);
 
@@ -62,17 +73,15 @@ p given in this table.
 
 */
 
-			addTestPoint(SteamTestPoint(300, 3, 0.100215168E-2, 0.115331273E3, 0.112324818E3, 0.392294792, 0.417301218E1, 0.150773921E4));
+			addTestPoint(Region1TestPoint(300, 3, 0.100215168E-2, 0.115331273E3, 0.112324818E3, 0.392294792, 0.417301218E1, 0.150773921E4));
 
-			addTestPoint(SteamTestPoint(300, 80, 0.971180894E-3, 0.184142828E3, 0.106448356E3, 0.368563852, 0.401008987E1, 0.163469054E4));
+			addTestPoint(Region1TestPoint(300, 80, 0.971180894E-3, 0.184142828E3, 0.106448356E3, 0.368563852, 0.401008987E1, 0.163469054E4));
 
-			addTestPoint(SteamTestPoint(500, 80, 0.120241800E-2, 0.975542239E3, 0.971934985E3, 0.258041912E1, 0.465580682E1, 0.124071337E4));
+			addTestPoint(Region1TestPoint(500, 80, 0.120241800E-2, 0.975542239E3, 0.971934985E3, 0.258041912E1, 0.465580682E1, 0.124071337E4));
 
 		}
 
 		void tearDown() {
-
-			delete S;
 
 			data.clear();
 

@@ -5,7 +5,7 @@
 
 #ifndef STEAMCALCULATOR_H
 class SteamCalculator;
-class SteamRegionBoundaries;
+class Boundaries;
 class SteamState;
 #endif
 
@@ -31,14 +31,11 @@ class SteamCalculatorException:public Exception {
 
 	protected:
 		friend class SteamCalculator;
-		friend class SteamRegionBoundaries;
-		//              friend class SteamRegion1;
-		//              friend class SteamRegion2;
-		//              friend class SteamRegion3;
+		friend class Boundaries;
 		friend class SteamState;
 
-		SteamCalculatorException(Pressure p = -1, Temperature T =
-		                             -1, SteamErrorCode c = STM_UNKNOWN_ERROR);
+		SteamCalculatorException(Pressure p = -1 * Pressure(), Temperature T =
+		                             -1 * Temperature(), SteamErrorCode c = STM_UNKNOWN_ERROR);
 
 	private:
 
@@ -54,8 +51,8 @@ class SteamAlmostSaturatedException:public Exception {
 		string what();
 
 	protected:
-		friend class SteamRegionBoundaries;
-		SteamAlmostSaturatedException(Pressure p = -1, Temperature T = -1);
+		friend class Boundaries;
+		SteamAlmostSaturatedException(Pressure p = -1*Pressure(), Temperature T = -1*Temperature());
 
 	private:
 		Num p;

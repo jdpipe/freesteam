@@ -35,7 +35,7 @@ class ZeroIn : public DesignByContract {
     public:
 
     ZeroIn() {
-	    this->tol = 0;
+	    this->tol = 0 * Abscissa();
     }
     /// Set the lower bound of the range that will be searched for a solution
     void setLowerBound(Abscissa ax) {
@@ -135,7 +135,7 @@ class ZeroIn : public DesignByContract {
 
 	    for (;;) {
 		    Abscissa prev_step = b - a;    ///<  Distance from the last but one to the last approximation
-		    double tol_act;                ///<  Actual tolerance
+		    Abscissa tol_act;                ///<  Actual tolerance
 		    Abscissa p;                    ///<  Interpolation step is calculated in the form p/q; division
 		    double q;                      ///<  operations is delayed until the last moment
 		    Abscissa new_step;             ///<  Step at this iteration
@@ -154,7 +154,7 @@ class ZeroIn : public DesignByContract {
 
 		    new_step = (c - b) / 2;
 
-		    if (fabs(new_step) <= tol_act || fb == Ordinate(0)) {
+		    if (fabs(new_step) <= tol_act || fb == 0 * Ordinate()) {
 			    this->issolved = true;       //  Acceptable approx. is found
 			    //cerr << "Best solution is b, f(b=" << b << ")=" << fb <<",f(a="<<a<<")="<< fa <<endl;
 			    return;
@@ -183,7 +183,7 @@ class ZeroIn : public DesignByContract {
 				    p = t2 * (cb * q * (q - t1) - (b - a) * (t1 - 1.0));
 				    q = (q - 1.0) * (t1 - 1.0) * (t2 - 1.0);
 			    }
-			    if (p > Abscissa(0)) {
+			    if (p > 0 * Abscissa()) {
 				    // p was calculated with the opposite sign; make p positive-
 				    q = -q;	// and assign possible minus to q
 			    } else {
@@ -202,7 +202,7 @@ class ZeroIn : public DesignByContract {
 		    }
 
 		    if (fabs(new_step) < tol_act) {	// Adjust the step to be not less
-			    if (new_step > Abscissa(0))	// than tolerance
+			    if (new_step > 0 * Abscissa())	// than tolerance
 				    new_step = tol_act;
 			    else
 				    new_step = -tol_act;
@@ -213,8 +213,8 @@ class ZeroIn : public DesignByContract {
 		    b += new_step;
 		    fb = ((*subject).*method) (b);	//  Do step to a new approxim.
 
-		    if ((fb > Ordinate(0) && fc > Ordinate(0))
-		        || (fb < Ordinate(0) && fc < Ordinate(0))) {
+		    if ((fb > 0 * Ordinate() && fc > 0 * Ordinate())
+		        || (fb < 0 * Ordinate() && fc < 0 * Ordinate())) {
 			    c = a;
 			    fc = fa;	//  Adjust c for it to have a sign opposite to that of b
 		    }

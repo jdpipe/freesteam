@@ -20,6 +20,8 @@ class DesignByContract {
 		static void __abort_Program_(const char *file, const int line,
 		                             const char *expr, const char *type);
 
+		static void DesignByContract::__report_Message_(const char *file, const int line, const char *msg);
+
 #endif
 
 };
@@ -35,6 +37,8 @@ class DesignByContract {
 #define REQUIRE(expr) ASSERT__("PRE-CONDITION",expr)
 #define ENSURE(expr) ASSERT__("POST-CONDITION",expr)
 
+#define MESSAGE(msg) DesignByContract::__report_Message_(__FILE__,__LINE__,msg)
+
 #else
 
 // When built in release mode, the _DEBUG flag would not be defined, thus there will be no overhead
@@ -45,6 +49,7 @@ class DesignByContract {
 #define REQUIRE(expr) ((void) 0)
 #define ENSURE(expr) ((void) 0)
 
+#define MESGAGE(msg) ((void) 0)
 #endif
 
 #endif

@@ -5,31 +5,31 @@
 
 #include <stdio.h>
 
-SteamRegion4 *SteamRegion4::_instance = 0;
+Region4 *Region4::_instance = 0;
 
-int SteamRegion4::getRegion() {
+int Region4::getRegion() {
 	return 4;
 }
 
-// when creating this object, need to get instance of SteamRegion1, SteamRegion2
+// when creating this object, need to get instance of Region1, Region2
 // so that interpolation can be done.
-SteamRegion4::SteamRegion4() {
+Region4::Region4() {
 	// liquid properties will be stored in the parent object
-	this->liquidstate = SteamRegion2::Instance();
+	this->liquidstate = Region2::Instance();
 	// gas properties will be stored in the parent's 'gas' object.
 }
 
-SteamState *SteamRegion4::Instance() {
-	//fprintf(stderr,"SteamRegion4 instance...\n");
+SteamState *Region4::Instance() {
+	//fprintf(stderr,"Region4 instance...\n");
 	if (_instance == 0) {
 		//fprintf(stderr,"Creating new object...\n");
-		_instance = new SteamRegion4();
+		_instance = new Region4();
 		//fprintf(stderr,"New object created...\n");
 	}
 	return _instance;
 }
 
-void SteamRegion4::set_pT(SteamCalculator * c, Pressure p, Temperature T,
+void Region4::set_pT(SteamCalculator * c, Pressure p, Temperature T,
                           Num x) {
 	// SteamCalculator will already have checked that these are saturated values:
 	c->gas = new SteamCalculator();
@@ -51,7 +51,7 @@ void SteamRegion4::set_pT(SteamCalculator * c, Pressure p, Temperature T,
 // Pass the common 'c' object to the SteamState instances.
 
 #define INTERP_REGION4(FUNC,TYPE) \
-	TYPE SteamRegion4::FUNC(SteamCalculator *c){ \
+	TYPE Region4::FUNC(SteamCalculator *c){ \
 		SteamCalculator *g=c->gas; \
 		SteamCalculator *l=c->liq; \
 		TYPE sub=l->FUNC(); \

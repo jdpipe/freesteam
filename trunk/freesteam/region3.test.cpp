@@ -1,5 +1,5 @@
 #include "steamcalculator.h"
-#include "test.h"
+#include "batchtest.h"
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
@@ -11,6 +11,43 @@
 using namespace std;
 
 
+
+/**
+	In region 3, points are defined in terms of temp,density, so define them that way here
+	
+	NOTE this approach will introduce some errors since rootfinding is used to find the target pres value, rather than defining the given rho.
+*/
+class SteamTestPointR3 {
+
+	public:
+
+		/// Easy initialiser for values of known units
+		SteamTestPointR3(double t, double rho, double p, double h, double u,
+		                 double s, double cp, double w) {
+
+			this->temp = t * Kelvin;
+			this->rho = rho * kilogram / metre3;
+			this->pres = p * MPa;
+			this->h = h * kJ_kg;
+			this->u = u * kJ_kg;
+			this->s = s * kJ_kgK;
+			this->cp = cp * kJ_kgK;
+			this->w = w * metre / second;
+
+		}
+		Temperature temp;
+		Density rho;
+		Pressure pres;
+		SpecificEnergy h;		///< enthalpy
+		SpecificEnergy u;		///< internal energy
+		SpecificEntropy s;
+		SpecHeatCap cp;
+		Velocity w;			///< speed of sound
+
+};
+
+
+
 class Region3RefDataTest : public BatchTest<SteamTestPointR3>{
 
 	private:
@@ -19,6 +56,10 @@ class Region3RefDataTest : public BatchTest<SteamTestPointR3>{
 		double tol;
 
 		void testOnePoint(SteamTestPointR3 p) {
+			
+			cerr << endl;
+			
+			cerr << "Testing R3 point T = " << p.temp << ", rho = " << p.rho << endl;
 
 			S->set_pT(p.pres, p.temp);
 
@@ -44,7 +85,7 @@ class Region3RefDataTest : public BatchTest<SteamTestPointR3>{
 
 			S = new SteamCalculator();
 
-			tol = 0.0000005;
+			tol = 1e-30;
 
 			data.
 			push_back(SteamTestPointR3

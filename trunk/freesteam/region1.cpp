@@ -3,22 +3,22 @@
 #include <cmath>
 #include <cstdio>
 
-SteamRegion1 *SteamRegion1::_instance = 0;
+Region1 *Region1::_instance = 0;
 
-SteamRegion1::SteamRegion1() {}
+Region1::Region1() {}
 
-SteamState *SteamRegion1::Instance() {
+SteamState *Region1::Instance() {
 	if (_instance == 0) {
-		_instance = new SteamRegion1();
+		_instance = new Region1();
 	}
 	return _instance;
 }
 
-int SteamRegion1::getRegion() {
+int Region1::getRegion() {
 	return 1;
 }
 
-void SteamRegion1::set_pT(SteamCalculator * c, Pressure p, Temperature T,
+void Region1::set_pT(SteamCalculator * c, Pressure p, Temperature T,
                           Num x) {
 	c->p = p;
 	c->pi = p / REG1_PRES_REF;
@@ -26,7 +26,7 @@ void SteamRegion1::set_pT(SteamCalculator * c, Pressure p, Temperature T,
 	c->tau = REG1_TEMP_REF / T;
 	c->x = x;
 	c->isset = true;
-	//cerr << "SteamRegion1::set_pT(p=" << c->p << ",T=" << c->T << ")"<< endl;
+	//cerr << "Region1::set_pT(p=" << c->p << ",T=" << c->T << ")"<< endl;
 	ENSURE(c->whichRegion() == 1);
 }
 
@@ -62,7 +62,7 @@ const Num REGION1_N[REG1_COUNT] = {
 
 // these macros define methods of Region1 to evaluate the power series expansions for gam, gampi, etc. to calculate the material properties, methods of the base Steam class call these here methods.
 
-#define LOOP_REG1(FUNC,EXPR) LOOP_SUM_FUNC_OBJ(SteamRegion1,FUNC,EXPR,REG1_COUNT)
+#define LOOP_REG1(FUNC,EXPR) LOOP_SUM_FUNC_OBJ(Region1,FUNC,EXPR,REG1_COUNT)
 
 LOOP_REG1(gam,
           REGION1_N[i] * pow(7.1 - c->pi,
@@ -111,7 +111,7 @@ LOOP_REG1(gampitau,
 
 // for use in thermal conductivity
 
-#define EVAL_REG1(fun,expr) EXPR_FUNC_OBJ(SteamRegion1,fun,expr,Num)
+#define EVAL_REG1(fun,expr) EXPR_FUNC_OBJ(Region1,fun,expr,Num)
 
 EVAL_REG1(pitau_iaps85,
 	IAPS85_TEMP_REF * REG1_PRES_REF 

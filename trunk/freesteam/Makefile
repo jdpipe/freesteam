@@ -34,7 +34,17 @@ OBJS = steamcalculator.o state.o region1.o region2.o region3.o region4.o boundar
 #TESTS = $(shell ls *.test.cpp | /bin/sed -r s%\.test\.cpp%.test.o%)
 
 # Or, define the tests in the order you want:
-TESTS = cppunit.test.o empty.test.o region1.test.o region2.test.o region3.test.o
+TESTS = cppunit.test.o empty.test.o units.test.o batchtest.test.o \
+	boundaries.test.o 
+#region1.test.o region2.test.o region3.test.o
+
+CPASS = $(wildcard *.cpass.cpp)
+CFAIL = $(wildcard *.cfail.cpp)
+
+#CPASS = units-1.cpass.cpp
+#CFAIL = units-1.cfail.cpp units-2.cfail.cpp units-
+
+TESTOBJS = steamtestpoint.o
 
 LIB = libsteam.a
 
@@ -60,7 +70,10 @@ $(LIB): $(OBJS)
 # MAKEDEPEND
 
 -include $(OBJS:.o=.d )
--include $(TESTS:.test.o=.test.d)
+-include $(TESTS:.o=.d)
+-include $(TESTOBJS:.o=.d)
+-include $(CPASS:.cpp=.d)
+-include $(CFAIL:.cpp=.d)
 
 %.d: %.cpp
 	@set -e; rm -f $@; \
@@ -101,15 +114,50 @@ $(NAME)-$(VERSION).tar: # tags
 	-rm -rf /tmp/$(NAME)-$(VERSION)
 
 #--------------------------
-# TESTING
+# COMPILE-TIME TESTING
 
-test.exe: test.o $(TESTS) $(LIB)
+CPASSEXES = $(CPASS:.cpp=.exe )
+CFAILEXES = $(CFAIL:.cpp=.exe )
+
+ctest: $(CPASSEXES) $(CFAILEXES)
+.PHONY: ctest cpasstest cfailtest
+
+%.cpass.exe: %.cpass.cpp $(LIB)
+#	@echo
+	@echo "ctest $< (expect pass)..."
+	@if $(CXX) -DCTEST $^ -o $@ $(LDFLAGS); then \
+	else \
+	  echo; \
+	  echo "$<:1: CTEST FAIL: Expected to compile, but did not."; \
+	  echo; \
+	  exit 1; \
+	fi;
+
+%.cfail.exe: %.cfail.cpp $(LIB) Makefile
+#	@echo
+	@echo "ctest $< (expect fail)..."
+	@if $(CXX) -DCTEST $< $(LIB) -o $@ $(LDFLAGS); then \
+	  echo; \
+	  echo "$<:1: CTEST FAIL: Shouldn't have compiled, but did."; \
+	  echo; \
+	  if [ -f $@ ]; then rm $@; fi; \
+	  exit 1; \
+	fi
+
+cleanctests:
+	@-rm *.cpass.exe
+	@-rm *.cfail.exe
+
+#--------------------------
+# RUN-TIME TESTING
+
+test.exe: test.o $(TESTS) $(TESTOBJS) $(LIB)
 	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS_CPPUNIT)
 
 
 #	$(CXX) $^ -o $@ $(CPPFLAGS) $(CXXFLAGS_CPPUNIT) $(CXXFLAGS) $(LDFLAGS) $(LIBS_CPPUNIT) -DTEST
 
-test: test.exe $(TESTS) 
+test: ctest test.exe $(TESTS)
 	./$@
 
 .PHONY:	test

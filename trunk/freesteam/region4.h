@@ -4,7 +4,7 @@
 #include "state.h"
 #include "zeroin.h"
 
-class SteamRegion4:public SteamState {
+class Region4:public SteamState {
 
 	public:
 		int getRegion();
@@ -27,8 +27,8 @@ class SteamRegion4:public SteamState {
 		                    Num x);
 
 	private:
-		SteamRegion4();
-		static SteamRegion4 *_instance;
+		Region4();
+		static Region4 *_instance;
 
 		SteamState *liquidstate;
 

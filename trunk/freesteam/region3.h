@@ -4,7 +4,7 @@
 #define REG3_DENS_REF RHO_CRIT	// kg/m³
 #define REG3_TEMP_REF T_CRIT	// K
 
-class SteamRegion3:public SteamState {
+class Region3:public SteamState {
 
 	public:
 		int getRegion();
@@ -28,16 +28,10 @@ class SteamRegion3:public SteamState {
 		virtual void set_pT(SteamCalculator * c, Pressure p, Temperature T,
 		                    Num x);
 
-		static SteamCalculator *reg3_steamcalculator_zeroin_object;
-
 	private:
 
-		Num my_zeroin(SteamCalculator * c, Num ax,
-		                     Num bx, double (*f) (double x),
-		                     Num tol);
-
-		SteamRegion3();
-		static SteamRegion3 *_instance;
+		Region3();
+		static Region3 *_instance;
 
 		METHOD_H_OBJ(phi);
 		METHOD_H_OBJ(phidel);

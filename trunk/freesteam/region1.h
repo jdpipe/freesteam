@@ -5,20 +5,20 @@
 #include "region4.h"
 #include "units.h"
 
-class SteamRegion1:public SteamState {
+class Region1:public SteamState {
 
 	protected:
 		friend class SteamCalculator;
-		friend class SteamRegion4;
+		friend class Region4;
 
 		static SteamState *Instance();
-		int SteamRegion1::getRegion();
+		int Region1::getRegion();
 		virtual void set_pT(SteamCalculator * c, Pressure p, Temperature T,
 		                    Num x);
 
 	private:
-		SteamRegion1();
-		static SteamRegion1 *_instance;
+		Region1();
+		static Region1 *_instance;
 
 		METHOD_H_OBJ(gam);
 		METHOD_H_OBJ(gampi);

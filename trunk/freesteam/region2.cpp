@@ -2,22 +2,22 @@
 #include "steamcalculator_macros.h"
 
 
-SteamRegion2 *SteamRegion2::_instance = 0;
+Region2 *Region2::_instance = 0;
 
-SteamRegion2::SteamRegion2() {}
+Region2::Region2() {}
 
-SteamState *SteamRegion2::Instance() {
+SteamState *Region2::Instance() {
 	if (_instance == 0) {
-		_instance = new SteamRegion2();
+		_instance = new Region2();
 	}
 	return _instance;
 }
 
-int SteamRegion2::getRegion() {
+int Region2::getRegion() {
 	return 2;
 }
 
-void SteamRegion2::set_pT(SteamCalculator * c, Pressure p, Temperature T,
+void Region2::set_pT(SteamCalculator * c, Pressure p, Temperature T,
                           Num x) {
 	c->p = p;
 	c->pi = p;			// p / 1 MPa
@@ -73,9 +73,9 @@ const Num REGION2_N[REG2R_COUNT] = {
 
 //-------------------------------------------------------------------------
 
-#define LOOP_REG2I(FUNC,EXPR) LOOP_SUM_FUNC_OBJ(SteamRegion2,FUNC,EXPR,REG2I_COUNT)
-#define LOOP_REG2R(FUNC,EXPR) LOOP_SUM_FUNC_OBJ(SteamRegion2,FUNC,EXPR,REG2R_COUNT)
-#define EVAL_REG2(FUNC,EXPR) EXPR_FUNC_OBJ(SteamRegion2,FUNC,EXPR,Num)
+#define LOOP_REG2I(FUNC,EXPR) LOOP_SUM_FUNC_OBJ(Region2,FUNC,EXPR,REG2I_COUNT)
+#define LOOP_REG2R(FUNC,EXPR) LOOP_SUM_FUNC_OBJ(Region2,FUNC,EXPR,REG2R_COUNT)
+#define EVAL_REG2(FUNC,EXPR) EXPR_FUNC_OBJ(Region2,FUNC,EXPR,Num)
 
 #include <cstdlib>
 #include <cmath>
@@ -157,7 +157,7 @@ LOOP_REG2R(gampitaur,
 )
 */
 
-Num SteamRegion2::pitau_iaps85(SteamCalculator * c) {
+Num Region2::pitau_iaps85(SteamCalculator * c) {
 	Num pitau_iaps85 = 0;
 	IS_VALID(c);
 	REQUIRE(c->T != 0);
@@ -184,7 +184,7 @@ EVAL_REG2(delpi_iaps85, \
 )
 */
 
-Num SteamRegion2::delpi_iaps85(SteamCalculator * c) {
+Num Region2::delpi_iaps85(SteamCalculator * c) {
 	Num delpi_iaps85 = 0;
 	Num gp = gampi(c);
 	delpi_iaps85 = -22.115 / 317.763 / 0.461526E-3 / c->T * gampipi(c) / (gp * gp);

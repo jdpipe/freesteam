@@ -3,18 +3,18 @@
 #include "zeroin.h"
 #include "steamcalculator_macros.h"
 
-SteamRegion3 *SteamRegion3::_instance = 0;
+Region3 *Region3::_instance = 0;
 
-SteamRegion3::SteamRegion3() {}
+Region3::Region3() {}
 
-SteamState *SteamRegion3::Instance() {
+SteamState *Region3::Instance() {
 	if (_instance == 0) {
-		_instance = new SteamRegion3();
+		_instance = new Region3();
 	}
 	return _instance;
 }
 
-int SteamRegion3::getRegion() {
+int Region3::getRegion() {
 	return 3;
 }
 
@@ -53,14 +53,14 @@ const Num REGION3_N[REG3_COUNT] = {
 
 //-------------------------------------------------------------------------
 
-#define LOOP_EVAL_REG3(FUNC,EXPR1,EXPR2) EXPR_LOOP_SUM_FUNC_OBJ(SteamRegion3,FUNC,EXPR1,EXPR2,1,REG3_COUNT)
-#define EVAL_REG3(FUNC,EXPR) EXPR_FUNC_OBJ(SteamRegion3,FUNC,EXPR)
+#define LOOP_EVAL_REG3(FUNC,EXPR1,EXPR2) EXPR_LOOP_SUM_FUNC_OBJ(Region3,FUNC,EXPR1,EXPR2,1,REG3_COUNT)
+#define EVAL_REG3(FUNC,EXPR) EXPR_FUNC_OBJ(Region3,FUNC,EXPR)
 
 #include <cstdlib>
 #include <cmath>
 #include <cstdio>
 
-void SteamRegion3::set_pT(SteamCalculator * c, Pressure p, Temperature T,
+void Region3::set_pT(SteamCalculator * c, Pressure p, Temperature T,
                           Num x) {
 
 	SteamCalculator *c2;
@@ -70,7 +70,7 @@ void SteamRegion3::set_pT(SteamCalculator * c, Pressure p, Temperature T,
 
 	c->reg3_target_pressure = p;
 
-	Pressure pb = SteamRegionBoundaries::getpbound_T(T);
+	Pressure pb = Boundaries::getpbound_T(T);
 	c2 = new SteamCalculator();
 	c2->set_pT(pb, T);
 	Density rhomin = c2->dens();
@@ -86,7 +86,7 @@ void SteamRegion3::set_pT(SteamCalculator * c, Pressure p, Temperature T,
 
 	c->accept(z);
 
-	if (!z->isSolved(0.00001)) {
+	if (!z->isSolved(0.00001 * MPa)) {
 		throw new Exception("Couldn't solve set_pT in reg3");
 	}
 	//my_zeroin(c,c2->dens(),REG3_ZEROIN_DENS_MAX,reg3_pres_err,REG3_ZEROIN_TOL);
@@ -96,7 +96,7 @@ void SteamRegion3::set_pT(SteamCalculator * c, Pressure p, Temperature T,
 	c->x = x;
 	c->isset = true;
 
-	//cerr << "SteamRegion3::set_pT(p=" << p << ",T=" << T << ")"<< endl;
+	//cerr << "Region3::set_pT(p=" << p << ",T=" << T << ")"<< endl;
 
 	ENSURE(c->whichRegion() == 3);
 
@@ -108,37 +108,37 @@ void SteamRegion3::set_pT(SteamCalculator * c, Pressure p, Temperature T,
 // In this region, need to overrride the following default methods defined in SteamState.
 
 SpecificVolume
-SteamRegion3::specvol(SteamCalculator *c){
+Region3::specvol(SteamCalculator *c){
 	return 1 / c->rho;
 }
 
 Density
-SteamRegion3::dens(SteamCalculator *c){
+Region3::dens(SteamCalculator *c){
 	return c->rho;
 }
 
 Pressure
-SteamRegion3::pres(SteamCalculator *c){
+Region3::pres(SteamCalculator *c){
 	return c->rho * R * c->T * c->del * phidel(c);
 }
 
 SpecificEnergy
-SteamRegion3::specienergy(SteamCalculator *c){
+Region3::specienergy(SteamCalculator *c){
 	return R * c->T * c->tau * phitau(c);
 }
 
 SpecificEntropy
-SteamRegion3::specentropy(SteamCalculator *c){
+Region3::specentropy(SteamCalculator *c){
 	return R * (c->tau * phitau(c) - phi(c));
 }
 
 SpecificEnergy
-SteamRegion3::specenthalpy(SteamCalculator *c){
+Region3::specenthalpy(SteamCalculator *c){
 	R * c->T * (c->tau * phitau(c) + c->del * phidel(c));
 }
 
 SpecHeatCap
-SteamRegion3::speccp(SteamCalculator *c){
+Region3::speccp(SteamCalculator *c){
 	return R * (-sq(c->tau) * phitautau(c) +
                       (pow
                        (c->del * phidel(c) -
@@ -148,7 +148,7 @@ SteamRegion3::speccp(SteamCalculator *c){
 }
 
 SpecHeatCap
-SteamRegion3::speccv(SteamCalculator *c){
+Region3::speccv(SteamCalculator *c){
 	R * (-sq(c->tau) * phitautau(c));
 }
 
@@ -197,7 +197,7 @@ LOOP_EVAL_REG3(phideltau,
 //EVAL_REG3(pitau_iaps85, \
 //      IAPS85_TEMP_REF * R * sq(c->del_iaps85()*IAPS85_DENS_REF) * (phidel(c) - (REG3_TEMP_REF / c->T) * phideltau(c)) / //(IAPS85_PRES_REF * REG3_DENS_REF) \
 //);
-Num SteamRegion3::pitau_iaps85(SteamCalculator * c) {
+Num Region3::pitau_iaps85(SteamCalculator * c) {
 	Num pitau_iaps85 = 0;
 	pitau_iaps85 =
 	    (IAPS85_TEMP_REF * R * sq(c->del_iaps85() * IAPS85_DENS_REF) *
@@ -211,7 +211,7 @@ Num SteamRegion3::pitau_iaps85(SteamCalculator * c) {
 
 // NOTE: factor of 1e6 removed.
 Num
-SteamRegion3::delpi_iaps85(SteamCalculator *c){
+Region3::delpi_iaps85(SteamCalculator *c){
 	return (IAPS85_PRES_REF * REG3_DENS_REF)
 		/ (IAPS85_DENS_REF * c->del_iaps85() * IAPS85_DENS_REF * R * c->T * (
 			2 * phidel(c) + (c->del_iaps85() * IAPS85_DENS_REF / REG3_DENS_REF) * phideldel(c)

@@ -1,5 +1,6 @@
 #include "steamcalculator.h"
-#include "test.h"
+#include "batchtest.h"
+#include "steamtestpoint.h"
 
 #include <cmath>
 #include <vector>
