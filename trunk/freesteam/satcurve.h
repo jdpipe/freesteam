@@ -130,7 +130,7 @@ class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 					S.setSatWater_T(z.getSolution());
 				}
 
-				return getOrdinate(S);
+				return SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>::getOrdinate(S);
 
 			}catch(Exception *e){
 				stringstream s;
@@ -148,7 +148,7 @@ class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 			S.setSatWater_T(T);
 			//cerr << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << getAbscissa(S);
 
-			return getAbscissa(S) - target;
+			return SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>::getAbscissa(S) - target;
 		}
 
 		Abscissa getAbscissaErrorSteam_T(const Temperature &T){
@@ -158,7 +158,7 @@ class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 			S.setSatSteam_T(T);
 			//cerr << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << getAbscissa(S);
 
-			return getAbscissa(S) - target;
+			return SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>::getAbscissa(S) - target;
 		}
 
 		SteamCalculator S;
@@ -184,7 +184,7 @@ class SatCurve<Ordinate,Temperature,OrdinateAlt,0>
 			}else{
 				S.setSatWater_T(T);
 			}
-			return getOrdinate(S);
+			return SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>::getOrdinate(S);
 		}
 
 };
@@ -208,7 +208,7 @@ class SatCurve<Ordinate,Pressure,OrdinateAlt,0>
 			}else{
 				S.setSatWater_p(p);
 			}
-			return getOrdinate(S);
+			return SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>::getOrdinate(S);
 		}
 };
 
