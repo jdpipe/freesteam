@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-TEST_EXE = test$(EXE_SUFFIX)
+TEST_EXE = runtest$(EXE_SUFFIX)
 TESTOBJS = steamtestpoint.o
 
 CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
