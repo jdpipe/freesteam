@@ -1,0 +1,52 @@
+#*
+	Tests for simple buffer tank model.
+*#
+
+using "buffertank";
+
+#*
+	Simple test of a buffer tank. Water flows in at
+	a steady rate, and mixes with the water in the tank.
+	
+	The temperature of the water coming out at the
+	outlet should gradually rise to equal the
+	temperature of the water being pumped into the tank.
+
+	THIS FLOWSHEET WORKS IN STEADY STATE
+	BUT COMPLAINS ABOUT derivatives="symbolic" WHEN ATTEMPTING
+	TO RUN TRANSIENT CASE.
+*#
+FlowSheet BufferTankTest
+	
+	DEVICES
+	S1 as Stream_pT;
+	TA as BufferTank;
+		
+	CONNECTIONS
+	S1 to TA.In;
+	
+	SPECIFY	
+	
+	# Inlet state and flow rate
+	S1.p = 1 * "atm";
+	S1.T = (273.15 + 30) * "K";
+	S1.mdot = 10 * "kg/s";
+	
+	# Tank volume
+	TA.V = 1 * "m^3";
+	
+	GUESS
+	TA.Out.h = 104.9 * "kJ/kg";
+	
+	TA.rho = 997 * "kg/m^3";
+	TA.H = 1* "m^3" * 104.9 * "kJ/kg" / (1000 * "kg/m^3");
+	
+	INITIAL
+	TA.T = (273.15 + 25) * "K";
+	
+	OPTIONS
+	# mode="steady";
+	differentiation="numeric";
+	outputLevel="all";
+	time = [0 : 0.01 : 60] * "s";
+end

@@ -1,0 +1,47 @@
+#*
+	Model of buffer tank
+	
+	This is a fixed volume of water which will act to smooth out fluctuations 
+	in upstream temperature, because of its thermal bulk.
+
+	As opposed to the HotWaterTank model, the volume of fluid in this model
+	is held constant.
+
+	Assume perfect mixing all the time.
+*#
+
+using "steamequipment";
+
+Model BufferTank as SteamEquipment_ph
+	
+	VARIABLES
+	rho as Density(Brief="Density of water in tank", Lower=600, Upper=1300, Unit="kg/m^3");
+	V as Volume(Brief="Volume of buffer tank (set it to a constant)");
+	h as SpecificEnthalpy(Brief="Average specific enthalpy in tank");
+	T as Temperature(Brief="Temperature of water in tank", Lower=273.15);
+	
+	EQUATIONS
+	# no pressure drop in the tank
+	In.p = Out.p;
+	
+	# mass is density by volume
+	m = rho * V;
+	
+	# total enthalpy
+	H = m * h;
+	
+	# Perfect mixing: what comes out is the average enthalpy and temperature
+	Out.h = h;
+	Out.T = T;
+		
+	# No heating
+	Qdot = 0 * "W";
+	
+	# No work
+	Wdot =  0 * "W";
+	
+	# density can be calculated using the outlet state, because of the mixing
+	# (assume that variation with pressure is negl)
+	rho = Out.freesteam.rho_ph(Out.p,Out.h);
+	
+end
