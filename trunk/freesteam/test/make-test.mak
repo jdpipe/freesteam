@@ -101,8 +101,12 @@ testheading:
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$;
 
+%.o : %.cpp
 
 %.test.o: %.test.cpp
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_CPPUNIT) -c -o $@ $<
+
+test.o: test.cpp
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_CPPUNIT) -c -o $@ $<
 
 #---------------------------------------------------------
