@@ -10,6 +10,12 @@
 	#warning EMSO DEBUG MODE IS SET - START EMSO FROM A CONSOLE TO SEE DEBUG OUTPUT
 #endif
 
+#ifdef SOLVER2_DEBUG
+	#define SOLVER2_DEBUG_PARAM debug
+#else
+	#define SOLVER2_DEBUG_PARAM
+#endif
+
 #include <emso/external_object.h>
 
 #include <sstream>
@@ -29,6 +35,8 @@ class EMSOfreesteam : public ExternalObjectBase {
 
 		EMSOfreesteam(){
 			#ifdef EMSO_DEBUG
+				debug=false;
+
 				numOfCalcCalls = 0;
 				numOfInstances++;
 				instanceNumber = instanceSerialNumber++;
@@ -98,8 +106,13 @@ class EMSOfreesteam : public ExternalObjectBase {
 				,const char *valuesText[]
 				,int_t *retval, char *msg
 		){
-			snprintf(msg, EMSO_MESSAGE_LENGTH, "EMSOfreesteam has no parameters");
-			*retval = emso_error;
+			#ifdef EMSO_DEBUG
+				snprintf(msg, EMSO_MESSAGE_LENGTH, "EMSOfreesteam parameters have not yet been implemented");
+				*retval = emso_error;
+			#else
+				snprintf(msg, EMSO_MESSAGE_LENGTH, "This EMSOfreesteam DLL was compiled without debug support, so you won't see any debug output.");
+				*retval = emso_warning;
+			#endif
 		}
 
 		/// Check method.
@@ -452,12 +465,12 @@ class EMSOfreesteam : public ExternalObjectBase {
 				,int_t *retval, char *msg
 		){
 			SteamCalculator S;
-			Solver2<Pressure,SpecificEnergy,0,SOLVE_ENTHALPY> SS_PH;
-			Solver2<Pressure,SpecificEnergy,0,SOLVE_IENERGY> SS_PU;
-			Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0> SS_UV;
-			Solver2<Pressure,SpecificEntropy,0,SOLVE_ENTROPY> SS_PS;
-			Solver2<Temperature,SpecificEntropy,0,SOLVE_ENTROPY> SS_TS;
-			Solver2<Temperature,SpecificEnergy,0,SOLVE_ENTHALPY> SS_TH;
+			Solver2<Pressure,SpecificEnergy,0,SOLVE_ENTHALPY> SS_PH(SOLVER2_DEBUG_PARAM);
+			Solver2<Pressure,SpecificEnergy,0,SOLVE_IENERGY> SS_PU(SOLVER2_DEBUG_PARAM);
+			Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0> SS_UV(SOLVER2_DEBUG_PARAM);
+			Solver2<Pressure,SpecificEntropy,0,SOLVE_ENTROPY> SS_PS(SOLVER2_DEBUG_PARAM);
+			Solver2<Temperature,SpecificEntropy,0,SOLVE_ENTROPY> SS_TS(SOLVER2_DEBUG_PARAM);
+			Solver2<Temperature,SpecificEnergy,0,SOLVE_ENTHALPY> SS_TH(SOLVER2_DEBUG_PARAM);
 
 			try{
 
@@ -723,6 +736,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 		static int_t numOfPackages;
 
 		#ifdef EMSO_DEBUG
+			bool debug;
 			int_t numOfCalcCalls;
 			int_t instanceNumber;
 			static int_t instanceSerialNumber;

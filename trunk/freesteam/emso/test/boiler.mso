@@ -37,8 +37,6 @@ end
 
 #*
     Boiler
-
-    Specify outlet pressure plus q or outlet temperature
 *#
 Model Boiler_pT as SteamEquipment_pT # 7
     

@@ -25,14 +25,9 @@ FlowSheet TestCondenser
 	
 	SPECIFY
 	S.mdot = 1 * "kg/s";
-	#S.h = 3000 * "kJ/kg";
 	S.p = 2.0 * "bar";
 	S.T = (150 + 273.15) * "K";
 	
-	# CO.q = 1700 * "kJ/s";
-	#CO.DT = -50 * "K";
-	#CO.UA = 30 * "kW/K";
-	#CO.DT = -50 * "K";
 	CO.Out.p = 1.0 * "bar";
 	CO.Out.T = (40 + 273.15) * "K";
 	
@@ -44,3 +39,34 @@ FlowSheet TestCondenser
 	mode = "steady";
 	outputLevel = "all";
 end
+
+FlowSheet TestCondenser2
+	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
+	DEVICES
+	S as Stream_pT; # 5 - 2       = 3
+	CO as Condenser_pT; # 14 - 5 - 2 = 7
+	#CO as Condenser;
+	
+	CONNECTIONS
+	S to CO.In; # (-5) - 0        = -5 DF
+	
+	SPECIFY
+	S.mdot = 1 * "kg/s";
+	S.p = 2.0 * "bar";
+	S.T = (150 + 273.15) * "K";
+	
+	CO.UA = 3090 * "kW/K";
+	CO.Out.p = 1 * "bar";
+	
+	GUESS 
+	# FIXME: [rafael] this is required when DT is specified instead of q:
+	# CO.Out.h = 300 * "kJ/kg";
+	
+	OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+end
+
