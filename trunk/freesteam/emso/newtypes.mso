@@ -35,6 +35,8 @@ Fequency as Positive(Brief = "Frequency", Default=1,Lower=0,Upper=100, Unit="1/s
 
 Temperature as Real(Brief = "Temperature", Default=290, Lower=-1000, Upper=1000, Unit = "K");
 AbsoluteTemperature as Temperature (Brief = "Absolute Temperature", Default=290, Lower=0, Upper=1073.15);
+RelativeTemperature as Temperature;
+
 
 # ELECTRICAL CURRENT
 
