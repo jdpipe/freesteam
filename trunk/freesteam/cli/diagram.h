@@ -32,6 +32,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <iostream>
 #include <string>
 
+class DiagramBase{
+
+	public:
+
+		virtual std::string plot() = 0;
+		static DiagramBase *newDiagram(const std::string &type);
+};
+
 /// Steam tables diagrams to plot with MATLAB
 /**
 	This class produces output which can be piped into an 'M-file' for MATLAB. It will generate plots on arbitrary sets of axes, showing the steam region boundaries for B13, B23, saturated steam line, saturated water line, as well as the limits of pressure and temperature according to IAPWS-IF97 release.
@@ -39,7 +47,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	See diagram.cli.cpp for example usage.
 */
 template<class Abscissa, class Ordinate, int AbsAlt=0, int OrdAlt=0>
-class Diagram{
+class Diagram : public DiagramBase{
 
 	public:
 

@@ -25,7 +25,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <iostream>
 
-int main(void){
+int main(const int argc, char *argv[]){
+
+	std::string type;
+
+	if(argc<2){
+		type="Ts";
+	}else{
+		type=std::string(argv[1]);
+	}
 
 	try{
 		// Diagram<SpecificEnergy,SpecificVolume, SOLVE_IENERGY,0> D;
@@ -33,10 +41,12 @@ int main(void){
 		// Diagram<SpecificEntropy, Temperature, SOLVE_ENTROPY> D;
 		// Diagram<SpecificEntropy, Pressure, SOLVE_ENTROPY, 0> D;
 		// Diagram<SpecificEnergy, Temperature, SOLVE_ENTHALPY, 0> D;
-		Diagram<SpecificEnergy, Pressure,SOLVE_ENTHALPY,0> D;
+		DiagramBase *D = DiagramBase::newDiagram(type);
 		// Diagram<SpecificVolume, Temperature> D;
 
-		cout << D.plot();
+		std::cout << D->plot();
+
+		delete D;
 	}catch(Exception *E){
 		cerr << "main: " << E->what();
 		delete E;
