@@ -28,14 +28,11 @@ Model Pump as SteamEquipment_ph # 8 + 3 - 4 = 7
     eta as Efficiency(Brief="Pump efficiency");
     v   as SpecificVolume(Brief="Inlet specific volume", Default=0.001);
 	h_es as SpecificEnthalpy(Brief = "Isentropic output enthalpy");
-	Dp as PressureDifference;
-    
+	
 	CONNECTIONS
 	#In.mdot to Out.mdot;
 	
     EQUATIONS
-    "Mass balance"
-    Out.mdot = In.mdot;
     
     v = In.freesteam.v_ph(In.p, In.h);
     
@@ -50,11 +47,9 @@ Model Pump as SteamEquipment_ph # 8 + 3 - 4 = 7
     "Efficiency"
     (Out.h - In.h) = eta * (h_es - In.h);
 	
-    "Pressure difference"
-    Dp = Out.p - In.p;
-	
 	"Zero Volume"
 	H = 0 * "J";
+	m = 0 * "kg";
 	
 end
 
@@ -64,35 +59,35 @@ Model PumpWithCurve as Pump
 
 	VARIABLES
 	# constants that define the pump curve:
-	H_max as Length(Brief="Zero-Flow Head");
-	Q_max as VolumeFlowRate(Brief="Zero-Head Flow Rate (vol)");
+	z_max as Length(Brief="Zero-Flow Head");
+	Vdot_max as VolumeFlowRate(Brief="Zero-Head Flow Rate (vol)");
 	N_1 as Frequency(Brief="Reference Speed", Unit="1/min");
 	
 	# variables that define the operating point:
 	N as Frequency(Brief="Pump speed (RPM)", Unit="1/min", Default=100);
-	H as Length(Brief="Pump head");
-	Q as VolumeFlowRate(Brief="Pump flow rate (vol)");
+	z as Length(Brief="Pump head");
+	Vdot as VolumeFlowRate(Brief="Pump flow rate (vol)");
 	
 	# internal variables
-	H_1 as Length(Brief="Pump head");
+	z_1 as Length(Brief="Pump head");
 	a as Real(Unit="m/(m^6/s^2)");
-	Q_1 as VolumeFlowRate(Brief="Pump flow rate (vol)");
+	Vdot_1 as VolumeFlowRate(Brief="Pump flow rate (vol)");
 	
 	EQUATIONS
 	"a"
-	a = H_max / Q_max^2;
+	a = z_max / Vdot_max^2;
 	
 	"pump curve parabola"
-	H_1 = a * (Q_1-Q_max) * (Q_1-Q_max);
+	z_1 = a * (Vdot_max^2 - Vdot_1^2);
 	
-	"Q"
-	Q = Q_1 * N / N_1;
+	"Vdot"
+	Vdot = Vdot_1 * N / N_1;
 	
 	"H"
-	H = H_1 * (N/N_1)^2;
+	z = z_1 * (N/N_1)^2;
 	# P = P_1 * (N/N_1)^3; # if we have a P_1(Q) curve, then we will be able to imply eta(Q,N) but at the moment, this is not implemented.
 	
 	"H to Dp"
-	Dp = 9.81 * "N/kg" * H / v;
+	Dp = 9.81 * "N/kg" * z / v;
 
 end

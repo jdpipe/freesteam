@@ -1,135 +1,179 @@
 #* 
     freesteam stream integration for use in steam system calculations
     
-    Based on steam.mso by Rafael de Pelegrini Soares,
-
-    Copyright 2002-2005 Rafael de Pelegrini Soares.
-    Modified by John Pye 2005 http://freesteam.sf.net
-    
-    This copyright statement must not be deleted and must be
-    included in any modification or adaptation of this Model.
+    Originally based on code by Rafael de Pelegrini Soares
+	Modified by John Pye 2005 http://freesteam.sf.net
 *#
 
 using "streams";
 
-#** 
-    Basic steam equipment item with one inlet and outlet stream.
+#*
+	This 'base' model contains many of the standard variables which all
+	steam equipment items should share.
 
-	Now with added first law...
+	However because we don't yet know the type of the 'in' and 'out' 
+	ports, we can't write any relationships between these.
 *#
-Model SteamEquipment # DF = 10
+Model SteamEquipmentBase
+	
+	VARIABLES
+	Qdot as HeatRate(Brief = "Heat supplied to component from environment", Unit="W", Lower=-2e9, Upper=2e9);
+	Wdot as Power(Brief = "Work done by fluid on environment", Unit="W", Lower=-2e9, Upper=2e9);
+	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
+	m as Mass(Brief = "Mass of fluid in the control volume");
+    DT  as Temperature(Brief="Temperature difference");
+    Dp  as PressureDifference(Brief="Pressure difference");	
+end
+	
+#*
+    Generic steam equipment item. Includes mass conservation and energy conservation laws.
+*#
+Model SteamEquipment as SteamEquipmentBase
 
     VARIABLES
 	in  In  as Stream;
 	out Out as Stream;
-	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
-	Wdot as Power(Brief = "Work done by fluid on environment");
-	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
-	m as Mass(Brief = "Mass of fluid in the control volume");
 	
 	SPECIFY
 	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
 	diff(m) = In.mdot - Out.mdot;
-	
+
+    "Temperature difference"
+    DT = Out.T - In.T;
+    
+    "Pressure difference"
+    Dp = Out.p - In.p;
 end
 
-Model SteamEquipment_ph # DF = 8
+#*
+    Generic steam equipment item. Includes mass conservation and energy conservation laws.
+	This version has steam properties added at the outlet port, such that T(p,h) and s(p,h)
+	relations are observed.
+*#
+Model SteamEquipment_ph as SteamEquipmentBase
 
     VARIABLES
 	in  In  as Stream;
 	out Out as Stream_ph;   
-	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
-	Wdot as Power(Brief = "Work done by fluid on environment");
-	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
-	m as Mass(Brief = "Mass of fluid in the control volume");
 	
 	SPECIFY
 	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
 	diff(m) = In.mdot - Out.mdot;
 	
-	
+    "Temperature difference"
+    DT = Out.T - In.T;
+    
+    "Pressure difference"
+    Dp = Out.p - In.p;	
 
 end
 
-Model SteamEquipment_ps # DF = 8
+#*
+    Generic steam equipment item. Includes mass conservation and energy conservation laws.
+	This version has steam properties added at the outlet port, such that h(p,s) and T(p,s)
+	relations are observed.
+*#
+Model SteamEquipment_ps as SteamEquipmentBase# DF = 8
 
     VARIABLES
 	in  In  as Stream;
 	out Out as Stream_ps;   
-	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
-	Wdot as Power(Brief = "Work done by fluid on environment");
-	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
-	m as Mass(Brief = "Mass of fluid in the control volume");
-	
+
 	SPECIFY
 	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
 	diff(m) = In.mdot - Out.mdot;
 	
-
+    "Temperature difference"
+    DT = Out.T - In.T;
+    
+    "Pressure difference"
+    Dp = Out.p - In.p;
 end
 
-Model SteamEquipment_Ts # DF = 8
+#*
+    Generic steam equipment item. Includes mass conservation and energy conservation laws.
+	This version has steam properties added at the outlet port, such that p(T,s) and h(T,s)
+	relations are observed.
+*#
+Model SteamEquipment_Ts as SteamEquipmentBase # DF = 8
 
     VARIABLES
 	in  In  as Stream;
 	out Out as Stream_Ts;   
-	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
-	Wdot as Power(Brief = "Work done by fluid on environment");
-	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
-	m as Mass(Brief = "Mass of fluid in the control volume");
 	
 	SPECIFY
 	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
 	diff(m) = In.mdot - Out.mdot;
 	
-
+    "Temperature difference"
+    DT = Out.T - In.T;
+    
+    "Pressure difference"
+    Dp = Out.p - In.p;
 end
 
-Model SteamEquipment_Th # DF = 8
+#*
+    Generic steam equipment item. Includes mass conservation and energy conservation laws.
+	This version has steam properties added at the outlet port, such that p(T,h) and s(T,h)
+	relations are observed.
+*#
+Model SteamEquipment_Th as SteamEquipmentBase
 
     VARIABLES
 	in  In  as Stream;
 	out Out as Stream_Th;   
-	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
-	Wdot as Power(Brief = "Work done by fluid on environment");
-	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
-	m as Mass(Brief = "Mass of fluid in the control volume");
 	
 	SPECIFY
 	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
 	diff(m) = In.mdot - Out.mdot;
 	
-
+    "Temperature difference"
+    DT = Out.T - In.T;
+    
+    "Pressure difference"
+    Dp = Out.p - In.p;
 end
 
-Model SteamEquipment_pT # DF = 8
+#*
+    Generic steam equipment item. Includes mass conservation and energy conservation laws.
+	This version has steam properties added at the outlet port, such that h(p,T) and s(p,T)
+	relations are observed.
+*#
+Model SteamEquipment_pT as SteamEquipmentBase
 
     VARIABLES
 	in  In  as Stream;
 	out Out as Stream_pT;   
-	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
-	Wdot as Power(Brief = "Work done by fluid on environment");
-	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
-	m as Mass(Brief = "Mass of fluid in the control volume");
 	
 	SPECIFY
 	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
 	diff(m) = In.mdot - Out.mdot;
 	
+	"Temperature difference"
+    DT = Out.T - In.T;
+    
+    "Pressure difference"
+    Dp = Out.p - In.p;
 end
 
-Model SteamEquipment_uv # DF = 8
+#*
+    Generic steam equipment item. Includes mass conservation and energy conservation laws.
+	This version has steam properties added at the outlet port, such that p(u,v), T(u,v), h(u,v) and s(u,v)
+	relations are observed.
+*#
+Model SteamEquipment_uv as SteamEquipmentBase
 
     VARIABLES
 	in  In  as Stream;
 	out Out as Stream_uv;   
-	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
-	Wdot as Power(Brief = "Work done by fluid on environment");
-	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
-	m as Mass(Brief = "Mass of fluid in the control volume");
 	
 	SPECIFY
 	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
 	diff(m) = In.mdot - Out.mdot;
-	
+    
+	"Temperature difference"
+    DT = Out.T - In.T;
+    
+    "Pressure difference"
+    Dp = Out.p - In.p;	
 end

@@ -29,7 +29,7 @@ Model BufferTank as SteamEquipment_ph
 	
 	# total enthalpy
 	H = m * h;
-	
+		
 	# Perfect mixing: what comes out is the average enthalpy and temperature
 	Out.h = h;
 	Out.T = T;

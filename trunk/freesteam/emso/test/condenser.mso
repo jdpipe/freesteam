@@ -21,31 +21,20 @@ using "steamequipment";
 Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
     
     VARIABLES
-    q   as HeatRate(Brief="Heat removed from the stream");
-    DT  as Temperature(Brief="Temperature difference");
-    Dp  as PressureDifference(Brief="Pressure difference", Upper=0);
-	UA  as HeatRatePerTemperature(Brief="Condenser UA value");
+    UA  as HeatRatePerTemperature(Brief="Condenser UA value");
 	x   as Quality;
 
-	CONNECTIONS
-    #In.mdot to Out.mdot;
-
-    EQUATIONS
-	"Mass balance"
-	Out.mdot = In.mdot;
-    
-    "Energy balance (q extracted > 0)"
-    q = - (Out.mdot * Out.h - In.mdot * In.h);
-    
-    "Heat transfer coefficient"
-    q = -UA * DT;
-    
-    "Temperature difference"
-    DT = Out.T - In.T;
-    
-    "Pressure difference"
-    Dp = Out.p - In.p;
+	EQUATIONS
+	# Zero volume
+	m = 0 * "kg";
+	H = 0 * "J";
 	
+	# No work
+	Wdot = 0 * "W";
+	
+	"Heat transfer coefficient"
+    Qdot = UA * DT;
+    	
 	"Outlet quality"
 	x = Out.freesteam.x_ph(Out.p, Out.h);
 	
@@ -57,29 +46,21 @@ end
 Model Condenser_pT as SteamEquipment_pT # 8 + 4 - 5 = 7
     
     VARIABLES
-    q   as HeatRate(Brief="Heat removed from the stream");
-    DT  as Temperature(Brief="Temperature difference");
-    Dp  as PressureDifference(Brief="Pressure difference");
-	UA  as HeatRatePerTemperature(Brief="Condenser UA value");
+    UA  as HeatRatePerTemperature(Brief="Condenser UA value");
 	
-    CONNECTIONS
-    # In.mdot to Out.mdot;
-
-    EQUATIONS
-	"Mass balance"
-	Out.mdot = In.mdot;
-    
-    "Energy balance (q extracted > 0)"
-    q = - (Out.mdot * Out.h - In.mdot * In.h);
-    
-    "Heat transfer coefficient"
-    q = -UA * DT;
-    
-    "Temperature difference"
-    DT = Out.T - In.T;
-    
-    "Pressure difference"
-    Dp = Out.p - In.p;
+	EQUATIONS
+	# Zero volume
+	m = 0 * "kg";
+	H = 0 * "J";
+	
+	# No work
+	Wdot = 0 * "W";
+	
+	"Heat transfer coefficient"
+    Qdot = UA * DT;
+	
+	# Can't evaluate x at outlet in this case, since steam state
+	# specified i.t.o. (p,T)
     
 end
 

@@ -79,15 +79,46 @@ FlowSheet PumpTest2
 	outputLevel = "all";
 end
 
+
+#*
+	Similar to above but Dp instead of Out.p
+
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet PumpTest3
+	
+	DEVICES
+	S1 as Stream_pT;
+	PU as Pump;
+	
+	CONNECTIONS
+	S1 to PU.In;
+	
+	SPECIFY
+	S1.mdot = 30 * "kg/s";
+	
+	S1.p = 1.5 * "bar";
+	S1.T = 380 * "K";
+	
+	PU.eta = 0.65;
+
+	PU.Dp = 58.5 * "bar";
+	
+	OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+end
+
 #*
 	Test of a pump with a pump curve.
 
 	Inlet state is specified, then pump speed, flow rate and pump pressure rise; 
 	the pumping power remains to be calculated.
 
-	THIS FLOWSHEET WORKS
+	////THIS FLOWSHEET WORKS
+	BROKEN !
 *#
-FlowSheet PumpTest3
+FlowSheet PumpTest4
 
 	DEVICES
 	S1 as Stream_pT;
@@ -97,18 +128,18 @@ FlowSheet PumpTest3
 	S1 to PU.In;
 
 	SPECIFY
-	S1.mdot=1000 *"kg/m^3" * 5 * 0.001 * "m^3/s";
+	S1.mdot= (1000 *"kg/m^3") * 5 * (0.001 * "m^3/s"); # 5 L/s
 
 	S1.p = 50 * "bar";
 	S1.T = (200 + 273.15) * "K";
 
-	PU.H_max = 10 * "m" * 20;
-	PU.Q_max = 10 * 0.001 * "m^3/s";
-	PU.N_1 = 2000 * "1/min";
+	PU.z_max = 10 * "m" * 20; # 20 bar
+	PU.Vdot_max = 10 * (0.001 * "m^3/s"); # 10 L/s
+	PU.N_1 = 2000 * "1/min"; # 2000 RPM
 	PU.eta = 0.65;
 	
-	PU.N = 3000 * "1/min";
-	PU.Dp = 10 * "bar";
+	PU.N = 2000 * "1/min"; # 3000 RPM
+	PU.Out.p = 60 * "bar";
 	
 	OPTIONS
 	mode="steady";
@@ -119,8 +150,9 @@ end
 	Let the pump curve determine the flow rate from the pressure rise, at fixed pump speed and power
 
 	THIS FLOWSHEET WORKS
+    ... BROKEN
 *#
-FlowSheet PumpTest4
+FlowSheet PumpTest5
 	
 	DEVICES
 	S1 as Stream_pT;
@@ -133,8 +165,8 @@ FlowSheet PumpTest4
 	S1.p = 50 * "bar";
 	S1.T = (200 + 273.15) * "K";
 
-	PU.H_max = 10 * "m" * 20;
-	PU.Q_max = 10 * 0.001 * "m^3/s";
+	PU.z_max = 10 * "m" * 20;
+	PU.Vdot_max = 10 * 0.001 * "m^3/s";
 	PU.N_1 = 2000 * "1/min";
 	PU.eta = 0.65;
 	
@@ -151,8 +183,9 @@ end
 	Let the pump curve determine the pressure rise given specified flow rate, speed and power
 
 	THIS FLOWSHEET WORKS
+   ... BROKEN
 *#
-FlowSheet PumpTest5
+FlowSheet PumpTest6
 		
 	DEVICES
 	S1 as Stream_pT;
@@ -167,8 +200,8 @@ FlowSheet PumpTest5
 	S1.p = 40 * "bar";
 	S1.T = (200 + 273.15) * "K";
 
-	PU.H_max = 10 * "m" * 20;
-	PU.Q_max = 10 * 0.001 * "m^3/s";
+	PU.z_max = 10 * "m" * 20;
+	PU.Vdot_max = 10 * 0.001 * "m^3/s";
 	PU.N_1 = 2000 * "1/min";
 	PU.eta = 0.65;
 	
