@@ -195,7 +195,10 @@ class SatCurve<Ordinate,Temperature,OrdinateAlt,0>
 /// SatCurve for case where Abscissa is pressure
 /**
 	Use T_sat(p) directly then return Ordinate(p,T_sat) - i.e. using the Region 4 backward equation
+
+	DISABLED because setSatSteam_p and setSatWater_p are inconsistent with satSatXxxxx_T
 */
+/*
 template<class Ordinate,int OrdinateAlt>
 class SatCurve<Ordinate,Pressure,OrdinateAlt,0>
 	: public SatCurveBase<Ordinate,Pressure,OrdinateAlt,0>{
@@ -215,6 +218,6 @@ class SatCurve<Ordinate,Pressure,OrdinateAlt,0>
 			return SatCurveBase<Ordinate,Pressure,OrdinateAlt,0>::getOrdinate(S);
 		}
 };
-
+*/
 
 #endif

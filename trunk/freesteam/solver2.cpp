@@ -19,6 +19,66 @@ Solver2<Pressure,Temperature,0,0>::whichRegion(const Pressure &p, const Temperat
 }
 
 /**
+	whichRegion given p, u
+*/
+int
+Solver2<Pressure,SpecificEnergy,0,SOLVE_IENERGY>::whichRegion(const Pressure &p, const SpecificEnergy &u){
+
+	try{
+
+		SteamCalculator S;
+
+		S.setSatWater_T(T_REG1_REG3);
+		Pressure p_b1234 = S.pres();
+		S.setRegion3_rhoT(RHO_CRIT,T_CRIT);
+		Pressure p_crit = S.pres();
+
+		REQUIRE(p > P_MIN);
+		REQUIRE(p < P_MAX);
+
+		if(p <= p_crit){
+
+			SatCurve<SpecificEnergy,Pressure,SOLVE_IENERGY> SC; // u_sat(p);
+			SpecificEnergy u_f = SC.solve(p,SAT_WATER);
+			SpecificEnergy u_g = SC.solve(p,SAT_STEAM);
+
+			if(p <= p_b1234){
+				if(u <= u_f){
+					return 1;
+				}
+
+				if(u >= u_g){
+					return 2;
+				}
+			}
+
+			if(u < u_g and u > u_f){
+				return 4;
+			}
+		}
+
+		B13Curve<SpecificEnergy,Pressure,SOLVE_IENERGY> B13;
+		SpecificEnergy u_b13 = B13.solve(p);
+		if(u <= u_b13){
+			return 1;
+		}
+
+		B23Curve<SpecificEnergy,Pressure,SOLVE_IENERGY> B23;
+		SpecificEnergy u_b23 = B23.solve(p);
+		if(u >= u_b23){
+			return 2;
+		}
+
+		return 3;
+
+	}catch(Exception *E){
+		stringstream s;
+		s << "Solver2<p,u>::whichRegion(p = " << p/MPa << " MPa, u = " << u/kJ_kg << " kJ/kg): " << E->what();
+		throw new Exception(s.str());
+	}
+}
+
+/**
 	whichRegion given u, v
 */
 int
