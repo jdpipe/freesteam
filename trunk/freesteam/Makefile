@@ -1,15 +1,35 @@
-#
-# Makefile for steam tables library
-# libsteam.a
-#
-# by John Pye
-#
+# freesteam - IAPWS-IF97 steam tables library
+# Copyright (C) 2004-2005  John Pye
+# 
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+
+# This is the GNU Makefile for freesteam. 
+# Use 'make test' or 'make example' on an GCC system such as Linux, mingw or cygwin to get started.
 
 #---------------------------
 # PROJECT
 
 NAME = freesteam
-VERSION = 0.4
+VERSION = 0.4.1
+
+#---------------------------
+# GET PLATFORM SPECIFIC SETTINGS
+
+BUILD_PLATFORM := $(shell ./config.guess)
+include make-$(BUILD_PLATFORM).mak
 
 #---------------------------
 # CONFIGURATION
@@ -18,14 +38,14 @@ VERSION = 0.4
 CXX = g++
 
 CXXFLAGS = -fmessage-length=170 -O3 -Wall
-LDFLAGS = -lncurses -lc -lm -O3
+LDFLAGS = -lm -O3
 
 CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
 
 CPPFLAGS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --cflags)
 LIBS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --libs)
 
-CPPFLAGS = -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -W -DNDEBUG $(CPPFLAGS_CPPUNIT)
+CPPFLAGS = -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -W $(CPPFLAGS_CPPUNIT)
 
 OBJS = exception.o steamcalculator.o state.o region1.o region2.o region3.o region4.o boundaries.o \
 	steamcalculatorexception.o zeroin.o designbycontract.o units.o solver.o steamproperty.o \
@@ -56,7 +76,9 @@ CFAIL = $(wildcard *.cfail.cpp)
 
 TESTOBJS = steamtestpoint.o iapws95.o
 
-CLIS = diagram.cli.exe
+HOOKOBJS = emsohooks.o
+
+CLIS = diagram.cli.cpp pboundt.cli.cpp
 
 CLIOBJS = diagram.o
 
@@ -79,6 +101,16 @@ $(LIB): $(OBJS)
 example: example.o $(LIB)
 	$(CXX) $^ -o $@ $(LDFLAGS)
 
+#--------------------------
+# EMSO
+
+EMSO = emsofreesteam-$(VERSION)$(SO_SUFFIX)
+
+emso: $(LIB) $(EMSO)
+
+$(EMSO): emsohooks.o
+	g++ -shared -o $@ $< $(LIB) $(LDFLAGS)
+
 #-------------------------
 # CLEAN
 
@@ -93,11 +125,11 @@ cleanobjs:
 	-rm *.o *~ core *.stackdump *.a
 
 cleantests:
-	@-rm *.test *.test.exe
+	@-rm *.test *.test$(EXE_SUFFIX)
 
 cleanctests:
-	@-rm *.cpass.exe
-	@-rm *.cfail.exe
+	@-rm *.cpass$(EXE_SUFFIX)
+	@-rm *.cfail$(EXE_SUFFIX)
 	@-rm &.cfail.cpp.ok
 	@-rm ctest.skip
 	
@@ -107,8 +139,9 @@ cleanctests:
 -include $(OBJS:.o=.d )
 -include $(TESTS:.o=.d)
 -include $(TESTOBJS:.o=.d)
--include $(CLIS:.exe=.d)
+-include $(CLIS:.cpp=.cli.d)
 -include $(CLIOBJS:.o=.d)
+-include $(HOOKOBJS:.o=.d)
 -include $(CPASS:.cpp=.d)
 -include $(CFAIL:.cpp=.d)
 
@@ -143,7 +176,7 @@ $(NAME)-$(VERSION).tar: # tags
 	-rm /tmp/$(NAME)-$(VERSION)/*.d
 	-rm /tmp/$(NAME)-$(VERSION)/*.ok
 	-rm /tmp/$(NAME)-$(VERSION)/*.a
-	-rm /tmp/$(NAME)-$(VERSION)/*.exe
+	-rm /tmp/$(NAME)-$(VERSION)/*$(EXE_SUFFIX)
 	-rm /tmp/$(NAME)-$(VERSION)/*.log
 	-rm /tmp/$(NAME)-$(VERSION)/core
 	-rm /tmp/$(NAME)-$(VERSION)/*.stackdump
@@ -161,7 +194,7 @@ $(NAME)-$(VERSION).tar: # tags
 
 .PHONY: ctest cpasstest cfailtest ctestheading do_ctest
 
-CPASSEXES = $(CPASS:.cpp=.exe )
+CPASSEXES = $(CPASS:.cpp=$(EXE_SUFFIX) )
 CFAILOKS = $(CFAIL:.cpp=.ok )
 
 ctest: $(LIB) ctestheading do_ctest
@@ -176,7 +209,7 @@ ctestheading:
 	@echo "COMPILE-TIME TESTING"
 	@echo
 
-%.cpass.exe: %.cpass.cpp $(LIB) Makefile
+%.cpass$(EXE_SUFFIX): %.cpass.cpp $(LIB) Makefile
 	@echo "ctest $< (expect pass)..."
 	@echo $(CXX) -DCTEST $< $(LIB) -o $@ $(LDFLAGS);
 	@if $(CXX) -DCTEST $< $(LIB) -o $@ $(LDFLAGS); then \
@@ -189,12 +222,12 @@ ctestheading:
 
 %.cfail.ok: %.cfail.cpp $(LIB) Makefile
 	@echo "ctest $< (expect fail)..."
-	@echo $(CXX) -DCTEST $< $(LIB) -o cfail.exe $(LDFLAGS)
-	@if $(CXX) -DCTEST $< $(LIB) -o cfail.exe $(LDFLAGS); then \
+	@echo $(CXX) -DCTEST $< $(LIB) -o cfail$(EXE_SUFFIX) $(LDFLAGS)
+	@if $(CXX) -DCTEST $< $(LIB) -o cfail$(EXE_SUFFIX) $(LDFLAGS); then \
 	  echo; \
 	  echo "$<:1: CTEST FAIL: Shouldn't have compiled, but did."; \
 	  echo; \
-	  if [ -f $@ ]; then rm cfail.exe; fi; \
+	  if [ -f $@ ]; then rm cfail$(EXE_SUFFIX); fi; \
 	  exit 1; \
 	fi; \
 	echo "$<" > $@;
@@ -204,10 +237,10 @@ ctestheading:
 
 .PHONY:	test testheading
 
-test: ctest testheading test.exe $(TESTS)
+test: ctest testheading test$(EXE_SUFFIX) $(TESTS)
 	./$@
 
-test.exe: test.o $(TESTS) $(TESTOBJS) $(LIB)
+test$(EXE_SUFFIX): test.o $(TESTS) $(TESTOBJS) $(LIB)
 	@echo
 	@echo "CppUnit libs flag: " $(LIBS_CPPUNIT)
 	@echo
@@ -221,16 +254,16 @@ testheading:
 #-----------------------------
 # LITTLE COMMANDLINE DIAGNOSTIC PROGRAMS
 
-%.cli.exe: %.cli.o $(OBJS) $(CLIOBJS)
+%.cli$(EXE_SUFFIX): %.cli.o $(OBJS) $(CLIOBJS)
 	$(CXX) $< $(OBJS) $(CLIOBJS) -o $@ $(LDFLAGS)
 
-critsurf.m: criticalsurface.cli.exe
+critsurf.m: criticalsurface.cli$(EXE_SUFFIX)
 	./$< > $@
 
-pboundt.m: pboundt.cli.exe
+pboundt.m: pboundt.cli$(EXE_SUFFIX)
 	./$< > $@
 
-diagram.m: diagram.cli.exe
+diagram.m: diagram.cli$(EXE_SUFFIX)
 	./$< > $@
 
 #-----------------------------

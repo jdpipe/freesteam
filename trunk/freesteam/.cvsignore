@@ -19,3 +19,6 @@ b13.data.txt
 pboundt.data.txt
 doc
 diagram.m
+*.dll
+*.bz2
+*.gz
