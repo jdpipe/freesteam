@@ -19,7 +19,7 @@
 # Platform-specific options for i686-pc-linux-gnu
 #
 
-EXE_SUFFIX = 
+EXE_SUFFIX = .exe
 SO_SUFFIX = .dll
 SO_PREFIX = 
 

@@ -12,8 +12,8 @@
 <body>
 <h1>freesteam<br>
 </h1>
-<div class="nav"><span style="font-weight: bold;">Current version: </span>0.4<br>
-<span style="font-weight: bold;">Released: </span>23 Feb 2005<br>
+<div class="nav"><span style="font-weight: bold;">Current version: </span>0.5.1<br>
+<span style="font-weight: bold;">Released: </span>8 Mar 2005<br>
 <br>
 Quick links
 <ul>
@@ -84,6 +84,8 @@ using one of the following combinations of variables:<br>
 (u,v) anywhere, by two-way iteration<br>
 (p,h) anywhere, by two-way iteration<br>
 (p,u) anywhere, by two-way iteration<br>
+(p,s) anywhere, by two-way iteration<br>
+(T,s) anywhere, by two-way iteration<br>
       </p>
       <p>Alternatively, you can specify:</p>
       <p>saturated water at T<br>
@@ -214,7 +216,10 @@ freesteam-0.4</code>.<br>
   </li>
   <li>Edit the <code>Makefile </code>if necessary, to reflect your
 C++ compiler command and CppUnit library locations.</li>
-  <li>Type:</li>
+  <li>On a Linux system, you'll need to type <code>chmod +x
+config.guess</code><br>
+  </li>
+  <li>Build/test the package:</li>
   <ol>
     <li><code>make test</code> to test the package</li>
     <li><code>make example</code> to make the example program, then
@@ -225,22 +230,23 @@ type '<code>./example</code>'<br>
 <h2><a name="othercompilers"></a>3. Other compilers</h2>
 freesteam is known to compile and run under the following system setups:<br>
 <ul>
-  <li>GCC 3.3.3.3 (cygwin special) </li>
+  <li>GCC 3.3.3 (cygwin special) </li>
   <li>GCC 3.4 (Linx 2.6 Fedora Core 3 on AMD 64 Opteron in <a
  href="http://sf.net/docs/E02/">cf.net compile farm</a>).</li>
+  <li>GCC 3.3.2 on Fedora Cora 1.<br>
+  </li>
   <li>GCC 3.3.3 20040412 (Red Hat Linux 3.3.3-7)</li>
+  <li>GCC 3.4.2 (mingw-special)<br>
+  </li>
 </ul>
-<p>We intend to get freesteam working with other compilers, in
-particular
-GCC/mingw, VC++ and the Intel C++ compiler. It might even work with
+<p>We hope to port freesteam to VC++ and the Intel C++ compiler. It
+might even work with
 those compilers
-already. It is anticipated that the code will not work in present form
+already, although it is anticipated that the code will not work in
+present form
 with VC++
 6.0 because of the complexity of the template methods used
 in the units-of-measurement class, 'units.h'.</p>
-<p>We are going to be regularly testing under MinGW as well as Cygwin,
-so
-stay tuned for this.</p>
 <h2><a name="license"></a>4. License</h2>
 <p><span style="font-weight: bold;">freesteam </span>is released under
 the GNU GPL, which is available online
@@ -269,7 +275,7 @@ value of specific volume along the saturation curve will give errors at
 low temperatures, because of the 'density anomaly'. See <a
  href="http://pye.dyndns.org/mantis/bug_view_page.php?bug_id=0000060">this
 bug</a>.</li>
-  <li>The current implementation used an IAPWS Supplementary Release
+  <li>The current implementation uses an IAPWS Supplementary Release
 correlation for the density of <span style="font-weight: bold;">saturated
 steam </span>when the temperature exceeds that of the region 1/region
 3 boundary. This is not in keeping with the 'pure' IAPWS-IF97 Release,
@@ -280,12 +286,16 @@ bug</a> for more information.</li>
 </ul>
 <h2><a name="futuredirections"></a>5. Future directions</h2>
 <ul>
-  <li>Currently working on creating <span style="font-weight: bold;">'hook'
-libraries</span> to allow freesteam to be accessed from <a
+  <li>Significant work has been done on building a <span
+ style="font-weight: bold;">hook library </span>to allow the <a
  href="http://www.rps.eng.br/emso.html">EMSO</a> system modelling
-program and <a href="http://www.fchart.com/ees/ees.shtml">EES</a>
-equation solver using their respective external procedure
-implementations.<br>
+program to use the freesteam library. Use of this DLL or shared object
+requires a non-GPL license, which we are currently preparing.</li>
+  <li>Preliminary work on another <span style="font-weight: bold;">hook
+library</span> to integrate freesteam with the <a
+ href="http://www.fchart.com/ees/ees.shtml">EES</a>
+equation solver has also been performed; this will likewise require
+some special licensing agreement.<br>
   </li>
   <li>Saturation properties for region 3 are currently implemented used
 the rho_sat(T) correlations from the IAPWS <a
@@ -328,7 +338,11 @@ amount of debugging code and GDB symbols. However some of this might be
 to do with bad use of C++ templates, need to take a look at that.</li>
   <li><span style="font-weight: bold;">Region 5</span> has not yet been
 implemented at all, but it's a low priority. Let us know if you'd need
-it.<br>
+it.</li>
+  <li>We'd like to extend the <span style="font-weight: bold;">phase
+diagrams</span> code so that lines of constant properties (pressure,
+temperature, entropy, enthalpy, etc) can be shown as well as the
+saturation/region lines.<br>
   </li>
 </ul>
 <h2><a name="links"></a>6. Links</h2>
@@ -449,7 +463,7 @@ document.write('<a href="mailto:'+e+m+a+i+l+'">'+e+m+a+i+l+'</a>');
 </p>
 <p>You can also take a look at my homepage about the <a
  href="http://pye.dyndns.org/">CLFR</a> if you want...</p>
-<address>Tuesday, 1 March 2005<br>
+<address>Tuesday, 8 March 2005<br>
 </address>
 </body>
 </html>
