@@ -40,7 +40,7 @@ include make-$(BUILD_PLATFORM).mak
 CXX = g++
 
 CXXFLAGS = -fmessage-length=170 -O3 -Wall
-LDFLAGS = -lm -O3
+LDFLAGS = -lc -lm -O3
 
 CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
 
@@ -102,7 +102,7 @@ $(LIB): $(OBJS)
 	$(AR) -cr $@ $(OBJS)
 
 example: example.o $(LIB)
-	$(CXX) $^ -o $@ $(LDFLAGS)
+	$(CXX) -o $@ -static $(LDFLAGS) $^ 
 
 #--------------------------
 # EMSO
@@ -112,7 +112,7 @@ EMSO = $(EMSO_NAME)$(SO_SUFFIX)
 emso: $(LIB) $(EMSO)
 
 $(EMSO): emsohooks.o Makefile
-	$(LD) -shared -o $@ $< $(LIB) $(LDFLAGS) $(EMSO_LD_SONAME)
+	$(EMSO_LD) -shared -o $@ $< $(LIB) $(LDFLAGS) $(EMSO_LD_SONAME)
 
 #-------------------------
 # CLEAN
