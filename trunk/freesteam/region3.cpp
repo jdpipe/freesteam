@@ -149,6 +149,14 @@ void Region3::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T
 }
 
 //----------------------------------------------------------------------
+// INTERNALLY-HELD-VALUE PROPERTIES
+
+Temperature
+Region3::temp(const SteamCalculator &c) const{
+	return c.T;
+}
+
+//----------------------------------------------------------------------
 // PHYSICAL PROPERTIES FOR REGION 3
 
 // In this region, need to overrride the following default methods defined in SteamState.
@@ -196,7 +204,7 @@ Region3::speccp(const SteamCalculator &c) const{
 
 SpecHeatCap
 Region3::speccv(const SteamCalculator &c) const{
-	R * (-sq(c.tau) * phitautau(c));
+	return R * (-sq(c.tau) * phitautau(c));
 }
 
 
@@ -230,10 +238,11 @@ LOOP_EVAL_REG3(phideltau
 );
 
 
-// NOTE: factor of 1e6 removed.
+/*/ NOTE: factor of 1e6 removed.
 //EVAL_REG3(pitau_iaps85, \
 //      IAPS85_TEMP_REF * R * sq(c.del_iaps85()*IAPS85_DENS_REF) * (phidel(c) - (REG3_TEMP_REF / c.T) * phideltau(c)) / //(IAPS85_PRES_REF * REG3_DENS_REF) \
 //);
+*/
 Num Region3::pitau_iaps85(const SteamCalculator &c) const {
 	Num pitau_iaps85 = 0;
 	pitau_iaps85 =

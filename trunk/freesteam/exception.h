@@ -23,6 +23,8 @@ class Exception{
 			message=string(s);
 		}
 
+		virtual ~Exception(){}
+
 		virtual string what(){
 			//cerr << "Returning string now..." << endl;
 			return message;

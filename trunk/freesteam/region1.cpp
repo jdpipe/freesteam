@@ -30,6 +30,94 @@ void Region1::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T
 }
 
 //----------------------------------------------------------------
+// REGION 1 PROPERTIES (SAME AS REGION 2!)
+
+/**
+* @return Temperature of water/steam [K]
+*/
+inline Temperature
+Region1::temp(const SteamCalculator &c) const{
+	REQUIRE(c.T > 0.0 * Kelvin);
+	return c.T;
+}
+
+/**
+* @return Pressure of steam/water[MPa]
+*/
+inline Pressure
+Region1::pres(const SteamCalculator &c) const{
+	REQUIRE(c.p >= 0.0 * MPa);
+	return c.p;
+}
+
+/**
+* @return Specific volume of steam [m³/kg]
+*/
+inline SpecificVolume
+Region1::specvol(const SteamCalculator &c) const{
+	return (R * c.T / c.p) * c.pi * gampi(c);
+}
+
+/**
+* @return Density of steam [kg/m³]
+*/
+inline Density
+Region1::dens(const SteamCalculator &c) const{
+	return 1.0 / specvol(c);
+}
+
+/*
+Num Steam::dens(){
+	Num dens=0;
+	dens=(1/specvol());
+	printf("NOTE: in Steam::dens(), dens = %10.8e (region %d)\n",dens,whereami());
+	return dens;
+}
+*/
+/**
+* @return Specific internal energy of water/steam [kJ/kg]
+*/
+SpecificEnergy
+Region1::specienergy(const SteamCalculator &c) const{
+	return (R * c.T) * (c.tau * gamtau(c) - c.pi * gampi(c));
+}
+
+/**
+* @return Specific entropy water/steam [kJ/kg]
+*/
+SpecificEntropy
+Region1::specentropy(const SteamCalculator &c) const{
+	return R * (c.tau * gamtau(c) - gam(c));
+}
+
+/**
+* @return Specific enthalpy of water/steam [kJ/kg]
+*/
+SpecificEnergy
+Region1::specenthalpy(const SteamCalculator &c) const{
+	return R * c.T * (c.tau * gamtau(c));
+}
+
+/**
+* @return Isobaric specific heat capacity of water/steam [kJ/kgK]
+*/
+SpecHeatCap
+Region1::speccp(const SteamCalculator &c) const{
+	return R * (-sq(c.tau) * gamtautau(c));
+}
+
+/**
+* @return Isochoric specific heat capacity of water/steam [kJ/kgK]
+*/
+SpecHeatCap
+Region1::speccv(const SteamCalculator &c) const{
+	return R * (-sq(c.tau) * gamtautau(c) +
+                           sq(gampi(c) -
+                              c.tau * gampitau(c)) / gampipi(c));
+}
+
+
+//----------------------------------------------------------------
 // REGION 1 CORRELATION DATA
 
 #define REG1_COUNT 34

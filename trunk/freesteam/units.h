@@ -9,10 +9,9 @@
 
 #define CHECK_UNITS
 
-//#ifdef CHECK_UNITS
-
 // All of the reinterpret casts are work-arounds to let us make
 // val & Units(double) private without using friends
+
 
 /// Unit Checking/tracking Class
 /**
@@ -42,9 +41,6 @@
 		http://www.experts-exchange.com/Programming/Programming_Languages/Cplusplus/Q_21215508.html \n
 		http://www.experts-exchange.com/Programming/Programming_Languages/Cplusplus/Q_21199495.html
 */
-
-//const int index = std::ios_base::xalloc();
-
 template< int M ,int L=0 ,int T=0 ,int K=0 ,int I=0 >
 class Units {
 
@@ -76,7 +72,7 @@ class Units {
 		bool operator>=( const Units& u ) const { return d_val>=u.d_val; }
 
 		// scalar typecast
-		operator double() const;// not defined here because only unitless can cast to double
+		inline operator double() const; // Deliberately not defined, will cause linker errors if called.
 
 		// Unit Division
 		template< int m, int l, int t, int k, int i >
@@ -187,8 +183,28 @@ template < int M, int L, int T, int K, int I >
 inline Units<2*M, 2*L, 2*T, 2*K, 2*I>
 sq(const Units < M, L, T, K, I > u) {
 	Units<2*M, 2*L, 2*T, 2*K, 2*I> r;
-	cerr << "sq(U)->";
 	*reinterpret_cast<double*>(&r) = (*reinterpret_cast<const double*>(&u))*(*reinterpret_cast<const double*>(&u));
+	return r;
+}
+
+// Cubing
+
+template < int M, int L, int T, int K, int I >
+inline Units<3*M, 3*L, 3*T, 3*K, 3*I>
+cube(const Units < M, L, T, K, I > u) {
+	Units<3*M, 3*L, 3*T, 3*K, 3*I> r;
+	double n = (*reinterpret_cast<const double*>(&u));
+	*reinterpret_cast<double*>(&r) = n*n*n;
+	return r;
+}
+
+// Square root (integer powers of units only)
+template < int M, int L, int T, int K, int I >
+inline Units<M, L, T, K, I>
+sqrt(const Units < 2*M, 2*L, 2*T, 2*K, 2*I > u) {
+	Units<M, L, T, K, I> r;
+	double n = (*reinterpret_cast<const double*>(&u));
+	*reinterpret_cast<double*>(&r) = sqrt(n);
 	return r;
 }
 
@@ -248,13 +264,16 @@ DEFINE_OUTPUT_METHOD( 1, -3,  0,  0,  0, "kg/m³");
 
 //--------------------------------
 // BASE MEASURES
+
 typedef Units < 1 > Mass;
 typedef Units < 0,  1 > Length;
 typedef Units < 0,  0,  1 > Time;
 typedef Units < 0,  0,  0,  1 > Temperature;
 typedef Units < 0,  0,  0,  0,  1 > Current;
+
 //--------------------------------
 // DERIVED MEASURES
+
 typedef Units < 0,  2 > Area;
 typedef Units < 0,  3 > Volume;
 
@@ -262,6 +281,8 @@ typedef Units < 1, -3 > Density;
 typedef Units <-1,  3 > SpecificVolume;
 
 typedef Units < 1, -3, -1> DensityPerTime;
+
+typedef Units < 0,  0, -1> Frequency;
 
 typedef Units < 1,  1, -2 > Force;
 typedef Units < 1, -1, -2 > Pressure;
@@ -276,15 +297,20 @@ typedef Units < 1, -1, -1 > DynamicViscosity;
 
 typedef Units < 1,  1, -3 > PowerPerLength;
 typedef Units < 1, -2, -2 > PressurePerLength;
+typedef Units < 1,  0, -2 > ForcePerLength;
 
 typedef Units < 1, -1, -3 > DensitySpecificEnergyPerTime;
 
 // Thermodynamics
+
 typedef Units < 1,  2, -2, -1 > Entropy;
 typedef Units < 0,  2, -2, -1 > SpecificEntropy;
 typedef Units < 1,  1, -3, -1 > Conductivity;
 typedef Units < 1,  0, -3, -1 > HeatTransferCoefficient;
+typedef Units <-1,  0,  3,  1 > ThermalResistance;
+
 typedef Units < 1,  1, -2, -1 > HeatCapacityPerLength;
+typedef Units < 1,  2, -3, -1 > PowerPerTemperature;
 
 typedef Units < 0,  3, -1 > VolFlowRate;
 typedef Units < 1,  0, -1 > MassFlowRate;
@@ -295,60 +321,12 @@ typedef Units < 1,  0, -3 > HeatFlux;
 typedef Units < 1, -2, -1 > MassFlux;
 
 // Electrical
+
 typedef Units < 0,  0,  1,  0,  1 > Charge;
 typedef Units < 1,  2, -3,  0, -1 > ElecPotential;
 typedef Units < 1,  2, -4,  0, -2 > Capacitance;
 typedef Units < 1,  2, -3,  0, -2 > Resistance;
 typedef Units <-1, -2,  3,  0,  2 > Conductance;
-
-
-/*#else
-
-// Fancy Units template becomes just a scalar
-typedef double Units;
-
-//--------------------------------
-// BASE MEASURES
-
-typedef Units Mass;
-typedef Units Length;
-typedef Units Time;
-typedef Units Temperature;
-typedef Units Current;
-
-//--------------------------------
-// DERIVED MEASURES
-
-typedef Units Area;
-typedef Units Volume;
-typedef Units Force;
-typedef Units Pressure;
-typedef Units Velocity;
-typedef Units Acceleration;
-typedef Units Torque;
-typedef Units Energy;
-typedef Units Power;
-
-typedef Units SpecificEnergy;
-typedef Units Entropy;
-typedef Units SpecificEntropy;
-typedef Units Density;
-typedef Units SpecificVolume;
-typedef Units DynamicViscosity;
-
-typedef Units Conductivity;
-typedef Units HeatTransferCoefficient typedef Units Flowrate;
-
-// Electrical
-typedef Units Charge;
-typedef Units ElecPotential;
-typedef Units Capacitance;
-typedef Units Resistance;
-typedef Units Conductance;
-
-
-#endif				// CHECK_UNITS
-*/
 
 //----------------------------------------------
 // BASE UNITS FOR BASE MEASURES
@@ -367,6 +345,8 @@ typedef Length Distance;
 typedef Energy Heat;
 typedef Heat Work;		// nice
 typedef Power HeatRate;
+typedef PowerPerTemperature HeatRatePerTemperature;
+
 typedef Pressure Stress;
 typedef HeatTransferCoefficient HTCoeff;
 typedef SpecificEntropy SpecificHeatCapacity;	// not the same but the units are the same
@@ -408,6 +388,8 @@ const Time minute = 60.0 * second;
 const Time hour = 60.0 * minute;
 const Time day = 24.0 * hour;
 
+const Frequency Hertz = 1.0 / second;
+
 const Force Newton = kilogram * metre / (second * second);
 
 const Pressure Pascal = Newton / (metre * metre);
@@ -423,15 +405,16 @@ const HeatFlux W_m2 = Watt / metre2;
 
 const double Percent = 1.0 / 100;
 
-//const ElecPotential volt = Watt / ampere;
-//const Charge Coulomb = ampere * second;
-//const Capacitance Farad = volt / Coulomb;
-//const Resistance Ohm = volt / ampere;
-
 //------------------------------------
 // COMMON MEASURES (NON-SI)
 
-// ...
+const Length mile = 1.609 * kilometre;
+const Length foot = 304.8 * milli * metre;
+const Length inch = 25.4 * milli * metre;
+
+const Temperature Rankin = 0.556 * Kelvin;
+
+const Frequency RPM = 1.0 / minute;
 
 //------------------------------------
 // THERMODYNAMIC MEASURES
@@ -448,23 +431,60 @@ const Conductivity mW_mK = milli * W_mK;
 const Density kg_m3 = kilogram / metre3;
 const SpecificVolume m3_kg = metre3 / kilogram;
 
+const MassFlowRate kg_s = kilogram / second;
+const VolFlowRate m3_s = metre3 / second;
+
+const HeatCapacityPerLength J_mK = Joule / metre / Kelvin;
+
 //------------------------------------
-// HANDLING TEMPERATURE CONVERSIONS
+// ELECTRICAL STUFF
 
-// CELCIUS
+const ElecPotential volt = Watt / ampere;
+const Charge Coulomb = ampere * second;
+const Capacitance Farad = volt / Coulomb;
+const Resistance Ohm = volt / ampere;
 
+//------------------------------------
+// HANDLING TEMPERATURES
+
+const Temperature ZeroCelsius = 273.15 * Kelvin;
+const Temperature ZeroFahrenheit = ZeroCelsius - 32.0 * Rankin;
+
+/**
+	Convert a temperature (in Kelvin) to Celsius.
+	@return the temperature, as a plain 'double' type
+*/
 inline double
 tocelsius(const Temperature& T){
 	double d = *reinterpret_cast<const double*>(&T);
 	return d - 273.15;
 }
 
-
+/**
+	Convert a Celsius temperature to Kelvin
+	@param T_C double value for the temperature in degrees
+	@return Temperature object (Kelvin)
+*/
 inline Temperature
-fromcelsius(double T_C){
-	return (T_C + 273.15) * Kelvin;
+fromcelsius(const double &T_C){
+	return (T_C * Kelvin) + ZeroCelsius;
 }
 
+/**
+	Convert from Fahrenheit temperature to Temperature object (Kelvin)
+*/
+inline double
+tofahrenheit(const Temperature &T){
+	return (T - ZeroFahrenheit) / Rankin;
+}
 
+/// Convert Temperature object to Fahrenheit
+/**
+	@return temperature in Fahrenheit (as type 'double')
+*/
+inline Temperature
+fromfahrenheit(const double &T_F){
+	return (T_F * Rankin) + ZeroFahrenheit;
+}
 
 #endif				// UNITS_H

@@ -11,6 +11,17 @@ class Region1:public SteamState {
 		friend class SteamCalculator;
 		friend class Region4;
 
+		virtual SpecificVolume specvol(const SteamCalculator &c) const;
+		virtual SpecificEnergy specienergy(const SteamCalculator &c) const;
+		virtual SpecificEntropy specentropy(const SteamCalculator &c) const;
+		virtual SpecificEnergy specenthalpy(const SteamCalculator &c) const;
+		virtual SpecHeatCap speccp(const SteamCalculator &c) const;
+		virtual SpecHeatCap speccv(const SteamCalculator &c) const;
+
+		virtual Temperature temp(const SteamCalculator &c) const;
+		virtual Pressure pres(const SteamCalculator &c) const;
+		virtual Density dens(const SteamCalculator &c) const;
+
 		static SteamState *Instance();
 		int Region1::getRegion() const;
 		virtual void set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x);

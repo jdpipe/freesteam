@@ -28,6 +28,11 @@ SteamState *Region4::Instance() {
 	return _instance;
 }
 
+Temperature
+Region4::temp(const SteamCalculator &c) const{
+	return c.T;
+}
+
 void Region4::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T,
                           Num x) {
 	// SteamCalculator will already have checked that these are saturated values:
@@ -46,6 +51,17 @@ void Region4::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T
 	c.isset = true;
 
 	ENSURE(c.whichRegion() == 4);
+}
+
+
+Num
+Region4::pitau_iaps85(const SteamCalculator &c) const{
+	throw new Exception("Invalid call to Region4::pitau_iaps85");
+}
+
+Num
+Region4::delpi_iaps85(const SteamCalculator &c) const{
+	throw new Exception("Invalid call to Region4::delpi_iaps85");
 }
 
 //--------

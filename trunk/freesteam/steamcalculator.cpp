@@ -81,6 +81,7 @@ SteamCalculator::operator=(SteamCalculator const &original) {
 		destroy();
 		copy(original);
 	}
+	return *this;
 }
 
 /// Destroy function
@@ -936,9 +937,9 @@ SteamCalculator::pitau_iaps85(void) const{
 
 Num
 SteamCalculator::lam() const{
-	Num l0 = lam0();
-	Num l1 = lam1();
-	Num l2 = lam2();
+	//Num l0 = lam0();
+	//Num l1 = lam1();
+	//Num l2 = lam2();
 	//Num l2=0;
 	Num lam = (lam0() * lam1() + lam2());
 	//printf("NOTE: lam0=%.5f, lam1=%.5f, lam2=%.5f => lam=%.5f\n",l0,l1,l2,lam);

@@ -95,7 +95,7 @@ class SteamCalculator:public DesignByContract {
 		SteamCalculator const &operator=(SteamCalculator const &original);
 
 		// Destructor
-		~SteamCalculator();
+		virtual ~SteamCalculator();
 
 		// Defining state, simple methods
 		void set_pT(const Pressure &p, const Temperature &T, double x = 1.0);	// pressure [MPa]

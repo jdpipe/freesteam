@@ -21,13 +21,9 @@ class Solver2Base{
 
 		Solver2Base(){}
 
-		virtual int whichRegion(const FirstProp &fp,const SecondProp &sp) const{
-			throw new Exception("Solver2Base::whichRegion() not implemented!");
-		}
+		virtual int whichRegion(const FirstProp &fp,const SecondProp &sp) = 0;
 
-		virtual SteamCalculator solve(const FirstProp &fp, const SecondProp &sp){
-			throw new Exception("Solver2Base::solve must be over-ridden");
-		}
+		virtual SteamCalculator solve(const FirstProp &fp, const SecondProp &sp) = 0;
 
 		FirstProp getFirstProp(SteamCalculator &S){
 			return SteamProperty<FirstProp,FirstPropAlt>::get(S);

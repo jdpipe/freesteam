@@ -18,6 +18,7 @@ class Region4:public SteamState {
 
 		Density dens(const SteamCalculator &c) const;
 		Pressure pres(const SteamCalculator &c) const;
+		Temperature temp(const SteamCalculator &c) const;
 
 	protected:
 		friend class SteamCalculator;
@@ -25,6 +26,9 @@ class Region4:public SteamState {
 		static SteamState *Instance();
 
 		virtual void set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x);
+
+		virtual Num pitau_iaps85(const SteamCalculator &c) const;
+		virtual Num delpi_iaps85(const SteamCalculator &c) const;
 
 	private:
 		Region4();

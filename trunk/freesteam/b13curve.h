@@ -28,7 +28,7 @@ class B13CurveBase{
 
 	public:
 
-		virtual Ordinate solve(Abscissa target){}
+		virtual Ordinate solve(const Abscissa &target) = 0;
 
 	protected:
 

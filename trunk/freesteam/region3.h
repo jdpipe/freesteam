@@ -22,6 +22,7 @@ class Region3:public SteamState {
 		Pressure pres(const SteamCalculator &c) const;
 		Density dens(const SteamCalculator &c) const;
 
+		Temperature temp(const SteamCalculator &c) const;
 
 	protected:
 		friend class SteamCalculator;

@@ -15,15 +15,14 @@ const SpecificGasConstant R=0.461526 * kJ_kgK; // Specific gas constant for wate
 #define REG4_TOL 0.001		// relative err on pressures considerd to be equal to psat.
 
 const Temperature TB_HIGH = 863.15 * Kelvin;
-const Temperature T_0DEGC = 273.15 * Kelvin;
-const Temperature T_MIN = T_0DEGC;
+const Temperature T_MIN = ZeroCelsius;
 const Temperature T_MAX = 1073.15 * Kelvin;
 const Temperature T_CRIT = 647.096 * Kelvin;	// critical-point temperature
 const Temperature T_TRIPLE = 273.16 * Kelvin;	// triple-point temperature
 const Temperature REG2_TEMP_REF = 540.0 * Kelvin;
 const Temperature REG1_TEMP_REF = 1386.0 * Kelvin;
-const Temperature REG1_T_LOW = T_0DEGC;
-const Temperature REG2_T_LOW = T_0DEGC;
+const Temperature REG1_T_LOW = ZeroCelsius;
+const Temperature REG2_T_LOW = ZeroCelsius;
 const Temperature REG2_T_HIGH = T_MAX;
 
 const Temperature T_REG1_REG3 = 623.15 * Kelvin;
@@ -70,9 +69,6 @@ const Temperature T_CRIT_PLUS=(T_CRIT + STEAM_T_EPS);
 
 const Density REG3_ZEROIN_DENS_MAX = 765.0 * kg_m3;
 const Density REG3_ZEROIN_TOL= 1e-18 * kg_m3;
-
-//#define K_TO_C(TEMP) (((Num)(TEMP))-T_0DEGC)
-//#define C_TO_K(TEMP) (((Num)(TEMP))+T_0DEGC)
 
 #define MPA_TO_BAR(PRES) (((Num)(PRES)) * 10.0      )
 #define BAR_TO_MPA(PRES) (((Num)(PRES)) * 0.1       )

@@ -18,7 +18,7 @@ VERSION = 0.3.1
 CXX = g++
 
 CPPFLAGS = -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -W -DNDEBUG
-CXXFLAGS = -fmessage-length=0 -O3
+CXXFLAGS = -fmessage-length=170 -O3 -Wall
 LDFLAGS = -lncurses -lc -lm -L/lib/ -L/usr/local/lib/ -O3
 
 CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
@@ -26,7 +26,9 @@ CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
 CXXFLAGS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --cflags)
 LIBS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --libs)
 
-OBJS = steamcalculator.o state.o region1.o region2.o region3.o region4.o boundaries.o steamcalculatorexception.o zeroin.o designbycontract.o units.o solver.o steamproperty.o satcurve.o b23curve.o b13curve.o convergencetest.o solver2.o
+OBJS = steamcalculator.o state.o region1.o region2.o region3.o region4.o boundaries.o \
+	steamcalculatorexception.o zeroin.o designbycontract.o units.o solver.o steamproperty.o \
+	satcurve.o b23curve.o b13curve.o convergencetest.o solver2.o
 
 # This line will cause all tests to be run in alphabetical order by filename
 #TESTS = $(shell ls *.test.cpp | /bin/sed -r s%\.test\.cpp%.test.o%)

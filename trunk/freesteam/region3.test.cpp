@@ -14,11 +14,12 @@ using namespace std;
 
 
 
-/**
+/*
 	In region 3, points are defined in terms of temp,density, so define them that way here
 
 	NOTE this approach will introduce some errors since rootfinding is used to find the target pres value, rather than defining the given rho.
 */
+
 class Region3TestPoint : public SteamTestPoint {
 
 	public:

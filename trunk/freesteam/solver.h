@@ -24,29 +24,31 @@ class SolverBase : public DesignByContract
 
 	protected:
 		/// Create the solver and assign fixed and target properties
-		SolverBase(MainProp mp,OtherProp op){
+		SolverBase(const MainProp &mp,const OtherProp &op){
 			//cerr << "Running SolverBase creator" << endl;
 			this->mp=mp;
 			this->op=op;
 		}
 
+		virtual ~SolverBase(){}
+
 	public:
 
-		virtual VaryProp setLowerBound(VaryProp lowerbound){
+		virtual void setLowerBound(const VaryProp &lowerbound){
 			this->lowerbound = lowerbound;
 		}
-		virtual VaryProp setUpperBound(VaryProp upperbound){
+		virtual void setUpperBound(const VaryProp &upperbound){
 			this->upperbound = upperbound;
 		}
 
 
 		/// Set the target property
-		void setTarget(OtherProp op){
+		void setTarget(const OtherProp &op){
 			this->op=op;
 		}
 
 		/// Set the 'fixed' parameter in the root finding
-		void setMainProp(MainProp mp){
+		void setMainProp(const MainProp &mp){
 			this->mp=mp;
 		}
 
@@ -86,6 +88,8 @@ class SolverBase : public DesignByContract
 					throw new Exception(s.str());
 				}
 
+				setVaryProp(z.getSolution());
+
 				return S;
 			}catch(Exception *e){
 				stringstream s;
@@ -95,9 +99,7 @@ class SolverBase : public DesignByContract
 		}
 	protected:
 
-		virtual void setVaryProp(const VaryProp &vp){
-			throw new Exception("Not implemented: getError_vp");
-		}
+		virtual void setVaryProp(const VaryProp &vp) = 0;
 
 		OtherProp getError_vp(const VaryProp &vp){
 			//cerr << endl << "Solver::getError_vp: " << SteamProperty<VaryProp,VaryPropAlt>::name() << " = " << vp;

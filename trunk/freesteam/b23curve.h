@@ -26,11 +26,12 @@ class B23CurveBase{
 
 	public:
 
-		virtual Ordinate solve(Abscissa target){}
+		virtual Ordinate solve(const Abscissa &target) = 0;
 
 	protected:
 
 		B23CurveBase(){}
+		virtual ~B23CurveBase(){};
 
 		Ordinate getOrdinate(SteamCalculator S){
 			return SteamProperty<Ordinate,OrdinateAlternative>::get(S);
@@ -58,10 +59,11 @@ class B23Curve : public B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 			// Intentionally empty
 		}
 
+		virtual ~B23Curve(){};
+
 		Ordinate solve(const Abscissa &target){
 
 			ZeroIn<B23Curve,Abscissa,Temperature> z;
-			Boundaries B;
 
 			try{
 
@@ -134,6 +136,7 @@ class B23Curve<Ordinate,Temperature,OrdinateAlternative,0>
 	public:
 
 		B23Curve() : B23CurveBase<Ordinate,Temperature,OrdinateAlternative,0>(){}
+		virtual ~B23Curve(){};
 
 		virtual Ordinate solve(const Temperature &T){
 			SteamCalculator S;
@@ -153,6 +156,7 @@ class B23Curve<Ordinate,Pressure,OrdinateAlternative,0>
 	public:
 
 		B23Curve() : B23CurveBase<Ordinate,Pressure,OrdinateAlternative,0>(){}
+		virtual ~B23Curve(){};
 
 		virtual Ordinate solve(const Pressure &p){
 			SteamCalculator S;

@@ -19,11 +19,12 @@ class SatCurveBase{
 
 	public:
 
-		virtual Ordinate solve(Abscissa target, int flags=SAT_WATER){}
+		virtual Ordinate solve(const Abscissa &target, const int &flags=SAT_WATER) = 0;
 
 	protected:
 
 		SatCurveBase(){}
+		virtual ~SatCurveBase(){}
 
 		Ordinate getOrdinate(SteamCalculator S){
 			return SteamProperty<Ordinate,OrdinateAlt>::get(S);
@@ -56,6 +57,8 @@ class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 
 	public:
 
+		virtual ~SatCurve(){}
+
 		static Temperature getLowerBound(const int &flags){
 			/*
 			if(flags & SAT_WATER
@@ -85,10 +88,9 @@ class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 
 			Note that this function will not solve for T < 3.984°C so you will get some errors there
 		*/
-		Ordinate solve(const Abscissa &target,int flags=SAT_WATER){
+		Ordinate solve(const Abscissa &target,const int &flags=SAT_WATER){
 
 			ZeroIn<SatCurve,Abscissa,Temperature> z;
-			Boundaries B;
 
 			try{
 
@@ -176,8 +178,9 @@ class SatCurve<Ordinate,Temperature,OrdinateAlt,0>
 	public:
 
 		SatCurve() : SatCurveBase<Ordinate,Temperature,OrdinateAlt,0>(){}
+		virtual ~SatCurve(){}
 
-		virtual Ordinate solve(const Temperature &T, int flags=SAT_WATER){
+		virtual Ordinate solve(const Temperature &T, const int &flags=SAT_WATER){
 			SteamCalculator S;
 			if(flags & SAT_STEAM){
 				S.setSatSteam_T(T);
@@ -200,8 +203,9 @@ class SatCurve<Ordinate,Pressure,OrdinateAlt,0>
 	public:
 
 		SatCurve() : SatCurveBase<Ordinate,Pressure,OrdinateAlt,0>(){}
+		virtual ~SatCurve(){}
 
-		virtual Ordinate solve(const Pressure &p,int flags=SAT_WATER){
+		virtual Ordinate solve(const Pressure &p,const int &flags=SAT_WATER){
 			SteamCalculator S;
 			if(flags & SAT_STEAM){
 				S.setSatSteam_p(p);
