@@ -136,8 +136,8 @@ class EMSOfreesteam : public ExternalObjectBase {
 						*numOfInputs = 1;
 						break;
 
-					case given_pTx:
-						*numOfInputs = 3;
+					case given_pT:
+						*numOfInputs = 2;
 						break;
 
 					case given_ph:
@@ -223,10 +223,9 @@ class EMSOfreesteam : public ExternalObjectBase {
 
 				// the method inputs
 				switch(input){
-					case given_pTx:
+					case given_pT:
 						strcpy(inputUnits[0], "MPa");
 						strcpy(inputUnits[1], "K");
-						strcpy(inputUnits[2], "");
 
 					case given_ph:
 					case given_pu:
@@ -400,7 +399,8 @@ class EMSOfreesteam : public ExternalObjectBase {
 				output = method & OutputMask;
 
 				#ifdef EMSO_DEBUG
-					cerr << "emsofreesteam[" << instanceNumber << "," << numOfCalcCalls << "]: ";
+					cerr << "EMSOfreesteam[" << instanceNumber << "," << numOfCalcCalls << "]: " << methodName << "(";
+					try{
 				#endif
 
 				switch(input){
@@ -418,40 +418,40 @@ class EMSOfreesteam : public ExternalObjectBase {
 						#endif
 						break;
 
-					case given_pTx:
-						S.set_pT(inputValues[0] * MPa, inputValues[1] * Kelvin, inputValues[2]);
+					case given_pT:
 						#ifdef EMSO_DEBUG
-							cerr << "p=" << inputValues[0] * MPa << ", T=" << inputValues[1] * Kelvin << ", x=" << inputValues[2];
+							cerr << "p=" << inputValues[0] * MPa << ", T=" << inputValues[1] * Kelvin;
 						#endif
+						S.set_pT(inputValues[0] * MPa, inputValues[1] * Kelvin);
 						break;
 
 					case given_ph:
-						S = SS_PH.solve(inputValues[0] * MPa, inputValues[1] * kJ_kg);
 						#ifdef EMSO_DEBUG
 							cerr << "p=" << inputValues[0] * MPa << ", h=" << inputValues[1] * kJ_kg;
 						#endif
+						S = SS_PH.solve(inputValues[0] * MPa, inputValues[1] * kJ_kg);
 						break;
 
 					case given_ps:
-						S = SS_PS.solve(inputValues[0] * MPa, inputValues[1] * kJ_kgK);
-
 						#ifdef EMSO_DEBUG
 							cerr << "p=" << inputValues[0] * MPa << ", s=" << inputValues[1] * kJ_kgK;
 						#endif
+						S = SS_PS.solve(inputValues[0] * MPa, inputValues[1] * kJ_kgK);
+
 						break;
 
 					case given_pu:
-						S = SS_PU.solve(inputValues[0] * MPa, inputValues[1] * kJ_kg);
 						#ifdef EMSO_DEBUG
 							cerr << "p=" << inputValues[0] * MPa << ", u=" << inputValues[1] * kJ_kg;
 						#endif
+						S = SS_PU.solve(inputValues[0] * MPa, inputValues[1] * kJ_kg);
 						break;
 
 					case given_uv:
-						S = SS_UV.solve(inputValues[0] * kJ_kg, inputValues[1] * m3_kg);
 						#ifdef EMSO_DEBUG
 							cerr << "u=" << inputValues[0] * kJ_kg << ", u=" << inputValues[1] * m3_kg;
 						#endif
+						S = SS_UV.solve(inputValues[0] * kJ_kg, inputValues[1] * m3_kg);
 						break;
 
 					default:
@@ -459,7 +459,13 @@ class EMSOfreesteam : public ExternalObjectBase {
 				}
 
 				#ifdef EMSO_DEBUG
-					cerr << " (region " << S.whichRegion() << ")";
+					}catch(Exception *E){
+						cerr << "): error: " << E->what() << endl;
+						throw;
+					}
+					cerr << "): (region " << S.whichRegion() << ")";
+
+					try{
 				#endif
 
 				switch(output){
@@ -542,12 +548,19 @@ class EMSOfreesteam : public ExternalObjectBase {
 						throw new Exception("Invalid output option (should never happen)");
 				}
 
+				#ifdef EMSO_DEBUG
+					}catch(Exception *E){
+						cerr << ": error: " << E->what() << endl;
+						throw;
+					}
+				#endif
 				*retval = emso_ok;
 
 			}catch(Exception *E){
 				stringstream s;
 				s << "EMSOfreesteam::calc: " << E->what();
 				delete E;
+
 				report_error(msg, s.str());
 				*retval = emso_error;
 			}
@@ -570,7 +583,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			These must never give nonzero when ANDed with output_arguments or each other
 		*/
 		enum input_arguments {
-			given_pTx = 1
+			given_pT = 1
 			, given_ph
 			, given_pu
 			, given_uv
@@ -638,19 +651,17 @@ class EMSOfreesteam : public ExternalObjectBase {
 			, EF_DECLARE(rho,steamT)
 			, EF_DECLARE(region,steamT)
 			, EF_DECLARE(psvhx,steamT)
-			, EF_DECLARE(T,pTx)
-			, EF_DECLARE(p,pTx)
-			, EF_DECLARE(x,pTx)
-			, EF_DECLARE(v,pTx)
-			, EF_DECLARE(u,pTx)
-			, EF_DECLARE(s,pTx)
-			, EF_DECLARE(h,pTx)
-			, EF_DECLARE(cp,pTx)
-			, EF_DECLARE(cv,pTx)
-			, EF_DECLARE(k,pTx)
-			, EF_DECLARE(mu,pTx)
-			, EF_DECLARE(rho,pTx)
-			, EF_DECLARE(region,pTx)
+			, EF_DECLARE(x,pT)
+			, EF_DECLARE(v,pT)
+			, EF_DECLARE(u,pT)
+			, EF_DECLARE(s,pT)
+			, EF_DECLARE(h,pT)
+			, EF_DECLARE(cp,pT)
+			, EF_DECLARE(cv,pT)
+			, EF_DECLARE(k,pT)
+			, EF_DECLARE(mu,pT)
+			, EF_DECLARE(rho,pT)
+			, EF_DECLARE(region,pT)
 			, EF_DECLARE(T,ph)
 			, EF_DECLARE(x,ph)
 			, EF_DECLARE(v,ph)
@@ -738,19 +749,17 @@ class EMSOfreesteam : public ExternalObjectBase {
 			EF_ASSIGN(rho,steamT);
 			EF_ASSIGN(region,steamT);
 			EF_ASSIGN(psvhx,steamT);
-			EF_ASSIGN(T,pTx);
-			EF_ASSIGN(p,pTx);
-			EF_ASSIGN(x,pTx);
-			EF_ASSIGN(v,pTx);
-			EF_ASSIGN(u,pTx);
-			EF_ASSIGN(s,pTx);
-			EF_ASSIGN(h,pTx);
-			EF_ASSIGN(cp,pTx);
-			EF_ASSIGN(cv,pTx);
-			EF_ASSIGN(k,pTx);
-			EF_ASSIGN(mu,pTx);
-			EF_ASSIGN(rho,pTx);
-			EF_ASSIGN(region,pTx);
+			EF_ASSIGN(x,pT);
+			EF_ASSIGN(v,pT);
+			EF_ASSIGN(u,pT);
+			EF_ASSIGN(s,pT);
+			EF_ASSIGN(h,pT);
+			EF_ASSIGN(cp,pT);
+			EF_ASSIGN(cv,pT);
+			EF_ASSIGN(k,pT);
+			EF_ASSIGN(mu,pT);
+			EF_ASSIGN(rho,pT);
+			EF_ASSIGN(region,pT);
 			EF_ASSIGN(T,ph);
 			EF_ASSIGN(x,ph);
 			EF_ASSIGN(v,ph);

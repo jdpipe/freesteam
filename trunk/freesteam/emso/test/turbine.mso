@@ -15,12 +15,12 @@ using "steamequipment";
 #* 
     Ideal (isentropic) turbine
 *#
-Model Turbine_Ideal as SteamEquipment # DF = 10 + 1 - 3 = 8
+Model Turbine_Ideal as SteamEquipment # DF = 10 -5 +1 -3 = 3 
 
     VARIABLES
     P  as Power(Brief="Turbine Power");
 
-    EQUATIONS
+    EQUATIONS # DF = -3
     "Mass Balance"
     In.mdot = Out.mdot;
     
@@ -35,12 +35,12 @@ end
 #* 
     Turbine (non-isentropic, with efficiency specified)
 *#
-Model Turbine as SteamEquipment # DF = 10 + 1 - 3 = 8
+Model Turbine as SteamEquipment # DF = 10 - 6 = 4
 
     VARIABLES
-    eta as Efficiency(Brief="Tubine efficiency");
-    out Out as Stream_ph; # Overrides SteamEquipment::Out
-    P as Power;
+    eta as Efficiency(Brief="Tubine efficiency"); # DF = 1
+    out Out as Stream_ph; # DF = -5
+    P as Power; # DF = 1
     
     EQUATIONS
     "Mass Balance"

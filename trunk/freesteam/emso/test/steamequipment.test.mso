@@ -4,43 +4,59 @@
 	Really just tests how the SteamEquipment can be connected together with other streams
 *#
 
-using "streams";
-using "steamequipment";
+using "newtypes";
 
-Model SteamEquipment_Trivial # 16 VAR, 5 EQ, 11 DF
+Model Stream 
 	
 	VARIABLES
-	In as Stream; # 8, 1, 7
-	Out as Stream; # 8, 1, 7
+	mdot as MassFlowRate;
+	p as Pressure;
+	h as SpecificEnthalpy;
+end
+
+Model SteamEquipment_Trivial # 7
+	
+	PARAMETERS
+	freesteam as CalcObject(File = "emsofreesteam");
+	
+	VARIABLES
+	In as Stream; # 7
+	Out as Stream; # 7
 		
-	EQUATIONS # 0, 3, -3
+	EQUATIONS # -7
 	Out.p = In.p - 3 * "bar";
 	Out.h = In.h + 100 * "kJ/kg";
 	Out.mdot = In.mdot;
 
 end
 	
-FlowSheet SteamEquipment_Test # 32, 30, 2
+FlowSheet SteamEquipment_Test # 0
 
 	PARAMETERS
 	freesteam as CalcObject(File = "emsofreesteam");
+	inputTemperature as Temperature(Lower=273.15, Upper = 1073.15, Default = 350, Unit="K");
 	
 	DEVICES 
-	S1 as Stream_ps; # 8, 5, 3
-	S2 as Stream; # 8, 1, 7
-	EQ as SteamEquipment_Trivial; # 16, 5, 11
+	S1 as Stream; # 7
+	S2 as Stream; # 7
+	EQ as SteamEquipment_Trivial; # 7
 	
-	CONNECTIONS # 0, 16, -16
+	CONNECTIONS # -15
 	S1 to EQ.In;
 	EQ.Out to S2;
 	
-	SPECIFY # 0, 3, -3
+	SET
+	inputTemperature = 300 * "K";
+
+	SPECIFY
 	S1.p = 10 * "bar";
 	S1.mdot = 5 * "kg/s";
-	S1.s = 5 * "kJ/kg/K";
+	
+	S1.h = freesteam.h_pT(S1.p,inputTemperature);
 	
 	OPTIONS
 	mode = "steady";
 	outputLevel = "all";
+	LASolver = "dense";
 
 end

@@ -14,22 +14,21 @@ using "streams";
 using "turbine";
 
 
-
-FlowSheet TurbineTest_Ideal # DF = 11 - 7 - 4 = 0
+FlowSheet TurbineTest_Ideal # DF = 0 ?
 	
 	PARAMETERS
 	freesteam as CalcObject(File="emsofreesteam");
 	
-	DEVICES
+	DEVICES # DF = 11
 	S1 as Stream_ph;      # DF = 3
 	S2 as Stream_ps;
 	TU as Turbine_Ideal;  # DF = 8
 	
-	CONNECTIONS
+	CONNECTIONS # DF = -7
 	S1 to TU.In;          # DF - 7
 	TU.Out to S2;
 	
-	SPECIFY
+	SPECIFY # DF = -4
 	"Inlet flowrate"
 	S1.mdot = 20000 * "kg/h";
 	
