@@ -13,11 +13,10 @@ using namespace std;
 #include <cppunit/TestCase.h>
 #include <cppunit/extensions/HelperMacros.h>
 
-/**
+/*
 	@todo
 		Rewrite B13CurveTest to use internally-generated test data
 */
-
 class B13CurveTest: public CppUnit::TestFixture{
 
 	public:
