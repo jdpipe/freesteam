@@ -274,8 +274,8 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 
 					case given_Ts:
-						strcpy(inputunits[0], "K");
-						strcpy(inputunits[1], "kJ/kgK");
+						strcpy(inputUnits[0], "K");
+						strcpy(inputUnits[1], "kJ/kgK");
 
 					case given_waterT:
 					case given_steamT:
@@ -343,8 +343,8 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 
 					case ph:
-						strcpy(outputunits[0], "MPa");
-						strcpy(outputunits[1], "kJ/kg");
+						strcpy(outputUnits[0], "MPa");
+						strcpy(outputUnits[1], "kJ/kg");
 
 					// Three outputs
 					case psh:
@@ -521,7 +521,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 
 					case given_Ts:
 						#ifdef EMSO_DEBUG
-							cerr << "T=" << inputvalues[0] * Kelvin << ", s=" << inputValues[1] * kJ_kgK;
+							cerr << "T=" << inputValues[0] * Kelvin << ", s=" << inputValues[1] * kJ_kgK;
 						#endif
 						S = SS_TS.solve(inputValues[0] * Kelvin, inputValues[1] * kJ_kgK);
 						break;
