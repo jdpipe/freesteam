@@ -26,16 +26,16 @@
 
 	Dev platform:
 		. Win2k -- gcc version 3.3.1 (cygming special)
-	
+
 	Tested on:
 		. NT4.0 -- VC++ 6.0
 		. Win2k -- gcc version 3.2.3 (mingw special 20030504-1)
 		. Linux -- gcc version 3.2.2 20030222 (Red Hat Linux 3.2.2-5)
-		
+
 	@todo
 		Get the units stuff working with a specific units-tracking flag. Should be possible to say that
 		all pressures get output in MPa, all temperatures in °C, etc etc.
-	
+
 	@see
 		http://www.embedded.com/shared/printableArticle.jhtml?articleID=9900094 \n
 		http://www.embedded.com/code/2001code.htm \n
@@ -47,7 +47,7 @@
 
 template< int M ,int L=0 ,int T=0 ,int K=0 ,int I=0 >
 class Units {
-			
+
 	public:
 
 		Units():d_val(1.0){}	// only used to consturct base units
@@ -91,7 +91,7 @@ class Units {
 
 		//bool hello;
 		double d_val;
-		
+
 		// used by */+- to make returning values easy
 		//Units( double val ):d_val(val){}
 
@@ -107,7 +107,7 @@ inline Units<0,0,0,0,0>::operator double() const {
 // Scalar Multiplication & Division
 template< int m, int l, int t, int k, int i >
 inline
-Units<m,l,t,k,i> 
+Units<m,l,t,k,i>
 operator*( double d, const Units<m,l,t,k,i> &u) {
 	return u*d;
 }
@@ -117,7 +117,7 @@ operator*( double d, const Units<m,l,t,k,i> &u) {
 // Scalar Multiplication & Division
 template< int m, int l, int t, int k, int i >
 inline
-Units<m,l,t,k,i> 
+Units<m,l,t,k,i>
 operator*(const Units<m,l,t,k,i> &u,  double d) {
 	return u*d;
 }
@@ -125,7 +125,7 @@ operator*(const Units<m,l,t,k,i> &u,  double d) {
 
 template< int m, int l, int t, int k,int i >
 inline
-Units<-m,-l,-t,-k,-i> 
+Units<-m,-l,-t,-k,-i>
 operator/( double d, const Units<m,l,t,k,i>& u) {
 	Units< -m, -l, -t, -k, -i > r;
 	*reinterpret_cast<double*>(&r) = d / *reinterpret_cast<const double*>(&u);
@@ -188,10 +188,10 @@ inline Units<2*M, 2*L, 2*T, 2*K, 2*I>
 sq(const Units < M, L, T, K, I > u) {
 	Units<2*M, 2*L, 2*T, 2*K, 2*I> r;
 	cerr << "sq(U)->";
-	*reinterpret_cast<double*>(&r) = sq(*reinterpret_cast<const double*>(&u));
+	*reinterpret_cast<double*>(&r) = (*reinterpret_cast<const double*>(&u))*(*reinterpret_cast<const double*>(&u));
 	return r;
 }
-	
+
 // Not-a-Number test
 
 template < int M, int L, int T, int K, int I >
@@ -248,38 +248,58 @@ DEFINE_OUTPUT_METHOD( 1, -3,  0,  0,  0, "kg/m³");
 
 //--------------------------------
 // BASE MEASURES
-typedef Units < 1,0,0,0,0 > Mass;
-typedef Units < 0, 1 > Length;
-typedef Units < 0, 0, 1 > Time;
-typedef Units < 0, 0, 0, 1 > Temperature;
-typedef Units < 0, 0, 0, 0, 1 > Current;
+typedef Units < 1 > Mass;
+typedef Units < 0,  1 > Length;
+typedef Units < 0,  0,  1 > Time;
+typedef Units < 0,  0,  0,  1 > Temperature;
+typedef Units < 0,  0,  0,  0,  1 > Current;
 //--------------------------------
 // DERIVED MEASURES
-typedef Units < 0, 2 > Area;
-typedef Units < 0, 3 > Volume;
-typedef Units < 1, 1, -2 > Force;
-typedef Units < 1, -1, -2 > Pressure;
-typedef Units < 0, 1, -1 > Velocity;
-typedef Units < 0, 1, -2 > Acceleration;
-typedef Units < 1, 2, -2 > Torque;
-typedef Units < 1, 2, -2 > Energy;
-typedef Units < 1, 2, -3 > Power;
-typedef Units < 0, 2, -2 > SpecificEnergy;
-// Thermodynamics
-typedef Units < 1, 2, -2, -1 > Entropy;
-typedef Units < 0, 2, -2, -1 > SpecificEntropy;
+typedef Units < 0,  2 > Area;
+typedef Units < 0,  3 > Volume;
+
 typedef Units < 1, -3 > Density;
-typedef Units < -1, 3 > SpecificVolume;
+typedef Units <-1,  3 > SpecificVolume;
+
+typedef Units < 1, -3, -1> DensityPerTime;
+
+typedef Units < 1,  1, -2 > Force;
+typedef Units < 1, -1, -2 > Pressure;
+typedef Units < 0,  1, -1 > Velocity;
+typedef Units < 0,  1, -2 > Acceleration;
+typedef Units < 1,  2, -2 > Torque;
+typedef Units < 1,  2, -2 > Energy;
+typedef Units < 1,  2, -3 > Power;
+typedef Units < 0,  2, -2 > SpecificEnergy;
+
 typedef Units < 1, -1, -1 > DynamicViscosity;
-typedef Units < 1, 1, -3, -1, 0 > Conductivity;
-typedef Units < 1, 0, -3, -1, 0 > HeatTransferCoefficient;
-typedef Units < 0, 3, -1, 0, 0 > Flowrate;
+
+typedef Units < 1,  1, -3 > PowerPerLength;
+typedef Units < 1, -2, -2 > PressurePerLength;
+
+typedef Units < 1, -1, -3 > DensitySpecificEnergyPerTime;
+
+// Thermodynamics
+typedef Units < 1,  2, -2, -1 > Entropy;
+typedef Units < 0,  2, -2, -1 > SpecificEntropy;
+typedef Units < 1,  1, -3, -1 > Conductivity;
+typedef Units < 1,  0, -3, -1 > HeatTransferCoefficient;
+typedef Units < 1,  1, -2, -1 > HeatCapacityPerLength;
+
+typedef Units < 0,  3, -1 > VolFlowRate;
+typedef Units < 1,  0, -1 > MassFlowRate;
+typedef Units < 1, -1, -1 > MassFlowRatePerLength;
+typedef Units < 1,  0, -2 > MassFlowRatePerTime;
+
+typedef Units < 1,  0, -3 > HeatFlux;
+typedef Units < 1, -2, -1 > MassFlux;
+
 // Electrical
-typedef Units < 0, 0, 1, 0, 1 > Charge;
-typedef Units < 1, 2, -3, 0, -1 > ElecPotential;
-typedef Units < 1, 2, -4, 0, -2 > Capacitance;
-typedef Units < 1, 2, -3, 0, -2 > Resistance;
-typedef Units < -1, -2, 3, 0, 2 > Conductance;
+typedef Units < 0,  0,  1,  0,  1 > Charge;
+typedef Units < 1,  2, -3,  0, -1 > ElecPotential;
+typedef Units < 1,  2, -4,  0, -2 > Capacitance;
+typedef Units < 1,  2, -3,  0, -2 > Resistance;
+typedef Units <-1, -2,  3,  0,  2 > Conductance;
 
 
 /*#else
@@ -346,6 +366,7 @@ typedef Velocity Speed;
 typedef Length Distance;
 typedef Energy Heat;
 typedef Heat Work;		// nice
+typedef Power HeatRate;
 typedef Pressure Stress;
 typedef HeatTransferCoefficient HTCoeff;
 typedef SpecificEntropy SpecificHeatCapacity;	// not the same but the units are the same
@@ -397,6 +418,8 @@ const Energy Joule = Newton * metre;
 const Energy kJ = kilo * Joule;
 
 const Power Watt = Joule / second;
+
+const HeatFlux W_m2 = Watt / metre2;
 
 const double Percent = 1.0 / 100;
 
