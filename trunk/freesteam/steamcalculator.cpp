@@ -371,6 +371,16 @@ SteamCalculator::setRegion3_rhoT(const Density &rho, const Temperature &T){
 	this->T = T;
 	tau = REG3_TEMP_REF / T;
 
+	if(T >= T_CRIT){
+		x = -1;
+	}else{
+		if(rho > RHO_CRIT){
+			x = 0;
+		}else{
+			x = 1;
+		}
+	}
+
 	ENSURE(whichRegion()==3);
 
 	isset = true;
@@ -432,16 +442,36 @@ SteamStateCode SteamCalculator::whichState(void){
 		}else{
 			if(pres() > Boundaries::getpbound_T(temp())){
 				//Region 3, check for saturation
+				Density rho_water, rho_steam;
+
 				switch(whichRegion()){
 					case 4:
 						return STEAM_SATURATED;
 					case 3:
-						return STEAM_SUPERCRITICAL;
+						if(temp() > T_CRIT){
+							return STEAM_SUPERCRITICAL;
+						}else if(temp() == T_CRIT){
+							return STEAM_SATURATED;
+						}
+
+						rho_water = Boundaries::getSatDensWater_T(temp());
+						rho_steam = Boundaries::getSatDensSteam_T(temp());
+
+						if(dens() > rho_water){
+							return STEAM_SUBCOOLED;
+						}else if(dens() < rho_steam){
+							return STEAM_SUPERHEATED;
+						}else{
+							return STEAM_SATURATED;
+						}
 					default:
 						throw new Exception("Invalid state with T>TB_LOW");
 				}
+			}else{
+				return STEAM_SUPERHEATED;
 			}
 		}
+		throw new Exception("Did not determine state!");
 	} else {
 		throw new Exception("State is not yet set");
 	}
@@ -459,6 +489,10 @@ const char *SteamCalculator::whichStateStr(void){
 
 	switch(st){
 		case STEAM_SATURATED:
+			if(temp()==T_CRIT){
+				return "SATURATED";
+			}
+
 			if (this->x == 0.0) {
 				return "SAT LIQUID";
 			} else if (this->x == 1.0) {

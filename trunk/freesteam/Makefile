@@ -44,6 +44,7 @@ TESTS = cppunit.test.o empty.test.o units.test.o batchtest.test.o \
 	pressuresolver.test.o temperaturesolver.test.o \
 	satcurve.test.o	b23curve.test.o \
 	b13curve.test.o \
+	whichstatestr.test.o \
 	solver2.test.o
 #	temperaturesolver2.test.o
 
@@ -214,6 +215,14 @@ critsurf.m: criticalsurface.cli.exe
 
 pboundt.m: pboundt.cli.exe
 	./$< > $@
+
+#-----------------------------
+# DOCUMENTATION
+
+.PHONY: README
+
+README:
+	wget -N -O README.html http://pye.dyndns.org/freesteam/
 
 #-----------------------------
 # INDENT THE CODE

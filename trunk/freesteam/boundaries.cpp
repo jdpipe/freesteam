@@ -97,6 +97,8 @@ Boundaries::getSatPres_T(Temperature T) {
 // SATURATION CURVES (SUPPLEMENTARY RHO(T) CURVES)
 
 /**
+	@see http://www.iapws.org/relguide/supsat.pdf
+
 	@todo
 		Limit getSatDensWater_T from being called with T <= TB_LOW
 */
@@ -131,6 +133,8 @@ Boundaries::getSatDensWater_T(const Temperature &T){
 }
 
 /**
+	@see http://www.iapws.org/relguide/supsat.pdf
+
 	@todo
 		Limit getSatDensSteam_T from being called with T <= TB_LOW
 */
