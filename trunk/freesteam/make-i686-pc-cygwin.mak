@@ -4,8 +4,4 @@
 
 EXE_SUFFIX = .exe
 SO_SUFFIX = .dll
-
-EMSO_LD_SONAME =
-EES_LD_SONAME =
-
-SO_LD = $(CXX)
+SO_PREFIX = 

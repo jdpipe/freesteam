@@ -25,7 +25,7 @@
 NAME = freesteam
 VERSION = 0.4.1
 
-EMSO_NAME = emsofreesteam-$(VERSION)
+EMSO_NAME = emsofreesteam
 EES_NAME = eesfreesteam-$(VERSION)
 
 #---------------------------
@@ -108,12 +108,12 @@ example: example.o $(LIB)
 #--------------------------
 # EMSO integration
 
-EMSO = $(EMSO_NAME)$(SO_SUFFIX)
+EMSO = $(SO_PREFIX)$(EMSO_NAME)$(SO_SUFFIX)
 
 emso: $(LIB) $(EMSO)
 
 $(EMSO): emsohooks.o Makefile
-	$(SO_LD) -shared -o $@ emsohooks.o $(LIB) $(LDFLAGS) $(EMSO_LD_SONAME)
+	$(CXX) -shared -o $@ emsohooks.o $(LIB) $(LDFLAGS)
 
 #--------------------------
 # EES integration
@@ -123,8 +123,7 @@ EES = $(EES_NAME)$(SO_SUFFIX)
 ees: $(LIB) $(EES)
 
 $(EES): eeshooks.o eesparameterlist.o Makefile
-	$(SO_LD) -shared -o $@ eeshooks.o eesparameterlist.o $(LIB) $(LDFLAGS) $(EES_LD_SONAME)
-
+	$(CXX) -shared -o $@ eeshooks.o eesparameterlist.o $(LIB) $(LDFLAGS)
 #--------------------------
 # CLEAN
 

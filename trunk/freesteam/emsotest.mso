@@ -1,0 +1,61 @@
+using "types";
+
+Model SaturatedSteam
+
+	PARAMETERS
+		PP as CalcObject(
+			Brief="freesteam Library",
+			File="emsofreesteam"
+		);
+
+	VARIABLES
+		v as Real(Brief="Specific Volume", Unit = "m^3/kg");
+	in	T as temperature(Brief="Temperature");
+	    p as pressure(Brief="Pressure");
+		
+
+	EQUATIONS
+		p = PP.p_waterT(T);
+	    v = PP.v_waterT(T);
+end
+
+Model SaturatedSteam2
+	PARAMETERS
+ext	SPP as CalcObject(Brief="Steam Physical Properties");
+
+	VARIABLES
+	v as Real(Brief="Specific Volume", Unit = "m^3/kg");
+	T as temperature(Brief="Temperature");
+    p as pressure(Brief="Pressure");
+
+	EQUATIONS
+	p = SPP.p_waterT(T);
+    v = SPP.v_waterT(T);
+end
+
+
+FlowSheet test
+	DEVICES
+	s as SaturatedSteam;
+	
+	SPECIFY
+	s.T = 320 * "K";
+	
+	OPTIONS
+	mode = "steady";
+end
+
+FlowSheet test2
+	PARAMETERS
+	SPP as CalcObject(File = "emsofreesteam");
+	
+	DEVICES
+	s as SaturatedSteam2;
+	
+	SPECIFY
+	s.T = 320 * "K";
+	
+	OPTIONS
+	mode = "steady";
+end
+
