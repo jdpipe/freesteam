@@ -1,0 +1,24 @@
+h1 {font-weight:bold;font-size:18pt;color:green;background-color:beige;margin:0;padding:5}
+h2 {font-weight:bold;font-size:14pt;color:green;padding-top:5; padding-bottom:5;margin:0}
+h3 {font-weight:bold;font-size:12pt;color:gray}
+
+div.printlink{vertical-align:bottom; text-decoration: none; font-size:10pt}
+
+body,td{font: normal 11pt 'Trebuchet MS', Verdana, Arial, Helvetica, sans-serif;}
+
+hr{border-top:solid 2pt green;border-bottom:0; border-left:0; border-right:0;margin-top:20} 
+
+p.small{font: normal 8pt 'Trebuchet MS', Verdana, Arial, Helvetica, sans-serif;}
+
+a {color:navy; text-decoration:none}
+a:hover{text-decoration:underline}
+
+table.fig{padding:20}
+td.bord{border:solid 2pt beige}
+
+div.nav{float:left;padding:5;margin-right:15;margin-top:20;border:solid 2pt green;width:200}
+
+ul{margin-left:0;padding-left:5}
+li{margin-left:20;padding-left:5}
+
+pre{border:solid 2pt beige; background-color: #FFFFF0; margin-left:20pt}

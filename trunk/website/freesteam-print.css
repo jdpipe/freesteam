@@ -1,0 +1,13 @@
+
+h1 {font-weight:bold;font-size:18pt;color:black;border:solid 2pt black;margin:0;padding:5}
+
+body{font: normal 11pt 'Trebuchet MS', Verdana, Arial, Helvetica, sans-serif;}
+
+h2{border:flat}
+
+hr{border-top:solid 1.5pt black;border-bottom:0; border-left:0; border-right:0} 
+
+div.printlink{visibility:hidden}
+
+a:link, a:visited {color:black; text-decoration:none; font-weight:500}
+a:link:after, a:visited:after {font-size:9pt; font-weight:normal; font-family:'Courier New',sans-serif; color:black; border:0; text-decoration:none; content: " <" attr(href) "> ";}
