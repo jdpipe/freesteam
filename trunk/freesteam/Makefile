@@ -105,12 +105,13 @@ example: example.o $(LIB)
 #--------------------------
 # EMSO
 
-EMSO = emsofreesteam-$(VERSION)$(SO_SUFFIX)
+EMSO_SONAME = emsofreesteam-$(VERSION)
 
+EMSO = $(EMSO_SONAME)$(SO_SUFFIX)
 emso: $(LIB) $(EMSO)
 
 $(EMSO): emsohooks.o
-	g++ -shared -o $@ $< $(LIB) $(LDFLAGS)
+	g++ -shared -o $@ $< $(LIB) $(LDFLAGS) -soname=$(EMSO_SONAME)
 
 #-------------------------
 # CLEAN
