@@ -28,9 +28,13 @@ CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
 CXXFLAGS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --cflags)
 LIBS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --libs)
 
-OBJS = steamcalculator.o steamstate.o steamregion1.o steamregion2.o steamregion3.o steamregion4.o steamregionboundaries.o steamcalculatorexception.o zeroin.o designbycontract.o units.o
+OBJS = steamcalculator.o state.o region1.o region2.o region3.o region4.o boundaries.o steamcalculatorexception.o zeroin.o designbycontract.o units.o
 
-TESTS = $(shell ls *.test.cpp | /bin/sed -r s%\.test\.cpp%.test.o%)
+# This line will cause all tests to be run in alphabetical order by filename
+#TESTS = $(shell ls *.test.cpp | /bin/sed -r s%\.test\.cpp%.test.o%)
+
+# Or, define the tests in the order you want:
+TESTS = cppunit.test.o empty.test.o region1.test.o region2.test.o region3.test.o
 
 LIB = libsteam.a
 

@@ -1,5 +1,5 @@
-#include "steamstate.h"
-#include "../zeroin/zeroin.h"
+#include "state.h"
+#include "zeroin.h"
 
 #define REG3_DENS_REF RHO_CRIT	// kg/m³
 #define REG3_TEMP_REF T_CRIT	// K

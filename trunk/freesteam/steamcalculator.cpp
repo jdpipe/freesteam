@@ -1,10 +1,10 @@
 #include "steamcalculator.h"
 #include "steamcalculator_macros.h"
-#include "steamstate.h"
-#include "steamregion1.h"
-#include "steamregion2.h"
-#include "steamregion3.h"
-#include "steamregion4.h"
+#include "state.h"
+#include "region1.h"
+#include "region2.h"
+#include "region3.h"
+#include "region4.h"
 #include "zeroin.h"
 #include "units.h"
 
@@ -763,6 +763,11 @@ SteamCalculator::delpi_iaps85(void) {
 Num
 SteamCalculator::pitau_iaps85(void) {
 	REQUIRE(isset);
+	REQUIRE(this->_state!=NULL);
+	
+	cerr << "Which state? " << whichState() << endl;
+	cerr << "Pressure:    " << this->pres() << endl;
+	cerr << "Temp:        " << this->temp() << endl;
 	
 	double pitau = this->_state->pitau_iaps85(this);
 

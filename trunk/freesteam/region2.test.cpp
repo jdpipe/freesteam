@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class SteamRegion2Test:public BatchTest < SteamTestPoint > {
+class Region2RefDataTest:public BatchTest < SteamTestPoint > {
 
 	private:
 
@@ -31,7 +31,7 @@ class SteamRegion2Test:public BatchTest < SteamTestPoint > {
 
 		// Invoke CPPUNIT macros to add tests to a suite:
 
-		CPPUNIT_TEST_SUITE(SteamRegion2Test);
+		CPPUNIT_TEST_SUITE(Region2RefDataTest);
 		CPPUNIT_TEST(testAllPoints);
 		CPPUNIT_TEST_SUITE_END();
 
@@ -69,4 +69,4 @@ class SteamRegion2Test:public BatchTest < SteamTestPoint > {
 		}
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION(SteamRegion2Test);
+CPPUNIT_TEST_SUITE_REGISTRATION(Region2RefDataTest);

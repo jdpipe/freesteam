@@ -1,4 +1,4 @@
-#include "steamregion2.h"
+#include "region2.h"
 #include "steamcalculator_macros.h"
 
 
@@ -159,15 +159,19 @@ LOOP_REG2R(gampitaur,
 
 Num SteamRegion2::pitau_iaps85(SteamCalculator * c) {
 	Num pitau_iaps85 = 0;
+	IS_VALID(c);
 	REQUIRE(c->T != 0);
 	REQUIRE(gampipi(c) != 0);
 	REQUIRE(!isinf(gampitau(c)));
 	REQUIRE(!isinf(gampi(c)));
 	REQUIRE(!isinf(c->T));
-
+	
 	pitau_iaps85 =
 	    647.226 / 22.115 * (gampitau(c) * 540 -
 	                        gampi(c) * c->T) / (sq(c->T) * gampipi(c));
+	                        
+	cerr << "pitau_iaps85 evaluation... value = " << pitau_iaps85 << endl;
+	
 	ENSURE(!isinf(pitau_iaps85));
 	ENSURE(!isnan(pitau_iaps85));
 	return pitau_iaps85;
@@ -183,7 +187,7 @@ EVAL_REG2(delpi_iaps85, \
 Num SteamRegion2::delpi_iaps85(SteamCalculator * c) {
 	Num delpi_iaps85 = 0;
 	Num gp = gampi(c);
-	delpi_iaps85 =
-	    -22.115 / 317.763 / 0.461526E-3 / c->T * gampipi(c) / (gp * gp);
+	delpi_iaps85 = -22.115 / 317.763 / 0.461526E-3 / c->T * gampipi(c) / (gp * gp);
+	ENSURE(!isnan(delpi_iaps85));
 	return delpi_iaps85;
 }

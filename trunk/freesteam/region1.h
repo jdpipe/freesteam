@@ -1,8 +1,8 @@
 #ifndef STEAMREGION1_H
 #define STEAMREGION1_H
 
-#include "steamstate.h"
-#include "steamregion4.h"
+#include "state.h"
+#include "region4.h"
 #include "units.h"
 
 class SteamRegion1:public SteamState {

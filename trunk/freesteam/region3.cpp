@@ -1,6 +1,6 @@
 #include "steamcalculator.h"
-#include "steamregion3.h"
-#include "../zeroin/zeroin.h"
+#include "region3.h"
+#include "zeroin.h"
 #include "steamcalculator_macros.h"
 
 SteamRegion3 *SteamRegion3::_instance = 0;

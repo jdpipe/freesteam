@@ -1,8 +1,8 @@
 #ifndef STEAMREGION4_H
 #define STEAMREGION4_H
 
-#include "steamstate.h"
-#include "../zeroin/zeroin.h"
+#include "state.h"
+#include "zeroin.h"
 
 class SteamRegion4:public SteamState {
 

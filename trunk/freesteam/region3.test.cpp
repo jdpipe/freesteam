@@ -11,7 +11,7 @@
 using namespace std;
 
 
-class SteamRegion3Test : public BatchTest<SteamTestPointR3>{
+class Region3RefDataTest : public BatchTest<SteamTestPointR3>{
 
 	private:
 
@@ -34,7 +34,7 @@ class SteamRegion3Test : public BatchTest<SteamTestPointR3>{
 
 	public:
 
-		CPPUNIT_TEST_SUITE(SteamRegion3Test);
+		CPPUNIT_TEST_SUITE(Region3RefDataTest);
 		CPPUNIT_TEST(testAllPoints);
 		CPPUNIT_TEST_SUITE_END();
 
@@ -75,4 +75,4 @@ class SteamRegion3Test : public BatchTest<SteamTestPointR3>{
 
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION(SteamRegion3Test);
+CPPUNIT_TEST_SUITE_REGISTRATION(Region3RefDataTest);

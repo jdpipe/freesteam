@@ -3,6 +3,8 @@
 #include "gridtest.h"
 
 #include <sstream>
+#include <iostream>
+#include <iomanip>
 using namespace std;
 
 class ConductivityTest : public GridTest<Pressure,Temperature,Conductivity>{
@@ -16,6 +18,8 @@ class ConductivityTest : public GridTest<Pressure,Temperature,Conductivity>{
 			
 			S->set_pT(p,T);
 			
+			cerr.flags(ios_base::showbase);
+			cerr << "Calculating conductivity at p = " << p << ", T = " << T << endl;
 			if(!eq(S->conductivity(),k,tol)){
 			
 				stringstream s; 

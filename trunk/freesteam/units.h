@@ -362,6 +362,8 @@ DEFINE_OUTPUT_METHOD(0, 0, 1, 0, 0, "s");
 DEFINE_OUTPUT_METHOD(0, 1, -1, 0, 0, "m/s");
 DEFINE_OUTPUT_METHOD(1, 0, 0, 0, 0, "kg");
 DEFINE_OUTPUT_METHOD(0, 0, 0, 1, 0, "K");
+DEFINE_OUTPUT_METHOD(1,-1,-2, 0, 0, "MPa");
+
 //--------------------------------
 // BASE MEASURES
 typedef Units < 1 > Mass;

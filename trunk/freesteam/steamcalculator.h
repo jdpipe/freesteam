@@ -4,8 +4,8 @@
 #include "designbycontract.h"
 #include "common.h"
 #include "steamcalculatorexception.h"
-#include "steamregionboundaries.h"
-#include "steamstate.h"
+#include "boundaries.h"
+#include "state.h"
 #include "zeroin.h"
 
 #define METHOD_SC(funcname,units) units funcname()
