@@ -8,9 +8,9 @@
 
 #include "eesparameterlist.h"
 
-#include "steamcalculator.h"
-#include "solver2.h"
-#include "exception.h"
+#include "../steamcalculator.h"
+#include "../solver2.h"
+#include "../exception.h"
 
 #include <windows.h>
 #include <sstream>

@@ -23,9 +23,12 @@ EES = $(EES_NAME)$(SO_SUFFIX)
 ees: $(LIB) $(EES)
 
 $(EES): eeshooks.o eesparameterlist.o Makefile
-	$(CXX) -shared -o $@ eeshooks.o eesparameterlist.o ../$(LIB) $(LDFLAGS)
+	$(CXX) -shared -o $@ eeshooks.o eesparameterlist.o $(LIB) $(LDFLAGS)
 
 OBJS = eeshooks.o eesparameterlist.o
+
+$(LIB):
+	make -C .. lib
 
 #---------------------------------------------------------
 # CLEAN

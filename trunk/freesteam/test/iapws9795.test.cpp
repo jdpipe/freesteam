@@ -1,6 +1,6 @@
 #include "../steamcalculator.h"
 #include "../exception.h"
-#include "../batchtest.h"
+#include "batchtest.h"
 #include "steamtestpoint.h"
 #include "../iapws95.h"
 
