@@ -33,7 +33,7 @@ FlowSheet CycleTest2
 	
 	# Boiler
 	BO.Dp = -2 * "bar";
-	BO.q = 113 * "MW";
+	BO.q = 130 * "MW";
 	# BO.Out.T = (400 + 273.15) * "K";
 	
 	# Turbine
@@ -53,6 +53,9 @@ FlowSheet CycleTest2
 	
 	#"System-wide energy conservation"
 	BO.q + PU.P = CO.q + TU.P;
+	
+	GUESS
+	TU.Dp = -30 * "bar";
 
 	OPTIONS
 	mode = "steady";

@@ -13,7 +13,7 @@ using "pump";
 using "condenser";
 using "throttle";
 
-FlowSheet CycleTest3
+FlowSheet CycleTest4
 	
 	PARAMETERS
 	freesteam as CalcObject(File="emsofreesteam");
@@ -34,12 +34,11 @@ FlowSheet CycleTest3
 	
 	SPECIFY # -9 DF
 	
-	BO.In.mdot = 30 * "kg/s";
-	# S1.p = 60 * "bar";
-	# S1.T = (121 + 273.15) * "K";	
-
 	# Boiler
+	# BO.In.mdot = 30 * "kg/s";
+	BO.In.p = 60 * "bar";
 	BO.Dp = -2 * "bar";
+	# BO.q = 72.5 * "MW";
 	BO.Out.T = (300 + 273.15) * "K";
 	
 	# Turbine
@@ -52,13 +51,16 @@ FlowSheet CycleTest3
 	
 	# Pump
 	PU.eta = 0.65;
-	PU.Out.p = 60 * "bar";
 	
 	PU.Out.p = BO.In.p;
 	PU.Out.h = BO.In.h;
+	# PU.Out.mdot = BO.In.mdot; # <-- this is redundant since all the mess flows are already equated!
 	
 	[BO.In.T, BO.In.s]=freesteam.Ts_ph(BO.In.p,BO.In.h);
 
+	#"System-wide energy conservation"
+	BO.q + PU.P = CO.q + TU.P;
+	
 OPTIONS
 	mode = "steady";
 	outputLevel = "all";
