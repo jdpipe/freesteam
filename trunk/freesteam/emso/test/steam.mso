@@ -104,3 +104,15 @@ Model Steam_Th as Steam
 	[p, s] = freesteam.ps_Th(T,h);
 
 end
+
+Model Steam_uv as Steam
+
+	VARIABLES
+	u as SpecificInternalEnergy;
+	v as SpecificVolume;
+	
+	EQUATIONS
+	"Steam properties"
+	[p, s, h, T] = freesteam.pshT_uv(u,v);
+
+end

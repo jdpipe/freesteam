@@ -10,7 +10,7 @@
 
 using "steamequipment";
 
-Model HotWaterTank as SteamEquipment_ps
+Model HotWaterTank as SteamEquipment_uv
 	
 	VARIABLES
 	y as Length(Brief="Height of water in tank", Unit="m", Lower=0, Upper=10);
@@ -34,12 +34,14 @@ Model HotWaterTank as SteamEquipment_ps
 	# Pressure at base is ambient plus static head
 	Out.p = p_amb + rho * 9.8 * "N/kg" * y;
 	
-	# No heating and no work
+	# No heating
 	Qdot = 0 * "W";
-	Wdot = 0 * "W";
+	
+	# Trivial work: forcing water up against atmospheric pressure as control volume changes size
+	Wdot =  0 * "W"; # p_amb * diff(m) / rho;
 	
 	# density can be calculated using the outlet state, because of the mixing
 	# (assume that variation with pressure is negl)
-	rho = Out.freesteam.rho_ps(Out.p,Out.s);
+	rho = 1 / Out.v;
 	
 end

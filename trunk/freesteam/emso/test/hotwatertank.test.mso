@@ -21,9 +21,9 @@ FlowSheet HotWaterTankTest
 	
 	SPECIFY	
 	
-	# Inlet is 80*C steam at 1 atm, flowing at 10 kg/s
+	# Inlet state and flow rate
 	S1.p = 1 * "atm";
-	S1.T = (273.15 + 80) * "K";
+	S1.T = (273.15 + 30) * "K";
 	S1.mdot = 10 * "kg/s";
 	
 	# Tank is 1 sq m in horiz x-sec
@@ -32,13 +32,6 @@ FlowSheet HotWaterTankTest
 	# Ambient pressure
 	TA.p_amb = 1 * "atm";
 	
-	# STRANGE:
-	# If I comment out this line
-	TA.Out.mdot=0 * "kg/s";	
-	# ... and uncomment the following,
-	# then the flowsheet says that the number of DFs is wrong.
-	
-	#*
 	EQUATIONS
 
 	if time < 30 * "s" then
@@ -46,14 +39,18 @@ FlowSheet HotWaterTankTest
 	else
 		TA.Out.mdot=10 * "kg/s";
 	end
-	*#
+	
 	GUESS
-	TA.rho = 1000 * "kg/m^3";
-	TA.H = 1* "m" * 1 * "m^2" * 800 * "kJ/kg" / (1000 * "kg/m^3");
+	TA.Out.h = 104.9 * "kJ/kg";
+	TA.Out.v = 1 / (997 * "kg/m^3");
+	
+	TA.rho = 997 * "kg/m^3";
+	TA.H = 1* "m^3" * 104.9 * "kJ/kg" / (1000 * "kg/m^3");
+	TA.Out.u = 104.8 * "kJ/kg";
 	
 	INITIAL
 	TA.y = 1 * "m";
-	TA.T = (273.15 + 20) * "K";
+	TA.T = (273.15 + 25) * "K";
 	
 	OPTIONS
 	differentiation="numeric";
