@@ -69,7 +69,7 @@ CLEANDIRS := test ctest cli ees emso
 clean: cleansubdirs cleanhere
 
 cleanhere:
-	@-rm *.o
+	@-rm *.o *.stackdump
 
 cleansubdirs:
 	$(foreach dir,$(CLEANDIRS),make -C $(dir) clean;)

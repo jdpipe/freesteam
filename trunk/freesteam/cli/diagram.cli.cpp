@@ -19,6 +19,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-#include "units.h"
+#include "diagram.h"
+#include "../exception.h"
+#include <stdlib.h>
 
-// Intentionally empty
+#include <iostream>
+
+int main(void){
+
+	try{
+		// Diagram<SpecificEnergy, Pressure,SOLVE_ENTHALPY,0> D;
+		// Diagram<SpecificEnergy,SpecificVolume, SOLVE_IENERGY,0> D;
+		// Diagram<Temperature, Pressure> D;
+		Diagram<SpecificEntropy, Temperature, SOLVE_ENTROPY> D;
+
+		cout << D.plot();
+	}catch(Exception *E){
+		cerr << "main: " << E->what();
+		delete E;
+		exit(1);
+	}
+}

@@ -1,8 +1,8 @@
 /*************************************************************************
 
-The thermodynamic properties of water calculated with the 
+The thermodynamic properties of water calculated with the
 IAPWS95 equations.  Variables and units:
-    
+
     T       Temperature, K
     rho     Density, kg/m^3
     p       Pressure, MPa
@@ -22,7 +22,7 @@ References:
         September 1996, Fredericia, Denmark.  See the "Releases"
         section of the website http://www.iapws.org/.
 
-    [2] NIST Chemistry Webbook:  
+    [2] NIST Chemistry Webbook:
         http://webbook.nist.gov/chemistry/fluid/
 
 ----------------------------------------------------------------------
@@ -69,8 +69,8 @@ namespace IAPWS95
     const Num rhoc_ = 322;
 
     const Num n0[] = {
-        0.0,  
-        -8.32044648201, 6.6832105268, 3.00632, 0.012436, 
+        0.0,
+        -8.32044648201, 6.6832105268, 3.00632, 0.012436,
         0.97315, 1.27950, 0.96956, 0.24873
     };
 
@@ -107,12 +107,12 @@ namespace IAPWS95
 
     const Num c[] = {
         0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-        1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
+        1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
         2, 2, 2, 3, 3, 3, 3, 4, 6, 6, 6, 6
     };
 
-    const Num d[] = { 
-        0,  1,  1,  1,  2,  2,  3,  4,  1,  1,  1,  2,  2,  3,  4,  
+    const Num d[] = {
+        0,  1,  1,  1,  2,  2,  3,  4,  1,  1,  1,  2,  2,  3,  4,
         4,  5,  7,  9, 10, 11, 13, 15,  1,  2,  2,  2,  3,  4,  4,
         4,  5,  6,  6,  7,  9,  9,  9,  9,  9, 10, 10, 12,  3,  4,
         4,  5, 14,  3,  6,  6,  6,  3,  3,  3
@@ -138,7 +138,7 @@ namespace IAPWS95
     const Num     B[] = { ARY55,   0.2,    0.2  };
     const Num     C[] = { ARY55,  28,     32    };
     const Num     D[] = { ARY55, 700,    800    };
-    
+
     // Note these are slightly different sizes
     const Num alpha[] = { ARY52, 20, 20, 20 };
     const Num  beta[] = { ARY52, 150, 150, 250, 0.3, 0.3 };
@@ -154,7 +154,7 @@ namespace IAPWS95
         ePhir4 = 55,
         ePhir5 = 57
     };
-	
+
 	Num phi0(const Num &,const Num &);
 	Num phi0delta(const Num &,const Num &);
 	Num phi0deltadelta(const Num &,const Num &);
@@ -172,6 +172,34 @@ namespace IAPWS95
 	Num phi0(const Num &,const Num &);
 }
 
+/**
+
+	The thermodynamic properties of water calculated with the
+	IAPWS95 equations.  Variables and units:
+
+		T       Temperature, K
+		rho     Density, kg/m^3
+		p       Pressure, MPa
+		u       Specific internal energy, kJ/kg
+		h       Specific enthalpy, kJ/kg
+		s       Specific entropy, kJ/(kg*K)
+		cv      Isochoric specific heat, kJ/(kg*K)
+		cp      Isobaric specific heat, kJ/(kg*K)
+		w       Speed of sound, m/s
+
+	References:
+
+		[1] The International Association for the Properties of
+			Water and Steam, "Release on the IAPWS Formulation 1995
+			for the Thermodynamic Properties of Ordinary Water
+			Substance for General and Scientific Use", dated
+			September 1996, Fredericia, Denmark.  See the "Releases"
+			section of the website http://www.iapws.org/.
+
+		[2] NIST Chemistry Webbook:
+			http://webbook.nist.gov/chemistry/fluid/
+
+*/
 class Water95
 {
 	public:
@@ -186,9 +214,9 @@ class Water95
 		Num  w(const Num & T, const Num & rho);
 
 		// Constants
-		const Num & R;     // Universal gas constant, kJ/(kg*K)
-		const Num & Tc;    // Water critical temperature, K
-		const Num & rhoc;  // Water critical density, kg/m^3
+		const Num & R;     ///< Universal gas constant, kJ/(kg*K)
+		const Num & Tc;    ///< Water critical temperature, K
+		const Num & rhoc;  ///< Water critical density, kg/m^3
 };
 
 

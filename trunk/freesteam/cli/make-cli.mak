@@ -25,8 +25,8 @@ CLIOBJS = diagram.o
 #-----------------------------
 # LITTLE COMMANDLINE DIAGNOSTIC PROGRAMS
 
-%.cli$(EXE_SUFFIX): %.cli.o $(OBJS) $(CLIOBJS)
-	$(CXX) $< $(OBJS) $(CLIOBJS) -o $@ $(LDFLAGS)
+%.cli$(EXE_SUFFIX): %.cli.o $(LIB)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 critsurf.m: criticalsurface.cli$(EXE_SUFFIX)
 	./$< > $@
@@ -37,11 +37,14 @@ pboundt.m: pboundt.cli$(EXE_SUFFIX)
 diagram.m: diagram.cli$(EXE_SUFFIX)
 	./$< > $@
 
+$(LIB):
+	make -C .. lib
+
 #---------------------------------------------------------
 # CLEAN
 
 clean:
-	@-rm *.o *.d.*
+	@-rm *.o *.d.* *.stackdump
 
 distclean: clean
-	*.cli$(EXE_SUFFIX) critsurf.m pboundt.m diagram.m *.d
+	@-rm *.cli$(EXE_SUFFIX) critsurf.m pboundt.m diagram.m *.d

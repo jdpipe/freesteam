@@ -20,5 +20,5 @@ PACKAGE_ROOT = ..
 include ../make-common.mak
 include make-cli.mak
 
-all: criticalsurface.cli$(EXE_SUFFIX) pboundt.cli$(EXE_SUFFIX) diagram.cli$(EXE_SUFFIX)
+all: $(CLIS:.cpp=$(EXE_SUFFIX))
 

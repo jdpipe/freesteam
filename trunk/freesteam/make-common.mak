@@ -1,12 +1,3 @@
-SHELL = /bin/sh
-
-BUILD_PLATFORM := $(shell $(PACKAGE_ROOT)/config.guess)
-
-include $(PACKAGE_ROOT)/make-$(BUILD_PLATFORM).mak
-
-NAME = freesteam
-VERSION = 0.4.1
-
 # freesteam - IAPWS-IF97 steam tables library
 # Copyright (C) 2004-2005  John Pye
 # 
@@ -23,6 +14,15 @@ VERSION = 0.4.1
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+SHELL = /bin/sh
+
+BUILD_PLATFORM := $(shell $(PACKAGE_ROOT)/config.guess)
+
+include $(PACKAGE_ROOT)/make-$(BUILD_PLATFORM).mak
+
+NAME = freesteam
+VERSION = 0.4.1
 
 EMSO_NAME = emsofreesteam
 EES_NAME = eesfreesteam-$(VERSION)

@@ -22,11 +22,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef DIAGRAM_H
 #define DIAGRAM_H
 
-#include "steamcalculator.h"
-#include "steamproperty.h"
-#include "satcurve.h"
-#include "b23curve.h"
-#include "b13curve.h"
+#include "../steamcalculator.h"
+#include "../steamproperty.h"
+#include "../satcurve.h"
+#include "../b23curve.h"
+#include "../b13curve.h"
 
 #include <sstream>
 #include <string>

@@ -71,7 +71,7 @@ ctestheading:
 # CLEAN
 
 clean:
-	@-rm *.o *.d.* $(CFAILOKS) $(CPASSEXES)
+	@-rm *.o *.d.* $(CFAILOKS) $(CPASSEXES) *.stackdump
 
 distclean: clean
 	@-rm *.d
