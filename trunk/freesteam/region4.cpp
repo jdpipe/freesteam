@@ -7,15 +7,14 @@
 
 Region4 *Region4::_instance = 0;
 
-int Region4::getRegion() {
+int Region4::getRegion() const{
 	return 4;
 }
 
 // when creating this object, need to get instance of Region1, Region2
 // so that interpolation can be done.
 Region4::Region4() {
-	// liquid properties will be stored in the parent object
-	this->liquidstate = Region2::Instance();
+	// liquid properties will be stored in the parent's 'liq' object
 	// gas properties will be stored in the parent's 'gas' object.
 }
 
@@ -29,21 +28,24 @@ SteamState *Region4::Instance() {
 	return _instance;
 }
 
-void Region4::set_pT(SteamCalculator * c, Pressure p, Temperature T,
+void Region4::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T,
                           Num x) {
 	// SteamCalculator will already have checked that these are saturated values:
-	c->gas = new SteamCalculator();
-	c->gas->setSatSteam_p(p);
-	c->liq = new SteamCalculator();
-	c->liq->setSatWater_p(p);
-	c->x = x;
-	c->p = p;
-	c->T = T;
-	c->isset = true;
-	ENSURE(c->whichRegion() == 4);
-	//fprintf(stderr,"Set properties of steam in Region 4!\n");
-	// so what is x then?
-	// SteamCalculator will have set that as well.
+	
+	REQUIRE(Boundaries::isSat_pT(p,T));
+	REQUIRE(x >=0);
+	REQUIRE(x <=1);
+	
+	c.gas = new SteamCalculator();
+	c.gas->setSatSteam_p(p);
+	c.liq = new SteamCalculator();
+	c.liq->setSatWater_p(p);
+	c.x = x;
+	c.p = p;
+	c.T = T;
+	c.isset = true;
+	
+	ENSURE(c.whichRegion() == 4);
 }
 
 //--------
@@ -52,6 +54,8 @@ void Region4::set_pT(SteamCalculator * c, Pressure p, Temperature T,
 
 #define INTERP_REGION4(FUNC,TYPE) \
 	TYPE Region4::FUNC(SteamCalculator *c){ \
+		ASSERT(c->x >= 0); \
+		ASSERT(c->x <= 1); \
 		SteamCalculator *g=c->gas; \
 		SteamCalculator *l=c->liq; \
 		TYPE sub=l->FUNC(); \

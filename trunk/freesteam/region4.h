@@ -1,5 +1,5 @@
-#ifndef STEAMREGION4_H
-#define STEAMREGION4_H
+#ifndef REGION4_H
+#define REGION4_H
 
 #include "state.h"
 #include "zeroin.h"
@@ -7,7 +7,7 @@
 class Region4:public SteamState {
 
 	public:
-		int getRegion();
+		int getRegion() const;
 
 		METHOD_STST(specvol,      SpecificVolume);
 		METHOD_STST(specienergy,  SpecificEnergy);
@@ -23,14 +23,11 @@ class Region4:public SteamState {
 
 		static SteamState *Instance();
 
-		virtual void set_pT(SteamCalculator * c, Pressure p, Temperature T,
-		                    Num x);
+		virtual void set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x);
 
 	private:
 		Region4();
 		static Region4 *_instance;
-
-		SteamState *liquidstate;
 
 };
 

@@ -9,7 +9,7 @@
 class SteamState:public DesignByContract {
 	public:
 
-		virtual int getRegion(void);
+		virtual int getRegion(void) const;
 
 		virtual METHOD_STST(specvol,      SpecificVolume);
 		virtual METHOD_STST(specienergy,  SpecificEnergy);
@@ -28,10 +28,10 @@ class SteamState:public DesignByContract {
 	protected:
 
 		friend class SteamCalculator;
-
+		friend void setRegion1(SteamCalculator &S,const Pressure &p,const Temperature &T);
+		
 		static SteamState *Instance();
-		virtual void set_pT(SteamCalculator * c, Pressure p, Temperature T,
-		                    Num x = -1);
+		virtual void set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x = -1);
 
 		virtual METHOD_STST_NUM(pitau_iaps85) {}
 		virtual METHOD_STST_NUM(delpi_iaps85) {}		

@@ -42,7 +42,7 @@ Boundaries::isValid_pT(Pressure p, Temperature T,
 
 	bool isvalid = true;
 
-	if (p <= P_MIN) {
+	if (p < P_MIN) {
 		if (throw_me)
 			throw new SteamCalculatorException(p, T, STM_PRESSURE_LOW);
 		isvalid = false;

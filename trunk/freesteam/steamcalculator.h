@@ -1,7 +1,7 @@
 /*
 
 freesteam - IAPWS-IF97 steam tables library
-Copyright (C) 2004  John Pye
+Copyright (C) 2004-2005  John Pye
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,8 +18,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-#ifndef STEAMCALCULATORSTATE_H
-#define STEAMCALCULATORSTATE_H
+#ifndef STEAMCALCULATOR_H
+#define STEAMCALCULATOR_H
 
 #include "designbycontract.h"
 #include "common.h"
@@ -70,17 +70,20 @@ class SteamCalculator:public DesignByContract {
 		~SteamCalculator();
 		
 		// Defining state, simple methods
-		void set_pT(Pressure p, Temperature T, double x = -1);	// pressure [MPa]
-		void set_rhou(Density rho, SpecificEnergy u);	// density [kg/m3], specific internal energy [kJ/kg]
+		void set_pT(const Pressure &p, const Temperature &T, double x = -1);	// pressure [MPa]
+		void set_rhoT(const Density &rho, const Temperature &T);	// will throw an error if not valid point in region 3
 
 		void changeState(SteamState * state);
 
-		void setSatSteam_p(Pressure p);	// p Pressure [MPa]
-		void setSatWater_p(Pressure p);	// p Pressure [MPa]
-		void setSatWater_T(Temperature T);	// T Temperature [K]
-		void setSatSteam_T(Temperature T);	// T Temperature [K]
-
-		bool isSet(void);
+		void setSatSteam_p(const Pressure &p);	// p Pressure [MPa]
+		void setSatWater_p(const Pressure &p);	// p Pressure [MPa]
+		void setSatWater_T(const Temperature &T);	// T Temperature [K]
+		void setSatSteam_T(const Temperature &T);	// T Temperature [K]
+		
+		void setB23_T(const Temperature &T);
+		void setB23_p(const Pressure &p);
+		
+		bool isSet(void) const;
 
 		#ifndef NDEBUG
 		// Design by contract stuff...
@@ -89,7 +92,8 @@ class SteamCalculator:public DesignByContract {
 
 		// Methods to return properties and state
 
-		int whichRegion(void);
+		int whichRegion(void) const;
+		
 		SteamStateCode whichState(void);
 		const char *SteamCalculator::whichStateStr(void);
 
@@ -139,11 +143,12 @@ class SteamCalculator:public DesignByContract {
 		friend class Region2;
 		friend class Region3;
 		friend class Region4;
-		friend Pressure reg3_pres_err(double);
 		friend class ZeroIn < SteamCalculator, Density, Temperature >;
 		friend class ZeroIn < SteamCalculator, SpecificEnergy, Pressure >;
 		friend class ZeroIn < SteamCalculator, Pressure, Density >;
-
+		
+		friend void setRegion1(SteamCalculator &S,const Pressure &p,const Temperature &T);
+			
 		METHOD_SC_NUM(tau_iaps85);
 		METHOD_SC_NUM(del_iaps85);
 		METHOD_SC_NUM(pi_iaps85);
@@ -160,22 +165,19 @@ class SteamCalculator:public DesignByContract {
 		METHOD_SC_NUM(mu1);
 		METHOD_SC_NUM(mu2);
 
-		Density rhoerror_T_reg1(Temperature T);
-		Density rhoerror_T_reg2(Temperature T);
-		SpecificEnergy uerror_p(Pressure p);
-
-		Pressure getRegion3PressureError(Density test_rho);
+		Pressure getRegion3PressureError(const Density &test_rho);
 
 		// All the intrinsic properties must be stored here because the states are singletons to save memory.
 
-		Temperature T;		///< temperature K
-		Pressure p;			///< pressure MPa
-		Num x;		///< quality
-		Num tau;		///< internal variable in IAPWS calcs
-		Num pi;		///< internal variable in IAPWS calcs
-		Num del;		///< internal variable in IAPWS calcs
-		Density rho;		///< density
-		Pressure reg3_target_pressure;	///< internal variable used in root-finding in region 3
+		Temperature T;			            ///< Temperature K
+		Pressure p;			                ///< Pressure MPa
+		Density rho;		                ///< Density, used by Region 3 only
+		Num x;		                        ///< Quality, used by Region 4
+		
+		Num tau;	                        ///< Internal variable in IAPWS calcs
+		Num pi;		                        ///< Internal variable in IAPWS calcs
+		Num del;		                    ///< Internal variable in IAPWS calcs
+		Pressure reg3_target_pressure;      ///< Internal variable used in root-finding in region 3
 
 	private:
 
@@ -205,11 +207,5 @@ class SteamCalculator:public DesignByContract {
 
 
 };
-
-Pressure reg3_pres_err(double);
-
-double steamcalculator_wrap_pressolve(Pressure p);
-double steamcalculator_wrap_tempsolve(Temperature T);
-
 
 #endif

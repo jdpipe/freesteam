@@ -1,3 +1,6 @@
+#ifndef REGION3_H
+#define REGION3_H
+
 #include "state.h"
 #include "zeroin.h"
 
@@ -7,7 +10,7 @@
 class Region3:public SteamState {
 
 	public:
-		int getRegion();
+		int getRegion() const;
 
 		METHOD_STST(specvol,      SpecificVolume);
 		METHOD_STST(specienergy,  SpecificEnergy);
@@ -21,12 +24,10 @@ class Region3:public SteamState {
 
 	protected:
 		friend class SteamCalculator;
-		friend Pressure reg3_pres_err(double test_dens);
 
 		static SteamState *Instance();
 
-		virtual void set_pT(SteamCalculator * c, Pressure p, Temperature T,
-		                    Num x);
+		virtual void set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x);
 
 	private:
 
@@ -44,3 +45,5 @@ class Region3:public SteamState {
 		METHOD_H_OBJ(delpi_iaps85);
 
 };
+
+#endif

@@ -13,19 +13,18 @@ SteamState *Region2::Instance() {
 	return _instance;
 }
 
-int Region2::getRegion() {
+int Region2::getRegion() const{
 	return 2;
 }
 
-void Region2::set_pT(SteamCalculator * c, Pressure p, Temperature T,
-                          Num x) {
-	c->p = p;
-	c->pi = p / (1.0 * MPa);			// p / 1 MPa
-	c->T = T;
-	c->tau = REG2_TEMP_REF / T;
-	c->x = x;
-	c->isset = true;
-	ENSURE(c->whichRegion() == 2);
+void Region2::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x) {
+	c.p = p;
+	c.pi = p / (1.0 * MPa);			// p / 1 MPa
+	c.T = T;
+	c.tau = REG2_TEMP_REF / T;
+	c.x = x;
+	c.isset = true;
+	ENSURE(c.whichRegion() == 2);
 }
 
 //------------------------------------------------------------------------------

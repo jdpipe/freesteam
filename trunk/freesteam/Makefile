@@ -18,16 +18,15 @@ VERSION = 0.2
 CXX = g++
 
 CPPFLAGS = -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -W
-#CXXFLAGS = -fmessage-length=165 -ggdb
-CXXFLAGS = -fmessage-length=0 -O3
-LDFLAGS = -lncurses -lc -lm -L/lib/
+CXXFLAGS = -fmessage-length=0 -O3 -ggdb
+LDFLAGS = -lncurses -lc -lm -L/lib/ -O3
 
 CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
 
 CXXFLAGS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --cflags)
 LIBS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --libs)
 
-OBJS = steamcalculator.o state.o region1.o region2.o region3.o region4.o boundaries.o steamcalculatorexception.o zeroin.o designbycontract.o units.o solver.o steamproperty.o satcurve.o b23curve.o b13curve.o
+OBJS = steamcalculator.o state.o region1.o region2.o region3.o region4.o boundaries.o steamcalculatorexception.o zeroin.o designbycontract.o units.o solver.o steamproperty.o satcurve.o b23curve.o b13curve.o convergencetest.o solver2.o
 
 # This line will cause all tests to be run in alphabetical order by filename
 #TESTS = $(shell ls *.test.cpp | /bin/sed -r s%\.test\.cpp%.test.o%)
@@ -37,19 +36,18 @@ TESTS = cppunit.test.o empty.test.o units.test.o batchtest.test.o \
 	zeroin.test.o \
 	region4.test.o b23.test.o boundaries.test.o region1.test.o \
 	region2.test.o region3.test.o \
+	b234point.test.o \
 	criticalpoint.test.o \
+	lowpressure.test.o \
 	iapws95.test.o iapws9795.test.o \
 	pressuresolver.test.o temperaturesolver.test.o \
 	satcurve.test.o	b23curve.test.o \
-	b13curve.test.o
+	b13curve.test.o \
+	solver2.test.o
 #	temperaturesolver2.test.o
 
-###### compile-time testing disabled:
 CPASS = $(wildcard *.cpass.cpp)
 CFAIL = $(wildcard *.cfail.cpp)
-
-#CPASS = units-1.cpass.cpp
-#CFAIL = units-1.cfail.cpp units-2.cfail.cpp units-
 
 TESTOBJS = steamtestpoint.o iapws95.o
 
@@ -229,7 +227,7 @@ ASTYLE_TARGETS_H = $(shell ls *.h | /bin/sed -r s%\.h$$%.h.asty%)
 .PHONY: beautiful 
 
 beautiful: $(ASTYLE_TARGETS_CXX) $(ASTYLE_TARGETS_H)
-# (but a rose is still a rose)
+	@echo "(but only a mamma c++ could love a baby c++)"
 
 %.cpp.asty: %.cpp
 	-$(ASTYLE) $(ASTYLEFLAGS) $< && touch $@;

@@ -1,12 +1,12 @@
 #ifndef SATCURVE_H
 #define SATCURVE_H
 
-#include "common.h"
-#include "units.h"
-#include "zeroin.h"
-#include "steamcalculator.h"
-#include "exception.h"
 #include "steamproperty.h"
+#include "units.h"
+#include "steamcalculator.h"
+#include "common.h"
+#include "zeroin.h"
+#include "exception.h"
 
 const bool SAT_WATER=0;
 const bool SAT_STEAM=1;
@@ -43,7 +43,8 @@ class SatCurveBase{
 			SpecificEnergy u = C.solve(3.6 * kg_m3,SAT_STEAM);
 		@endcode
 		
-*/template<class Ordinate,class Abscissa,int OrdinateAlternative=0, int AbscissaAlternative=0>
+*/
+template<class Ordinate,class Abscissa,int OrdinateAlternative=0, int AbscissaAlternative=0>
 class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlternative,AbscissaAlternative>{
 
 	// ZeroIn will be finding the TEMPERATURE at which SatCurve's ABSCISSA has the desired value:
@@ -85,14 +86,14 @@ class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 
 			}catch(Exception *e){
 				stringstream s;
-				s << "SatCurve::solve caught: " << e->what();
+				s << "SatCurve::solve: " << e->what();
 				throw new Exception(s.str());
 			}	
 		}
 		
 	private:
 	
-		Abscissa getAbscissaError_T(Temperature T){
+		Abscissa getAbscissaError_T(const Temperature &T){
 			
 			//cerr << "Trying with T = " << T << ": ";
 			

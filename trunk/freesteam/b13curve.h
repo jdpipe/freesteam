@@ -1,5 +1,5 @@
-#ifndef SATCURVE_H
-#define SATCURVE_H
+#ifndef B13CURVE_H
+#define B13CURVE_H
 
 #include "common.h"
 #include "exception.h"
@@ -56,10 +56,10 @@ class B13Curve : public B13CurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 		Ordinate solve(const Abscissa &target){
 			
 			try{
-				Abscissa maxerr = target * 0.001 * Percent;
+				Abscissa maxerr = target * 1e-12;
 				
 				Solver<Temperature,Abscissa,Pressure> PS1(T_REG1_REG3,target);
-				SteamCalculator S = PS1.solve(maxerr, 0.1 * Pascal);
+				SteamCalculator S = PS1.solve(maxerr, 0.001 * Pascal);
 				
 				//cout << S.pres() << endl;
 				
@@ -67,7 +67,7 @@ class B13Curve : public B13CurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 
 			}catch(Exception *e){
 				stringstream s;
-				s << "B13Curve::solve caught: " << e->what();
+				s << "B13Curve::solve: " << e->what();
 				throw new Exception(s.str());
 			}	
 		}
@@ -101,7 +101,7 @@ class B13Curve<Ordinate,Pressure,OrdinateAlternative,0>
 
 		virtual Ordinate solve(const Pressure &p){
 			SteamCalculator S;
-			S.set_pT(p,T_REG1_REG3);
+			S.set_pT(p,T_REG1_REG3,0);
 			return getOrdinate(S);
 		}
 };

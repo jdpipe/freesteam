@@ -78,7 +78,7 @@ class TemperatureSolverTest2Point{
 			}catch(Exception *e){
 				stringstream s;
 				s.flags(ios_base::showbase);
-				s << "Exception caught: " << e->what();
+				s << "TemperatureSolverTest2Point::test: " << e->what();
 				s << "(expected value of T was " << T << " = " << tocelsius(T) << "°C)";
 				CPPUNIT_FAIL(s.str());
 			}

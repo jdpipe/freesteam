@@ -1,3 +1,6 @@
+#ifndef TEST_H
+#define TEST_H
+
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -17,3 +20,5 @@ using namespace std;
 	s<< #method << ": expected " << val << ", got " << S.method() << "."; \
 	CPPUNIT_FAIL(s.str()); \
 	}
+
+#endif

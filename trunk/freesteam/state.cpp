@@ -5,7 +5,7 @@
 #define EVAL_STEAM(FUNC,EXPR) EXPR_FUNC(SteamState,FUNC,EXPR)
 #define EVAL_STEAM_OBJ(FUNC,EXPR) EXPR_FUNC_OBJ(SteamState,FUNC,EXPR)
 
-int SteamState::getRegion() {
+int SteamState::getRegion() const{
 	return -1;
 }
 
@@ -13,8 +13,7 @@ SteamState *SteamState::Instance() {
 	throw new Exception("Illegal call to SteamState::Instance(). Must instantiate a subclass.");
 }
 
-void SteamState::set_pT(SteamCalculator * c, Pressure p, Temperature T,
-                        Num x) {
+void SteamState::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x) {
 	throw new Exception("Illegal call to SteamState::Instance(). Must instantiate a subclass.");
 }
 

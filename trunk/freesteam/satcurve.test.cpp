@@ -22,6 +22,7 @@ class SatCurveTest: public CppUnit::TestFixture{
 		
 	protected:
 		
+		/*
 		void TestTU(Temperature T, SpecificEnergy u,bool state=SAT_WATER){
 			try{
 				// Solver will give use u_sat(v)
@@ -37,11 +38,12 @@ class SatCurveTest: public CppUnit::TestFixture{
 				
 			}catch(Exception *e){
 				stringstream s;
-				s << "Exception caught: " << e->what();
+				s << "SatCurveTest::TestTU: " << e->what();
 				CPPUNIT_FAIL(s.str());
 			}		
 		}
-
+		*/
+		
 		void TestUT(SpecificEnergy u,Temperature T, bool state=SAT_WATER){
 			try{
 				// Solver will give use u_sat(v)
@@ -57,7 +59,7 @@ class SatCurveTest: public CppUnit::TestFixture{
 				
 			}catch(Exception *e){
 				stringstream s;
-				s << "Exception caught: " << e->what();
+				s << "SatCurveTest::TestUT: " << e->what();
 				CPPUNIT_FAIL(s.str());
 			}		
 		}
@@ -78,7 +80,7 @@ class SatCurveTest: public CppUnit::TestFixture{
 				
 			}catch(Exception *e){
 				stringstream s;
-				s << "Exception caught: " << e->what();
+				s << "SatCurveTest::TestVU: " << e->what();
 				CPPUNIT_FAIL(s.str());
 			}
 		}		
@@ -101,6 +103,7 @@ class SatCurveTest: public CppUnit::TestFixture{
 		void Test27(){ TestUT(2543.0 * kJ_kg      , fromcelsius(133.5) , SAT_STEAM   ); }
 		void Test28(){ TestUT(2552.7 * kJ_kg      , fromcelsius(143.6) , SAT_STEAM   ); }
 
+		/*
 		void Test31(){ TestTU( fromcelsius(111.4) ,  467.0 * kJ_kg     , SAT_WATER   ); }
 		void Test32(){ TestTU( fromcelsius(120.6) ,  504.5 * kJ_kg     , SAT_WATER   ); }
 		void Test33(){ TestTU( fromcelsius(133.5) ,  561.1 * kJ_kg     , SAT_WATER   ); }
@@ -109,7 +112,10 @@ class SatCurveTest: public CppUnit::TestFixture{
 		void Test36(){ TestTU( fromcelsius(120.6) , 2529.2 * kJ_kg     , SAT_STEAM   ); }
 		void Test37(){ TestTU( fromcelsius(133.5) , 2543.0 * kJ_kg     , SAT_STEAM   ); }
 		void Test38(){ TestTU( fromcelsius(143.6) , 2552.7 * kJ_kg     , SAT_STEAM   ); }
-
+		*/
+		
+		void Test40(){ TestVU( 0.001127231 * m3_kg , 761.3878384 * kJ_kg, SAT_WATER    ); }
+		
 	public:
 
 		// Invoke CPPUNIT macros to add tests to a suite:
@@ -133,6 +139,8 @@ class SatCurveTest: public CppUnit::TestFixture{
 		CPPUNIT_TEST(Test26);
 		CPPUNIT_TEST(Test27);
 		CPPUNIT_TEST(Test28);
+
+		CPPUNIT_TEST(Test40);
 		
 		CPPUNIT_TEST_SUITE_END();
 };

@@ -1,14 +1,3 @@
-/// UNIT CHECKING / TRACKING CLASS
-/**
-	Adapted from code given by Rettig at
-	http://www.embedded.com/shared/printableArticle.jhtml?articleID=9900094
-	http://www.embedded.com/code/2001code.htm
-	
-	Original Author:  Christopher Rettig ( rettigcd@bigfoot.com )
-	
-	Current version by John Pye <john dot pye at student-unsw-edu-au>
-*/
-
 #ifndef UNITS_H
 #define UNITS_H
 
@@ -25,12 +14,15 @@
 // All of the reinterpret casts are work-arounds to let us make
 // val & Units(double) private without using friends
 
+/// UNIT CHECKING / TRACKING CLASS
 /**
-	Purpose:
-	 Template class to create a 'Units' data type.
-	  It checks that units are correct at *COMPILE* time.
-	  It hides conversion constants.
-	  It enforces self documenting code.
+	Purpose: Template class to create a 'Units' data type.
+		- It checks that units are correct at *COMPILE* time.
+		- It hides conversion constants.
+		- It enforces self documenting code.
+
+	Original Author:  Christopher Rettig ( rettigcd@bigfoot.com )
+	(This is not the original version)
 
 	Dev platform:
 		. Win2k -- gcc version 3.3.1 (cygming special)
@@ -39,12 +31,23 @@
 		. NT4.0 -- VC++ 6.0
 		. Win2k -- gcc version 3.2.3 (mingw special 20030504-1)
 		. Linux -- gcc version 3.2.2 20030222 (Red Hat Linux 3.2.2-5)
+		
+	@todo
+		Get the units stuff working with a specific units-tracking flag. Should be possible to say that
+		all pressures get output in MPa, all temperatures in °C, etc etc.
+	
+	@see
+		http://www.embedded.com/shared/printableArticle.jhtml?articleID=9900094
+		http://www.embedded.com/code/2001code.htm
+		http://www.experts-exchange.com/Programming/Programming_Languages/Cplusplus/Q_21215508.html
+		http://www.experts-exchange.com/Programming/Programming_Languages/Cplusplus/Q_21199495.html
 */
 
+//const int index = std::ios_base::xalloc();
 
 template< int M ,int L=0 ,int T=0 ,int K=0 ,int I=0 >
 class Units {
-		
+			
 	public:
 
 		Units():d_val(1.0){}	// only used to consturct base units

@@ -57,7 +57,7 @@ class ZeroIn : public DesignByContract {
     private:
     Abscissa ax;		///< lower bound
     Abscissa bx;		///< upper bound
-    Ordinate(Subject::*method) (Abscissa);	///< pointer to member function that will be solved
+    Ordinate(Subject::*method) (const Abscissa&);	///< pointer to member function that will be solved
     Abscissa tol;		///< tolerance, stop once we move less than this amount (absolute) in an iteration
     Abscissa x;			///< solution result
     bool issolved;
@@ -81,22 +81,22 @@ class ZeroIn : public DesignByContract {
     }
 
     /// @see setLowerBound
-    Abscissa getLowerBound() {
+    Abscissa getLowerBound() const {
 	    return ax;
     }
 
     /// Set the upper bound of the range that will be searched for a solution
-    void setUpperBound(const Abscissa bx) {
+    void setUpperBound(const Abscissa& bx) {
 	    this->bx = bx;
     }
 
     /// @see setUpperBound
-    Abscissa getUpperBound() {
+    Abscissa getUpperBound() const{
 	    return bx;
     }
 
     /// set tolerance of the solution
-    void setTolerance(const Abscissa tol) {
+    void setTolerance(const Abscissa& tol) {
 	    this->tol = tol;
     }
 
@@ -109,7 +109,7 @@ class ZeroIn : public DesignByContract {
 				z->setMethod(&Quadratic::evaluate);
 			@endcode
      */
-    void setMethod(Ordinate(Subject::*method) (Abscissa)) {
+    void setMethod(Ordinate(Subject::*method) (const Abscissa&)) {
 	    this->method = method;
     }
 
@@ -157,7 +157,7 @@ class ZeroIn : public DesignByContract {
 
 
     */
-    void visit(Subject * subject) {
+    void visit(Subject *subject) {
 
 	    //cerr << "Begin zeroin with lower bound " << K_TO_C(getLowerBound()) << "°C and upper bound " << K_TO_C(getUpperBound()) << endl;
 
@@ -170,7 +170,12 @@ class ZeroIn : public DesignByContract {
 	    fb = ((*subject).*method) (b);
 	    c = a;
 	    fc = fa;
-
+		
+		if(fa == 0.0 * Ordinate()){
+			fb=0.0 * Ordinate(); // used by getError
+			return;
+		}
+		
 	    //  Main iteration loop
 
 	    for (;;) {
@@ -262,22 +267,22 @@ class ZeroIn : public DesignByContract {
 	    // (((we never arrive here)))
     }
 
-    bool isSolved(void) {
+    bool isSolved(void) const{
 	    return issolved;
     }
 
-    bool isSolved(Ordinate error) {
+    bool isSolved(const Ordinate &error) {
 	    if (fabs(fb) > error) {
 		    return false;
 	    }
 	    return true;
     }
 
-    Abscissa getSolution(void) {
+    Abscissa getSolution(void) const {
 	    return a;
     }
 
-    Ordinate getError(void) {
+    Ordinate getError(void) const{
 	    return fb;
     }
 };

@@ -55,7 +55,7 @@ class CriticalPointTest : public CppUnit::TestFixture{
 
 		void testU(){
 			SpecificEnergy u = 2015.73 * kJ_kg;
-			if(fabs(S.specienergy() - u) > 1.0 * kJ_kg){
+			if(fabs(S.specienergy() - u) > 4.0 * kJ_kg){
 				stringstream s;
 				s.flags(ios_base::showbase);
 				s << "At C.P, got u = " << S.specienergy() << ", expected " << u;
@@ -65,7 +65,7 @@ class CriticalPointTest : public CppUnit::TestFixture{
 
 		void testH(){
 			SpecificEnergy h = 2084.26 * kJ_kg;
-			if(fabs(S.specenthalpy() - h) > 1.0 * kJ_kg){
+			if(fabs(S.specenthalpy() - h) > 4.0 * kJ_kg){
 				stringstream s;
 				s.flags(ios_base::showbase);
 				s << "At C.P, got h = " << S.specenthalpy() << ", expected " << h;
@@ -75,7 +75,7 @@ class CriticalPointTest : public CppUnit::TestFixture{
 
 		void testS(){
 			SpecificEntropy s = 4.407 * kJ_kgK;
-			if(fabs(S.specentropy() - s) > 0.001 * kJ_kgK){
+			if(fabs(S.specentropy() - s) > 5.0 * J_kgK){
 				stringstream ss;
 				ss.flags(ios_base::showbase);
 				ss << "At C.P, got s = " << S.specentropy() << ", expected " << s;

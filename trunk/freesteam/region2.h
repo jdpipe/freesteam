@@ -1,3 +1,6 @@
+#ifndef REGION2_H
+#define REGION2_H
+
 #include "state.h"
 
 class Region2:public SteamState {
@@ -7,9 +10,8 @@ class Region2:public SteamState {
 		friend class Region4;
 
 		static SteamState *Instance();
-		int getRegion();
-		virtual void set_pT(SteamCalculator * c, Pressure p, Temperature T,
-		                    Num x);
+		int getRegion() const;
+		virtual void set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x);
 
 	private:
 		Region2();
@@ -42,3 +44,5 @@ class Region2:public SteamState {
 		METHOD_STST_NUM(delpi_iaps85);
 
 };
+
+#endif

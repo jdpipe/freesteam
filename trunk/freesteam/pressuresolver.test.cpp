@@ -61,7 +61,7 @@ class PressureSolverTest: public CppUnit::TestFixture{
 				
 			}catch(Exception *e){
 				stringstream s;
-				s << "Exception caught: " << e->what();
+				s << "PressureSolverTest::Test: " << e->what();
 				CPPUNIT_FAIL(s.str());
 			}
 		}		

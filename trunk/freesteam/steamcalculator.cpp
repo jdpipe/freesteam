@@ -88,9 +88,11 @@ SteamCalculator::operator=(SteamCalculator const &original) {
 }
 
 /// Destroy function
-/**	Shared by destructor and assignment operators
+/**
+	Shared by destructor and assignment operators
 */
-void SteamCalculator::destroy() {
+void 
+SteamCalculator::destroy() {
 
 	// if we did two-phase calcs, then get rid of the gas SteamCalculator
 	if (this->gas != NULL) {
@@ -102,7 +104,8 @@ void SteamCalculator::destroy() {
 }
 
 /// Destructor
-/*	If saturated, this destroys the gas/liquid SteamCalculators used for the
+/*
+	If saturated, this destroys the gas/liquid SteamCalculators used for the
 	calculation of quality.
 */
 SteamCalculator::~SteamCalculator() {
@@ -112,6 +115,10 @@ SteamCalculator::~SteamCalculator() {
 //------------------------------------------------
 // SETTNG/CHANGING STEAM STATE
 
+/// Update the '_state' object according to current steam state
+/**
+	This is the state/strategy design pattern, tweaked a bit for the case of Region 4...
+*/
 void
 SteamCalculator::changeState(SteamState * state) {
 	_state = state;
@@ -120,31 +127,51 @@ SteamCalculator::changeState(SteamState * state) {
 }
 
 /// Set the steam conditions by pressure, temperature and optionally quality.
-/** @param p pressure
+/**
+	@param p pressure
 	@param T temperature
 	@param x quality (only if saturated)
 */
-void SteamCalculator::set_pT(Pressure p, Temperature T, Num x) {
+void 
+SteamCalculator::set_pT(const Pressure &p, const Temperature &T, Num x) {
 
 	isset = false;
 
 	REQUIRE(Boundaries::isValid_pT(p, T, true));
+	
+	/*
+		Test first for saturation, because we need to have a bit of 'slop' there to allow for numerical inconsistencies of using the forwards/backwards saturation curve equation.
+	*/
 
 	if (Boundaries::isSat_pT(p, T)) {
 		
-		// MESSAGE("SATURATED p,T IN set_PT");
+		ASSERT(x >= 0);
+		ASSERT(x <= 1);
 		
+		// MESSAGE("SATURATED p,T IN set_PT");
+		cerr << "(Saturated, p = " << p << ", T = " << T << ". ";
 		if (x == 0) {
-			if (Boundaries::isRegion1_pT(p, T)) {
+			cerr << "Liquid. ";
+			// Saturated liquid
+			if(T < T_REG1_REG3){
+				cerr << "Region 1) ";
 				changeState(Region1::Instance());
-			} else {
+			}else{
+				cerr << "Region 3) ";
 				changeState(Region3::Instance());
 			}
 		} else if (x == 1) {
-			if (Boundaries::isRegion2_pT(p, T)) {
+			cerr << "Gas. ";
+			// Saturated gas
+			if(T < TB_LOW){
+				cerr << "Region 2) ";
 				changeState(Region2::Instance());
+			} else {
+				cerr << "Region 3) ";
+				changeState(Region3::Instance());
 			}
 		} else {
+			cerr << "Two-phase, Region 4, x = " << x << ") ";
 			// TWO PHASE calculator
 			changeState(Region4::Instance());
 		}
@@ -166,7 +193,7 @@ void SteamCalculator::set_pT(Pressure p, Temperature T, Num x) {
 		throw new SteamCalculatorException(p, T, STM_UNABLE_DET_REGION);
 	}
 
-	_state->set_pT(this, p, T, x);
+	_state->set_pT(*this, p, T, x);
 
 	ENSURE(_state->getRegion() == whichRegion());
 }
@@ -180,7 +207,8 @@ void SteamCalculator::set_pT(Pressure p, Temperature T, Num x) {
 	
 	@param p pressure
 */
-void SteamCalculator::setSatWater_p(Pressure p) {
+void
+SteamCalculator::setSatWater_p(const Pressure &p) {
 
 	Temperature T;
 
@@ -198,23 +226,20 @@ void SteamCalculator::setSatWater_p(Pressure p) {
 
 	ASSERT(Boundaries::isSat_pT(p, T));
 
-	if (Boundaries::isRegion1_pT(p, T)) {
-		changeState(Region1::Instance());
-	} else if (Boundaries::isRegion3_pT(p, T)) {
+	if(p > PB_LOW){
 		changeState(Region3::Instance());
-	} else {
-		stringstream s;
-		s << "Couldn't setSatWater_p(p = " << setprecision(6) << p <<"); T = " << T;
-		throw new Exception(s.str());
+	}else{
+		changeState(Region1::Instance());
 	}
 
-	_state->set_pT(this, p, T, 0);
+	_state->set_pT(*this, p, T, 0);
 }
 
 /// Set state to be saturated steam at a specified pressure.
 /*	@param p pressure
 */
-void SteamCalculator::setSatSteam_p(Pressure p) {
+void 
+SteamCalculator::setSatSteam_p(const Pressure &p) {
 
 	Temperature T;
 
@@ -233,13 +258,14 @@ void SteamCalculator::setSatSteam_p(Pressure p) {
 	ASSERT(Boundaries::isSat_pT(p, T));
 
 	changeState(Region2::Instance());
-	_state->set_pT(this, p, T, 1);
+	_state->set_pT(*this, p, T, 1);
 }
 
 /// Set state to be saturated water at a specified temperature.
 /*	@param T temperature
 */
-void SteamCalculator::setSatWater_T(Temperature T) {
+void 
+SteamCalculator::setSatWater_T(const Temperature &T) {
 
 	REQUIRE(T >= T_MIN);
 	REQUIRE(T <= T_CRIT);
@@ -256,43 +282,118 @@ void SteamCalculator::setSatWater_T(Temperature T) {
 		throw new Exception(s.str());
 	}
 
-	_state->set_pT(this, p, T, 0);
+	_state->set_pT(*this, p, T, 0);
 }
 
 /// Set state to be saturated steam at a specified temperature.
 /*	@param T temperature
 */
-void SteamCalculator::setSatSteam_T(Temperature T) {
+void 
+SteamCalculator::setSatSteam_T(const Temperature &T) {
 
 	REQUIRE(T >= T_TRIPLE);
 	REQUIRE(T <= T_CRIT);
 
 	Pressure p = Boundaries::getSatPres_T(T);
 
-	// ASSERT(p <= P_CRIT);
-	// ASSERT(p >= REG4_P_MIN);
+	ASSERT(p <= P_CRIT + 0.01 * MPa);
+	ASSERT(p >= REG4_P_MIN);
+	
 	ASSERT(Boundaries::isSat_pT(p, T));
 
-	if(T< TB_LOW){
+	if(T<= TB_LOW){
 		changeState(Region2::Instance());
 	}else{
 		changeState(Region3::Instance());
 	}
 
-	_state->set_pT(this, p, T, 1);
+	_state->set_pT(*this, p, T, 1);
 }
 
-// --------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+
+/// Set properties on B23 curve given temperature
+void
+SteamCalculator::setB23_T(const Temperature &T){
+	
+	REQUIRE(T >= T_MIN);
+	REQUIRE(T <= T_MAX);
+	
+	if(T < TB_LOW || T > TB_HIGH){
+		stringstream s;
+		s << "Invalid temperature in setB23_T, T = " << T;
+		throw new Exception(s.str());
+	}
+	
+	Pressure p = Boundaries::getpbound_T(T);
+	
+	ASSERT(p >= PB_LOW - 0.001 * MPa);
+	
+	changeState(Region2::Instance());
+	
+	_state->set_pT(*this, p, T, 1);	
+	
+	ENSURE(whichRegion() == 2);
+}
+
+
+/// Set properties on B23 curve given pressure
+void
+SteamCalculator::setB23_p(const Pressure &p){
+	
+	REQUIRE(p >= PB_LOW);
+	REQUIRE(p <= P_MAX);
+	
+	if(p < PB_LOW){
+		stringstream s;
+		s << "Invalid pressure in setB23_p, p = " << p;
+		throw new Exception(s.str());
+	}
+	
+	Temperature T = Boundaries::getTbound_p(p);
+	
+	ASSERT(T >= TB_LOW);
+	ASSERT(T <= TB_HIGH);
+	
+	changeState(Region2::Instance());
+	
+	_state->set_pT(*this, p, T, 1);	
+	
+	ENSURE(whichRegion() == 2);
+}
+
+//--------------------------------------------------------------------------
+// Direct setting of rho,T for Region 3
+
+void
+SteamCalculator::set_rhoT(const Density &rho, const Temperature &T){
+	
+	changeState(Region3::Instance());
+	
+	this->rho = rho;
+	del = rho / REG3_DENS_REF;
+	
+	this->T = T;
+	tau = REG3_TEMP_REF / T;
+	
+	ENSURE(whichRegion()==3);
+
+	isset = true;
+}
+
+//--------------------------------------------------------------------------
 // Methods for saturated liquid/gas.
 
 /// Has the state of the SteamCalculator been initialised?
-bool SteamCalculator::isSet() {
+bool 
+SteamCalculator::isSet() const{
 	return isset;
 }
 
 #ifndef NDEBUG
 /// Used for design-by-contract IS_VALID tests:
-bool SteamCalculator::isValid() {
+bool 
+SteamCalculator::isValid(){
 	return this->isSet()
 	       && Boundaries::isValid_pT(this->pres(), this->temp());
 }
@@ -301,7 +402,8 @@ bool SteamCalculator::isValid() {
 /// Get the region for the present SteamCalculator (1 to 4, according to IAPWS)
 /*	@return steam region
 */
-int SteamCalculator::whichRegion(void) {
+int 
+SteamCalculator::whichRegion(void) const{
 	int r;
 	/*
 	   if(!isset){
@@ -317,7 +419,7 @@ int SteamCalculator::whichRegion(void) {
 /// Get the state for the present SteamCalculator
 /* 	@return steam state, subcooled, superheated, saturated or supercritical, or unknown.
 */
-SteamStateCode SteamCalculator::whichState(void) {
+SteamStateCode SteamCalculator::whichState(void){
 	if (isset) {
 		if (Boundaries::isSat_pT(this->pres(), this->temp())) {
 			return STEAM_SATURATED;
@@ -340,7 +442,7 @@ SteamStateCode SteamCalculator::whichState(void) {
 /// Get a string version of steam state
 /*	@see whichState()
 */
-const char *SteamCalculator::whichStateStr(void) {
+const char *SteamCalculator::whichStateStr(void){
 	SteamStateCode st = this->whichState();
 
 	if (!isset) {
@@ -807,13 +909,16 @@ SteamCalculator::lam() {
 
 
 Pressure 
-SteamCalculator::getRegion3PressureError(Density test_rho) {
+SteamCalculator::getRegion3PressureError(const Density &rho) {
+	
+	//cerr << endl << "SteamCalculator::getRegion3PressureError: T = " << T << ", rho = " << rho << ". ";
 
 	ASSERT(whichRegion() == 3);
+	ASSERT(rho <= REG3_ZEROIN_DENS_MAX);
 	
-	rho = test_rho;
+	this->rho = rho;
 	del = rho / REG3_DENS_REF;
-
+	
 	Pressure p = _state->pres(this);
 	
 	if(p > P_MAX){
@@ -822,9 +927,18 @@ SteamCalculator::getRegion3PressureError(Density test_rho) {
 	
 	ENSURE(p >= 0.0 * Pascal);
 	ENSURE(p <= P_MAX + 0.01 * MPa);
-
+	
+	//cerr << "Found p = " << p / MPa << " MPa. ";
+	
 	return (p - reg3_target_pressure);
 }
 
 //-----------------------------------
-// SOLVER ROUTINES
+// UTILITY FUNCTIONS
+
+/// Efficient short-cut for Solver2::solveRegion1
+void setRegion1(SteamCalculator &S,const Pressure &p,const Temperature &T){
+	REQUIRE(S.whichRegion()==1);
+	S._state->set_pT(S,p,T,0.0);
+	ENSURE(S.whichRegion()==1);
+}

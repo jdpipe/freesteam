@@ -16,7 +16,7 @@ class ZeroInTest: public CppUnit::TestFixture{
 
 	public:
 	
-		double quadratic(double x){
+		double quadratic(const double &x){
 			this->x=x;	
 			return x*x - 4*x - 4;
 		}

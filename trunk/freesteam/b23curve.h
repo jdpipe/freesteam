@@ -1,5 +1,5 @@
-#ifndef SATCURVE_H
-#define SATCURVE_H
+#ifndef B23CURVE_H
+#define B23CURVE_H
 
 #include "common.h"
 #include "exception.h"
@@ -54,6 +54,10 @@ class B23Curve : public B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 	
 	public:
 	
+		B23Curve(){
+			// Intentionally empty
+		}
+		
 		Ordinate solve(const Abscissa &target){
 
 			ZeroIn<B23Curve,Abscissa,Temperature> z;
@@ -67,40 +71,46 @@ class B23Curve : public B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 				this->state=state;
 
 				// Always try to solve to accuracy of 0.001% of the target value:
-				Abscissa maxerror = target * 0.001 * Percent;
+				Abscissa maxerror = fabs(target) * 0.001 * Percent;
 
-				z.setLowerBound(TB_LOW + 0.01 * Kelvin);
+				z.setLowerBound(TB_LOW);
 				z.setUpperBound(TB_HIGH);
 				z.setTolerance(0.00001 * Kelvin);
 
 				z.setMethod(&B23Curve::getAbscissaError_T);
 
 				z.visit(this);
-
+				
 				if(!z.isSolved(maxerror)){	
 					stringstream s;
 					s.flags(ios_base::showbase);
-					s << "In B23Curve::solve, unable to solve for target " << target << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
+					s << "Unable to solve for target " << target << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
 					throw new Exception(s.str());
 				}
+	
+
+				Temperature T = z.getSolution();
+				//cerr << endl << "Solution found was T = " << T;
+				S.setB23_T(T);
+				//cerr << endl << "At which abscissa = " << getAbscissa(S) << endl;
+				//cerr << endl << "Found solution in region " << S.whichRegion() << ", T = " << S.temp() << ", p = " << S.pres() << ". ";
 
 				return getOrdinate(S);
 
 			}catch(Exception *e){
 				stringstream s;
-				s << "B23Curve::solve caught: " << e->what();
+				s << "B23Curve::solve: " << e->what();
 				throw new Exception(s.str());
 			}	
 		}
 		
 	private:
 	
-		Abscissa getAbscissaError_T(Temperature T){
+		Abscissa getAbscissaError_T(const Temperature &T){
 			
 			//cerr << "T = " << T;
 			
-			Pressure p_bound = Boundaries::getpbound_T(T);
-			S.set_pT(p_bound,T);
+			S.setB23_T(T);
 			
 			//cerr << " --> Abscissa = " << getAbscissa(S) << endl;
 			
@@ -126,9 +136,8 @@ class B23Curve<Ordinate,Temperature,OrdinateAlternative,0>
 		B23Curve() : B23CurveBase<Ordinate,Temperature,OrdinateAlternative,0>(){}
 
 		virtual Ordinate solve(const Temperature &T){
-			Pressure p_bound = Boundaries::getpbound_T(T);
 			SteamCalculator S;
-			S.set_pT(p_bound,T);
+			S.setB23_T(T);
 			return getOrdinate(S);
 		}
 };
@@ -146,9 +155,8 @@ class B23Curve<Ordinate,Pressure,OrdinateAlternative,0>
 		B23Curve() : B23CurveBase<Ordinate,Pressure,OrdinateAlternative,0>(){}
 
 		virtual Ordinate solve(const Pressure &p){
-			Temperature T_bound = Boundaries::getTbound_p(p);
 			SteamCalculator S;
-			S.set_pT(p,T_bound);
+			S.setB23_p(p);
 			return getOrdinate(S);
 		}
 };

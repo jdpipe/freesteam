@@ -14,7 +14,7 @@ SteamState *Region3::Instance() {
 	return _instance;
 }
 
-int Region3::getRegion() {
+int Region3::getRegion() const{
 	return 3;
 }
 
@@ -60,28 +60,74 @@ const Num REGION3_N[REG3_COUNT] = {
 #include <cmath>
 #include <cstdio>
 
-void Region3::set_pT(SteamCalculator * c, Pressure p, Temperature T,
-                          Num x) {
+/**
+	I think this is how this is (vertical lines only approximately vertical)
 
-	SteamCalculator *c2;
+	^
+	|	
+  p	|s~5.1                   |T~T13
+	|                        |
+	|          crit          |
+	|           __pt         |		p = P_CRIT
+	|       _-''  ''-_       |-------------
+	|     .'          '.     |
+	|   .'sat        sat'.   |
+	|  - vap          liq -  |
+	| /                    \ |
+	|/                      \|
+	+=================================>
+	                             rho
+*/
+void Region3::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x) {
+
+	//cerr << endl << "About to solve p = " << p / MPa << " MPa, T = " << T << " in Region3... ";
 	ZeroIn<SteamCalculator, Pressure, Density> z;
 
-	c->T = T;
-	c->tau = REG3_TEMP_REF / T;
+	c.T = T;
+	c.tau = REG3_TEMP_REF / T;
 
-	c->reg3_target_pressure = p;
+	c.reg3_target_pressure = p;
 
 	Pressure pb = Boundaries::getpbound_T(T);
-
-	SteamCalculator S2;
-	S2.set_pT(pb, T);
 	
-	z.setLowerBound(S2.dens());
-	z.setUpperBound(REG3_ZEROIN_DENS_MAX);
+	//cerr << endl << "p_bound(T) = " << pb / MPa << " MPa. ";
+	
+	SteamCalculator S2;
+	
+	
+	if(p > P_CRIT){
+		//cerr << endl << "Region3::set_pT: above P_CRIT. ";
+		
+		// We are above the saturation pressure, clearly out in the open in region 3
+		S2.set_pT(pb, T);
+		
+		//cerr << endl << "region(p_bount(T),T) is " << S2.whichRegion() << ". ";
+		z.setLowerBound(S2.dens());
+		z.setUpperBound(REG3_ZEROIN_DENS_MAX);
+	}else{
+		if(T < T_CRIT){
+			
+			//cerr << endl << "Region3::set_pT: p < P_CRIT, T < T_CRIT";
+						
+			z.setLowerBound(RHO_CRIT);
+			z.setUpperBound(REG3_ZEROIN_DENS_MAX);
+			
+		}else{
+			//cerr << endl << "Region3::set_pT: p < P_CRIT, T >= T_CRIT";
+			
+			// We are to the left of the saturation curve on the p-rho chart
+			z.setUpperBound(RHO_CRIT);
+			z.setLowerBound(0.0001 * kg_m3);
+		}
+	}
+	
+	//cerr << endl << "Lower bound is " << z.getLowerBound() << ". ";
+	//cerr << endl << "Upper bound is " << z.getUpperBound() << ". ";
+	
 	z.setTolerance(REG3_ZEROIN_TOL);
 	z.setMethod(&SteamCalculator::getRegion3PressureError);
 
-	z.visit(c);
+	z.visit(&c);
 
 	Pressure maxerror = 0.001 * Pascal;
 	
@@ -95,10 +141,10 @@ void Region3::set_pT(SteamCalculator * c, Pressure p, Temperature T,
 	/**
 		@todo: remove redundent 'x' from Region3::set_pT function?
 	*/
-	c->x = x;
-	c->isset = true;
+	c.x = x;
+	c.isset = true;
 
-	ENSURE(c->whichRegion() == 3);
+	ENSURE(c.whichRegion() == 3);
 
 }
 

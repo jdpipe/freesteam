@@ -1,5 +1,5 @@
-#ifndef STEAMREGION1_H
-#define STEAMREGION1_H
+#ifndef REGION1_H
+#define REGION1_H
 
 #include "state.h"
 #include "region4.h"
@@ -10,11 +10,11 @@ class Region1:public SteamState {
 	protected:
 		friend class SteamCalculator;
 		friend class Region4;
-
+		friend void setRegion1(SteamCalculator &S,const Pressure &p,const Temperature &T);
+		
 		static SteamState *Instance();
-		int Region1::getRegion();
-		virtual void set_pT(SteamCalculator * c, Pressure p, Temperature T,
-		                    Num x);
+		int Region1::getRegion() const;
+		virtual void set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x);
 
 	private:
 		Region1();

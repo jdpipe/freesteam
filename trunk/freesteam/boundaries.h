@@ -1,6 +1,6 @@
 
-#ifndef STEAMREGIONBOUNDARIES_H
-#define STEAMREGIONBOUNDARIES_H
+#ifndef BOUNDARIES_H
+#define BOUNDARIES_H
 
 #include "steamcalculator.h"
 
