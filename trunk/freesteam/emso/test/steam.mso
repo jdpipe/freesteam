@@ -1,13 +1,8 @@
 #* 
 	freesteam stream integration for use in steam system calculations
 	
-	Based on steam.mso by Rafael de Pelegrini Soares,
-
-	Copyright 2002-2005 Rafael de Pelegrini Soares.
-	Modified by John Pye 2005 http://freesteam.sf.net
-	
-	This copyright statement must not be deleted and must be
-	included in any modification or adaptation of this Model.
+	John Pye 2005 http://freesteam.sf.net
+	Originally based on code by Rafael de Pelegrini Soares http://rps.eng.br
 *#
 
 using "newtypes";
