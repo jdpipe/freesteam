@@ -37,12 +37,13 @@ FlowSheet CycleTest
 	
 	S1.mdot = 38 * "kg/s";
 	#S1.p = 60 * "bar";
-	S1.T = (121 + 273.15) * "K";	
+	# S1.T = (121 + 273.15) * "K";	
 
 	# Boiler
 	#BO.Out.p = 58 * "bar";
 	BO.Dp = -2 * "bar";
-	BO.Out.T = (500 + 273.15) * "K";
+	BO.q = 113 * "MW";
+	#BO.Out.T = (500 + 273.15) * "K";
 	
 	# Turbine
 	TU.eta = 0.85;
@@ -50,7 +51,8 @@ FlowSheet CycleTest
 	
 	# Condenser
 	#CO.Out.p = 1.5 * "bar";
-	CO.Out.T = (40 + 273.15) * "K";
+	#CO.Out.T = (40 + 273.15) * "K";
+	CO.UA = 3090 * "kW/K";
 	
 	# Pump
 	PU.eta = 0.65;
