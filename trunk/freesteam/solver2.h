@@ -99,7 +99,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 		*/
 		SteamCalculator solve(const FirstProp &fp, const SecondProp &sp){
 			int region = 0;
-			SteamCalculator S;
+			SteamCalculator S,S2;
 
 			try{
 				//cerr << endl << "Solver2: solving for " << SteamProperty<FirstProp,FirstPropAlt>::name() << " = " << fp << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << " = " <<  sp;
@@ -110,22 +110,28 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				switch(region){
 					case 1:
 						S.set_pT(10.0 * bar, fromcelsius(100));
-						return solveRegion1(fp,sp,S);
+						S2 = solveRegion1(fp,sp,S);
+						break;
 					case 2:
 						S.set_pT(6.0 * MPa, fromcelsius(400));
-						return solveRegion2(fp,sp,S);
+						S2 = solveRegion2(fp,sp,S);
+						break;
 					case 3:
 						S.setRegion3_rhoT(1 / 0.00317 * kg_m3, fromcelsius(400));
-						return solveRegion3(fp,sp,S);
+						S2 = solveRegion3(fp,sp,S);
+						break;
 					case 4:
 						S.setRegion4_Tx(fromcelsius(263.9),0.5);
-						return solveRegion4(fp,sp,S);
+						S2 = solveRegion4(fp,sp,S);
+						break;
 				}
 			}catch(Exception *E){
 				stringstream s;
 				s << "Solver2::solve (with region=" << region << "): " << E->what();
 				throw new Exception(s.str());
 			}
+
+			return S2;
 		}
 
 		/// Solve with a first guess provided
