@@ -1,14 +1,19 @@
 CHANGELOG
 
-0.1
---------------------------
-First public release
+0.4
+Wednesday, 23 February 2005
+---------------------------
+Expanded two-way solver to u,v (all regions), p,h, p,u
+Added a 'first guess' option which can be used as a framework for integrating backwards correlations safely
+Added a little CLI app (diagram.cli) to plot boundary curves on arbitrary axes via MATLAB
+Made tolerance on SatCurve solver finer to correct Solver2 problems
 
-0.2
---------------------------
-Added support for solver routines to specify state in terms of (p,u), (p,s), (p,v), (T,u), (T,s), (T,v)
-Added more tests
-Added IAPWS-95 routines and comparison test for IF-97 vs 95.
+
+0.3.1
+Friday, 11 February 2005
+------------------------
+Ported to GCC 3.4: just minor changes
+
 
 0.3 
 Thursday, 10 February 2005
@@ -19,7 +24,15 @@ const-ified many methods
 Added lots more tests
 Changed the saturation curve correlation for T > T_REG1_REG3
 
-0.3.1
-Friday, 11 February 2005
-------------------------
-Ported to GCC 3.4: just minor changes
+
+0.2
+--------------------------
+Added support for solver routines to specify state in terms of (p,u), (p,s), (p,v), (T,u), (T,s), (T,v)
+Added more tests
+Added IAPWS-95 routines and comparison test for IF-97 vs 95.
+
+
+0.1
+--------------------------
+First public release
+

@@ -819,6 +819,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 		}
 };
 
+template<>
 SteamCalculator
 Solver2<Pressure,Temperature,0,0>::solveRegion3(
 	const Pressure &p, const Temperature &T, const SteamCalculator &firstguess

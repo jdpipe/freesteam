@@ -17,14 +17,15 @@ VERSION = 0.4
 #CXX = /usr/local/bin/gfilt
 CXX = g++
 
-CPPFLAGS = -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -W -DNDEBUG
 CXXFLAGS = -fmessage-length=170 -O3 -Wall
 LDFLAGS = -lncurses -lc -lm -O3
 
 CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
 
-CXXFLAGS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --cflags)
+CPPFLAGS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --cflags)
 LIBS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --libs)
+
+CPPFLAGS = -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -W -DNDEBUG $(CPPFLAGS_CPPUNIT)
 
 OBJS = exception.o steamcalculator.o state.o region1.o region2.o region3.o region4.o boundaries.o \
 	steamcalculatorexception.o zeroin.o designbycontract.o units.o solver.o steamproperty.o \

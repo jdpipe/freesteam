@@ -208,7 +208,10 @@ class Diagram{
 		}
 };
 
+template<>
 const std::string Diagram<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::getMatlabPlotType();
+
+template<>
 const std::string Diagram<SpecificEnergy,Pressure,SOLVE_ENTHALPY,0>::getMatlabPlotType();
 
 #endif
