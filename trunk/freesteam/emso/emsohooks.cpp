@@ -11,7 +11,11 @@
 #endif
 
 #ifdef SOLVER2_DEBUG
-	#define SOLVER2_DEBUG_PARAM debug
+	#ifdef EMSO_DEBUG
+		#define SOLVER2_DEBUG_PARAM debug
+	#else
+		#define SOLVER2_DEBUG_PARAM false
+	#endif
 #else
 	#define SOLVER2_DEBUG_PARAM
 #endif
@@ -23,7 +27,7 @@
 #include <map>
 using namespace std;
 
-#define EF_ASSIGN(out,in) ( m[#out "_" #in]=out ## _ ## in )
+#define EF_ASSIGN(out,in) ( methodNames[#out "_" #in]=out ## _ ## in )
 #define EF_DECLARE(out,in) out ## _ ## in = out | given_ ## in
 
 /** Data structure for an EMSO 'WaterSteam' package instance.
@@ -43,6 +47,8 @@ class EMSOfreesteam : public ExternalObjectBase {
 
 				cerr << "Created EMSOfreesteam object " << instanceNumber << " (now " << numOfInstances << " instances)..." << endl;
 			#endif
+
+			initialiseMethodNames();
 
 			cerr.flags(ios_base::showbase);
 		};
@@ -135,7 +141,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 
 				if(method == 0){
 					stringstream s;
-					s << "Method '" << methodName << "' not found";
+					s << "Method '" << methodName << "' not found. Valid methods are: " << getValidMethodNames();
 					throw new Exception(s.str());
 				}
 
@@ -796,7 +802,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 		};
 
 		/// The methods
-		enum method_name {
+		typedef enum {
 
 			EF_DECLARE(p,waterT)
 			, EF_DECLARE(x,waterT)
@@ -923,7 +929,175 @@ class EMSOfreesteam : public ExternalObjectBase {
 			, EF_DECLARE(Tuvx,ps)
 			, EF_DECLARE(Thvx,ps)
 			, EF_DECLARE(Tuvx,ph)
-		};
+		} Method;
+
+		typedef map<const string, Method> MethodMap;
+
+		static MethodMap methodNames;
+
+		void initialiseMethodNames(){
+			if(!methodNames.size()){
+
+				// DON'T EDIT THESE, EDIT method_name AND CREATE THESE USING SOME FIND/REPLACE:
+				// Find: \t\t\t,? ?EF_DECLARE(\([^)]+\))
+				// Replace: \t\t\tEF_ASSIGN(\1);
+
+				EF_ASSIGN(p,waterT);
+				EF_ASSIGN(x,waterT);
+				EF_ASSIGN(v,waterT);
+				EF_ASSIGN(u,waterT);
+				EF_ASSIGN(s,waterT);
+				EF_ASSIGN(h,waterT);
+				EF_ASSIGN(cp,waterT);
+				EF_ASSIGN(cv,waterT);
+				EF_ASSIGN(k,waterT);
+				EF_ASSIGN(mu,waterT);
+				EF_ASSIGN(rho,waterT);
+				EF_ASSIGN(region,waterT);
+				EF_ASSIGN(psvhx,waterT);
+				EF_ASSIGN(psh,waterT);
+				EF_ASSIGN(ps,waterT);
+				EF_ASSIGN(p,steamT);
+				EF_ASSIGN(x,steamT);
+				EF_ASSIGN(v,steamT);
+				EF_ASSIGN(u,steamT);
+				EF_ASSIGN(s,steamT);
+				EF_ASSIGN(h,steamT);
+				EF_ASSIGN(cp,steamT);
+				EF_ASSIGN(cv,steamT);
+				EF_ASSIGN(k,steamT);
+				EF_ASSIGN(mu,steamT);
+				EF_ASSIGN(rho,steamT);
+				EF_ASSIGN(region,steamT);
+				EF_ASSIGN(psvhx,steamT);
+				EF_ASSIGN(psh,steamT);
+				EF_ASSIGN(ps,steamT);
+				EF_ASSIGN(x,pT);
+				EF_ASSIGN(v,pT);
+				EF_ASSIGN(u,pT);
+				EF_ASSIGN(s,pT);
+				EF_ASSIGN(h,pT);
+				EF_ASSIGN(cp,pT);
+				EF_ASSIGN(cv,pT);
+				EF_ASSIGN(k,pT);
+				EF_ASSIGN(mu,pT);
+				EF_ASSIGN(rho,pT);
+				EF_ASSIGN(region,pT);
+				EF_ASSIGN(hs,pT);
+				EF_ASSIGN(T,ph);
+				EF_ASSIGN(x,ph);
+				EF_ASSIGN(v,ph);
+				EF_ASSIGN(u,ph);
+				EF_ASSIGN(s,ph);
+				EF_ASSIGN(cp,ph);
+				EF_ASSIGN(cv,ph);
+				EF_ASSIGN(k,ph);
+				EF_ASSIGN(mu,ph);
+				EF_ASSIGN(rho,ph);
+				EF_ASSIGN(region,ph);
+				EF_ASSIGN(Ts,ph);
+				EF_ASSIGN(T,ps);
+				EF_ASSIGN(x,ps);
+				EF_ASSIGN(v,ps);
+				EF_ASSIGN(u,ps);
+				EF_ASSIGN(h,ps);
+				EF_ASSIGN(cp,ps);
+				EF_ASSIGN(cv,ps);
+				EF_ASSIGN(k,ps);
+				EF_ASSIGN(mu,ps);
+				EF_ASSIGN(rho,ps);
+				EF_ASSIGN(region,ps);
+				EF_ASSIGN(Th,ps);
+				EF_ASSIGN(T,pu);
+				EF_ASSIGN(x,pu);
+				EF_ASSIGN(v,pu);
+				EF_ASSIGN(s,pu);
+				EF_ASSIGN(h,pu);
+				EF_ASSIGN(cp,pu);
+				EF_ASSIGN(cv,pu);
+				EF_ASSIGN(k,pu);
+				EF_ASSIGN(mu,pu);
+				EF_ASSIGN(rho,pu);
+				EF_ASSIGN(region,pu);
+				EF_ASSIGN(Th,pu);
+				EF_ASSIGN(Ts,pu);
+				EF_ASSIGN(hs,pu);
+				EF_ASSIGN(T,uv);
+				EF_ASSIGN(p,uv);
+				EF_ASSIGN(x,uv);
+				EF_ASSIGN(s,uv);
+				EF_ASSIGN(h,uv);
+				EF_ASSIGN(cp,uv);
+				EF_ASSIGN(cv,uv);
+				EF_ASSIGN(k,uv);
+				EF_ASSIGN(mu,uv);
+				EF_ASSIGN(rho,uv);
+				EF_ASSIGN(region,uv);
+				EF_ASSIGN(Th,uv);
+				EF_ASSIGN(Ts,uv);
+				EF_ASSIGN(hs,uv);
+				EF_ASSIGN(psh,uv);
+				EF_ASSIGN(ps,uv);
+				EF_ASSIGN(p,Ts);
+				EF_ASSIGN(x,Ts);
+				EF_ASSIGN(v,Ts);
+				EF_ASSIGN(u,Ts);
+				EF_ASSIGN(h,Ts);
+				EF_ASSIGN(cp,Ts);
+				EF_ASSIGN(cv,Ts);
+				EF_ASSIGN(k,Ts);
+				EF_ASSIGN(mu,Ts);
+				EF_ASSIGN(rho,Ts);
+				EF_ASSIGN(region,Ts);
+				EF_ASSIGN(ph,Ts);
+				EF_ASSIGN(p,Th);
+				EF_ASSIGN(x,Th);
+				EF_ASSIGN(v,Th);
+				EF_ASSIGN(u,Th);
+				EF_ASSIGN(s,Th);
+				EF_ASSIGN(cp,Th);
+				EF_ASSIGN(cv,Th);
+				EF_ASSIGN(k,Th);
+				EF_ASSIGN(mu,Th);
+				EF_ASSIGN(rho,Th);
+				EF_ASSIGN(region,Th);
+				EF_ASSIGN(ps,Th);
+				EF_ASSIGN(Tsvx,ph);
+				EF_ASSIGN(Tsvx,pu);
+				EF_ASSIGN(Tuvx,ps);
+				EF_ASSIGN(Thvx,ps);
+				EF_ASSIGN(Tuvx,ph);
+				// DON'T EDIT THOSE, EDIT method_name AND CREATE THESE USING SOME FIND/REPLACE:
+
+			}
+		}
+
+		string getValidMethodNames(){
+
+			stringstream ss;
+
+			MethodMap::iterator i;
+
+			bool first=true;
+			int perthisline=-1;
+			for(i = methodNames.begin(); i!=methodNames.end(); i++){
+				if(!first){
+					ss << ", ";
+				}else{
+					first=false;
+				}
+
+				if(!(++perthisline %= 10)){
+					ss << endl;
+				}
+				ss << (*i).first;
+
+			}
+
+			ss << endl;
+
+			return ss.str();
+		}
 
 		/**
 			Convert a string method name to one of the enumerators #method_names
@@ -931,143 +1105,11 @@ class EMSOfreesteam : public ExternalObjectBase {
 		*/
 		int_t convertMethod(const string &name){
 
-			map<const string,enum method_name> m;
-			map<const string,enum method_name>::iterator i;
+			MethodMap::iterator i;
 
-			// DON'T EDIT THESE, EDIT method_name AND CREATE THESE USING SOME FIND/REPLACE:
-			// Find: \t\t\t,? ?EF_DECLARE(\([^)]+\))
-			// Replace: \t\t\tEF_ASSIGN(\1);
+			i = methodNames.find(name);
 
-			EF_ASSIGN(p,waterT);
-			EF_ASSIGN(x,waterT);
-			EF_ASSIGN(v,waterT);
-			EF_ASSIGN(u,waterT);
-			EF_ASSIGN(s,waterT);
-			EF_ASSIGN(h,waterT);
-			EF_ASSIGN(cp,waterT);
-			EF_ASSIGN(cv,waterT);
-			EF_ASSIGN(k,waterT);
-			EF_ASSIGN(mu,waterT);
-			EF_ASSIGN(rho,waterT);
-			EF_ASSIGN(region,waterT);
-			EF_ASSIGN(psvhx,waterT);
-			EF_ASSIGN(psh,waterT);
-			EF_ASSIGN(ps,waterT);
-			EF_ASSIGN(p,steamT);
-			EF_ASSIGN(x,steamT);
-			EF_ASSIGN(v,steamT);
-			EF_ASSIGN(u,steamT);
-			EF_ASSIGN(s,steamT);
-			EF_ASSIGN(h,steamT);
-			EF_ASSIGN(cp,steamT);
-			EF_ASSIGN(cv,steamT);
-			EF_ASSIGN(k,steamT);
-			EF_ASSIGN(mu,steamT);
-			EF_ASSIGN(rho,steamT);
-			EF_ASSIGN(region,steamT);
-			EF_ASSIGN(psvhx,steamT);
-			EF_ASSIGN(psh,steamT);
-			EF_ASSIGN(ps,steamT);
-			EF_ASSIGN(x,pT);
-			EF_ASSIGN(v,pT);
-			EF_ASSIGN(u,pT);
-			EF_ASSIGN(s,pT);
-			EF_ASSIGN(h,pT);
-			EF_ASSIGN(cp,pT);
-			EF_ASSIGN(cv,pT);
-			EF_ASSIGN(k,pT);
-			EF_ASSIGN(mu,pT);
-			EF_ASSIGN(rho,pT);
-			EF_ASSIGN(region,pT);
-			EF_ASSIGN(hs,pT);
-			EF_ASSIGN(T,ph);
-			EF_ASSIGN(x,ph);
-			EF_ASSIGN(v,ph);
-			EF_ASSIGN(u,ph);
-			EF_ASSIGN(s,ph);
-			EF_ASSIGN(cp,ph);
-			EF_ASSIGN(cv,ph);
-			EF_ASSIGN(k,ph);
-			EF_ASSIGN(mu,ph);
-			EF_ASSIGN(rho,ph);
-			EF_ASSIGN(region,ph);
-			EF_ASSIGN(Ts,ph);
-			EF_ASSIGN(T,ps);
-			EF_ASSIGN(x,ps);
-			EF_ASSIGN(v,ps);
-			EF_ASSIGN(u,ps);
-			EF_ASSIGN(h,ps);
-			EF_ASSIGN(cp,ps);
-			EF_ASSIGN(cv,ps);
-			EF_ASSIGN(k,ps);
-			EF_ASSIGN(mu,ps);
-			EF_ASSIGN(rho,ps);
-			EF_ASSIGN(region,ps);
-			EF_ASSIGN(Th,ps);
-			EF_ASSIGN(T,pu);
-			EF_ASSIGN(x,pu);
-			EF_ASSIGN(v,pu);
-			EF_ASSIGN(s,pu);
-			EF_ASSIGN(h,pu);
-			EF_ASSIGN(cp,pu);
-			EF_ASSIGN(cv,pu);
-			EF_ASSIGN(k,pu);
-			EF_ASSIGN(mu,pu);
-			EF_ASSIGN(rho,pu);
-			EF_ASSIGN(region,pu);
-			EF_ASSIGN(Th,pu);
-			EF_ASSIGN(Ts,pu);
-			EF_ASSIGN(hs,pu);
-			EF_ASSIGN(T,uv);
-			EF_ASSIGN(p,uv);
-			EF_ASSIGN(x,uv);
-			EF_ASSIGN(s,uv);
-			EF_ASSIGN(h,uv);
-			EF_ASSIGN(cp,uv);
-			EF_ASSIGN(cv,uv);
-			EF_ASSIGN(k,uv);
-			EF_ASSIGN(mu,uv);
-			EF_ASSIGN(rho,uv);
-			EF_ASSIGN(region,uv);
-			EF_ASSIGN(Th,uv);
-			EF_ASSIGN(Ts,uv);
-			EF_ASSIGN(hs,uv);
-			EF_ASSIGN(psh,uv);
-			EF_ASSIGN(ps,uv);
-			EF_ASSIGN(p,Ts);
-			EF_ASSIGN(x,Ts);
-			EF_ASSIGN(v,Ts);
-			EF_ASSIGN(u,Ts);
-			EF_ASSIGN(h,Ts);
-			EF_ASSIGN(cp,Ts);
-			EF_ASSIGN(cv,Ts);
-			EF_ASSIGN(k,Ts);
-			EF_ASSIGN(mu,Ts);
-			EF_ASSIGN(rho,Ts);
-			EF_ASSIGN(region,Ts);
-			EF_ASSIGN(ph,Ts);
-			EF_ASSIGN(p,Th);
-			EF_ASSIGN(x,Th);
-			EF_ASSIGN(v,Th);
-			EF_ASSIGN(u,Th);
-			EF_ASSIGN(s,Th);
-			EF_ASSIGN(cp,Th);
-			EF_ASSIGN(cv,Th);
-			EF_ASSIGN(k,Th);
-			EF_ASSIGN(mu,Th);
-			EF_ASSIGN(rho,Th);
-			EF_ASSIGN(region,Th);
-			EF_ASSIGN(ps,Th);
-			EF_ASSIGN(Tsvx,ph);
-			EF_ASSIGN(Tsvx,pu);
-			EF_ASSIGN(Tuvx,ps);
-			EF_ASSIGN(Thvx,ps);
-			EF_ASSIGN(Tuvx,ph);
-			// DON'T EDIT THOSE, EDIT method_name AND CREATE THESE USING SOME FIND/REPLACE:
-
-			i = m.find(name);
-
-			if(i != m.end()){
+			if(i != methodNames.end()){
 				return (*i).second;
 			}
 
@@ -1078,7 +1120,13 @@ class EMSOfreesteam : public ExternalObjectBase {
 		*
 		*/
 		void report_error(char *msg, const string &error){
-			snprintf(msg, EMSO_MESSAGE_LENGTH, error.c_str());
+			if(error.size() > EMSO_MESSAGE_LENGTH){
+				stringstream ss;
+				ss << error.substr(0,EMSO_MESSAGE_LENGTH-24) << "... (message cut short)";
+				snprintf(msg,EMSO_MESSAGE_LENGTH,ss.str().c_str());
+			}else{
+				snprintf(msg, EMSO_MESSAGE_LENGTH, error.c_str());
+			}
 		}
 
 };
@@ -1087,6 +1135,9 @@ class EMSOfreesteam : public ExternalObjectBase {
 	int_t EMSOfreesteam::numOfInstances = 0;
 	int_t EMSOfreesteam::instanceSerialNumber = 0;
 #endif
+
+EMSOfreesteam::MethodMap EMSOfreesteam::methodNames=EMSOfreesteam::MethodMap();
+
 
 //* The factory function
 ExternalObjectBase* ExternalObjectFactory(){

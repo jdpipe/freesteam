@@ -1,0 +1,20 @@
+using "newtypes";
+
+FlowSheet MethodListTest
+
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+
+	VARIABLES
+	s as SpecificEntropy;
+	p as Pressure;
+	h as SpecificEnthalpy;
+		
+	SPECIFY
+	s = freesteam.s_ssph(p,h);
+	p = 10 * "bar";
+	h = 3000 * "kJ/kg";
+	
+	OPTIONS
+	mode="steady";
+end
