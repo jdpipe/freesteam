@@ -29,7 +29,10 @@ class BoundariesTest : public CppUnit::TestFixture {
 				CPPUNIT_ASSERT_EQUAL_MESSAGE("#3: region is incorrect",1,S.whichRegion());
 
 			}catch(Exception *e){
-				CPPUNIT_FAIL(e->what());
+				stringstream ss;
+				ss << "BoundariesTest::testRegion1: " << e->what();
+				delete e;
+				CPPUNIT_FAIL(ss.str());
 			}
 		}
 
@@ -49,7 +52,10 @@ class BoundariesTest : public CppUnit::TestFixture {
 			CPPUNIT_ASSERT_EQUAL(2,S.whichRegion());
 
 			}catch(Exception *e){
-				CPPUNIT_FAIL(e->what());
+				stringstream ss;
+				ss << "BoundariesTest::testRegion2: " << e->what();
+				delete e;
+				CPPUNIT_FAIL(ss.str());
 			}
 		}
 

@@ -97,7 +97,10 @@ class IAPWS9795TestPoint{
 				IAPWS9795_COMPARE(cv97,cv95, 0.45 * Percent);
 
 			}catch(Exception *e){
-				CPPUNIT_FAIL(e->what());
+				stringstream ss;
+				ss << "IAPWS9795TestPoint::test: " << e->what();
+				delete e;
+				CPPUNIT_FAIL(ss.str());
 			}
 		}
 };

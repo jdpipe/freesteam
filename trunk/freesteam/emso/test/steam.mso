@@ -20,59 +20,28 @@ using "newtypes";
 *#
 Model Steam_Base
 	
-	PARAMETERS
+	VARIABLES
 
-	T as AbsoluteTemperature(
-		Unit = "K"
-		, Default = 600
-		, Lower   = 273.15
-		, Upper   = 1073.15
-	);
-
-	p as Pressure( # Pa
-		Lower   = 0
-		, Upper = 100
-		, Default = 10
-	);
-	
+	T as AbsoluteTemperature(    Lower=273.15, Upper=1073.15,Default = 600);
+	p as Pressure(               Lower=0,      Upper=100,    Default = 10 );
+	h as SpecificEnthalpy(       Lower=0,      Upper=1e4,    Default=4000 );
+	s as SpecificEntropy(        Lower=0,      Upper=10,     Default=7 );
+	v as SpecificVolume(         Lower=0,      Upper=1100,   Default=0.1 );
+	u as SpecificInternalEnergy( Lower=0,      Upper=3800,   Default = 2200);
 	x as Quality;
-	
-	h as SpecificEnthalpy(
-		Lower=0
-		, Upper=1e4
-		, Default=4000
-	);
-	
-	s as SpecificEntropy(
-		Lower=0
-		, Upper=10
-		, Default=7
-	);
-	
-	v as SpecificVolume(
-	    Lower=0
-		, Upper=1100
-		, Default=0.1
-	);
-	
-	
-	#*u as SpecificInternalEnergy(
-		Lower=0
-		, Upper = 3800
-	    , Default = 2200
-		, Unit = "kJ/kg"
-	);
-	*#
+
+	EQUATIONS
+	h = u + p * v;
 	
 end
 
 Model Steam_ps as Steam_Base
 
 	PARAMETERS
-	ext freesteam as CalcObject(Brief="Steam Physical Properties");
-	
+	ext freesteam as CalcObject(Brief="Freesteam IAPWS calculator");
+		
 	EQUATIONS
 	"Steam properties"
-	[T, s, v, x] = freesteam.Tsvx_ph(p, h);	
+	[T, u, v, x] = freesteam.Tuvx_ps(p, s);	
 
 end

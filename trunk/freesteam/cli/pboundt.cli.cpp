@@ -59,6 +59,7 @@ int main(void){
 		}catch(Exception *E){
 			cerr << "Exception: " << E->what() << endl;
 			cout << tab << "0";
+			delete E;
 		}
 
 		cout << endl;

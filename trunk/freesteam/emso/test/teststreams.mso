@@ -1,5 +1,6 @@
 #* 
-	freesteam stream integration for use in steam system calculations
+	freesteam IAPWS-IF97 library integration 
+	for use in steam cycle calculations
 	
 	Based on steam.mso by Rafael de Pelegrini Soares,
 
@@ -17,36 +18,18 @@ FlowSheet Test_Stream_ps
 	PARAMETERS
 	freesteam as CalcObject(File="emsofreesteam");
 	
-	#h_error as SpecificEnthalpy(Default = 200);
-	#T_error as RelativeTemperature(Default = 200);
-	
 	DEVICES
 	S as Stream_ps;
 	
 	SPECIFY
 	"Flow rate"
 	S.mdot = 10 * "kg/s";
-
-	# Region 1 Test Points:
-	# (3  MPA, 0.5 kJ/kg/K) -> 307.842 K
-	# (80 MPA, 0.5 kJ/kg/K) -> 309.979 K
-	# (80 MPA, 3 kJ/kg/K) -> 565.899 K
-
-	# Region 2 Test Points:
-	# (0.1  MPA, 7.5 kJ/kg/K) -> 399.517 K
-	# (8  MPA, 7.5 kJ/kg/K) -> 1064.95 K
-	# (80  MPA, 5.25 kJ/kg/K) -> 854.011 K
 	
 	"Pressure"
-	S.p = 8e6 * "Pa";
+	S.p = 101700 * "Pa";
+
 	"Entropy"
 	S.s = 7.5 * "kJ/kg/K";
-	
-	#h_error = S.h - 224.233 * "kJ/kg";
-	#T_error = S.T - 309.979 * "K";
-	
-	#st.h = 224.224 * "kJ/kg";
-	#st.T = 309.979 * "K";
 	
 	OPTIONS
 	relativeAccuracy = 1e-10;

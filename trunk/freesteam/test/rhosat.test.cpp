@@ -27,6 +27,7 @@ class RhoSatTest: public CppUnit::TestFixture{
 			}catch(Exception *e){
 				stringstream s;
 				s << "RhoSatTest::TestLiqPoint: " << e->what();
+				delete e;
 				CPPUNIT_FAIL(s.str());
 			}
 		}
@@ -47,6 +48,7 @@ class RhoSatTest: public CppUnit::TestFixture{
 			}catch(Exception *e){
 				stringstream s;
 				s << "RhoSatTest::TestPoint: " << e->what();
+				delete e;
 				CPPUNIT_FAIL(s.str());
 			}
 		}

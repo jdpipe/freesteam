@@ -46,6 +46,7 @@ class Solver2Test : public CppUnit::TestFixture
 			}catch(Exception *E){
 				stringstream ss;
 				ss << "Solver2Test<" <<  SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">:testWith(p = " << p << ", T = " << T << ", rho = " << rho << "): " << E->what();
+				delete E;
 				CPPUNIT_FAIL(ss.str());
 			}
 		}
@@ -193,6 +194,7 @@ class Solver2Test : public CppUnit::TestFixture
 			}catch(Exception *E){
 				stringstream s;
 				s << "Solver2Test::testRegion3: " << E->what();
+				delete E;
 				CPPUNIT_FAIL(s.str());
 			}
 		}

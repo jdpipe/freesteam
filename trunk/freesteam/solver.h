@@ -115,6 +115,7 @@ class SolverBase : public DesignByContract
 			}catch(Exception *e){
 				stringstream s;
 				s << "Solver<" << SteamProperty<MainProp,MainPropAlt>::name() << "," << SteamProperty<OtherProp,OtherPropAlt>::name() << "," << SteamProperty<VaryProp,VaryPropAlt>::name() << ">::solve: " << e->what();
+				delete e;
 				throw new Exception(s.str());
 			}
 		}

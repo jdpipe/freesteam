@@ -81,8 +81,10 @@ class ConductivityTest : public GridTest<Pressure,Temperature,Conductivity>{
 				}
 
 			}catch(Exception *e){
-				stringstream s;
-				CPPUNIT_FAIL(e->what());
+				stringstream ss;
+				ss << "ConductivityTest::setUp: " << e->what();
+				delete e;
+				CPPUNIT_FAIL(ss.str());
 			}
 
 			//cerr << "TABLE:" << endl;

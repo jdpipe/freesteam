@@ -80,6 +80,7 @@ class TemperatureSolverTest2Point{
 				s.flags(ios_base::showbase);
 				s << "TemperatureSolverTest2Point::test: " << e->what();
 				s << "(expected value of T was " << T << " = " << tocelsius(T) << "°C)";
+				delete e;
 				CPPUNIT_FAIL(s.str());
 			}
 		}

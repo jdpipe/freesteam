@@ -2,7 +2,11 @@
 #include "../solver2.h"
 
 #ifndef HAVE_EMSO
-	#error EMSO not configured on your system, check CPPFLAGS in the file PACKAGE_ROOT/make-xxxxx.mak for your system.
+	#error EMSO NOT CONFIGURED ON YOUR SYSTEM, CHECK CPPFLAGS IN THE FILE PACKAGE_ROOT/make-xxxxx.mak FOR YOUR SYSTEM.
+#endif
+
+#ifdef EMSO_DEBUG
+	#warning EMSO DEBUG MODE IS SET - START EMSO FROM A CONSOLE TO SEE DEBUG OUTPUT
 #endif
 
 #include <emso/external_object.h>
@@ -12,633 +16,709 @@
 #include <map>
 using namespace std;
 
-#define EF_ASSIGN(name) m[#name]=name
+#define EF_ASSIGN(out,in) ( m[#out "_" #in]=out ## _ ## in )
+#define EF_DECLARE(out,in) out ## _ ## in = out | given_ ## in
 
 /** Data structure for an EMSO 'WaterSteam' package instance.
 * This object contains instance-specific data.
 */
 class EMSOfreesteam : public ExternalObjectBase {
-public:
 
-	EMSOfreesteam(){
-		// Intentionally empty
-	};
+	public:
 
-	~EMSOfreesteam(){
-		// Intentionally empty
-	};
+		EMSOfreesteam(){
+			#ifdef EMSO_DEBUG
+				numOfCalcCalls = 0;
+				numOfInstances++;
+				instanceNumber = instanceSerialNumber++;
 
-	/**
-		Creates an instance of this module in EMSO
-	*/
-	virtual void create(int_t *retval, char *msg){
-		++numOfPackages;
-	}
+				cerr << "Created EMSOfreesteam object " << instanceNumber << " (now " << numOfInstances << " instances)..." << endl;
+			#endif
 
-	/**
-		Destroyes an instance of this object in EMSO
-	*/
-	virtual void destroy(int_t *retval, char *msg){
-		--numOfPackages;
-	}
+			cerr.flags(ios_base::showbase);
+		};
 
-	/// Set a parameter for the instance.
-	virtual void setParameter(const char *parameterName,
-			const int_t *valueType,
-			const int_t *valueLength,
-			const real_t *values,
-			const char *valuesText[],
-			int_t *retval, char *msg
-	){
-		*retval = emso_error;
-		snprintf(msg, EMSO_MESSAGE_LENGTH, "EMSOfreesteam has no parameters");
-	}
+		~EMSOfreesteam(){
+			#ifdef EMSO_DEBUG
+				numOfInstances--;
 
-	/// Check method.
-	virtual void checkMethod(const char *methodName,
-			int_t *methodID,
-			int_t *numOfInputs,
-			int_t *numOfOutputs,
-			int_t *retval, char *msg
-	){
+				cerr << "Deleting EMSOfreesteam object " << instanceNumber << " (leaves " << numOfInstances << " instances)..." << endl;
+			#endif
+		};
 
-		try{
-			int_t method, input, output;
-			*methodID = method = convertMethod(string(methodName));
+		/**
+			Create object. Anything risking should go here and throw an exception if necessary
+		*/
+		virtual void create(int_t *retval, char *msg){
+			try{
 
-			if(method == 0){
+				#ifdef EMSO_DEBUG
+					cerr << "EMSOfreesteam::create(): instance " << instanceNumber << endl;
+				#endif
+
+				*retval = emso_ok;
+
+			}catch(Exception *E){
+				stringstream ss;
+				ss << "EMSOfreesteam::create: " << E->what();
+				delete E;
+				report_error(retval, msg, ss.str());
+			}
+		}
+
+		/**
+			Destroyes an instance of this object in EMSO
+		*/
+		virtual void destroy(int_t *retval, char *msg){
+			try{
+
+				#ifdef EMSO_DEBUG
+					cerr << "EMSOfreesteam::destroy(): instance " << instanceNumber << endl;
+				#endif
+
+				*retval = emso_ok;
+
+			}catch(Exception *E){
+				stringstream ss;
+				ss << "EMSOfreesteam::destroy: " << E->what();
+				delete E;
+				report_error(retval, msg, ss.str());
+			}
+		}
+
+		/// Set a parameter for the instance.
+		virtual void setParameter(const char *parameterName,
+				const int_t *valueType,
+				const int_t *valueLength,
+				const real_t *values,
+				const char *valuesText[],
+				int_t *retval, char *msg
+		){
+			*retval = emso_error;
+			snprintf(msg, EMSO_MESSAGE_LENGTH, "EMSOfreesteam has no parameters");
+		}
+
+		/// Check method.
+		virtual void checkMethod(const char *methodName,
+				int_t *methodID,
+				int_t *numOfInputs,
+				int_t *numOfOutputs,
+				int_t *retval, char *msg
+		){
+
+			try{
+				int_t method, input, output;
+
+				#ifdef EMSO_DEBUG
+					cerr << "Searching for DLL method '" << methodName << "'..." << endl;
+				#endif
+
+				*methodID = method = convertMethod(string(methodName));
+
+				if(method == 0){
+					stringstream s;
+					s << "Method '" << methodName << "' not found";
+					throw new Exception(s.str());
+				}
+
+				input = method & InputMask;
+				output = (method & OutputMask);
+
+				// The number of input parameters:
+				switch(input){
+
+					case given_steamT:
+					case given_waterT:
+						*numOfInputs = 1;
+						break;
+
+					case given_pTx:
+						*numOfInputs = 3;
+						break;
+
+					case given_ph:
+					case given_pu:
+					case given_uv:
+					case given_ps:
+						*numOfInputs = 2;
+						break;
+
+					default:
+						throw new Exception("Invalid input parameter combo");
+				}
+
+				// Number of output parameters:
+				switch(output){
+					case Tsvx:
+					case Tuvx:
+						*numOfOutputs = 4;
+						break;
+
+					default:
+						*numOfOutputs = 1;
+						break;
+				}
+
+			}catch(Exception *E){
 				stringstream s;
-				s << "Method '" << methodName << "' not found";
-				throw new Exception(s.str());
+				s << "EMSOfreesteam::checkMethod: " << E->what();
+				report_error(retval, msg, s.str());
+				delete E;
 			}
-
-			input = method & InputMask;
-			output = (method & OutputMask);
-
-			// The number of input parameters:
-			switch(input){
-
-				case given_steamT:
-				case given_waterT:
-					*numOfInputs = 1;
-					break;
-
-				case given_pTx:
-					*numOfInputs = 3;
-					break;
-
-				case given_ph:
-				case given_pu:
-				case given_uv:
-				case given_ps:
-					*numOfInputs = 2;
-					break;
-
-				default:
-					throw new Exception("Invalid input parameter combo");
-			}
-
-			// Number of output parameters:
-			switch(output){
-				case Tsvx:
-					*numOfOutputs = 4;
-					break;
-
-				default:
-					*numOfOutputs = 1;
-					break;
-			}
-
-		}catch(Exception *E){
-			stringstream s;
-			s << "EMSOfreesteam::checkMethod: " << E->what();
-			report_error(retval, msg, s.str().c_str());
-			delete E;
 		}
-	}
 
-	/// Method details
-	/**
-		Relate information about the available methods in this component back to EMSO
-	*/
-	virtual void methodDetails(const char *methodName,
-			const int_t *methodID,
+		/// Method details
+		/**
+			Relate information about the available methods in this component back to EMSO
+		*/
+		virtual void methodDetails(const char *methodName,
+				const int_t *methodID,
 
-			const int_t *numOfInputs,
-			int_t *inputLengths,
-			int_t *inputTypes,
-			char *inputUnits[],
+				const int_t *numOfInputs,
+				int_t *inputLengths,
+				int_t *inputTypes,
+				char *inputUnits[],
 
-			const int_t *numOfOutputs,
-			int_t *outputLengths,
-			int_t *outputTypes,
-			char *outputUnits[],
-			int_t *derivativeMatrix,
+				const int_t *numOfOutputs,
+				int_t *outputLengths,
+				int_t *outputTypes,
+				char *outputUnits[],
+				int_t *derivativeMatrix,
 
-			int_t *retval, char *msg
-	){
+				int_t *retval, char *msg
+		){
 
-		try{
-			int_t method, input, output;
+			try{
+				int_t method, input, output;
 
-			method = *methodID;
-			if(!method)
-				method = convertMethod(string(methodName));
+				method = *methodID;
+				if(!method)
+					method = convertMethod(string(methodName));
 
-			if(method == 0){
+				if(method == 0){
+					stringstream s;
+					s << "Method '" << methodName << "' not found.";
+					throw new Exception(s.str());
+					return;
+				}
+
+				input = method & InputMask;
+				output = method & OutputMask;
+
+				//all of our inputs and outputs are of length 1, hence we do not
+				//need to set inputLengths or outputLengths
+
+				// the method inputs
+				switch(input){
+					case given_pTx:
+						strcpy(inputUnits[0], "MPa");
+						strcpy(inputUnits[1], "K");
+						strcpy(inputUnits[2], "");
+
+					case given_ph:
+					case given_pu:
+						strcpy(inputUnits[0], "MPa");
+						strcpy(inputUnits[1], "kJ/kg");
+						break;
+
+					case given_ps:
+						strcpy(inputUnits[0], "MPa");
+						strcpy(inputUnits[1], "kJ/kg/K");
+						break;
+
+					case given_uv:
+						strcpy(inputUnits[0], "kJ/kg");
+						strcpy(inputUnits[1], "m^3/kg");
+						break;
+
+					case given_waterT:
+					case given_steamT:
+						strcpy(inputUnits[0], "K");
+						break;
+
+					default:
+						throw new Exception("Invalid input param combination");
+				};
+
+				// the outputs
+				switch(output){
+
+					case T:
+						strcpy(outputUnits[0], "K");
+						break;
+
+					case p:
+						strcpy(outputUnits[0], "MPa");
+						break;
+
+					case h:
+					case u:
+						strcpy(outputUnits[0], "kJ/kg");
+						break;
+
+					case s:
+					case cp:
+					case cv:
+						strcpy(outputUnits[0], "kJ/(kg*K)");
+						break;
+
+					case x:
+						break;
+
+					case k:
+						strcpy(outputUnits[0], "W/(m*K)");
+						break;
+					case mu:
+						strcpy(outputUnits[0], "Pa*sec");
+						break;
+					case v:
+						strcpy(outputUnits[0], "m^3/kg");
+						break;
+
+					case rho:
+						strcpy(outputUnits[0], "kg/m^3");
+						break;
+
+					case Tsvx:
+						strcpy(outputUnits[0], "K");
+						strcpy(outputUnits[1], "kJ/kgK");
+						strcpy(outputUnits[2], "m^3/kg");
+
+					case Tuvx:
+						strcpy(outputUnits[0], "K");
+						strcpy(outputUnits[1], "kJ/kg");
+						strcpy(outputUnits[2], "m^3/kg");
+
+					case region:
+						break;
+
+					default:
+						throw new Exception("Invalid output param combination");
+				}
+			}catch(Exception *E){
 				stringstream s;
-				s << "Method '" << methodName << "' not found.";
-				throw new Exception(s.str());
-				return;
+				s << "EMSOfreesteam::calc: " << E->what();
+				report_error(retval, msg, s.str());
+				delete E;
 			}
-
-			input = method & InputMask;
-			output = method & OutputMask;
-
-			//all of our inputs and outputs are of length 1, hence we do not
-			//need to set inputLengths or outputLengths
-
-			// the method inputs
-			switch(input){
-				case given_pTx:
-					strcpy(inputUnits[0], "Pa");
-					strcpy(inputUnits[1], "K");
-					strcpy(inputUnits[2], "");
-
-				case given_ph:
-				case given_pu:
-					strcpy(inputUnits[0], "Pa");
-					strcpy(inputUnits[1], "kJ/kg");
-					break;
-
-				case given_ps:
-					strcpy(inputUnits[0], "Pa");
-					strcpy(inputUnits[1], "kJ/kg/K");
-					break;
-
-				case given_uv:
-					strcpy(inputUnits[0], "kJ/kg");
-					strcpy(inputUnits[1], "m^3/kg");
-					break;
-
-				case given_waterT:
-				case given_steamT:
-					strcpy(inputUnits[0], "K");
-					break;
-
-				default:
-					throw new Exception("Invalid input param combination");
-			};
-
-			// the outputs
-			switch(output){
-
-				case T:
-					strcpy(outputUnits[0], "K");
-					break;
-
-				case p:
-					strcpy(outputUnits[0], "Pa");
-					break;
-
-				case h:
-				case u:
-					strcpy(outputUnits[0], "kJ/kg");
-					break;
-
-				case s:
-				case cp:
-				case cv:
-					strcpy(outputUnits[0], "kJ/(kg*K)");
-					break;
-
-				case x:
-					break;
-
-				case k:
-					strcpy(outputUnits[0], "W/(m*K)");
-					break;
-				case mu:
-					strcpy(outputUnits[0], "Pa*sec");
-					break;
-				case v:
-					strcpy(outputUnits[0], "m^3/kg");
-					break;
-
-				case rho:
-					strcpy(outputUnits[0], "kg/m^3");
-					break;
-
-				case Tsvx:
-					strcpy(outputUnits[0], "K");
-					strcpy(outputUnits[1], "kJ/kg");
-					strcpy(outputUnits[2], "m^3/kg");
-
-
-				case region:
-					break;
-
-				default:
-					throw new Exception("Invalid output param combination");
-			}
-		}catch(Exception *E){
-			stringstream s;
-			s << "EMSOfreesteam::calc: " << E->what();
-			report_error(retval, msg, s.str().c_str());
-			delete E;
 		}
-	}
 
-	/**
-		Calculation
-	*/
-	virtual void calc(const char *methodName,
-			const int_t *methodID,
+		/**
+			Calculation
+		*/
+		virtual void calc(const char *methodName,
+				const int_t *methodID,
 
-			const int_t *numOfInputs,
-			const int_t *inputLengths,
-			const int_t *totalInputLength,
-			const real_t *inputValues,
+				const int_t *numOfInputs,
+				const int_t *inputLengths,
+				const int_t *totalInputLength,
+				const real_t *inputValues,
 
-			const int_t *numOfOutputs,
-			const int_t *outputLengths,
-			const int_t *totalOutputLength,
-			real_t *outputValues,
+				const int_t *numOfOutputs,
+				const int_t *outputLengths,
+				const int_t *totalOutputLength,
+				real_t *outputValues,
 
-			const int_t *calculeDerivatives,
-			real_t *outputDerivatives,
+				const int_t *calculeDerivatives,
+				real_t *outputDerivatives,
 
-			int_t *retval, char *msg
-	){
-		SteamCalculator S;
-		Solver2<Pressure,SpecificEnergy,0,SOLVE_ENTHALPY> SS_PH;
-		Solver2<Pressure,SpecificEnergy,0,SOLVE_IENERGY> SS_PU;
-		Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0> SS_UV;
-		Solver2<Pressure,SpecificEntropy,0,SOLVE_ENTROPY> SS_PS;
+				int_t *retval, char *msg
+		){
+			SteamCalculator S;
+			Solver2<Pressure,SpecificEnergy,0,SOLVE_ENTHALPY> SS_PH;
+			Solver2<Pressure,SpecificEnergy,0,SOLVE_IENERGY> SS_PU;
+			Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0> SS_UV;
+			Solver2<Pressure,SpecificEntropy,0,SOLVE_ENTROPY> SS_PS;
 
-		try{
-			int_t method, input, output;
-			method = *methodID;
-			if(!method)
-				method = convertMethod(string(methodName));
+			try{
 
-			if(method == 0){
+				#ifdef EMSO_DEBUG
+					++numOfCalcCalls;
+				#endif
+
+				int_t method, input, output;
+				method = *methodID;
+				if(!method)
+					method = convertMethod(string(methodName));
+
+				if(method == 0){
+					stringstream s;
+					s << "Method '" << methodName << " not found";
+					throw new Exception(s.str());
+					return;
+				}
+				input = method & InputMask;
+				output = method & OutputMask;
+
+				switch(input){
+					case given_waterT:
+						S.setSatWater_T(inputValues[0] * Kelvin);
+						break;
+
+					case given_steamT:
+						S.setSatSteam_T(inputValues[0] * Kelvin);
+						break;
+
+					case given_pTx:
+						S.set_pT(inputValues[0] * MPa, inputValues[1] * Kelvin, inputValues[2]);
+						break;
+
+					case given_ph:
+						S = SS_PH.solve(inputValues[0] * MPa, inputValues[1] * kJ_kg);
+						break;
+
+					case given_ps:
+						S = SS_PS.solve(inputValues[0] * MPa, inputValues[1] * kJ_kgK);
+
+						#ifdef EMSO_DEBUG
+							cerr << "emsofreesteam: call#" << numOfCalcCalls << ": ";
+							cerr << "Set p = " << inputValues[0] * MPa << ", s = " << inputValues[1] * kJ_kgK;
+							cerr << " (region is " << S.whichRegion() << ")";
+						#endif
+
+						break;
+
+					case given_pu:
+						S = SS_PU.solve(inputValues[0] * Pascal, inputValues[1] * kJ_kg);
+						break;
+
+					case given_uv:
+						S = SS_UV.solve(inputValues[0] * kJ_kg, inputValues[1] * m3_kg);
+						break;
+
+					default:
+						throw new Exception("EMSOfreesteam::calc: Un-handled input option (may be not yet implemented)");
+				}
+
+				switch(output){
+					case T:
+						outputValues[0] = S.temp() / Kelvin;
+						break;
+					case p:
+						outputValues[0] = S.pres() / Pascal;
+						break;
+					case v:
+						outputValues[0] = S.specvol() / m3_kg;
+						break;
+					case u:
+						outputValues[0] = S.specienergy()/kJ_kg;
+						break;
+					case s:
+						outputValues[0] = S.specentropy() / kJ_kgK;
+						break;
+					case h:
+						outputValues[0] = S.specenthalpy() / kJ_kg;
+						break;
+					case cp:
+						outputValues[0] = S.speccp() / kJ_kgK;
+						break;
+					case cv:
+						outputValues[0] = S.speccv() / kJ_kgK;
+						break;
+					case k:
+						outputValues[0] = S.conductivity() / W_mK;
+						break;
+					case mu:
+						outputValues[0] = S.dynvisc() / Pascal / second;
+						break;
+					case x:
+						outputValues[0] = S.quality();
+						break;
+					case Tsvx:
+						outputValues[0] = S.temp() / Kelvin;
+						outputValues[1] = S.specentropy() / kJ_kgK;
+						outputValues[2] = S.specvol() / m3_kg;
+						outputValues[3] = S.quality();
+						break;
+					case Tuvx:
+						outputValues[0] = S.temp() / Kelvin;
+						outputValues[1] = S.specienergy() / kJ_kg;
+						outputValues[2] = S.specvol() / m3_kg;
+						outputValues[3] = S.quality();
+
+						#ifdef EMSO_DEBUG
+							cerr << "... found T = " << S.temp() << ", u = " << S.specienergy() << ", v = " << S.specvol() << ", x = " << S.quality() << endl;
+						#endif
+						break;
+
+					default:
+						throw new Exception("Invalid output option (should never happen)");
+				}
+			}catch(Exception *E){
 				stringstream s;
-				s << "Method '" << methodName << " not found";
-				throw new Exception(s.str());
-				return;
+				s << "EMSOfreesteam::calc: " << E->what();
+				report_error(retval, msg, s.str());
+				delete E;
 			}
-			input = method & InputMask;
-			output = method & OutputMask;
-
-			switch(input){
-				case given_waterT:
-					S.setSatWater_T(inputValues[0] * Kelvin);
-					break;
-
-				case given_steamT:
-					S.setSatSteam_T(inputValues[0] * Kelvin);
-					break;
-
-				case given_pTx:
-					S.set_pT(inputValues[0] * Pascal, inputValues[1] * Kelvin, inputValues[2]);
-					break;
-
-				case given_ph:
-					S = SS_PH.solve(inputValues[0] * Pascal, inputValues[1] * kJ_kg);
-					break;
-
-				case given_ps:
-					S = SS_PS.solve(inputValues[0] * Pascal, inputValues[1] * kJ_kgK);
-					break;
-
-				case given_pu:
-					S = SS_PU.solve(inputValues[0] * Pascal, inputValues[1] * kJ_kg);
-					break;
-
-				case given_uv:
-					S = SS_UV.solve(inputValues[0] * kJ_kg, inputValues[1] * m3_kg);
-					break;
-
-				default:
-					throw new Exception("EMSOfreesteam::calc: Un-handled input option (may be not yet implemented)");
-			}
-
-			switch(output){
-				case T:
-					outputValues[0] = S.temp() / Kelvin;
-					break;
-				case p:
-					outputValues[0] = S.pres() / Pascal;
-					break;
-				case v:
-					outputValues[0] = S.specvol() / m3_kg;
-					break;
-				case u:
-					outputValues[0] = S.specienergy()/kJ_kg;
-					break;
-				case s:
-					outputValues[0] = S.specentropy() / kJ_kgK;
-					break;
-				case h:
-					outputValues[0] = S.specenthalpy() / kJ_kg;
-					break;
-				case cp:
-					outputValues[0] = S.speccp() / kJ_kgK;
-					break;
-				case cv:
-					outputValues[0] = S.speccv() / kJ_kgK;
-					break;
-				case k:
-					outputValues[0] = S.conductivity() / W_mK;
-					break;
-				case mu:
-					outputValues[0] = S.dynvisc() / Pascal / second;
-					break;
-				case x:
-					outputValues[0] = S.quality();
-					break;
-				case Tsvx:
-					outputValues[0] = S.temp() / Kelvin;
-					outputValues[1] = S.specentropy() / kJ_kgK;
-					outputValues[2] = S.specvol() / m3_kg;
-					outputValues[3] = S.quality();
-					break;
-
-				default:
-					throw new Exception("Invalid output option (should never happen)");
-			}
-		}catch(Exception *E){
-			stringstream s;
-			s << "EMSOfreesteam::calc: " << E->what();
-			report_error(retval, msg, s.str().c_str());
-			delete E;
-		}
-	}
-
-private:
-
-	/// The current number of created EMSOfreesteam objects.
-	static int_t numOfPackages;
-
-	/// Specific property options
-	enum input_arguments {
-		given_pTx = 1
-		, given_ph
-		, given_pu
-		, given_uv
-		, given_ps
-		, given_waterT
-		, given_steamT
-
-		, InputMask = 0x00000fff
-	};
-
-	static const int shift = 16;
-
-	/// Returned property options
-	enum output_arguments{
-
-		T		= 0x00010000
-		,p      = 0x00020000
-		,v      = 0x00030000
-		,u      = 0x00040000
-		,s      = 0x00050000
-		,h      = 0x00060000
-		,cp     = 0x00070000
-		,cv     = 0x00080000
-		,rho    = 0x00090000
-		,x      = 0x000a0000
-		,k      = 0x00100000
-		,mu     = 0x00200000
-		,Tsvx   = 0x01000000
-		,region = 0x10000000
-
-		,OutputMask = 0xffff0000
-	};
-
-	/// The methods
-	enum method_name {
-
-		p_waterT = p | given_waterT
-		,x_waterT = x | given_waterT
-		,v_waterT = v | given_waterT
-		,u_waterT = u | given_waterT
-		,s_waterT = s | given_waterT
-		,h_waterT = h | given_waterT
-		,cp_waterT = cp | given_waterT
-		,cv_waterT = cv | given_waterT
-		,k_waterT = k | given_waterT
-		,mu_waterT = mu | given_waterT
-		,rho_waterT = rho | given_waterT
-		,region_waterT = region | given_waterT
-
-		,p_steamT = p | given_steamT
-		,x_steamT = x | given_steamT
-		,v_steamT = v | given_steamT
-		,u_steamT = u | given_steamT
-		,s_steamT = s | given_steamT
-		,h_steamT = h | given_steamT
-		,cp_steamT = cp | given_steamT
-		,cv_steamT = cv | given_steamT
-		,k_steamT = k | given_steamT
-		,mu_steamT = mu | given_steamT
-		,rho_steamT = rho | given_steamT
-		,region_steamT = region | given_steamT
-
-		,T_pTx = T | given_pTx
-		,p_pTx = p | given_pTx
-		,x_pTx = x | given_pTx
-		,v_pTx = v | given_pTx
-		,u_pTx = u | given_pTx
-		,s_pTx = s | given_pTx
-		,h_pTx = h | given_pTx
-		,cp_pTx = cp | given_pTx
-		,cv_pTx = cv | given_pTx
-		,k_pTx = k | given_pTx
-		,mu_pTx = mu | given_pTx
-		,rho_pTx = rho | given_pTx
-		,region_pTx = region | given_pTx
-
-		,T_ph = T | given_ph
-		,x_ph = x | given_ph
-		,v_ph = v | given_ph
-		,u_ph = u | given_ph
-		,s_ph = s | given_ph
-		,cp_ph = cp | given_ph
-		,cv_ph = cv | given_ph
-		,k_ph = k | given_ph
-		,mu_ph = mu | given_ph
-		,rho_ph = rho | given_ph
-		,region_ph = region | given_ph
-
-		,T_ps = T | given_ps
-		,x_ps = x | given_ps
-		,v_ps = v | given_ps
-		,u_ps = u | given_ps
-		,h_ps = h | given_ps
-		,cp_ps = cp | given_ps
-		,cv_ps = cv | given_ps
-		,k_ps = k | given_ps
-		,mu_ps = mu | given_ps
-		,rho_ps = rho | given_ps
-		,region_ps = region | given_ps
-
-
-		,T_pu = T | given_pu
-		,x_pu = x | given_pu
-		,v_pu = v | given_pu
-		,s_pu = s | given_pu
-		,h_pu = h | given_pu
-		,cp_pu = cp | given_pu
-		,cv_pu = cv | given_pu
-		,k_pu = k | given_pu
-		,mu_pu = mu | given_pu
-		,rho_pu = rho | given_pu
-		,region_pu = region | given_pu
-
-		,T_uv = T | given_uv
-		,p_uv = p | given_uv
-		,x_uv = x | given_uv
-		,s_uv = s | given_uv
-		,h_uv = h | given_uv
-		,cp_uv = cp | given_uv
-		,cv_uv = cv | given_uv
-		,k_uv = k | given_uv
-		,mu_uv = mu | given_uv
-		,rho_uv = rho | given_uv
-		,region_uv = region | given_uv
-
-		,Tsvx_ph	= Tsvx | given_ph
-		,Tsvx_pu	= Tsvx | given_pu
-	};
-
-	/**
-		Convert a string method name to one of the enumerators #method_names
-		If the given name is not a valid method #unknownMethod is returned.
-	*/
-	int_t convertMethod(const string &name){
-
-		map<const string,enum method_name> m;
-		map<const string,enum method_name>::iterator i;
-
-		// These lines can be made using some quick regexps from the above stuff, or vv
-		EF_ASSIGN(p_waterT);
-		EF_ASSIGN(x_waterT);
-		EF_ASSIGN(v_waterT);
-		EF_ASSIGN(u_waterT);
-		EF_ASSIGN(s_waterT);
-		EF_ASSIGN(h_waterT);
-		EF_ASSIGN(cp_waterT);
-		EF_ASSIGN(cv_waterT);
-		EF_ASSIGN(k_waterT);
-		EF_ASSIGN(mu_waterT);
-		EF_ASSIGN(rho_waterT);
-		EF_ASSIGN(region_waterT);
-
-		EF_ASSIGN(p_steamT);
-		EF_ASSIGN(x_steamT);
-		EF_ASSIGN(v_steamT);
-		EF_ASSIGN(u_steamT);
-		EF_ASSIGN(s_steamT);
-		EF_ASSIGN(h_steamT);
-		EF_ASSIGN(cp_steamT);
-		EF_ASSIGN(cv_steamT);
-		EF_ASSIGN(k_steamT);
-		EF_ASSIGN(mu_steamT);
-		EF_ASSIGN(rho_steamT);
-		EF_ASSIGN(region_steamT);
-
-		EF_ASSIGN(T_pTx);
-		EF_ASSIGN(p_pTx);
-		EF_ASSIGN(x_pTx);
-		EF_ASSIGN(v_pTx);
-		EF_ASSIGN(u_pTx);
-		EF_ASSIGN(s_pTx);
-		EF_ASSIGN(h_pTx);
-		EF_ASSIGN(cp_pTx);
-		EF_ASSIGN(cv_pTx);
-		EF_ASSIGN(k_pTx);
-		EF_ASSIGN(mu_pTx);
-		EF_ASSIGN(rho_pTx);
-		EF_ASSIGN(region_pTx);
-
-		EF_ASSIGN(T_ph);
-		EF_ASSIGN(x_ph);
-		EF_ASSIGN(v_ph);
-		EF_ASSIGN(u_ph);
-		EF_ASSIGN(s_ph);
-		EF_ASSIGN(cp_ph);
-		EF_ASSIGN(cv_ph);
-		EF_ASSIGN(k_ph);
-		EF_ASSIGN(mu_ph);
-		EF_ASSIGN(rho_ph);
-		EF_ASSIGN(region_ph);
-
-		EF_ASSIGN(T_ps);
-		EF_ASSIGN(x_ps);
-		EF_ASSIGN(v_ps);
-		EF_ASSIGN(u_ps);
-		EF_ASSIGN(h_ps);
-		EF_ASSIGN(cp_ps);
-		EF_ASSIGN(cv_ps);
-		EF_ASSIGN(k_ps);
-		EF_ASSIGN(mu_ps);
-		EF_ASSIGN(rho_ps);
-		EF_ASSIGN(region_ps);
-
-		EF_ASSIGN(T_pu);
-		EF_ASSIGN(x_pu);
-		EF_ASSIGN(v_pu);
-		EF_ASSIGN(s_pu);
-		EF_ASSIGN(h_pu);
-		EF_ASSIGN(cp_pu);
-		EF_ASSIGN(cv_pu);
-		EF_ASSIGN(k_pu);
-		EF_ASSIGN(mu_pu);
-		EF_ASSIGN(rho_pu);
-		EF_ASSIGN(region_pu);
-
-		EF_ASSIGN(T_uv);
-		EF_ASSIGN(p_uv);
-		EF_ASSIGN(x_uv);
-		EF_ASSIGN(s_uv);
-		EF_ASSIGN(h_uv);
-		EF_ASSIGN(cp_uv);
-		EF_ASSIGN(cv_uv);
-		EF_ASSIGN(k_uv);
-		EF_ASSIGN(mu_uv);
-		EF_ASSIGN(rho_uv);
-		EF_ASSIGN(region_uv);
-
-		EF_ASSIGN(Tsvx_ph);
-		EF_ASSIGN(Tsvx_pu);
-
-		i = m.find(name);
-
-		if(i != m.end()){
-			return (*i).second;
 		}
 
-		return 0;
-	}
+	private:
 
-	/** check if we have an error and print it to the given msg
-	*
-	*/
-	void report_error(int_t *retval, char *msg, const char *e){
-		*retval = emso_error;
-		snprintf(msg, EMSO_MESSAGE_LENGTH, e);
-	}
+		/// The current number of created EMSOfreesteam objects.
+		static int_t numOfPackages;
+
+		#ifdef EMSO_DEBUG
+			int_t numOfCalcCalls;
+			int_t instanceNumber;
+			static int_t instanceSerialNumber;
+			static int_t numOfInstances;
+		#endif
+
+		/// Specific property options
+		/**
+			These must never give nonzero when ANDed with output_arguments or each other
+		*/
+		enum input_arguments {
+			given_pTx = 1
+			, given_ph
+			, given_pu
+			, given_uv
+			, given_ps
+			, given_waterT
+			, given_steamT
+
+			, InputMask = 0x00000fff
+		};
+
+		/// Returned property options
+		/**
+			These must never give nonzero when ANDed with input_arguments or each other
+		*/
+		enum output_arguments{
+
+			T		= 0x00010000
+			,p      = 0x00020000
+			,v      = 0x00030000
+			,u      = 0x00040000
+			,s      = 0x00050000
+			,h      = 0x00060000
+			,cp     = 0x00070000
+			,cv     = 0x00080000
+			,rho    = 0x00090000
+			,x      = 0x000a0000
+			,k      = 0x00100000
+			,mu     = 0x00200000
+			,Tsvx   = 0x01000000
+			,Tuvx   = 0x02000000
+			,region = 0x10000000
+
+			,OutputMask = 0xffff0000
+		};
+
+		/// The methods
+		enum method_name {
+
+			EF_DECLARE(p,waterT)
+			, EF_DECLARE(x,waterT)
+			, EF_DECLARE(v,waterT)
+			, EF_DECLARE(u,waterT)
+			, EF_DECLARE(s,waterT)
+			, EF_DECLARE(h,waterT)
+			, EF_DECLARE(cp,waterT)
+			, EF_DECLARE(cv,waterT)
+			, EF_DECLARE(k,waterT)
+			, EF_DECLARE(mu,waterT)
+			, EF_DECLARE(rho,waterT)
+			, EF_DECLARE(region,waterT)
+			, EF_DECLARE(p,steamT)
+			, EF_DECLARE(x,steamT)
+			, EF_DECLARE(v,steamT)
+			, EF_DECLARE(u,steamT)
+			, EF_DECLARE(s,steamT)
+			, EF_DECLARE(h,steamT)
+			, EF_DECLARE(cp,steamT)
+			, EF_DECLARE(cv,steamT)
+			, EF_DECLARE(k,steamT)
+			, EF_DECLARE(mu,steamT)
+			, EF_DECLARE(rho,steamT)
+			, EF_DECLARE(region,steamT)
+			, EF_DECLARE(T,pTx)
+			, EF_DECLARE(p,pTx)
+			, EF_DECLARE(x,pTx)
+			, EF_DECLARE(v,pTx)
+			, EF_DECLARE(u,pTx)
+			, EF_DECLARE(s,pTx)
+			, EF_DECLARE(h,pTx)
+			, EF_DECLARE(cp,pTx)
+			, EF_DECLARE(cv,pTx)
+			, EF_DECLARE(k,pTx)
+			, EF_DECLARE(mu,pTx)
+			, EF_DECLARE(rho,pTx)
+			, EF_DECLARE(region,pTx)
+			, EF_DECLARE(T,ph)
+			, EF_DECLARE(x,ph)
+			, EF_DECLARE(v,ph)
+			, EF_DECLARE(u,ph)
+			, EF_DECLARE(s,ph)
+			, EF_DECLARE(cp,ph)
+			, EF_DECLARE(cv,ph)
+			, EF_DECLARE(k,ph)
+			, EF_DECLARE(mu,ph)
+			, EF_DECLARE(rho,ph)
+			, EF_DECLARE(region,ph)
+			, EF_DECLARE(T,ps)
+			, EF_DECLARE(x,ps)
+			, EF_DECLARE(v,ps)
+			, EF_DECLARE(u,ps)
+			, EF_DECLARE(h,ps)
+			, EF_DECLARE(cp,ps)
+			, EF_DECLARE(cv,ps)
+			, EF_DECLARE(k,ps)
+			, EF_DECLARE(mu,ps)
+			, EF_DECLARE(rho,ps)
+			, EF_DECLARE(region,ps)
+			, EF_DECLARE(T,pu)
+			, EF_DECLARE(x,pu)
+			, EF_DECLARE(v,pu)
+			, EF_DECLARE(s,pu)
+			, EF_DECLARE(h,pu)
+			, EF_DECLARE(cp,pu)
+			, EF_DECLARE(cv,pu)
+			, EF_DECLARE(k,pu)
+			, EF_DECLARE(mu,pu)
+			, EF_DECLARE(rho,pu)
+			, EF_DECLARE(region,pu)
+			, EF_DECLARE(T,uv)
+			, EF_DECLARE(p,uv)
+			, EF_DECLARE(x,uv)
+			, EF_DECLARE(s,uv)
+			, EF_DECLARE(h,uv)
+			, EF_DECLARE(cp,uv)
+			, EF_DECLARE(cv,uv)
+			, EF_DECLARE(k,uv)
+			, EF_DECLARE(mu,uv)
+			, EF_DECLARE(rho,uv)
+			, EF_DECLARE(region,uv)
+			, EF_DECLARE(Tsvx,ph)
+			, EF_DECLARE(Tsvx,pu)
+			, EF_DECLARE(Tuvx,ps)
+			, EF_DECLARE(Tuvx,ph)
+		};
+
+		/**
+			Convert a string method name to one of the enumerators #method_names
+			If the given name is not a valid method #unknownMethod is returned.
+		*/
+		int_t convertMethod(const string &name){
+
+			map<const string,enum method_name> m;
+			map<const string,enum method_name>::iterator i;
+
+			// DON'T EDIT THESE, EDIT method_name AND CREATE THESE USING SOME FIND/REPLACE:
+			EF_ASSIGN(p,waterT);
+			EF_ASSIGN(x,waterT);
+			EF_ASSIGN(v,waterT);
+			EF_ASSIGN(u,waterT);
+			EF_ASSIGN(s,waterT);
+			EF_ASSIGN(h,waterT);
+			EF_ASSIGN(cp,waterT);
+			EF_ASSIGN(cv,waterT);
+			EF_ASSIGN(k,waterT);
+			EF_ASSIGN(mu,waterT);
+			EF_ASSIGN(rho,waterT);
+			EF_ASSIGN(region,waterT);
+			EF_ASSIGN(p,steamT);
+			EF_ASSIGN(x,steamT);
+			EF_ASSIGN(v,steamT);
+			EF_ASSIGN(u,steamT);
+			EF_ASSIGN(s,steamT);
+			EF_ASSIGN(h,steamT);
+			EF_ASSIGN(cp,steamT);
+			EF_ASSIGN(cv,steamT);
+			EF_ASSIGN(k,steamT);
+			EF_ASSIGN(mu,steamT);
+			EF_ASSIGN(rho,steamT);
+			EF_ASSIGN(region,steamT);
+			EF_ASSIGN(T,pTx);
+			EF_ASSIGN(p,pTx);
+			EF_ASSIGN(x,pTx);
+			EF_ASSIGN(v,pTx);
+			EF_ASSIGN(u,pTx);
+			EF_ASSIGN(s,pTx);
+			EF_ASSIGN(h,pTx);
+			EF_ASSIGN(cp,pTx);
+			EF_ASSIGN(cv,pTx);
+			EF_ASSIGN(k,pTx);
+			EF_ASSIGN(mu,pTx);
+			EF_ASSIGN(rho,pTx);
+			EF_ASSIGN(region,pTx);
+			EF_ASSIGN(T,ph);
+			EF_ASSIGN(x,ph);
+			EF_ASSIGN(v,ph);
+			EF_ASSIGN(u,ph);
+			EF_ASSIGN(s,ph);
+			EF_ASSIGN(cp,ph);
+			EF_ASSIGN(cv,ph);
+			EF_ASSIGN(k,ph);
+			EF_ASSIGN(mu,ph);
+			EF_ASSIGN(rho,ph);
+			EF_ASSIGN(region,ph);
+			EF_ASSIGN(T,ps);
+			EF_ASSIGN(x,ps);
+			EF_ASSIGN(v,ps);
+			EF_ASSIGN(u,ps);
+			EF_ASSIGN(h,ps);
+			EF_ASSIGN(cp,ps);
+			EF_ASSIGN(cv,ps);
+			EF_ASSIGN(k,ps);
+			EF_ASSIGN(mu,ps);
+			EF_ASSIGN(rho,ps);
+			EF_ASSIGN(region,ps);
+			EF_ASSIGN(T,pu);
+			EF_ASSIGN(x,pu);
+			EF_ASSIGN(v,pu);
+			EF_ASSIGN(s,pu);
+			EF_ASSIGN(h,pu);
+			EF_ASSIGN(cp,pu);
+			EF_ASSIGN(cv,pu);
+			EF_ASSIGN(k,pu);
+			EF_ASSIGN(mu,pu);
+			EF_ASSIGN(rho,pu);
+			EF_ASSIGN(region,pu);
+			EF_ASSIGN(T,uv);
+			EF_ASSIGN(p,uv);
+			EF_ASSIGN(x,uv);
+			EF_ASSIGN(s,uv);
+			EF_ASSIGN(h,uv);
+			EF_ASSIGN(cp,uv);
+			EF_ASSIGN(cv,uv);
+			EF_ASSIGN(k,uv);
+			EF_ASSIGN(mu,uv);
+			EF_ASSIGN(rho,uv);
+			EF_ASSIGN(region,uv);
+			EF_ASSIGN(Tsvx,ph);
+			EF_ASSIGN(Tsvx,pu);
+			EF_ASSIGN(Tuvx,ps);
+			EF_ASSIGN(Tuvx,ph);
+			// DON'T EDIT THOSE, EDIT method_name AND CREATE THESE USING SOME FIND/REPLACE:
+
+			i = m.find(name);
+
+			if(i != m.end()){
+				return (*i).second;
+			}
+
+			return 0;
+		}
+
+		/** check if we have an error and print it to the given msg
+		*
+		*/
+		void report_error(int_t *retval, char *msg, const string &error){
+			*retval = emso_error;
+			snprintf(msg, EMSO_MESSAGE_LENGTH, error.c_str());
+		}
 
 };
 
-int_t EMSOfreesteam::numOfPackages = 0;
-
+#ifdef EMSO_DEBUG
+	int_t EMSOfreesteam::numOfInstances = 0;
+	int_t EMSOfreesteam::instanceSerialNumber = 0;
+#endif
 
 //* The factory function
 ExternalObjectBase* ExternalObjectFactory(){
-	return new EMSOfreesteam;
+	return new EMSOfreesteam();
 }
 
 

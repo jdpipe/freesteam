@@ -214,6 +214,7 @@ SteamCalculator::set_pT(const Pressure &p, const Temperature &T, Num x) {
 	}catch(Exception *E){
 		stringstream s;
 		s << "SteamCalculator::set_pT(p = " << p << ",T = " << T <<"): " << E->what();
+		delete E;
 		throw new Exception(s.str());
 	}
 }
@@ -1013,6 +1014,7 @@ SteamCalculator::setRegion4_Tx(const Temperature &T, const Num &x){
 	}catch(Exception *E){
 		stringstream s;
 		s << "SteamCalculator::setRegion4_Tx: " << E->what();
+		delete E;
 		throw new Exception(s.str());
 	}
 }

@@ -18,8 +18,17 @@
 #--------------------------
 # EMSO integration
 
+EMSO_DEBUG =
+
 EMSO = $(SO_PREFIX)$(EMSO_NAME)$(SO_SUFFIX)
 
+emsohooks.o: emsohooks.cpp
+ifeq ($(EMSO_DEBUG),1)
+	$(CXX) $(CPPFLAGS) -DEMSO_DEBUG $(CXXFLAGS) -c -o $@ $^
+else
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
+endif
+	
 emso: $(EMSO)
 
 $(EMSO): emsohooks.o libcheck

@@ -52,6 +52,7 @@ class Region4TestPoint{
 			}catch(Exception *E){
 				stringstream s;
 				s << "Region4TestPoint::test: " << E->what();
+				delete E;
 				CPPUNIT_FAIL(s.str());
 			}
 		}

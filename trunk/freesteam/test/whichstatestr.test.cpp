@@ -60,6 +60,7 @@ class WhichStateStrTest : public CppUnit::TestFixture{
 			}catch(Exception *E){
 				stringstream s;
 				s << "WhichStateStrTest:testSaturated: " << E->what();
+				delete E;
 				CPPUNIT_FAIL(s.str());
 			}
 		}
@@ -73,6 +74,7 @@ class WhichStateStrTest : public CppUnit::TestFixture{
 			}catch(Exception *E){
 				stringstream s;
 				s << "WhichStateStrTest:testSupercritical: " << E->what();
+				delete E;
 				CPPUNIT_FAIL(s.str());
 			}
 		}
@@ -93,6 +95,7 @@ class WhichStateStrTest : public CppUnit::TestFixture{
 			}catch(Exception *E){
 				stringstream s;
 				s << "WhichStateStrTest:testSubcooled: " << E->what();
+				delete E;
 				CPPUNIT_FAIL(s.str());
 			}
 		}
@@ -110,6 +113,7 @@ class WhichStateStrTest : public CppUnit::TestFixture{
 			}catch(Exception *E){
 				stringstream s;
 				s << "WhichStateStrTest:testSuperheated: " << E->what();
+				delete E;
 				CPPUNIT_FAIL(s.str());
 			}
 		}

@@ -80,6 +80,7 @@ int main(){
 
 	}catch(Exception *E){
 		cerr << "Error: " << E->what();
+		delete E;
 		exit(1);
 	}
 }

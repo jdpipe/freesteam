@@ -19,6 +19,7 @@ class SteamPropertyTest : public SteamProperty<Property,PropertyAlternative>{
 			}catch(Exception *E){
 				stringstream s;
 				s << "SteamPropertyTest::test: " << E->what();
+				delete E;
 				throw new Exception(s.str());
 			}
 

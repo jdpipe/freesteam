@@ -158,6 +158,7 @@ class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 			}catch(Exception *e){
 				stringstream s;
 				s << "SatCurve<" << SteamProperty<Ordinate,OrdinateAlt>::name() << "," << SteamProperty<Abscissa,AbscissaAlt>::name() << ">::solve(" << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << target << "," << (flags & SAT_STEAM ? "SAT_STEAM" : "SAT_WATER") << "): " << e->what();
+				delete e;
 				throw new Exception(s.str());
 			}
 		}

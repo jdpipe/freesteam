@@ -89,6 +89,7 @@ class B13Curve : public B13CurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 			}catch(Exception *e){
 				stringstream s;
 				s << "B13Curve<" << SteamProperty<Ordinate,OrdinateAlt>::name() << "," << SteamProperty<Abscissa,AbscissaAlt>::name() << ">::solve(" << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << target <<"): " << e->what();
+				delete e;
 				throw new Exception(s.str());
 			}
 		}

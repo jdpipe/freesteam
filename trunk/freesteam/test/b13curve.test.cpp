@@ -85,6 +85,7 @@ class B13CurveTest: public CppUnit::TestFixture{
 			}catch(Exception *E){
 				stringstream s;
 				s << "B13CurveTest::testB13: " << E->what();
+				delete E;
 				CPPUNIT_FAIL(s.str());
 			}
 

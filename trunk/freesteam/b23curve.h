@@ -123,6 +123,7 @@ class B23Curve : public B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 			}catch(Exception *e){
 				stringstream s;
 				s << "B23Curve::solve: " << e->what();
+				delete e;
 				throw new Exception(s.str());
 			}
 		}

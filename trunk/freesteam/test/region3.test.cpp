@@ -51,6 +51,7 @@ class Region3TestPoint : public SteamTestPoint {
 			}catch(Exception *E){
 				stringstream s;
 				s << "Region3TestPoint::test: " << E->what();
+				delete E;
 				CPPUNIT_FAIL(s.str());
 			}
 		}

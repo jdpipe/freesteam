@@ -68,6 +68,7 @@ int main(void){
 
 		}catch(Exception *E){
 			cerr << "Exception: " << E->what() << endl;
+			delete E;
 		}
 	}
 

@@ -199,6 +199,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 			}catch(Exception *E){
 				stringstream s;
 				s << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::solve (no first guess; found region=" << region << "): " << E->what();
+				delete E;
 				throw new Exception(s.str());
 			}
 
@@ -230,6 +231,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 			}catch(Exception *E){
 				stringstream s;
 				s << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::solve (given first guess; found region="<< region<<"): " << E->what();
+				delete E;
 				throw new Exception(s.str());
 			}
 		}
@@ -416,6 +418,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 			}catch(Exception *E){
 				stringstream s;
 				s << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">:solveRegion3: " << E->what();
+				delete E;
 				throw new Exception(s.str());
 			}
 		}
@@ -570,6 +573,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 			}catch(Exception *E){
 				stringstream s;
 				s<< "Solver2::solveRegion4: " << E->what();
+				delete E;
 				throw new Exception(s.str());
 			}
 		}

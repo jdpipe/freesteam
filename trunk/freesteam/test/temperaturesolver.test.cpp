@@ -61,6 +61,7 @@ class TemperatureSolverTest: public CppUnit::TestFixture{
 			}catch(Exception *e){
 				stringstream s;
 				s << "TemperatureSolverTest::Test: " << e->what();
+				delete e;
 				CPPUNIT_FAIL(s.str());
 			}
 		}

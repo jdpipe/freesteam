@@ -62,6 +62,7 @@ class SatCurveTest: public CppUnit::TestFixture{
 			}catch(Exception *e){
 				stringstream s;
 				s << "SatCurveTest::TestUT: " << e->what();
+				delete e;
 				CPPUNIT_FAIL(s.str());
 			}
 		}
@@ -83,6 +84,7 @@ class SatCurveTest: public CppUnit::TestFixture{
 			}catch(Exception *e){
 				stringstream s;
 				s << "SatCurveTest::TestVU: " << e->what();
+				delete e;
 				CPPUNIT_FAIL(s.str());
 			}
 		}
@@ -108,6 +110,7 @@ class SatCurveTest: public CppUnit::TestFixture{
 			}catch(Exception *E){
 				stringstream s1;
 				s1 << "SatCurveTest::TestWater: " << E->what();
+				delete E;
 				CPPUNIT_FAIL(s1.str());
 			}
 		}
@@ -129,6 +132,7 @@ class SatCurveTest: public CppUnit::TestFixture{
 			}catch(Exception *E){
 				stringstream s1;
 				s1 << "SatCurveTest::TestSteam: " << E->what();
+				delete E;
 				CPPUNIT_FAIL(s1.str());
 			}
 		}
