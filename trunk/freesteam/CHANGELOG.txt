@@ -4,6 +4,7 @@ CHANGELOG
 Saturday, 12 March 2005
 -----------------------
 Added two-way T,h solver
+Property plots with log axes where required
 Minor bug fixes
 
 
