@@ -106,7 +106,7 @@ int Solver2<Temperature, SpecificEnergy, 0, SOLVE_ENTHALPY>::whichRegion(const T
 
 	}catch(Exception *E){
 		stringstream ss;
-		ss << "Solver2<p,u>::whichRegion(T = " << T << ", h = " << h/kJ_kg << " kJ/kgK): " << E->what();
+		ss << "Solver2<T,h>::whichRegion(T = " << T << ", h = " << h/kJ_kg << " kJ/kgK): " << E->what();
 		delete E;
 		throw new Exception(ss.str());
 	}
@@ -239,7 +239,7 @@ Solver2<Pressure,SpecificEntropy,0,SOLVE_ENTROPY>::whichRegion(const Pressure &p
 
 	}catch(Exception *E){
 		stringstream ss;
-		ss << "Solver2<p,u>::whichRegion(p = " << p/MPa << " MPa, s = " << s/kJ_kgK << " kJ/kgK): " << E->what();
+		ss << "Solver2<p,s>::whichRegion(p = " << p/MPa << " MPa, s = " << s/kJ_kgK << " kJ/kgK): " << E->what();
 		delete E;
 		throw new Exception(ss.str());
 	}
