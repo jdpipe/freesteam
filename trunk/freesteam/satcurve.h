@@ -184,7 +184,7 @@ class SatCurve<Ordinate,Temperature,OrdinateAlt,0>
 			}else{
 				S.setSatWater_T(T);
 			}
-			return SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>::getOrdinate(S);
+			return SatCurveBase<Ordinate,Temperature,OrdinateAlt,0>::getOrdinate(S);
 		}
 
 };
@@ -208,7 +208,7 @@ class SatCurve<Ordinate,Pressure,OrdinateAlt,0>
 			}else{
 				S.setSatWater_p(p);
 			}
-			return SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>::getOrdinate(S);
+			return SatCurveBase<Ordinate,Pressure,OrdinateAlt,0>::getOrdinate(S);
 		}
 };
 

@@ -66,7 +66,7 @@ class B13Curve : public B13CurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 
 				//cout << S.pres() << endl;
 
-				return getOrdinate(S);
+				return B13CurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>::getOrdinate(S);
 
 			}catch(Exception *e){
 				stringstream s;
@@ -91,7 +91,7 @@ class B13Curve<Ordinate,Pressure,OrdinateAlt,0>
 		virtual Ordinate solve(const Pressure &p){
 			SteamCalculator S;
 			S.set_pT(p,T_REG1_REG3,0);
-			return getOrdinate(S);
+			return B13CurveBase<Ordinate,Pressure,OrdinateAlt,0>::getOrdinate(S);
 		}
 };
 

@@ -11,35 +11,35 @@
 /// Region2-Region3 boundary solver for arbitrary variables
 /**
 	This needs to be high-precision, hopefully comparable to the Boundaries::isSat_pT test.
-	
+
 	@example
 		To solve for the internal energy of steam on the Region2-Region3 boundary when v=0.004 m3/kg, use:
-		
+
 		@code
 			B23Curve<SpecificEnergy,SpecificVolume> C;
 			SpecificEnergy u = C.solve(0.004 * m3_kg);
 		@endcode
-		
+
 */
 template<class Ordinate,class Abscissa,int OrdinateAlternative=0, int AbscissaAlternative=0>
 class B23CurveBase{
-	
+
 	public:
-	
+
 		virtual Ordinate solve(Abscissa target){}
 
 	protected:
-	
+
 		B23CurveBase(){}
-				
+
 		Ordinate getOrdinate(SteamCalculator S){
 			return SteamProperty<Ordinate,OrdinateAlternative>::get(S);
 		}
-		
+
 		Abscissa getAbscissa(SteamCalculator S){
 			return SteamProperty<Abscissa,AbscissaAlternative>::get(S);
 		}
-		
+
 };
 
 /// B23 Curve for case where Abscissa is neither temperature nor pressure
@@ -51,20 +51,20 @@ class B23Curve : public B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 
 	// ZeroIn will be finding the TEMPERATURE at which B23Curve's ABSCISSA has the desired value:
 	friend class ZeroIn<B23Curve,Temperature,Abscissa>;
-	
+
 	public:
-	
+
 		B23Curve(){
 			// Intentionally empty
 		}
-		
+
 		Ordinate solve(const Abscissa &target){
 
 			ZeroIn<B23Curve,Abscissa,Temperature> z;
 			Boundaries B;
 
 			try{
-				
+
 				//cerr << endl << "B23Curve::solve: Trying to solve for " << 				SteamProperty<Abscissa,AbscissaAlternative>::name() << " = " << target << endl;
 
 				this->target=target;
@@ -80,14 +80,14 @@ class B23Curve : public B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 				z.setMethod(&B23Curve::getAbscissaError_T);
 
 				z.visit(this);
-				
-				if(!z.isSolved(maxerror)){	
+
+				if(!z.isSolved(maxerror)){
 					stringstream s;
 					s.flags(ios_base::showbase);
 					s << "Unable to solve for target " << target << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
 					throw new Exception(s.str());
 				}
-	
+
 
 				Temperature T = z.getSolution();
 				//cerr << endl << "Solution found was T = " << T;
@@ -95,26 +95,26 @@ class B23Curve : public B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 				//cerr << endl << "At which abscissa = " << getAbscissa(S) << endl;
 				//cerr << endl << "Found solution in region " << S.whichRegion() << ", T = " << S.temp() << ", p = " << S.pres() << ". ";
 
-				return getOrdinate(S);
+				return B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,AbscissaAlternative>::getOrdinate(S);
 
 			}catch(Exception *e){
 				stringstream s;
 				s << "B23Curve::solve: " << e->what();
 				throw new Exception(s.str());
-			}	
+			}
 		}
-		
+
 	private:
-	
+
 		Abscissa getAbscissaError_T(const Temperature &T){
-			
+
 			//cerr << "B23Curve::getAbscissaError_T: T = " << T;
-			
+
 			S.setB23_T(T);
-			
+
 			//cerr << " --> " << SteamProperty<Abscissa,AbscissaAlternative>::name() << " = " << getAbscissa(S) << endl;
-			
-			return getAbscissa(S) - target;
+
+			return B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,AbscissaAlternative>::getAbscissa(S) - target;
 		}
 
 		SteamCalculator S;
@@ -128,17 +128,17 @@ class B23Curve : public B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 	Use p_sat(T) directly then return Ordinate(p_sat,T)
 */
 template<class Ordinate,int OrdinateAlternative>
-class B23Curve<Ordinate,Temperature,OrdinateAlternative,0> 
+class B23Curve<Ordinate,Temperature,OrdinateAlternative,0>
 	: public B23CurveBase<Ordinate,Temperature,OrdinateAlternative,0>{
-	
+
 	public:
-	
+
 		B23Curve() : B23CurveBase<Ordinate,Temperature,OrdinateAlternative,0>(){}
 
 		virtual Ordinate solve(const Temperature &T){
 			SteamCalculator S;
 			S.setB23_T(T);
-			return getOrdinate(S);
+			return B23CurveBase<Ordinate,Temperature,OrdinateAlternative,0>::getOrdinate(S);
 		}
 };
 
@@ -147,17 +147,17 @@ class B23Curve<Ordinate,Temperature,OrdinateAlternative,0>
 	Use T_sat(p) directly then return Ordinate(p,T_sat) - i.e. using the Region 4 backward equation
 */
 template<class Ordinate,int OrdinateAlternative>
-class B23Curve<Ordinate,Pressure,OrdinateAlternative,0> 
+class B23Curve<Ordinate,Pressure,OrdinateAlternative,0>
 	: public B23CurveBase<Ordinate,Pressure,OrdinateAlternative,0>{
-	
+
 	public:
-	
+
 		B23Curve() : B23CurveBase<Ordinate,Pressure,OrdinateAlternative,0>(){}
 
 		virtual Ordinate solve(const Pressure &p){
 			SteamCalculator S;
 			S.setB23_p(p);
-			return getOrdinate(S);
+			return B23CurveBase<Ordinate,Pressure,OrdinateAlternative,0>::getOrdinate(S);
 		}
 };
 
