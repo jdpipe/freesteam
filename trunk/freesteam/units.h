@@ -75,31 +75,31 @@ class Units {
 		Units( const Units& u ):d_val( u.d_val ){}
 		const Units& operator=( const Units& u ){	d_val=u.d_val; return *this; }
 
-		// scalar mulitplication & division
+		// Scalar mulitplication & division
 		Units operator*( double d ) const { Units u; u.d_val=d_val*d; return u; }
 		Units operator/( double d ) const { Units u; u.d_val=d_val/d; return u; }
 		const Units& operator*=( double d ) { d_val*=d; return *this; }
 		const Units& operator/=( double d ) { d_val/=d; return *this; }
 
-		// unit additions & subtraction
+		// Unit additions & subtraction
 		Units operator+( const Units& u ) const { Units v; v.d_val=d_val+u.d_val; return v; }
 		Units operator-( const Units& u ) const { Units v; v.d_val=d_val-u.d_val; return v; }
 		Units& operator+=( const Units& u ) { d_val+=u.d_val; return *this; }
 		Units& operator-=( const Units& u ) { d_val-=u.d_val; return *this; }
 		Units operator-() const { Units u; u.d_val=-d_val; return u; }
 
-		// comparison
-		bool operator==( const Units& u ) const { return d_val==u.d_val; }
-		bool operator!=( const Units& u ) const { return d_val!=u.d_val; }
-		bool operator< ( const Units& u ) const { return d_val< u.d_val; }
-		bool operator<=( const Units& u ) const { return d_val<=u.d_val; }
-		bool operator> ( const Units& u ) const { return d_val> u.d_val; }
-		bool operator>=( const Units& u ) const { return d_val>=u.d_val; }
+		// Comparisons
+		bool operator==( const Units& u ) const { return d_val==u.d_val; } ///<Equality
+		bool operator!=( const Units& u ) const { return d_val!=u.d_val; } ///<Inequality
+		bool operator< ( const Units& u ) const { return d_val< u.d_val; } ///<Less-than
+		bool operator<=( const Units& u ) const { return d_val<=u.d_val; } ///<Less-or-equal
+		bool operator> ( const Units& u ) const { return d_val> u.d_val; } ///<Greater-than
+		bool operator>=( const Units& u ) const { return d_val>=u.d_val; } ///<Greater-or-equal
 
-		// scalar typecast
+		// Scalar typecast
 		inline operator double() const; // Deliberately not defined, will cause linker errors if called.
 
-		// Unit Division
+		/// Division
 		template< int m, int l, int t, int k, int i >
 		Units<M-m,L-l,T-t,K-k,I-i>
 		operator/( const Units<m,l,t,k,i>& u2 ) const {
@@ -119,13 +119,16 @@ class Units {
 };
 
 
-// only defined for unitless types
+/// Cast to double
+/**
+	Only defined for dimensionless values!
+*/
 inline Units<0,0,0,0,0>::operator double() const {
 	return d_val;
 }
 
 
-// Scalar Multiplication & Division
+/// Scalar multiplication
 template< int m, int l, int t, int k, int i >
 inline
 Units<m,l,t,k,i>
@@ -144,6 +147,7 @@ operator*(const Units<m,l,t,k,i> &u,  double d) {
 }
 */
 
+/// Division
 template< int m, int l, int t, int k,int i >
 inline
 Units<-m,-l,-t,-k,-i>
@@ -154,8 +158,7 @@ operator/( double d, const Units<m,l,t,k,i>& u) {
 }
 
 
-// Unit Multiplication
-
+/// Multiplication
 template<int M, int L, int T, int K, int I,  int m, int l, int t, int k, int i >
 Units<M+m,L+l,T+t,K+k,I+i >
 operator*(const Units<M,L,T,K,I>& u1, const Units<m,l,t,k,i>& u2 ){
@@ -187,8 +190,7 @@ eq(const Units<M,L,T,K,I> &u, const Units<M,L,T,K,I> &v, const Units<M,L,T,K,I> 
 	return false;
 }
 
-// Absolute Values
-
+// Absolute value
 template < int M, int L, int T, int K, int I >
 inline
 Units<M,L,T,K,I>
@@ -202,25 +204,21 @@ fabs(const Units<M,L,T,K,I> u) {
 	}
 }
 
-// Squaring
-
+/// Square of a value
+/**
+	This function only exists in order to override the sq() defined in common.h
+*/
 template < int M, int L, int T, int K, int I >
 inline Units<2*M, 2*L, 2*T, 2*K, 2*I>
 sq(const Units < M, L, T, K, I > u) {
-	Units<2*M, 2*L, 2*T, 2*K, 2*I> r;
-	*reinterpret_cast<double*>(&r) = (*reinterpret_cast<const double*>(&u))*(*reinterpret_cast<const double*>(&u));
-	return r;
+	return u * u;
 }
 
-// Cubing
-
+/// Cube of a value
 template < int M, int L, int T, int K, int I >
 inline Units<3*M, 3*L, 3*T, 3*K, 3*I>
 cube(const Units < M, L, T, K, I > u) {
-	Units<3*M, 3*L, 3*T, 3*K, 3*I> r;
-	double n = (*reinterpret_cast<const double*>(&u));
-	*reinterpret_cast<double*>(&r) = n*n*n;
-	return r;
+	return u * u * u;
 }
 
 // Square root (integer powers of units only)
