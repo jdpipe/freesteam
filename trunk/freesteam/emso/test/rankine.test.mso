@@ -6,37 +6,75 @@
 
 using "rankine";
 
-FlowSheet RankineTest
+FlowSheet RankineOnceThroughTest
+	
+	DEVICES
+	cyc as RankineOnceThrough;
+	
+	SPECIFY
+	cyc.mdot = 38 *"kg/s";
+	
+	cyc.BO.In.p = 60 * "bar";
+	cyc.BO.In.h = 3000 * "kJ/kg";
+	
+	cyc.BO.A_1 = 3.14159 * (0.2 * "m")^2 / 4;
+	cyc.BO.K = 15;
+	cyc.BO.q = 120 * "MW";
+	
+	cyc.TU.eta = 0.85;
+	cyc.TU.Out.p = 0.05 * "bar";
+	cyc.TU.x = 0.95;
+	
+	cyc.CO.Dp = 0 * "bar";
+	
+	cyc.CO.x = 0.0001;
+	
+	cyc.PU.eta = 0.65;
+	
+	OPTIONS
+	mode="steady";
+end
+
+	
+	
+FlowSheet RankineClosedLoopTest
 	
 	PARAMETERS
 	freesteam as CalcObject(File="emsofreesteam");
 	
     DEVICES
-	cyc as Rankine;
+	cyc as RankineClosedLoop;
 		
 	SPECIFY # -9 DF
 	
+	cyc.BO.In.mdot = 38 * "kg/s";
 	cyc.BO.In.p = 60 * "bar";
-	cyc.BO.Dp = -2 * "bar";	
-	cyc.BO.Out.T = (300 + 273.15) * "K";
-
+	# cyc.BO.In.T = (121 + 273.15) * "K";	
+	
+	cyc.BO.A_1 = 3.1415926 * (0.2 * "m")^2 / 4;
+	cyc.BO.K = 20;
+	cyc.BO.q = 120 * "MW";
+		
 	cyc.TU.eta = 0.85;
 	cyc.TU.x = 0.95;
 	cyc.TU.Out.p = 0.05 * "bar";
 	
-	cyc.CO.Dp = 0 * "bar";
+	# cyc.CO.Dp = 0 * "bar";
 	cyc.CO.x = 0.00001;
-
-	cyc.PU.eta = 0.65;
-	cyc.PU.H_max = 10 * "bar" / (9.8 * "N/kg" * 1000 * "kg/m^3");
-	cyc.PU.Q_max = 30 * "kg/s" / (1000 * "kg/m^3");
-	cyc.PU.N_1 = 2000 * "1/min";
-	cyc.PU.N = 1000 * "1/min";
 	
+	cyc.CO.Out.p = 0.05 * "bar";
+
+
+	# cyc.PU.eta = 0.65;
+	# cyc.PU.H_max = 10 * "bar" / (9.8 * "N/kg" * 1000 * "kg/m^3");
+	# cyc.PU.Q_max = 30 * "kg/s" / (1000 * "kg/m^3");
+	# cyc.PU.N_1 = 2000 * "1/min";
+	# cyc.PU.N = 1000 * "1/min";
+	# cyc.PU.P = 5000 * "W";
 	
 	GUESS
-	cyc.BO.Out.p = 60 * "bar";
-
+	cyc.TU.In.p = 60 * "bar";
+	cyc.TU.Dp = -50 * "bar";
 OPTIONS
 	mode = "steady";
 	outputLevel = "all";

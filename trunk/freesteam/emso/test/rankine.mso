@@ -14,7 +14,8 @@ using "pump";
 using "condenser";
 using "throttle";
 
-Model Rankine
+
+Model RankineOnceThrough
 	
 	PARAMETERS
 	freesteam as CalcObject(File="emsofreesteam");
@@ -22,10 +23,10 @@ Model Rankine
     VARIABLES
 	mdot as MassFlowRate;
 	
-    BO	as Boiler_pT;
+    BO	as BoilerWithLoss;
 	TU	as Turbine;
 	CO	as Condenser;
-	PU 	as PumpWithCurve;
+	PU 	as Pump;
 	
 	CONNECTIONS
 	BO.Out	to	TU.In;
@@ -35,8 +36,40 @@ Model Rankine
 	SPECIFY
 	BO.In.mdot = mdot;
 	
-	PU.Out.p = BO.In.p;
-	PU.Out.h = BO.In.h;
+	# PU.Out.p = BO.In.p;
+	# PU.Out.h = BO.In.h;
+	# PU.Out.mdot = BO.In.mdot; # <-- this is redundant since all the mess flows are already equated!
+	
+	[BO.In.T, BO.In.s]=freesteam.Ts_ph(BO.In.p,BO.In.h);
+
+	#"System-wide energy conservation"
+	# BO.q + PU.P = CO.q + TU.P;
+	
+end
+
+Model RankineClosedLoop
+	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
+    VARIABLES
+	mdot as MassFlowRate;
+	
+    BO	as BoilerWithLoss;
+	TU	as Turbine;
+	CO	as Condenser;
+	# PU 	as Pump;
+	
+	CONNECTIONS
+	BO.Out	to	TU.In;
+	TU.Out	to  CO.In;
+	# CO.Out	to  PU.In;
+	
+	SPECIFY
+	BO.In.mdot = mdot;
+	
+	# PU.Out.p = BO.In.p;
+	# PU.Out.h = BO.In.h;
 	# PU.Out.mdot = BO.In.mdot; # <-- this is redundant since all the mess flows are already equated!
 	
 	[BO.In.T, BO.In.s]=freesteam.Ts_ph(BO.In.p,BO.In.h);

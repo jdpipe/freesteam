@@ -62,3 +62,17 @@ Model Boiler_pT as SteamEquipment_pT # 7
     Dp = Out.p - In.p;
     
 end
+
+Model BoilerWithLoss as Boiler # 7
+		
+	PARAMETERS freesteam as CalcObject(File="emsofreesteam");
+	
+    VARIABLES
+    K as Positive(Brief="Minor loss coefficient for boiler");
+	A_1 as Area(Brief="Boiler inlet pipe area");
+		
+    EQUATIONS
+	"Pressure drop"
+	Dp = K * In.mdot^2 / freesteam.rho_ph(In.p,In.h) / A_1^2;
+    
+end

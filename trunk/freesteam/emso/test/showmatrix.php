@@ -32,19 +32,20 @@ $equations=array();
 $A=array();
 $b=array();
 $x=array();
+$system=new System();
 
 //-------------------------------------
 // Read variable names from 'rlt' file
 // (alternatively you can replace this section with just $variables=array();
 // and the variables will be left un-named.)
 
-$res =& readResults("cycletest2.rlt");
+$res =& readResults("RankineTest.rlt");
 
 $connections=array(
-	array("PU.Out","BO.In")
-	,array("BO.Out","TU.In")
-	,array("TU.Out","CO.In")
-	,array("CO.Out","PU.In")
+#	array("PU.Out","BO.In")
+	array("cyc.BO.Out","cyc.TU.In")
+	,array("cyc.TU.Out","cyc.CO.In")
+# 	,array("CO.Out","PU.In")
 );
 
 $res->applyConnections($connections);
@@ -65,11 +66,13 @@ $f = file("php://stdin");
 reset($f);
 while(list($n,$line)=each($f)){
 	if(preg_match("@^([0-9]+)\\s*:(\\s+(-?[0-9]\\.([0-9]+|#I0+)e[+-][0-9]{3})\\(([0-9]+)\\))*\\s*$@",$line,$matches)){		
-	
+		// Equation coefficients line
 		$e=$matches[1];
 		
 		if(!array_key_exists($e,$equations)){
 			$equations[$e]="Equation ".$e;
+			$eq2 =& new Equation("eq_".$e,$equations[$e]);
+			$system->addEquation($eq2);
 		}
 		
 		if(!array_key_exists($e,$A)){
@@ -84,18 +87,32 @@ while(list($n,$line)=each($f)){
 		
 		for($i=0;$i<count($matches1);$i++){
 			$v = $matches1[$i][3];
+			
 			if(!array_key_exists($v,$variables)){
 				$variables[$v]="x_".$v;
 			}
+			
+			if(!array_key_exists($variables[$v],$system->vars)){
+				$var2 =& new Variable($variables[$v]);
+				$system->addVariable($var2);
+			}
+
 			if(array_key_exists($v,$A[$e])){
 				die("Error, element already defined for variable $v in equation $e: line is\n$line\n");
 			}
 			
 			$A[$e][$v]=$matches1[$i][1];
+			
+			if(!is_a($eq2,"Equation")){die("Not an equation!");}
+			
+			$eq2->addVariable($variables[$v]);
 		}
+		
 		
 		//print_r($matches1);
 	}elseif(preg_match("#^b\\s*:#",$line)){
+		// Right-hand-side line:
+		
 		list($head,$tail)=preg_split("#:#",$line);
 		if(!preg_match_all("@\\s+(-?[0-9]\\.([0-9]+|#I0+)e[+-][0-9]{3})@",$tail,$matches1,PREG_SET_ORDER)){
 			die("Invalid 'b' line:\n$line\n");
@@ -111,6 +128,8 @@ while(list($n,$line)=each($f)){
 			$b[$i]=$matches1[$i][1];
 		}
 	}elseif(preg_match("#x\\s*:#",$line)){
+		// Solutions line:
+		
 		list($head,$tail)=preg_split("#:#",$line);
 		if(!preg_match_all("@\\s+(-?[0-9]\\.([0-9]+|#I0)e[+-][0-9]{3})@",$tail,$matches1,PREG_SET_ORDER)){
 			die("Invalid 'x' line:\n$line\n");
@@ -119,6 +138,11 @@ while(list($n,$line)=each($f)){
 			if(!array_key_exists($i,$variables)){
 				$variables[$i]="x_".$i;
 			}
+			if(!array_key_exists($i,$variables2)){
+				$var2=new Variable($variables[$i]);
+				$system->addVariable($var2);
+			}
+			
 			if(array_key_exists($i,$x)){
 				die("Error, 'x' element already defined for variable $i (check you don't have multiple 'x:' lines)");
 			}
@@ -155,10 +179,24 @@ for($e=0;$e<count($equations);$e++){
 			print(abs($a+0.0)." * ");
 		}
 		print($variables[$v]);
+
 		$first=false;
 	}
 	print(" = ".($b[$e]+0.0)."\n");
 }
+
+// Print equations as graph
+
+print($system->toString());
+
+
+$graphfp=fopen("equations.dot","w") or die("Couldn't write to equations.dot");
+
+fwrite($graphfp,$system->toGraph());
+
+fclose($graphfp) or die("Couldn't close equations.dot");
+
+
 
 if(count($variables) < 50 && count($equations) < 50){
 
@@ -453,7 +491,7 @@ class FlowSheet extends ModelNode{
 			$frompath=$connections[$i][0];
 			$topath=$connections[$i][1];
 			
-			//print("Connecting $frompath to $topath...\n");
+			print("Connecting $frompath to $topath...\n");
 			
 			$from =& $this->findByPath($frompath);
 			$to =& $this->findByPath($topath);
@@ -500,6 +538,388 @@ function readResults($filename){
 	$node->read($lines);
 	
 	return $node;
+}
+
+
+class System{
+	var $vars;
+	var $eqs;
+	var $detvars;
+	
+	function System(){
+		$this->vars=array();
+		$this->eqs=array();
+		$this->detvars=array();
+	}
+	
+	function addEquation(&$equation){
+		if(array_key_exists($equation->name,$this->eqs)){
+			die("Equation name ".$equation->name.") already exists");
+		}
+		if(!is_a($equation,'Equation')){
+			die("System::addEquation: not an equation");
+		}
+		
+		//print("Adding ".$equation->name." to system\n");
+		$this->eqs[$equation->name] =& $equation;
+		$this->eqs[$equation->name]->system = & $this;
+		//print("System equations: ".join(",",array_keys($this->eqs))."\n");
+	}
+	
+	function addVariable(&$variable){
+		if(array_key_exists($variable->name,$this->vars)){
+			die("Variable named ".$variable->name.") already exists");
+		}
+		if(!is_a($variable,'Variable')){
+			die("System::addVariable: not a variable");
+		}
+		//print("Adding ".$variable->name." to system\n");
+		$this->vars[$variable->name] =& $variable;
+		$this->vars[$variable->name]->system = & $this;
+		//print("System variables: ".join(",",array_keys($this->vars))."\n");
+	}
+	
+	function toString(){
+	
+		$s="SYSTEM:\n";
+		$keys=array_keys($this->eqs);
+		for($i=0;$i<count($keys);$i++){
+			//print("printing equation ".$keys[$i]."\n");
+			if(!is_a($this->eqs[$keys[$i]],'Equation')){
+				die("System::toString: Not an equation!");
+			}
+				
+			$s.=$this->eqs[$keys[$i]]->toString();
+		}
+		
+		$keys=array_keys($this->vars);
+		for($i=0;$i<count($keys);$i++){
+			$s.=$this->vars[$keys[$i]]->toString();
+		}
+		$s.="END SYSTEM\n";
+		return $s;
+	}
+		
+	function toGraph(){	
+		$this->traverseDetermined();
+		
+		$s="";
+		print("Creating equations graph:\n\n");
+		$s.="graph MYGRAPH{\n";
+		$s.="\toverlap=false;\n";
+		$s.="\tsplines=true;\n";
+		$s.="\tmaxiter=1000;\n";
+		$s.="\tnode [style=filled,color=gainsboro];\n";
+		$keys=array_keys($this->vars);
+		for($v=0;$v<count($this->vars);$v++){
+			$s.=$this->vars[$keys[$v]]->toGraph();
+		}
+		$keys=array_keys($this->eqs);
+		for($e=0;$e<count($this->eqs);$e++){
+			if(!is_a($this->eqs[$keys[$e]],'Equation')){
+				die("System::toGraph: not an equation");
+			}
+			$s.=$this->eqs[$keys[$e]]->toGraph();
+		}
+		$s.="\n}\n";
+		return $s;
+	}
+	
+	function &getVariable($name){
+		if(!array_key_exists($name,$this->vars)){
+			die("Invalid variable $name");
+		}
+		if(!is_a($this->vars[$name],'Variable')){
+			print("System::getVariable: variables avail: ".join(", ",array_keys($this->vars))."\n");
+			die("System::getVariable($name): not a variable, it's a ".gettype($this->vars[$name]));
+		}
+		return $this->vars[$name];
+	}
+	
+	function &getEquation($name){
+		//print("Getting equation $name\n");
+		
+		if(!array_key_exists($name,$this->eqs)){
+			die("Invalid equation $name");
+		}
+		if(!is_a($this->eqs[$name],'Equation')){
+			die("System::getEquation($name): not an equation");
+		}
+		return $this->eqs[$name];
+	}
+	
+	function isDeterminedVar($name){
+		return in_array($name,$this->detvars);
+	}
+	
+	function setDeterminedVar($name){
+		if(!$this->isDeterminedVar($name)){
+			$this->detvars[]=$name;
+		}
+	}
+	
+	function traverseDetermined(){
+	
+		$keys=array_keys($this->eqs);
+		for($i=0;$i<count($this->eqs);$i++){
+			$equation =& $this->eqs[$keys[$i]];
+			if($equation->isAssignment()){
+				$variable =& $this->getVariable($equation->varnames[0]);
+				if(in_array($variable->name,$this->detvars)){
+					die("Variable overspecified: ".$variable->name);
+				}
+				print("Found assigned variable: ".$variable->name."\n");
+				$this->detvars[]=$variable->name;
+				$variable->assignedby=$equation->name;
+				$variable->determined=true;
+			}
+		}
+		
+		$lastcount=0;
+		$iteration=0;
+		while(count($this->detvars)>$lastcount){
+			$iteration++;
+			print("Checking system, iteration $iteration...\n");	
+			$lastcount=count($this->detvars);
+			for($i=0;$i<count($this->detvars);$i++){
+				$variable =& $this->getVariable($this->detvars[$i]);
+				for($j=0;$j<count($variable->eqnames);$j++){
+					$equation =& $this->getEquation($variable->eqnames[$j]);
+					if($equation->isUnResolved()){
+						print("Checking unresolved equation ".$equation->name."... ");
+						$equation->checkDetermined();
+					}
+				}
+			}
+			print("... There are now ".count($this->detvars)." determined variables.\n");
+		}
+	}				
+}		
+	
+/**
+	Class to hold equations (relationships between variables)
+*/
+class Equation{
+	var $varnames;
+	var $name;
+	var $expr;
+	var $system;
+	var $determined;
+	var $been_here;
+	var $resolved;
+	
+	function Equation($name,$expr=NULL){
+		if($expr==NULL)$expr=$name;
+		//print("Creating equation $name\n");
+		
+		$this->name=$name;
+		$this->expr=$expr;
+		$this->varnames=array();
+		
+		$this->determined=0;
+		$this->been_here=false;
+		$this->resolved=false;
+	}
+	
+	function setSystem(&$system){
+		$this->system =& $system;
+	}
+	
+	function toString(){
+		return "Equation '".$this->name."': ".join(", ",$this->varnames)."\n";
+	}
+	
+	function addVariable($varname){
+		
+		if(in_array($varname,$this->varnames)){
+			print($this->system->toString());
+			
+			die("Variable ".$varname." already in ".$this->name."\n");
+		}
+		
+		$variable =& $this->system->getVariable($varname);
+		
+		$variable->addEquation($this->name);
+		$this->varnames[] = $variable->name;
+		
+		//print("Assigned variable ".$variable->name." to equation ".$this->name." (now has ".count($this->varnames).")\n");
+	}
+
+	function toGraph(){
+		$s="";
+		$s.="\t$this->name [shape=box,label=\"$this->expr\"]";
+		if($this->isAssignment()){
+			$s.=" [color=yellow]";
+		}elseif($this->isDetermined()){
+			$s.=" [color=skyblue]";
+		}
+		$s.=";\n";
+		
+		for($i=0;$i<count($this->varnames);$i++){
+			//print("Equation::toGraph: getting variable ".$this->varnames[$i]."\n");
+			$variable =& $this->system->getVariable($this->varnames[$i]);
+			$s.="\t".$this->name."--".$variable->getGraphName()."\n";
+		}
+		return $s;
+	}
+	
+	function getVariableCount(){
+		return count($this->varnames);
+	}
+	
+	function isAssignment(){
+		if(count($this->varnames)==1){
+			$this->resolved=true;
+			$this->determined=true;
+			return true;
+		}
+		return false;
+	}
+	
+	function isUnresolved(){
+		return !$this->resolved;
+	}
+	
+	function checkDetermined(){
+		$debug=false;
+		if($this->name=="eq_22")$debug=true;
+		
+		$determinedcount=0;
+		for($i=0;$i<count($this->varnames);$i++){
+			$variable =& $this->system->getVariable($this->varnames[$i]);
+			if($variable->checkDetermined()){
+				$determinedcount++;
+			}
+			if($debug)print("\n  Variable ".$variable->name." ".($variable->isDetermined() ? "is" : "is not")." determined");
+		}
+		
+		if($debug)print("\n  Determinedcount: $determinedcount");
+		
+		if($determinedcount+1==count($this->varnames)){
+			print("\nEquation '$this->name' is now determined");
+			$this->resolved=true;	
+			$this->determined=true;
+			
+			for($i=0;$i<count($this->varnames);$i++){
+				$variable =& $this->system->getVariable($this->varnames[$i]);
+				$variable->checkDetermined();
+			}
+		}else{
+			print("(".$determinedcount."/".count($this->varnames).")\n");
+			//print("Equation '$this->name': not determined, ".$determinedcount." vars det, total ".count($this->varnames)."\n");
+			$this->determined=false;
+		}
+		
+		return $this->determined;
+	}
+	
+	function isDetermined(){
+		return $this->determined;
+	}
+}
+
+class Variable{
+	var $name;
+	var $value;
+	var $eqnames;
+	var $determined;
+	var $assignedby;
+	var $determinedby;
+	var $system;
+	
+	function Variable($name){
+		//print("Creating variable $name\n");
+		$this->name=$name;
+		$this->value=NULL;
+		$this->eqnames=array();
+		$this->determined=false;
+		$this->assignedby=false;
+		$this->determinedby="";
+	}
+	
+	function setValue($value){
+		$this->value=$value;
+	}
+	
+	function setSystem(&$system){
+		$this->system =& $system;
+	}
+	
+	function toString(){
+		return "Variable '".$this->name."': ".join(", ",$this->eqnames)."\n";
+	}
+	
+	function toGraph(){
+		$s="\t".$this->getGraphName()." [label=\"".$this->name."\"]";
+		
+		if(count($this->eqnames)==0){
+			$s.=" [color=red]";
+		}else{
+			if($this->isAssigned()){
+				$s.=" [color=green, label=\"".$this->name."\\nspec by: ".$this->assignedby."\"]";
+			}elseif($this->isDetermined()){
+				$s.=" [color=skyblue, label=\"".$this->name."\\ndet by: ".$this->determinedby."\"]";
+			}
+		}
+		
+		return $s.";\n";
+	}
+	
+	function getGraphName(){
+		return str_replace('.','_',$this->name);
+	}
+	
+	function addEquation($eqname){
+		if(in_array($eqname,$this->eqnames)){
+			die("Equation ".$eqname." already assigned to ".$this->name);
+		}
+
+		//print("Assigned equation ".$eqname." to variable ".$this->name."\n");
+		$this->eqnames[]= $eqname;
+	}
+	
+	function checkDetermined(){
+		if($this->isAssigned())return true;
+		
+		if($this->system->isDeterminedVar($this->name)){
+			$this->determined=true;
+			return true;
+		}
+		
+		for($i=0;$i<count($this->eqnames);$i++){
+			$equation =& $this->system->getEquation($this->eqnames[$i]);
+			
+			if($equation->isDetermined() && !$this->system->isDeterminedVar($this->name)){
+				print("\nVariable ".$this->name." is now determined.\n");
+				$this->determinedby=$equation->name;
+				$this->system->setDeterminedVar($this->name);
+				return true;
+			}
+		}
+		
+		return false;
+
+	}		
+	function isDetermined(){
+		if(in_array($this->name,$this->system->detvars)){
+			return true;
+		}
+		return false;
+	}
+	
+	function isAssigned(){
+		if($this->assignedby){
+			return true;
+		}
+	}
+	
+	function getAssignedBy(){
+		return $this->assignedby;
+	}
+	
+	function setAssignedBy($eqname){
+		$this->assignedby=$eqname;
+	}
 }
 
 ?>

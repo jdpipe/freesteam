@@ -591,6 +591,9 @@ class EMSOfreesteam : public ExternalObjectBase {
 					case v:
 						outputValues[0] = S.specvol() / m3_kg;
 						break;
+					case rho:
+						outputValues[0] = S.dens() / kg_m3;
+						break;
 					case u:
 						outputValues[0] = S.specienergy()/kJ_kg;
 						break;
