@@ -83,6 +83,9 @@ class SteamCalculator:public DesignByContract {
 		void setB23_T(const Temperature &T);
 		void setB23_p(const Pressure &p);
 		
+		void setRegion1_pT(const Pressure &p, const Temperature &T);
+		void setRegion2_pT(const Pressure &p, const Temperature &T);
+		
 		bool isSet(void) const;
 
 		#ifndef NDEBUG
@@ -146,9 +149,7 @@ class SteamCalculator:public DesignByContract {
 		friend class ZeroIn < SteamCalculator, Density, Temperature >;
 		friend class ZeroIn < SteamCalculator, SpecificEnergy, Pressure >;
 		friend class ZeroIn < SteamCalculator, Pressure, Density >;
-		
-		friend void setRegion1(SteamCalculator &S,const Pressure &p,const Temperature &T);
-			
+					
 		METHOD_SC_NUM(tau_iaps85);
 		METHOD_SC_NUM(del_iaps85);
 		METHOD_SC_NUM(pi_iaps85);

@@ -9,6 +9,9 @@
 #include "steamproperty.h"
 #include "solver.h"
 
+#include <iostream>
+using namespace std;
+
 /// Region1-Region3 boundary solver (fixed temperature line) for arbitrary variables
 /**
 	

@@ -26,80 +26,126 @@ Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const Specif
 	
 	//cerr << endl << "Solver2: whichRegion(u,v)...";
 	
-	SatCurve<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0> SC; // u_sat(v)
-	SteamCalculator S;
-	S.setSatSteam_T(T_CRIT);
-	SpecificVolume v_crit=S.specvol();
-	SpecificEnergy u_crit=S.specienergy();
-	
-	S.set_pT(100.0 * MPa, T_REG1_REG3);
-	SpecificVolume v_b13 = S.specvol();
+	try{
 
-	SpecificEnergy u_b13, u_b23, u_sat;
-	
-	if(v > v_crit){
-		//cerr << endl << "Solver2: v > v_crit";
+		SatCurve<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0> SC; // u_sat(v)
+		SteamCalculator S;
 		
-		if(u < u_crit){
-			cerr << endl << "Solver2: u < u_crit: REGION = 4";
-			return 4;
-		}
-		
-		// check saturated vapour line
-		u_sat = SC.solve(v,SAT_STEAM);
-		
-		if(u < u_sat){
-			cerr << endl << "Solver2: u < u_sat: REGION = 4";
-			return 4;
-		}		
-		
-		// check again B23 curve
-		B23Curve<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0> *B23C;
-		B23C = new B23Curve<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>();
-		
-		u_b23 = B23C->solve(v);
+		SpecificVolume v_crit, v_b23_Tmax, v_b13, v_sat;
+		SpecificEnergy u_b13, u_b23, u_b34, u_sat, u_crit;
 
-		if(u < u_b23){
-			cerr << endl << "Solver2: u < u_b23: REGION = 3";
-			return 3;
-		}
+		S.setSatSteam_T(T_CRIT);
+		v_crit=S.specvol();
+		u_crit=S.specienergy();
 
-		cerr << endl << "Solver2: u >= u_b23: REGION = 2";
-		return 2;
 
-	}else{
-		//cerr << endl << "Solver2: v < v_crit";
-		
-		if(v < v_b13){
-			return 1;
-		}
-		
-		if(u < u_crit){
-			//cerr << endl <<"Solver2: v > v_b13 and u < u_crit: solving for saturated water at v = " << v;
-			
-			// check saturated liquid line
-			u_sat = SC.solve(v,SAT_WATER);
+		if(v > v_crit){
+			//cerr << endl << "Solver2<u,v>::whichRegion: v > v_crit";
 
-			if(u < u_sat){
-
-				cerr << endl << "Solver2: u < u_sat: REGION = 4";
+			if(u < u_crit){
+				cerr << endl << "Solver2<u,v>::whichRegion: u < u_crit: REGION = 4";
 				return 4;
 			}
-		}
-		
-		// check B13 curve
-		B13Curve<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0> B13C;
-		SpecificEnergy u_b13 = B13C.solve(v);
-		
-		if(u <= u_b13){
-			//cerr << endl << "Solver2: u < u_bound: REGION = 1";
+
+			S.setB23_T(TB_LOW);
+			SpecificVolume v_b234 = S.specvol();
+
+			if(v >= v_b234){
+				//cerr << endl << "Solver2<u,v>::whichRegion: v > v_b234, check sat vap line";
+				
+				// check saturated vapour line
+				u_sat = SC.solve(v,SAT_STEAM);
+
+				if(u < u_sat){
+					cerr << endl << "Solver2<u,v>::whichRegion: u < u_sat: REGION = 4";
+					return 4;
+				}
+				
+				//cerr << endl << "Solver2<u,v>::whichRegion: u > u_sat: REGION = 2";
+				return 2;
+			}
+			
+			//cerr << endl << "Solver2<u,v>::whichRegion: v < v_b234, check B23 curve";
+
+			B23Curve<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0> B23C;
+			
+			u_b23 = B23C.solve(v);
+
+			if(u > u_b23){
+				//cerr << endl << "Solver2<u,v>::whichRegion: u > u_b23: REGION = 2";
+				return 2;
+			}
+
+			u_b34 = SC.solve(v,SAT_STEAM);
+
+			if(u > u_b34){
+				cerr << endl << "Solver2<u,v>::whichRegion: u > u_b34: REGION = 3";
+				return 3;
+			}
+
+			cerr << endl << "Solver2<u,v>::whichRegion: v < v_b234, u <= u_b34: REGION = 4";
+			return 4;
+
+		}else{
+			//cerr << endl << "Solver2<u,v>::whichRegion: v < v_crit";
+			
+			if(u > u_crit){
+				//cerr << endl << "Solver2<u,v>::whichRegion: u > u_crit";
+				S.setB23_T(TB_HIGH);
+				v_b23_Tmax = S.specvol();
+				
+				if(v > v_b23_Tmax){
+					
+					//cerr << endl << "Solver2<u,v>::whichRegion: v > v_b23_Tmax";
+					B23Curve<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0> B23C;
+					u_b23 = B23C.solve(v);
+					
+					if(u >= u_b23){
+						//cerr << endl << "Solver2<u,v>::whichRegion: u >= u_b23: REGION = 2";
+						return 2;
+					}
+				}
+				
+				cerr << endl << "Solver2<u,v>::whichRegion: u > u_crit, v < v_b23_Tmax or u < u_b23: REGION = 3";
+				return 3;
+			}
+			
+			//cerr << endl <<"Solver2<u,v>::whichRegion: u <= u_crit: solve v_sat(u)";
+			
+			SatCurve<SpecificVolume,SpecificEnergy,0,SOLVE_IENERGY> SCu;
+			
+			v_sat = SCu.solve(u);
+			
+			if(v > v_sat){
+				cerr << endl <<"Solver2<u,v>::whichRegion: v > v_sat: REGION = 4";
+				return 4;
+			}
+			
+			S.set_pT(P_MAX,T_REG1_REG3,0.0);
+			if(u > S.specienergy()){
+				if(v > S.specvol()){
+					//cerr << endl <<"Solver2<u,v>::whichRegion: v > v_b13_pmax: solve for v_b13";
+					B13Curve<SpecificVolume, SpecificEnergy,0,SOLVE_IENERGY> B13C;
+					v_b13 = B13C.solve(u);
+
+					if(v <= v_b13){
+						cerr << endl <<"Solver2<u,v>::whichRegion: v <= v_b13: REGION = 3";
+						return 3;
+					}
+				}else{
+					throw new Exception("Solver2<u,v>::whichRegion: Invalid u,v: u > u_b13_pmax but v < v_b13_pmax");
+				}
+			}
+			
+			//cerr << endl <<"Solver2<u,v>::whichRegion: v <= v_b13_pmax or v > v_b13: REGION = 1";
 			return 1;
 		}
-		
-		cerr << endl << "Solver2: u > u_b13 = " << u_b13 <<" ( u - u_b13 = " << u - u_b13 << "): REGION = 3";
-		return 3;
-	}
 	
+	}catch(Exception *E){
+		stringstream s;
+		s << "Solver2<u,v>::whichRegion(u = " << u / kJ_kg << "kJ_kg, v = " << v << "): " << E->what();
+		throw new Exception(s.str());
+	}
 }
 
 //----------------------------------------

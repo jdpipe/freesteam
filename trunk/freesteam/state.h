@@ -28,7 +28,6 @@ class SteamState:public DesignByContract {
 	protected:
 
 		friend class SteamCalculator;
-		friend void setRegion1(SteamCalculator &S,const Pressure &p,const Temperature &T);
 		
 		static SteamState *Instance();
 		virtual void set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x = -1);

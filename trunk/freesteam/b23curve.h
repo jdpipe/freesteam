@@ -65,7 +65,7 @@ class B23Curve : public B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 
 			try{
 				
-				//cerr << endl << "Trying to solve for Abscissa = " << target << endl;
+				//cerr << endl << "B23Curve::solve: Trying to solve for " << 				SteamProperty<Abscissa,AbscissaAlternative>::name() << " = " << target << endl;
 
 				this->target=target;
 				this->state=state;
@@ -108,11 +108,11 @@ class B23Curve : public B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 	
 		Abscissa getAbscissaError_T(const Temperature &T){
 			
-			//cerr << "T = " << T;
+			//cerr << "B23Curve::getAbscissaError_T: T = " << T;
 			
 			S.setB23_T(T);
 			
-			//cerr << " --> Abscissa = " << getAbscissa(S) << endl;
+			//cerr << " --> " << SteamProperty<Abscissa,AbscissaAlternative>::name() << " = " << getAbscissa(S) << endl;
 			
 			return getAbscissa(S) - target;
 		}

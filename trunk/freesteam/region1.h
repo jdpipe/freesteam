@@ -10,7 +10,6 @@ class Region1:public SteamState {
 	protected:
 		friend class SteamCalculator;
 		friend class Region4;
-		friend void setRegion1(SteamCalculator &S,const Pressure &p,const Temperature &T);
 		
 		static SteamState *Instance();
 		int Region1::getRegion() const;

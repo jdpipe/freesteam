@@ -64,7 +64,9 @@ class Solver2
 		
 	public:
 		
-		Solver2(){}
+		Solver2(){
+			//cerr << endl <<"Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::Solver2()";
+		}
 		
 		int whichRegion(const FirstProp &fp, const SecondProp &sp);
 		
@@ -88,7 +90,7 @@ class Solver2
 						S.set_pT(10.0 * bar, fromcelsius(100));
 						return solveRegion1(fp,sp,S);
 					case 2:
-						S.set_pT(50.0 * bar, fromcelsius(280));
+						S.set_pT(6.0 * MPa, fromcelsius(400));
 						return solveRegion2(fp,sp,S);
 					case 3:
 						S.set_rhoT(1 / 0.00317 * kg_m3, fromcelsius(400));
@@ -129,10 +131,7 @@ class Solver2
 				throw new Exception(s.str());
 			}
 		}
-
-		SteamCalculator solveRegion2(const FirstProp &f1, const SecondProp &s1,const SteamCalculator &firstguess){
-			throw new Exception("solveRegion2 not implemented");
-		}
+		
 		SteamCalculator solveRegion3(const FirstProp &f1, const SecondProp &s1,const SteamCalculator &firstguess){
 			throw new Exception("solveRegion3 not implemented");
 		}
@@ -174,7 +173,7 @@ class Solver2
 				Df = f1 - f;
 				Ds = s1 - s;
 					
-				// Because of the problem with knowing the tolerance this function has been 
+				// In this template it's hard to know the units of the convergence test, so make it as a new, separate, template:
 				if(
 					ConvergenceTest<FirstProp,FirstPropAlt>::test(Df,p,T)
 					&& ConvergenceTest<SecondProp,SecondPropAlt>::test(Ds,p,T)
@@ -183,22 +182,22 @@ class Solver2
 					return guess;
 				}
 
-				dT = -guess.temp() * 0.001;
+				dT = -T * 0.001;
 				// ensure we don't go over the T limits with our peturbation
 				if(T + dT < T_TRIPLE){
 					dT = -dT;
 				}
 				
-				petT.set_pT(guess.pres(),guess.temp() + dT);
+				petT.set_pT(p,T + dT);
 				ASSERT(petT.whichRegion()==1);
 				
 				// ensure we don't go over p limits
-				dp = guess.pres() * 0.001;
+				dp = p * 0.001;
 				if(p > 99.0 * MPa){
 					dp = -dp;
 				}
 
-				petp.set_pT(guess.pres() + dp, guess.temp());
+				petp.set_pT(p + dp, T);
 				ASSERT(petp.whichRegion()==1);
 
 				DfT = SteamProperty<FirstProp,FirstPropAlt>::get(petT) - f; 
@@ -257,9 +256,11 @@ class Solver2
 					}
 				}
 				
-				//guess._state->set_pT(p,T,0);
-				setRegion1(guess,p,T);
-
+				ASSERT(guess.whichRegion()==1);
+				ASSERT(Boundaries::isRegion1_pT(p,T));
+				
+				guess.setRegion1_pT(p,T);
+				
 				niter++;
 				
 				if(niter > maxiter){
@@ -268,7 +269,138 @@ class Solver2
 			}
 		}
 				
+		SteamCalculator solveRegion2(const FirstProp &f1, const SecondProp &s1,const SteamCalculator &firstguess){
 			
+			// Most of this is the same as for solveRegion1:
+			
+			//cerr << endl << "---------------------------------" << endl << "SOLVE REGION 2";
+			SteamCalculator guess = firstguess;
+			
+			if(firstguess.whichRegion()!=2){
+				throw new Exception("Solver2::solveRegion2: First guess is not region 2");
+			}
+			
+			SteamCalculator petT, petp;
+			Temperature T,dT;
+			Pressure p,dp;
+			FirstProp f,Df, DfT, Dfp;
+			SecondProp s,Ds,DsT, Dsp;
+			
+			int niter=0;
+			// If we are in region 1, then we will be iterating with pressure and temperature
+			
+			while(1){
+				
+				T = guess.temp();
+				p = guess.pres();
+
+				//cerr << endl << "Iter " << niter << ": p = " << p / MPa << " MPa, T = " << T << " (" << tocelsius(T) << "°C)";
+
+				f = SteamProperty<FirstProp,FirstPropAlt>::get(guess);
+				s = SteamProperty<SecondProp,SecondPropAlt>::get(guess);
+				
+				//cerr << ": " << SteamProperty<FirstProp,FirstPropAlt>::name() << " = " << f;
+				//cerr << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << " = " << s;
+				
+				Df = f1 - f;
+				Ds = s1 - s;
+					
+				if(
+					ConvergenceTest<FirstProp,FirstPropAlt>::test(Df,p,T)
+					&& ConvergenceTest<SecondProp,SecondPropAlt>::test(Ds,p,T)
+				){	
+					//cerr << endl << "     ... SOLUTION OK" << endl;
+					return guess;
+				}
+
+				// Peturb T but keep inside T_MAX
+				dT = T * 0.001;
+				if(T + dT > T_MAX){
+					dT = -dT;
+				}
+				petT.set_pT(p,T+ dT);
+				ASSERT(petT.whichRegion()==2);
+				
+				// Peturb p but keep above P_TRIPLE
+				dp = -p * 0.001;
+				if(p + dp < P_TRIPLE){
+					dp = -dp;
+				}
+				petp.set_pT(p + dp, T);
+				ASSERT(petp.whichRegion()==2);
+
+				DfT = SteamProperty<FirstProp,FirstPropAlt>::get(petT) - f; 
+				DsT = SteamProperty<SecondProp,SecondPropAlt>::get(petT) - s;
+
+				Dfp = SteamProperty<FirstProp,FirstPropAlt>::get(petp) - f;
+				Dsp = SteamProperty<SecondProp,SecondPropAlt>::get(petp) - s;
+
+				// Solve new peturbations
+				dT = dT * (Df*Dsp - Ds*Dfp) / (DfT*Dsp - DsT*Dfp);
+				dp = dp * (DfT*Ds - DsT*Df) / (DfT*Dsp - DsT*Dfp);
+				
+				// Regulate maximum change in temperature
+				
+				Temperature dTMax = 0.1 * T;
+				Temperature dTAbs = fabs(dT);
+				if(dTAbs > dTMax){
+					//cerr << endl << "      ... limiting dT, too great";
+					dT = dT * dTMax/dTAbs;
+				}
+				
+				// Regulate max change in pressure
+				
+				Pressure dpMax = 0.5 * p;
+				Pressure dpAbs = fabs(dp);
+				if(dpAbs > dpMax){
+					//cerr << endl << "      ... limiting dp, too great";
+					dp = dp * dpMax/dpAbs;
+				}
+				
+				//cerr << endl << "     ... calculated dT = " << dT << ", dp = " << dp;
+				T = T + dT;
+				p = p + dp;
+
+				// Keep new temperature in limits
+				if(T > T_MAX){
+					//cerr << endl << "     ... applying T_MAXlimit";
+					T = T_MAX;
+				}else if(T < T_TRIPLE){
+					//cerr << endl << "     ... applying T_TRIPLE limit";
+					T = T_TRIPLE;
+				}
+
+				// Keep pressure in limits
+				if(p < P_TRIPLE){
+					//cerr << endl << "     ... applying P_TRIPLE limit";
+					p = P_TRIPLE;
+				}else if(T > TB_LOW){
+					Pressure pbound = Boundaries::getpbound_T(T);
+					if(p > pbound){
+						//cerr << endl << "     ... applying pbound limit";
+						p = pbound;
+					}
+				}else{
+					Pressure psat = Boundaries::getSatPres_T(T);
+					if(p > psat){
+						//cerr << endl << "     ... applying psat limit";
+						p = psat;
+					}
+				}
+				
+				ASSERT(guess.whichRegion()==2);
+				ASSERT(Boundaries::isRegion2_pT(p,T));
+				
+				guess.setRegion2_pT(p,T);
+				
+				niter++;
+				
+				if(niter > maxiter){
+					throw new Exception("Solver2::solveRegion1: Exceeded maximum iterations");
+				}
+			}
+
+		}			
 };
 
 

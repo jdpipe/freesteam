@@ -134,68 +134,76 @@ SteamCalculator::changeState(SteamState * state) {
 */
 void 
 SteamCalculator::set_pT(const Pressure &p, const Temperature &T, Num x) {
-
-	isset = false;
-
-	REQUIRE(Boundaries::isValid_pT(p, T, true));
 	
-	/*
-		Test first for saturation, because we need to have a bit of 'slop' there to allow for numerical inconsistencies of using the forwards/backwards saturation curve equation.
-	*/
+	try{
+	
+		isset = false;
 
-	if (Boundaries::isSat_pT(p, T)) {
-		
-		ASSERT(x >= 0);
-		ASSERT(x <= 1);
-		
-		// MESSAGE("SATURATED p,T IN set_PT");
-		cerr << "(Saturated, p = " << p << ", T = " << T << ". ";
-		if (x == 0) {
-			cerr << "Liquid. ";
-			// Saturated liquid
-			if(T < T_REG1_REG3){
-				cerr << "Region 1) ";
-				changeState(Region1::Instance());
-			}else{
-				cerr << "Region 3) ";
-				changeState(Region3::Instance());
-			}
-		} else if (x == 1) {
-			cerr << "Gas. ";
-			// Saturated gas
-			if(T < TB_LOW){
-				cerr << "Region 2) ";
-				changeState(Region2::Instance());
+		REQUIRE(Boundaries::isValid_pT(p, T, true));
+
+		/*
+			Test first for saturation, because we need to have a bit of 'slop' there to allow for numerical inconsistencies of using the forwards/backwards saturation curve equation.
+		*/
+
+		if (Boundaries::isSat_pT(p, T)) {
+
+			ASSERT(x >= 0);
+			ASSERT(x <= 1);
+
+			// MESSAGE("SATURATED p,T IN set_PT");
+			cerr << "(Saturated, p = " << p << ", T = " << T << ". ";
+			if (x == 0) {
+				cerr << "Liquid. ";
+				// Saturated liquid
+				if(T < T_REG1_REG3){
+					cerr << "Region 1) ";
+					changeState(Region1::Instance());
+				}else{
+					cerr << "Region 3) ";
+					changeState(Region3::Instance());
+				}
+			} else if (x == 1) {
+				cerr << "Gas. ";
+				// Saturated gas
+				if(T < TB_LOW){
+					cerr << "Region 2) ";
+					changeState(Region2::Instance());
+				} else {
+					cerr << "Region 3) ";
+					changeState(Region3::Instance());
+				}
 			} else {
-				cerr << "Region 3) ";
-				changeState(Region3::Instance());
+				cerr << "Two-phase, Region 4, x = " << x << ") ";
+				// TWO PHASE calculator
+				changeState(Region4::Instance());
 			}
+		} else if (Boundaries::isRegion1_pT(p, T)) {
+			//MESSAGE("NOT SATURATED, IT'S IN REGION 1");
+			x = 0;
+			changeState(Region1::Instance());
+		} else if (Boundaries::isRegion2_pT(p, T)) {
+			//MESSAGE("NOT SATURATED, IT'S IN REGION 2");
+			x = 1;
+			changeState(Region2::Instance());
+		} else if (Boundaries::isRegion3_pT(p, T)) {
+			//cerr << p << " " << T;
+			//MESSAGE("NOT SATURATED, IT'S IN REGION 3");
+			x = -1;
+			changeState(Region3::Instance());
 		} else {
-			cerr << "Two-phase, Region 4, x = " << x << ") ";
-			// TWO PHASE calculator
-			changeState(Region4::Instance());
+			MESSAGE("UNABLE TO DETERMINE REGION OF STEAM");
+			throw new SteamCalculatorException(p, T, STM_UNABLE_DET_REGION);
 		}
-	} else if (Boundaries::isRegion1_pT(p, T)) {
-		//MESSAGE("NOT SATURATED, IT'S IN REGION 1");
-		x = 0;
-		changeState(Region1::Instance());
-	} else if (Boundaries::isRegion2_pT(p, T)) {
-		//MESSAGE("NOT SATURATED, IT'S IN REGION 2");
-		x = 1;
-		changeState(Region2::Instance());
-	} else if (Boundaries::isRegion3_pT(p, T)) {
-		//cerr << p << " " << T;
-		//MESSAGE("NOT SATURATED, IT'S IN REGION 3");
-		x = -1;
-		changeState(Region3::Instance());
-	} else {
-		MESSAGE("UNABLE TO DETERMINE REGION OF STEAM");
-		throw new SteamCalculatorException(p, T, STM_UNABLE_DET_REGION);
+
+		_state->set_pT(*this, p, T, x);
+
+		ENSURE(_state->getRegion() == whichRegion());
+	
+	}catch(Exception *E){
+		stringstream s;
+		s << "SteamCalculator::set_pT(p = " << p << ",T = " << T <<"): " << E->what();
+		throw new Exception(s.str());
 	}
-
-	_state->set_pT(*this, p, T, x);
-
-	ENSURE(_state->getRegion() == whichRegion());
 }
 
 
@@ -933,12 +941,23 @@ SteamCalculator::getRegion3PressureError(const Density &rho) {
 	return (p - reg3_target_pressure);
 }
 
-//-----------------------------------
-// UTILITY FUNCTIONS
+//---------------------------------------------------
+// Non-checking routines for use with solvers etc
 
-/// Efficient short-cut for Solver2::solveRegion1
-void setRegion1(SteamCalculator &S,const Pressure &p,const Temperature &T){
-	REQUIRE(S.whichRegion()==1);
-	S._state->set_pT(S,p,T,0.0);
-	ENSURE(S.whichRegion()==1);
+void
+SteamCalculator::setRegion1_pT(const Pressure &p, const Temperature &T){
+	
+	ASSERT(whichRegion() == 1);
+	ASSERT(Boundaries::isRegion1_pT(p,T));
+	_state->set_pT(*this,p,T,0.0);
+
+}
+
+void
+SteamCalculator::setRegion2_pT(const Pressure &p, const Temperature &T){
+	
+	ASSERT(whichRegion() == 2);
+	ASSERT(Boundaries::isRegion2_pT(p,T));
+	_state->set_pT(*this,p,T,0.0);
+
 }

@@ -5,7 +5,7 @@
 
 Region1 *Region1::_instance = 0;
 
-Region1::Region1() {}
+Region1::Region1(){}
 
 SteamState *Region1::Instance() {
 	if (_instance == 0) {
