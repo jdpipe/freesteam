@@ -10,16 +10,12 @@ int SteamState::getRegion() {
 }
 
 SteamState *SteamState::Instance() {
-	throw new
-	Exception
-	("Illegal call to SteamState::Instance(). Must instantiate a subclass.");
+	throw new Exception("Illegal call to SteamState::Instance(). Must instantiate a subclass.");
 }
 
 void SteamState::set_pT(SteamCalculator * c, Pressure p, Temperature T,
                         Num x) {
-	throw new
-	Exception
-	("Illegal call to SteamState::Instance(). Must instantiate a subclass.");
+	throw new Exception("Illegal call to SteamState::Instance(). Must instantiate a subclass.");
 }
 
 /**

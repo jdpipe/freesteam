@@ -156,7 +156,7 @@ eq(const Units<M,L,T,K,I> u, const Units<M,L,T,K,I> v, double tol = UNITS_DEFAUL
 template < int M, int L, int T, int K, int I >
 inline
 bool
-eq(const Units<M,L,T,K,I> u, const Units<M,L,T,K,I> v, const Units<M,L,T,K,I> tol) {
+eq(const Units<M,L,T,K,I> &u, const Units<M,L,T,K,I> &v, const Units<M,L,T,K,I> &tol) {
 	if(fabs(u-v) < tol){
 		return true;
 	}
@@ -394,7 +394,7 @@ const Energy kJ = kilo * Joule;
 
 const Power Watt = Joule / second;
 
-const double Percent = 1 / 100;
+const double Percent = 1.0 / 100;
 
 //const ElecPotential volt = Watt / ampere;
 //const Charge Coulomb = ampere * second;
