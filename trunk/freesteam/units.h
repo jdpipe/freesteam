@@ -310,6 +310,8 @@ typedef Units <-1,  0,  3,  1 > ThermalResistance;
 typedef Units < 1,  1, -2, -1 > HeatCapacityPerLength;
 typedef Units < 1,  2, -3, -1 > PowerPerTemperature;
 
+typedef Units < 0,  0,  0, -1 > ThermalExpansionCoefficient;
+
 typedef Units < 0,  3, -1 > VolFlowRate;
 typedef Units < 1,  0, -1 > MassFlowRate;
 typedef Units < 1, -1, -1 > MassFlowRatePerLength;
@@ -342,7 +344,9 @@ typedef Velocity Speed;
 typedef Length Distance;
 typedef Energy Heat;
 typedef Heat Work;		// nice
+
 typedef Power HeatRate;
+typedef PowerPerLength HeatRatePerLength;
 typedef PowerPerTemperature HeatRatePerTemperature;
 
 typedef Pressure Stress;

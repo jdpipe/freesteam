@@ -396,14 +396,12 @@ SteamCalculator::isSet() const{
 	return isset;
 }
 
-#ifndef NDEBUG
 /// Used for design-by-contract IS_VALID tests:
 bool
 SteamCalculator::isValid() const{
 	return isSet()
 		&& Boundaries::isValid_pT(this->pres(), this->temp());
 }
-#endif
 
 /// Get the region for the present SteamCalculator (1 to 4, according to IAPWS)
 /*	@return steam region

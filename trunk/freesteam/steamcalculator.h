@@ -117,10 +117,8 @@ class SteamCalculator:public DesignByContract {
 
 		bool isSet(void) const;
 
-		#ifndef NDEBUG
 		// Design by contract stuff...
 		virtual bool isValid(void) const;
-		#endif
 
 		// Methods to return properties and state
 

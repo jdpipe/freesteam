@@ -9,6 +9,8 @@
 
 /// Base class for all two-property solvers
 /**
+	This class is abstract. Use it when creating template Solver2 classes for particular combinations of variables, so that all Solver2 classes will have common methods whichRegion, solve, getFirstProp, etc, defined.
+
 	@param FirstProp (Units of) first property to be solved for
 	@param SecondProp (Units of) second property to be solved for
 	@param FirstPropAlt First property alternative, used to distinguish two properties having the same units
@@ -20,6 +22,7 @@ class Solver2Base{
 	protected:
 
 		Solver2Base(){}
+		virtual ~Solver2Base(){}
 
 		virtual int whichRegion(const FirstProp &fp,const SecondProp &sp) = 0;
 
@@ -72,7 +75,7 @@ class Solver2
 
 	public:
 
-		Solver2(){
+		Solver2() : Solver2Base<FirstProp,SecondProp,FirstPropAlt,SecondPropAlt>(){
 			//cerr << endl <<"Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::Solver2()";
 		}
 
