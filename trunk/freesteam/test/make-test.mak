@@ -18,15 +18,27 @@
 TEST_EXE = runtest$(EXE_SUFFIX)
 TESTOBJS = steamtestpoint.o
 
-CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
+CPPUNIT_CONFIG = cppunit-config
 
 CPPFLAGS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --cflags)
-LIBS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --libs)
+LDFLAGS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --libs)
 
 ctest:
 	make -C ../ctest
 
 testobjs: $(TESTOBJS)
+
+
+#-----------------------------------------------------------
+# LIBRARY
+
+$(LIB):
+	make -C .. lib
+
+.PHONY: libcheck
+
+libcheck: $(LIB)
+	make -C .. libcheck
 
 #-----------------------------------------------------------
 # DEFINE THE TESTS
@@ -38,7 +50,7 @@ testobjs: $(TESTOBJS)
 TESTS = cppunit.test.o empty.test.o units.test.o batchtest.test.o \
 	zeroin.test.o \
 	region4.test.o b23.test.o boundaries.test.o \
-	rhosat.test.o \
+ 	rhosat.test.o \
 	region1.test.o region2.test.o region3.test.o \
 	b234point.test.o \
 	criticalpoint.test.o \
@@ -54,21 +66,44 @@ TESTS = cppunit.test.o empty.test.o units.test.o batchtest.test.o \
 #--------------------------
 # RUN-TIME TESTING
 
-.PHONY:	test testheading
+.PHONY:	buildtest testheading
 
-test: $(TEST_EXE)
+.PRECIOUS: $(TESTS) $(TESTOBJS)
+
+test: buildtest $(TEST_EXE)
 	./$(TEST_EXE)
 
-$(TEST_EXE): test.o $(TESTS) $(TESTOBJS) $(LIB)
+buildtest: $(LIB)
+	@if [ ! -n "$(CPPUNIT_CONFIG)" ] && [ ! -e `which $(CPPUNIT_CONFIG)` ]; then \
+		echo; \
+		echo "CPPUNIT NOT FOUND, make sure 'cppunit-config' command is in your path"; \
+		echo; \
+		exit 1; \
+	fi;
 	@echo
-	@echo "CppUnit libs flag: " $(LIBS_CPPUNIT)
+	@echo "BUILDING TESTS with CppUnit version" `$(CPPUNIT_CONFIG) --version`
+	@echo "(cppunit-config command is " $(CPPUNIT_CONFIG) ")"
+	@echo "Flags: " $(CPPFLAGS_CPPUNIT)
+	@echo "Libs:  " $(LDFLAGS_CPPUNIT)
 	@echo
-	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS_CPPUNIT)
+	
+$(TEST_EXE): test.o $(TESTS) $(TESTOBJS) libcheck
+	$(CXX) test.o $(TESTS) $(TESTOBJS) $(LIB) -o $@ $(LDFLAGS) $(LDFLAGS_CPPUNIT)
 
 testheading:
 	@echo
 	@echo "RUNTIME TESTING"
 	@echo
+
+%.test.d: %.test.cpp
+	@set -e; rm -f $@; \
+	$(CXX) $(MAKEDEPFLAG) $(CPPFLAGS) $(CPPFLAGS_CPPUNIT) $(@:.d=.cpp) > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	rm -f $@.$$$$;
+
+
+%.test.o: %.test.cpp
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_CPPUNIT) -c -o $@ $<
 
 #---------------------------------------------------------
 # CLEAN

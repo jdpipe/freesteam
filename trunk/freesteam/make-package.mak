@@ -41,9 +41,18 @@ again: mostlyclean all
 
 $(LIB): $(OBJS)
 	$(AR) -cr $@ $(OBJS)
+	./config.guess > libcheck.txt
 
 example: example.o $(LIB)
 	$(CXX) -o $@ -static $(LDFLAGS) $^ 
+
+#--------------------------
+# LIBCHECK - make sure we have built the lib on this platform and not another one
+
+libcheck: $(LIB) libcheck.txt
+	./config.guess > libcheck2.txt
+	diff libcheck.txt libcheck2.txt
+	rm libcheck2.txt	
 
 #--------------------------
 # SUBDIRECTORIES
@@ -77,7 +86,7 @@ cleansubdirs:
 distclean: distcleanhere distcleansubdirs
 
 distcleanhere: cleanhere
-	@-rm example$(EXE_SUFFIX) $(LIB) *.d DOCS *.tar.bz2
+	@-rm example$(EXE_SUFFIX) $(LIB) libcheck.txt *.d DOCS *.tar.bz2
 	@-rm -rf doc
 
 distcleansubdirs:

@@ -21,6 +21,17 @@ CFAIL = $(wildcard *.cfail.cpp)
 -include $(CPASS:.cpp=.d)
 -include $(CFAIL:.cpp=.d)
 
+#-----------------------------------------------------------
+# LIBRARY
+
+$(LIB):
+	make -C .. lib
+
+.PHONY: libcheck
+
+libcheck: $(LIB)
+	make -C .. libcheck
+
 #--------------------------
 # COMPILE-TIME TESTING
 
@@ -44,7 +55,7 @@ ctestheading:
 	@echo "COMPILE-TIME TESTING"
 	@echo
 
-%.cpass$(EXE_SUFFIX): %.cpass.cpp $(LIB) Makefile
+%.cpass$(EXE_SUFFIX): %.cpass.cpp libcheck Makefile
 	@echo "ctest $< (expect pass)..."
 	@echo $(CXX) -DCTEST $< $(LIB) -o $@ $(LDFLAGS);
 	@if $(CXX) -DCTEST $< $(LIB) -o $@ $(LDFLAGS); then exit 0 \
@@ -55,7 +66,7 @@ ctestheading:
 	  exit 1; \
 	fi;
 
-%.cfail.ok: %.cfail.cpp $(LIB) Makefile
+%.cfail.ok: %.cfail.cpp libcheck Makefile
 	@echo "ctest $< (expect fail)..."
 	@echo $(CXX) -DCTEST $< $(LIB) -o cfail$(EXE_SUFFIX) $(LDFLAGS)
 	@if $(CXX) -DCTEST $< $(LIB) -o cfail$(EXE_SUFFIX) $(LDFLAGS); then \

@@ -22,13 +22,21 @@ EMSO = $(SO_PREFIX)$(EMSO_NAME)$(SO_SUFFIX)
 
 emso: $(EMSO)
 
-$(EMSO): emsohooks.o  $(LIB)
+$(EMSO): emsohooks.o libcheck
 	$(CXX) -shared -o $@ emsohooks.o $(LIB) $(LDFLAGS)
 
 OBJS = emsohooks.o
 
+#-----------------------------------------------------------
+# LIBRARY
+
 $(LIB):
 	make -C .. lib
+
+.PHONY: libcheck
+
+libcheck: $(LIB)
+	make -C .. libcheck
 
 #---------------------------------------------------------
 # CLEAN

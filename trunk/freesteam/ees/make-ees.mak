@@ -20,15 +20,23 @@
 
 EES = $(EES_NAME)$(SO_SUFFIX)
 
-ees: $(LIB) $(EES)
+ees: $(EES)
 
-$(EES): eeshooks.o eesparameterlist.o Makefile
+$(EES): eeshooks.o eesparameterlist.o libcheck Makefile
 	$(CXX) -shared -o $@ eeshooks.o eesparameterlist.o $(LIB) $(LDFLAGS)
 
 OBJS = eeshooks.o eesparameterlist.o
 
+#-----------------------------------------------------------
+# LIBRARY
+
 $(LIB):
 	make -C .. lib
+
+.PHONY: libcheck
+
+libcheck: $(LIB)
+	make -C .. libcheck
 
 #---------------------------------------------------------
 # CLEAN
