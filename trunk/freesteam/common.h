@@ -29,6 +29,8 @@ const Temperature REG2_T_HIGH = T_MAX;
 const Temperature T_REG1_REG3 = 623.15 * Kelvin;
 const Temperature TB_LOW = T_REG1_REG3;
 
+const Temperature T_MIN_VOL = fromcelsius(3.984);
+
 const Pressure P_MAX = 100.0 * MPa;
 const Pressure PB_LOW = 16.5292 * MPa;
 const Pressure P_MIN = 0.0 * Pascal;
@@ -54,7 +56,7 @@ const Temperature IAPS85_TEMP_REF = 647.226 * Kelvin;
 /// @see http://www.iapws.org/relguide/visc.pdf#page=7 Eq (4)
 const Pressure IAPS85_PRES_REF = 22.115 * MPa;	// MPa (THIS IS *NOT* EQUAL TO P_CRIT!)
 
-/// @see http://www.iapws.org/relguide/visc.pdf#page=7 
+/// @see http://www.iapws.org/relguide/visc.pdf#page=7
 const Conductivity IAPS85_THCOND_REF = 0.49450 * Watt / metre / Kelvin;
 
 const Temperature IAPS85_TEMP_REG2_REF = 540.0 * Kelvin;

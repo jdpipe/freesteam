@@ -7,7 +7,7 @@
 #include <string>
 using namespace std;
 
-class Exception : public DesignByContract{
+class Exception{
 	private:
 		string message;
 
@@ -16,7 +16,7 @@ class Exception : public DesignByContract{
 			//cerr << "Exception created! (char)" << endl;
 			message=string(c);
 		}
-		
+
 		Exception(string s){
 			//cerr << "Exception created! (string)" << endl;
 			//cerr << "String is " << s << endl;
@@ -27,7 +27,7 @@ class Exception : public DesignByContract{
 			//cerr << "Returning string now..." << endl;
 			return message;
 		}
-		
+
 		void setMessage(string message){
 			this->message=message;
 		}
@@ -53,12 +53,12 @@ class Air_Temp_Over_Range: public Exception{
 		Air_Temp_Over_Range(double T) : Exception("Air temp over range"){
 			this->T=T;
 		}
-		
+
 		string what(){
 			cerr << "Temp = " << this->T << endl;
 			return Exception::what();
 		}
-	
+
 	private:
 		double T;
 };
@@ -68,12 +68,12 @@ class Air_Temp_Under_Range: public Exception{
 		Air_Temp_Under_Range(double T) : Exception("Air temp under range"){
 			this->T=T;
 		}
-		
+
 		string what(){
 			cerr << "Temp = " << this->T << endl;
 			return Exception::what();
 		}
-	
+
 	private:
 		double T;
 };

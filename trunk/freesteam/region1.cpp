@@ -64,65 +64,65 @@ const Num REGION1_N[REG1_COUNT] = {
 #define LOOP_REG1(FUNC,EXPR) LOOP_SUM_FUNC_OBJ(Region1,FUNC,EXPR,REG1_COUNT)
 
 LOOP_REG1(gam,
-          REGION1_N[i] * pow(7.1 - c->pi,
-                             REGION1_I[i]) * pow(c->tau - 1.222,
+          REGION1_N[i] * pow(7.1 - c.pi,
+                             REGION1_I[i]) * pow(c.tau - 1.222,
                                                  REGION1_J[i])
          );
 
 
 LOOP_REG1(gampi,
-          -REGION1_N[i] * REGION1_I[i] * pow(7.1 - c->pi,
+          -REGION1_N[i] * REGION1_I[i] * pow(7.1 - c.pi,
                                              REGION1_I[i] -
-                                             1) * pow(c->tau - 1.222,
+                                             1) * pow(c.tau - 1.222,
                                                       REGION1_J[i])
          );
 
 LOOP_REG1(gampipi,
           REGION1_N[i] * REGION1_I[i] * (REGION1_I[i] - 1) * pow(7.1 -
-                  c->pi,
+                  c.pi,
                   REGION1_I
                   [i] -
                   2) *
-          pow(c->tau - 1.222, REGION1_J[i])
+          pow(c.tau - 1.222, REGION1_J[i])
          );
 
 
 LOOP_REG1(gamtau,
-          REGION1_N[i] * pow(7.1 - c->pi,
-                             REGION1_I[i]) * REGION1_J[i] * pow(c->tau -
+          REGION1_N[i] * pow(7.1 - c.pi,
+                             REGION1_I[i]) * REGION1_J[i] * pow(c.tau -
                                                                 1.222,
                                                                 REGION1_J
                                                                 [i] - 1)
          );
 
 LOOP_REG1(gamtautau,
-          REGION1_N[i] * pow(7.1 - c->pi,
+          REGION1_N[i] * pow(7.1 - c.pi,
                              REGION1_I[i]) * REGION1_J[i] * (REGION1_J[i] -
                                                              1) *
-          pow(c->tau - 1.222, REGION1_J[i] - 2)
+          pow(c.tau - 1.222, REGION1_J[i] - 2)
          );
 
 LOOP_REG1(gampitau,
-          -REGION1_N[i] * REGION1_I[i] * pow(7.1 - c->pi,
+          -REGION1_N[i] * REGION1_I[i] * pow(7.1 - c.pi,
                                              REGION1_I[i] -
                                              1) * REGION1_J[i] *
-          pow(c->tau - 1.222, REGION1_J[i] - 1));
+          pow(c.tau - 1.222, REGION1_J[i] - 1));
 
 // for use in thermal conductivity
 
 #define EVAL_REG1(fun,expr) EXPR_FUNC_OBJ(Region1,fun,expr,Num)
 
 EVAL_REG1(pitau_iaps85,
-	IAPS85_TEMP_REF * REG1_PRES_REF 
-		* (gampitau(c) * REG1_TEMP_REF - gampi(c) * c->T) 
-		/ (IAPS85_PRES_REF * sq(c->T) * gampipi(c))
+	IAPS85_TEMP_REF * REG1_PRES_REF
+		* (gampitau(c) * REG1_TEMP_REF - gampi(c) * c.T)
+		/ (IAPS85_PRES_REF * sq(c.T) * gampipi(c))
 );
 
 EVAL_REG1(delpi_iaps85,
-	- IAPS85_PRES_REF 
-		/ IAPS85_DENS_REF 
-		/ R 
-		/ c->T 
-		* gampipi(c) 
+	- IAPS85_PRES_REF
+		/ IAPS85_DENS_REF
+		/ R
+		/ c.T
+		* gampipi(c)
 		/ sq(gampi(c))
 );

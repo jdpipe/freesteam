@@ -9,7 +9,7 @@
 // Which region?
 
 // whichRegion given p, T
-	
+
 int
 Solver2<Pressure,Temperature,0,0>::whichRegion(const Pressure &p, const Temperature &T){
 	SteamCalculator S;
@@ -23,14 +23,14 @@ Solver2<Pressure,Temperature,0,0>::whichRegion(const Pressure &p, const Temperat
 */
 int
 Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const SpecificEnergy &u, const SpecificVolume &v){
-	
+
 	//cerr << endl << "Solver2: whichRegion(u,v)...";
-	
+
 	try{
 
 		SatCurve<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0> SC; // u_sat(v)
 		SteamCalculator S;
-		
+
 		SpecificVolume v_crit, v_b23_Tmax, v_b13, v_sat;
 		SpecificEnergy u_b13, u_b23, u_b34, u_sat, u_crit;
 
@@ -43,7 +43,7 @@ Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const Specif
 			//cerr << endl << "Solver2<u,v>::whichRegion: v > v_crit";
 
 			if(u < u_crit){
-				cerr << endl << "Solver2<u,v>::whichRegion: u < u_crit: REGION = 4";
+				//cerr << endl << "Solver2<u,v>::whichRegion: u < u_crit: REGION = 4";
 				return 4;
 			}
 
@@ -52,23 +52,23 @@ Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const Specif
 
 			if(v >= v_b234){
 				//cerr << endl << "Solver2<u,v>::whichRegion: v > v_b234, check sat vap line";
-				
+
 				// check saturated vapour line
 				u_sat = SC.solve(v,SAT_STEAM);
 
 				if(u < u_sat){
-					cerr << endl << "Solver2<u,v>::whichRegion: u < u_sat: REGION = 4";
+					//cerr << endl << "Solver2<u,v>::whichRegion: u < u_sat: REGION = 4";
 					return 4;
 				}
-				
+
 				//cerr << endl << "Solver2<u,v>::whichRegion: u > u_sat: REGION = 2";
 				return 2;
 			}
-			
+
 			//cerr << endl << "Solver2<u,v>::whichRegion: v < v_b234, check B23 curve";
 
 			B23Curve<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0> B23C;
-			
+
 			u_b23 = B23C.solve(v);
 
 			if(u > u_b23){
@@ -83,64 +83,97 @@ Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const Specif
 				return 3;
 			}
 
-			cerr << endl << "Solver2<u,v>::whichRegion: v < v_b234, u <= u_b34: REGION = 4";
+			//cerr << endl << "Solver2<u,v>::whichRegion: v < v_b234, u <= u_b34: REGION = 4";
 			return 4;
 
 		}else{
 			//cerr << endl << "Solver2<u,v>::whichRegion: v < v_crit";
-			
+
 			if(u > u_crit){
 				//cerr << endl << "Solver2<u,v>::whichRegion: u > u_crit";
 				S.setB23_T(TB_HIGH);
 				v_b23_Tmax = S.specvol();
-				
+
 				if(v > v_b23_Tmax){
-					
+
 					//cerr << endl << "Solver2<u,v>::whichRegion: v > v_b23_Tmax";
 					B23Curve<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0> B23C;
 					u_b23 = B23C.solve(v);
-					
+
 					if(u >= u_b23){
 						//cerr << endl << "Solver2<u,v>::whichRegion: u >= u_b23: REGION = 2";
 						return 2;
 					}
 				}
-				
+
 				cerr << endl << "Solver2<u,v>::whichRegion: u > u_crit, v < v_b23_Tmax or u < u_b23: REGION = 3";
 				return 3;
 			}
-			
-			//cerr << endl <<"Solver2<u,v>::whichRegion: u <= u_crit: solve v_sat(u)";
-			
-			SatCurve<SpecificVolume,SpecificEnergy,0,SOLVE_IENERGY> SCu;
-			
-			v_sat = SCu.solve(u);
-			
-			if(v > v_sat){
-				cerr << endl <<"Solver2<u,v>::whichRegion: v > v_sat: REGION = 4";
-				return 4;
-			}
-			
-			S.set_pT(P_MAX,T_REG1_REG3,0.0);
-			if(u > S.specienergy()){
-				if(v > S.specvol()){
-					//cerr << endl <<"Solver2<u,v>::whichRegion: v > v_b13_pmax: solve for v_b13";
-					B13Curve<SpecificVolume, SpecificEnergy,0,SOLVE_IENERGY> B13C;
-					v_b13 = B13C.solve(u);
+			// u < u_crit, v <= v_crit
 
-					if(v <= v_b13){
-						cerr << endl <<"Solver2<u,v>::whichRegion: v <= v_b13: REGION = 3";
-						return 3;
-					}
-				}else{
-					throw new Exception("Solver2<u,v>::whichRegion: Invalid u,v: u > u_b13_pmax but v < v_b13_pmax");
+			//cerr << endl <<"Solver2<u,v>::whichRegion: u <= u_crit";
+
+			SatCurve<SpecificVolume,SpecificEnergy,0,SOLVE_IENERGY> SCu;
+			v_sat = SCu.solve(u);
+
+			S.set_pT(P_MAX,T_REG1_REG3,0.0);
+			SpecificEnergy u_b13_pmax = S.specienergy();
+			SpecificVolume v_b13_pmax = S.specvol();
+
+			S.setSatWater_T(T_REG1_REG3);
+			SpecificEnergy u_b134 = S.specienergy();
+
+
+			//cerr << endl <<"Solver2<u,v>::whichRegion: found v_sat(u) = " << v_sat;
+
+			if(v >= v_sat){
+				//cerr << endl <<"Solver2<u,v>::whichRegion: v >= v_sat...";
+				if(u > u_b134){
+					//cerr << endl <<"Solver2<u,v>::whichRegion: u > b134: REGION 4";
+					return 4;
+				}
+				if(v > v_sat){
+					//cerr << endl <<"Solver2<u,v>::whichRegion: v > v_sat: REGION 4";
+					return 4;
 				}
 			}
-			
-			//cerr << endl <<"Solver2<u,v>::whichRegion: v <= v_b13_pmax or v > v_b13: REGION = 1";
+
+			//cerr << endl <<"Solver2<u,v>::whichRegion: v < v_sat (by " << (v_sat - v);
+
+			if(u <= u_b13_pmax){
+				//cerr << endl <<"Solver2<u,v>::whichRegion: v <= v_b13_pmax or v > v_b13: REGION = 1";
+				return 1;
+			}
+
+			//cerr << endl << "Solver2<u,v>:whichRegion: u > u_b13_pmax ( = " << u_b13_pmax << ")";
+
+			if(v < v_b13_pmax){
+				throw new Exception("Solver2<u,v>::whichRegion: Invalid u,v: u > u_b13_pmax but v < v_b13_pmax");
+			}
+
+			//cerr << endl <<"Solver2<u,v>::whichRegion: checking u <= u_b134:";
+
+			if(u > u_b134){
+				cerr << endl <<"Solver2<u,v>::whichRegion: u > u_b134 ( = " << u_b134 << "): REGION = 3";
+				return 3;
+			}
+
+			//cerr << "OK";
+
+			//cerr << endl <<"Solver2<u,v>::whichRegion: v > v_b13_pmax, u <= u_b234: solve for v_b13";
+
+			B13Curve<SpecificVolume, SpecificEnergy,0,SOLVE_IENERGY> B13C;
+			v_b13 = B13C.solve(u);
+
+			if(v <= v_b13){
+				cerr << endl <<"Solver2<u,v>::whichRegion: v <= v_b13: REGION = 3";
+				return 3;
+			}
+
+			//cerr << endl << "Solver2<u,v>::whichRegion: v > v_b13: REGION = 1";
 			return 1;
 		}
-	
+
 	}catch(Exception *E){
 		stringstream s;
 		s << "Solver2<u,v>::whichRegion(u = " << u / kJ_kg << "kJ_kg, v = " << v << "): " << E->what();
@@ -189,9 +222,9 @@ Solver2<Pressure,Temperature,0,0>::solve(Pressure p,Temperature T){
 				throw new Exception(s.str());
 			}
 		}
-		
+
 		Then, each solveRegionN(xxx,yyy) can done with partial template specialisations etc as required.
-		
+
 		REGION     |    FirstQuantity   |   SecondQuantity
 		-----------|--------------------|----------------------------
 		4				Pressure			*					single solver
@@ -203,9 +236,9 @@ Solver2<Pressure,Temperature,0,0>::solve(Pressure p,Temperature T){
 		3				Density				*					single solver
 		3				SpecificVolume		*					single solver
 		3				*					Temperature			single solver
-		
-		All the rest should be possible a common two-variable solver once brackets have been determined, eg on 
-		
+
+		All the rest should be possible a common two-variable solver once brackets have been determined, eg on
+
 		Region 1:
 			T < xxx
 			p > p_sat(T)
@@ -217,8 +250,8 @@ Solver2<Pressure,Temperature,0,0>::solve(Pressure p,Temperature T){
 			Rho in certain range
 			T in certain range
 			Maybe check validity after increments added
-		
-			
+
+
 		if(whi
 		Region4<SpecificEnergy,SpecificVolume>::solve
 	}

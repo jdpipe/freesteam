@@ -13,7 +13,7 @@ using namespace std;
 	@param MainProp	fixed value
 	@param OtherProp target value
 	@param VaryProp value which is varied unti OtherProp has desired value
-	
+
 	See SteamProperty
 */
 template<class MainProp, class OtherProp, class VaryProp, int MainPropAlt,int OtherPropAlt,int VaryPropAlt>
@@ -21,7 +21,7 @@ class SolverBase : public DesignByContract
 {
 
 	friend class ZeroIn<SolverBase,VaryProp,OtherProp>;
-	
+
 	protected:
 		/// Create the solver and assign fixed and target properties
 		SolverBase(MainProp mp,OtherProp op){
@@ -29,7 +29,7 @@ class SolverBase : public DesignByContract
 			this->mp=mp;
 			this->op=op;
 		}
-	
+
 	public:
 
 		virtual VaryProp setLowerBound(VaryProp lowerbound){
@@ -37,19 +37,19 @@ class SolverBase : public DesignByContract
 		}
 		virtual VaryProp setUpperBound(VaryProp upperbound){
 			this->upperbound = upperbound;
-		}		
-		
-	
+		}
+
+
 		/// Set the target property
 		void setTarget(OtherProp op){
 			this->op=op;
 		}
-		
+
 		/// Set the 'fixed' parameter in the root finding
 		void setMainProp(MainProp mp){
 			this->mp=mp;
 		}
-		
+
 		/// Peform the iterations
 		/**
 			@param maxerror Seek value of OtherProp to within this maximum error
@@ -62,26 +62,26 @@ class SolverBase : public DesignByContract
 			,VaryProp   tol
 		){
 			ZeroIn<SolverBase,OtherProp,VaryProp> z;
-			
+
 			//cerr << endl << "Solving for "<< SteamProperty<OtherProp,OtherPropAlt>::name() << " = " << op << " by varying " << SteamProperty<VaryProp,VaryPropAlt>::name() << ", and with " << SteamProperty<MainProp,MainPropAlt>::name() << " fixed at " << mp << endl;
-			
+
 			try{
-			
+
 				//S.set_pT(P_CRIT,T);
-				
+
 				z.setLowerBound(lowerbound);
 				z.setUpperBound(upperbound);
 				z.setTolerance(tol);
 
 				z.setMethod(&SolverBase::getError_vp);
-				
+
 				z.visit(this);
 
-				if(!z.isSolved(maxerror)){	
+				if(!z.isSolved(maxerror)){
 					stringstream s;
 					s.flags(ios_base::showbase);
 					s << "Failed solution: target "<< SteamProperty<OtherProp,OtherPropAlt>::name() << " = " << op << ", with " << SteamProperty<MainProp,MainPropAlt>::name() << " fixed at " << mp << endl;
-					
+
 					s << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
 					throw new Exception(s.str());
 				}
@@ -89,28 +89,28 @@ class SolverBase : public DesignByContract
 				return S;
 			}catch(Exception *e){
 				stringstream s;
-				s << "Solver::solve: " << e->what();
+				s << "Solver<" << SteamProperty<MainProp,MainPropAlt>::name() << "," << SteamProperty<OtherProp,OtherPropAlt>::name() << "," << SteamProperty<VaryProp,VaryPropAlt>::name() << ">::solve: " << e->what();
 				throw new Exception(s.str());
 			}
-		}		
+		}
 	protected:
-	
-		virtual void setVaryProp(const VaryProp &vp){	
+
+		virtual void setVaryProp(const VaryProp &vp){
 			throw new Exception("Not implemented: getError_vp");
 		}
 
 		OtherProp getError_vp(const VaryProp &vp){
 			//cerr << endl << "Solver::getError_vp: " << SteamProperty<VaryProp,VaryPropAlt>::name() << " = " << vp;
-			
+
 			setVaryProp(vp);
-			
+
 			//cerr << " -> " << SteamProperty<OtherProp,OtherPropAlt>::name() << " = " << SteamProperty<OtherProp,OtherPropAlt>::get(S) ;
-			
+
 			return SteamProperty<OtherProp,OtherPropAlt>::get(S) - op;
 		}
-	
+
 	protected:
-	
+
 		OtherProp op;
 		MainProp mp;
 		SteamCalculator S;
@@ -121,49 +121,49 @@ class SolverBase : public DesignByContract
 /// Single-property steam solver
 /**
 	This class will solve for (temperature or pressure) plus another steam property, by varying (pressure or temperature) until the desired value of the other steam property is found.
-	
+
 	@example
 		To find p such that (T=600K, u=1500 kJ/kg):
-		
+
 		@code
 			Solver<Temperature,SpecificEnergy,Pressure> PS1(600 * Kelvin,1500 * kJ_kg);
 			SteamCalculator S = PS1.solve(0.00001 * kJ_kg, 0.1 * Pascal);
 			cout << S.pres() << end;
-		@endcode	
-		
+		@endcode
+
 	@param MainProp is the one of the correlation properties. In other words it can be fed directly into the known correlation equations.
-	
+
 	@param OtherProp is the quantity to be solved for. In other words it is not correlated for and must be solved for by varying VaryProp.
-	
+
 	@param VaryProp is the quantity which will be varied to in order to home in on the desired value of OtherProp.
 */
 template<class MainProp, class OtherProp, class VaryProp, int MainPropAlt=0,int OtherPropAlt=0,int VaryPropAlt=0>
-class Solver 
+class Solver
 	: public SolverBase<MainProp,OtherProp,VaryProp,MainPropAlt,OtherPropAlt,VaryPropAlt>
 {
 	public:
-		
+
 		Solver(const MainProp &mp,const OtherProp &op)
 			: SolverBase<MainProp,OtherProp,VaryProp,MainPropAlt,OtherPropAlt,VaryPropAlt>(mp,op){
 			// not implemented
 			throw new Exception("Not implemented");
 		}
 
-		
+
 };
 
 /*
 
 // Solving for specific volume given temperature
-class Solver<Temperature,SpecificVolume,Pressure,0,0,0> 
+class Solver<Temperature,SpecificVolume,Pressure,0,0,0>
 	: public SolverBase<Temperature,SpecificVolume,Pressure,0,0,0>
 {
 	public:
-		
+
 		Solver(Temperature T,SpecificVolume v, bool isSuperheated=false)
 			: SolverBase<Temperature,SpecificVolume,Pressure,0,0,0>(T,v){
-			
-			
+
+
 			if(T > T_CRIT){
 				lowerbound = P_MIN;
 				upperbound = P_MAX;
@@ -177,12 +177,12 @@ class Solver<Temperature,SpecificVolume,Pressure,0,0,0>
 				}
 			}
 		}
-		
+
 	protected:
 
 		virtual void setVaryProp(const Pressure &p){
 			S.set_pT(p,mp);
-		}				
+		}
 
 };
 
@@ -191,40 +191,40 @@ class Solver<Temperature,SpecificVolume,Pressure,0,0,0>
 /// Temperature solver
 /**
 	This solver solves for XXX = xxx1 by varying pressure, with a prescribed fixed value of temperature
-	
+
 	Problem: what is the pressure of water if the specific volume is 0.00102 m3/kg, and the temperature is 623.15 K (350°C)?
-	
+
 	at 100MPa, v = 0.00131 m3/kg (compressed liquid)
 	at 600 Pa, v = 470.3 m3/kg (superheated vapour)
 	at 100 Pa  v = 1490.3 m3/kg (superheated vapour, even less dense)
 	at 10 kPa, v = 14
 	at 100 kPa v = 0.00102 m3/kg (phase change has occurred)
-	
+
 	volume |*
 	       |   *      phase
-	       |      *.   |change      LIQUID GETS LESS                 
+	       |      *.   |change      LIQUID GETS LESS
 	       |         * v           DENSE AT HIGHER *
 	       |GAS - high *        PRESSURE!  *
 	       |    volume |         *    *
 	       |           *    *     LIQUID - small vol
 	       +---------------------------------------
 	                                          pressure
-	
+
 */
 template<class OtherProp, int OtherPropAlt>
-class Solver<Temperature,OtherProp,Pressure,0,OtherPropAlt,0> 
+class Solver<Temperature,OtherProp,Pressure,0,OtherPropAlt,0>
 	: public SolverBase<Temperature,OtherProp,Pressure,0,OtherPropAlt,0>
 {
 	public:
-		
+
 		Solver(Temperature T,OtherProp op)
 			: SolverBase<Temperature,OtherProp,Pressure,0,OtherPropAlt,0>(T,op){
 			lowerbound = P_TRIPLE;
 			upperbound = P_MAX;
 		}
-	
+
 	protected:
-		
+
 		virtual void setVaryProp(const Pressure &p){
 			S.set_pT(p,mp);
 		}
@@ -235,7 +235,7 @@ class Solver<Temperature,OtherProp,Pressure,0,OtherPropAlt,0>
 	This solver solves for XXX = xxx1 by varying temperature, with a prescribed fixed value of pressure
 */
 template<class OtherProp, int OtherPropAlt>
-class Solver<Pressure,OtherProp,Temperature,0,OtherPropAlt,0> 
+class Solver<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>
 	: public SolverBase<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>
 {
 	public:
@@ -245,12 +245,12 @@ class Solver<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>
 			lowerbound = T_MIN;
 			upperbound = T_MAX;
 		}
-	
+
 	protected:
-		
+
 		virtual void setVaryProp(const Temperature &T){
 			S.set_pT(mp,T);
-		}	
+		}
 };
 
 #endif

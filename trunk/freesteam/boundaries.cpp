@@ -108,12 +108,14 @@ Boundaries::getSatDensWater_T(const Temperature &T){
 	REQUIRE(T <= T_CRIT);
 
 	Num tau = 1 - T / T_CRIT;
+
 	Num tau_1_3 = pow(tau,1.0/3);
+
 	Num tau_2_3 = sq(tau_1_3);
 	Num tau_5_3 = tau * tau_2_3;
 	Num tau_16_3 = sq(tau_5_3) * tau_5_3 * tau_1_3;
-	Num tau_43_3 = sq(tau_16_3) * tau_16_3 / tau_5_3;
-	Num tau_110_3 = sq(tau_43_3) * tau_43_3 / tau_16_3 / tau;
+	Num tau_43_3 = sq(tau_16_3) * sq(tau_5_3) * tau_1_3;
+	Num tau_110_3 = sq(tau_43_3) * tau_16_3 * tau_5_3 * tau;
 
 	Num delta = 1
 		+ REGION43_B[1]*tau_1_3
@@ -122,6 +124,8 @@ Boundaries::getSatDensWater_T(const Temperature &T){
 		+ REGION43_B[4]*tau_16_3
 		+ REGION43_B[5]*tau_43_3
 		+ REGION43_B[6]*tau_110_3;
+
+	ENSURE(!isnan(delta));
 
 	return delta * RHO_CRIT;
 }
@@ -140,7 +144,9 @@ Boundaries::getSatDensSteam_T(const Temperature &T){
 	}
 
 	Num tau = 1 - T / T_CRIT;
+
 	Num tau_1_6 = pow(tau,1.0/6);
+
 	Num tau_2_6 = sq(tau_1_6);
 	Num tau_4_6 = sq(tau_2_6);
 	Num tau_8_6 = sq(tau_4_6);
@@ -239,6 +245,53 @@ Boundaries::isValid_pT(Pressure p, Temperature T,
 	}
 
 	return isvalid;
+}
+
+bool
+Boundaries::isSat_Tx(const Temperature &T, const Num &x, const bool throw_me){
+
+	if(isnan(T)){
+		if(throw_me){
+			stringstream s;s << "Boundaries::isSat_Tx: T is not a number: T = " << T << ", x = " << x;
+			throw new Exception(s.str());
+		}
+		return false;
+	}
+	if(isnan(x)){
+		if(throw_me){
+			stringstream s;s << "Boundaries::isSat_Tx: x is not a number: T = " << T << ", x = " << x;
+			throw new Exception(s.str());
+		}
+		return false;
+	}
+
+	if(T < T_TRIPLE){
+		if(throw_me){
+			stringstream s;s << "Boundaries::isSat_Tx: T < T_TRIPLE: T = " << T << ", x = " << x;
+			throw new Exception(s.str());
+		}
+		return false;
+	}else if(T > T_CRIT){
+		if(throw_me){
+			stringstream s;s << "Boundaries::isSat_Tx: T > T_CRIT: T = " << T << ", x = " << x;
+			throw new Exception(s.str());
+		}
+		return false;
+	}else if(x < 0.0){
+		if(throw_me){
+			stringstream s;s << "Boundaries::isSat_Tx: x < 0.0: T = " << T << ", x = " << x;
+			throw new Exception(s.str());
+		}
+		return false;
+	}else if(x > 1.0){
+		if(throw_me){
+			stringstream s;s << "Boundaries::isSat_Tx: x > 1.0: T = " << T << ", x = " << x;
+			throw new Exception(s.str());
+		}
+		return false;
+	}
+
+	return true;
 }
 
 /// Check for a pressure/temperature being in the saturated zone (within some tolerance)

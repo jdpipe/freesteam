@@ -59,17 +59,13 @@ SteamCalculator::copy(const SteamCalculator & original) {
 		del = original.del;
 		rho = original.rho;
 
-		changeState(original._state);
+		_state = original._state;
 
 		if (whichRegion() == 4) {
-			this->set_pT(p, T, x);
-			//fprintf(stderr,"SetPT...\n");
-
-		} else {
-			//fprintf(stderr,"State is same...\n");
-			_state = original._state;
-			isset = original.isset;
+			gas = new SteamCalculator(*(original.gas));
+			liq = new SteamCalculator(*(original.liq));
 		}
+		isset = true;
 
 	} else {
 		p = -1.0 * Pressure();
@@ -96,9 +92,11 @@ SteamCalculator::destroy() {
 
 	// if we did two-phase calcs, then get rid of the gas SteamCalculator
 	if (this->gas != NULL) {
+		//cerr << endl << "DESTROY GAS" << endl;
 		delete this->gas;
 	}
 	if (this->liq != NULL) {
+		//cerr << endl << "DESTROY LIQ" << endl;
 		delete this->liq;
 	}
 }
@@ -145,11 +143,15 @@ SteamCalculator::set_pT(const Pressure &p, const Temperature &T, Num x) {
 			Test first for saturation, because we need to have a bit of 'slop' there to allow for numerical inconsistencies of using the forwards/backwards saturation curve equation.
 		*/
 
-		ASSERT(T >= T_MIN);
-		ASSERT(T <= T_MAX);
-		ASSERT(p >= P_MIN);
+		if(p < P_MIN){
+			throw new Exception("SteamCalculator::set_pT: p < P_MIN");
+		}
 
-		ASSERT(p <= P_MAX);
+		//REQUIRE(p >= P_MIN);
+		REQUIRE(p <= P_MAX);
+
+		REQUIRE(T >= T_MIN);
+		REQUIRE(T <= T_MAX);
 
 		if(T <= TB_LOW){
 			Pressure psat = Boundaries::getSatPres_T(T);
@@ -178,6 +180,9 @@ SteamCalculator::set_pT(const Pressure &p, const Temperature &T, Num x) {
 				changeState(Region2::Instance());
 			}
 		}
+
+		ASSERT(x >= 0.0);
+		ASSERT(x <= 1.0);
 
 		_state->set_pT(*this,p,T,x);
 
@@ -286,8 +291,9 @@ SteamCalculator::setSatSteam_T(const Temperature &T) {
 
 	if(T <= TB_LOW){
 		// Use region 2
+		Pressure p = Boundaries::getSatPres_T(T);
 		changeState(Region2::Instance());
-		_state->set_pT(*this, p, T, 1);
+		_state->set_pT(*this, p, T, 1.0);
 	}else{
 		setRegion3_rhoT(Boundaries::getSatDensSteam_T(T),T);
 	}
@@ -355,6 +361,8 @@ SteamCalculator::setB23_p(const Pressure &p){
 void
 SteamCalculator::setRegion3_rhoT(const Density &rho, const Temperature &T){
 
+	REQUIRE(!isnan(rho));
+
 	changeState(Region3::Instance());
 
 	this->rho = rho;
@@ -380,9 +388,9 @@ SteamCalculator::isSet() const{
 #ifndef NDEBUG
 /// Used for design-by-contract IS_VALID tests:
 bool
-SteamCalculator::isValid(){
-	return this->isSet()
-	       && Boundaries::isValid_pT(this->pres(), this->temp());
+SteamCalculator::isValid() const{
+	return isSet()
+		&& Boundaries::isValid_pT(this->pres(), this->temp());
 }
 #endif
 
@@ -474,76 +482,76 @@ const char *SteamCalculator::whichStateStr(void){
 
 /// Temperature [K]
 Temperature
-SteamCalculator::temp(void) {
+SteamCalculator::temp(void) const{
 	REQUIRE(isset);
-	return this->_state->temp(this);
+	return _state->temp(*this);
 }
 
 /// Pressure [MPa]
 Pressure
-SteamCalculator::pres(void) {
+SteamCalculator::pres(void) const{
 	REQUIRE(isset);
 	//fprintf(stderr,"About to evaluate SteamCalculator::pres...\n");
-	return this->_state->pres(this);
+	return _state->pres(*this);
 }
 
 /// Density [kg/m³]
 Density
-SteamCalculator::dens(void) {
+SteamCalculator::dens(void) const{
 	REQUIRE(isset);
-	Density rho = this->_state->dens(this);
+	Density rho = _state->dens(*this);
 	ENSURE(!isnan(rho));
 	return rho;
 }
 
 /// Specific volume [m³/kg]
 SpecificVolume
-SteamCalculator::specvol(void) {
+SteamCalculator::specvol(void) const{
 	REQUIRE(isset);
-	return this->_state->specvol(this);
+	return _state->specvol(*this);
 }
 
 /// Specific internal energy [kJ/kg]
 SpecificEnergy
-SteamCalculator::specienergy(void) {
+SteamCalculator::specienergy(void) const{
 	REQUIRE(isset);
 	//cerr << "About to calculate specienergy at p = " << pres() / bar << " bar, T = " << tocelsius(temp()) << "°C" << endl;
-	SpecificEnergy u = this->_state->specienergy(this);
+	SpecificEnergy u = _state->specienergy(*this);
 	//ENSURE(u > 0.0 * kJ_kg);
 	return u;
 }
 
 /// Specific entropy [kJ/kg]
 SpecificEntropy
-SteamCalculator::specentropy(void) {
+SteamCalculator::specentropy(void) const{
 	REQUIRE(isset);
-	return this->_state->specentropy(this);
+	return _state->specentropy(*this);
 }
 
 /// Specific enthalpy [kJ/kg]
 SpecificEnergy
-SteamCalculator::specenthalpy(void) {
+SteamCalculator::specenthalpy(void) const{
 	REQUIRE(isset);
-	return this->_state->specenthalpy(this);
+	return _state->specenthalpy(*this);
 }
 
 /// Specific isobaric hear capacity [kJ/kgK]
 SpecHeatCap
-SteamCalculator::speccp(void) {
+SteamCalculator::speccp(void) const{
 	REQUIRE(isset);
-	return this->_state->speccp(this);
+	return _state->speccp(*this);
 }
 
 /// Specific isochoric heat capacity [kJ/kgK]
 SpecHeatCap
-SteamCalculator::speccv(void) {
+SteamCalculator::speccv(void) const{
 	REQUIRE(isset);
-	return this->_state->speccv(this);
+	return _state->speccv(*this);
 }
 
 /// Steam quality (if saturated)
 Num
-SteamCalculator::quality(void) {
+SteamCalculator::quality(void) const{
 	REQUIRE(isset);
 	return this->x;
 }
@@ -595,7 +603,7 @@ const Num THCON_N[THCON_I_COUNT][THCON_J_COUNT]
 	@see http://www.iapws.org/relguide/thcond.pdf#page=8, Eq. 4
 */
 Num
-SteamCalculator::tau_iaps85(){
+SteamCalculator::tau_iaps85() const{
 	return this->T / IAPS85_TEMP_REF;
 }
 
@@ -608,7 +616,7 @@ SteamCalculator::tau_iaps85(){
 	Density calculated with IAPWS SF95 is expected, in order to meet the reference values given
 */
 Num
-SteamCalculator::del_iaps85(){
+SteamCalculator::del_iaps85() const{
 	return  dens() / IAPS85_DENS_REF;
 }
 
@@ -619,7 +627,7 @@ SteamCalculator::del_iaps85(){
 	@see http://www.iapws.org/relguide/visc.pdf#page=7, Eq. 7
 */
 Num
-SteamCalculator::pi_iaps85(){
+SteamCalculator::pi_iaps85() const{
 	return this->p / IAPS85_PRES_REF;
 }
 
@@ -628,7 +636,7 @@ SteamCalculator::pi_iaps85(){
 
 /// @see http://www.iapws.org/relguide/IF97.pdf
 Num
-SteamCalculator::mu0() {
+SteamCalculator::mu0() const{
 
 	Num e = 0;
 
@@ -644,7 +652,7 @@ SteamCalculator::mu0() {
 
 /// @see http://www.iapws.org/relguide/IF97.pdf
 Num
-SteamCalculator::mu1() {
+SteamCalculator::mu1() const{
 
 	Num e = 0;
 
@@ -666,7 +674,7 @@ SteamCalculator::mu1() {
 
 /// @see http://www.iapws.org/relguide/IF97.pdf
 Num
-SteamCalculator::mu2() {
+SteamCalculator::mu2() const{
 
 	// "For industrial use, the value of mu2 can be taken as 1"
 	// IAPWS Rel.. Viscosity 1997
@@ -696,7 +704,7 @@ SteamCalculator::mu2() {
 
 /// @see http://www.iapws.org/relguide/IF97.pdf
 Num
-SteamCalculator::mu(){
+SteamCalculator::mu() const{
 	return mu0() * mu1() * mu2();
 }
 
@@ -713,7 +721,7 @@ SteamCalculator::mu(){
 	@see http://www.iapws.org/relguide/IF97.pdf
 */
 DynamicViscosity
-SteamCalculator::dynvisc() {
+SteamCalculator::dynvisc() const{
 	REQUIRE(isset);
 	return (IAPS85_VISC_REF * mu());
 }
@@ -739,7 +747,7 @@ SteamCalculator::dynvisc() {
 	@see http://www.iapws.org/relguide/IF97.pdf
 */
 Conductivity
-SteamCalculator::conductivity() {
+SteamCalculator::conductivity() const{
 	REQUIRE(isset);
 	Conductivity k = IAPS85_THCOND_REF * lam();
 	ENSURE(!isnan(k));
@@ -756,7 +764,7 @@ SteamCalculator::conductivity() {
 *
 */
 Num
-SteamCalculator::lam0() {
+SteamCalculator::lam0() const{
 
 	Num l = 0;
 	Num ttau = this->tau_iaps85();
@@ -784,7 +792,7 @@ SteamCalculator::lam0() {
 *
 */
 Num
-SteamCalculator::lam1() {
+SteamCalculator::lam1() const{
 	Num l = 0;
 	Num tttau = 1 / this->tau_iaps85();
 	Num ddel = this->del_iaps85();
@@ -818,7 +826,7 @@ SteamCalculator::lam1() {
 *
 */
 Num
-SteamCalculator::lam2() {
+SteamCalculator::lam2() const{
 
 	Num tt = tau_iaps85();
 	Num dd = del_iaps85();
@@ -865,12 +873,12 @@ SteamCalculator::lam2() {
 }
 
 Num
-SteamCalculator::delpi_iaps85(void) {
-	return this->_state->delpi_iaps85(this);
+SteamCalculator::delpi_iaps85(void) const{
+	return _state->delpi_iaps85(*this);
 }
 
 Num
-SteamCalculator::pitau_iaps85(void) {
+SteamCalculator::pitau_iaps85(void) const{
 	REQUIRE(isset);
 	REQUIRE(this->_state!=NULL);
 
@@ -878,7 +886,7 @@ SteamCalculator::pitau_iaps85(void) {
 	//cerr << "Pressure:    " << this->pres() << endl;
 	//cerr << "Temp:        " << this->temp() << endl;
 
-	double pitau = this->_state->pitau_iaps85(this);
+	double pitau = _state->pitau_iaps85(*this);
 
 	ENSURE(!isinf(pitau));
 	ENSURE(!isnan(pitau));
@@ -893,7 +901,7 @@ SteamCalculator::pitau_iaps85(void) {
 //EVAL_STEAM(lam, lam0() * lam1() + lam2())
 
 Num
-SteamCalculator::lam() {
+SteamCalculator::lam() const{
 	Num l0 = lam0();
 	Num l1 = lam1();
 	Num l2 = lam2();
@@ -917,7 +925,7 @@ SteamCalculator::getRegion3PressureError(const Density &rho) {
 	this->rho = rho;
 	del = rho / REG3_DENS_REF;
 
-	Pressure p = _state->pres(this);
+	Pressure p = _state->pres(*this);
 
 	if(p > P_MAX){
 		p = P_MAX + (0.01 * MPa);	// keep pressure *almost* sensible.
@@ -936,25 +944,42 @@ SteamCalculator::getRegion3PressureError(const Density &rho) {
 
 void
 SteamCalculator::setRegion1_pT(const Pressure &p, const Temperature &T){
-
-	ASSERT(whichRegion() == 1);
 	ASSERT(Boundaries::isRegion1_pT(p,T));
+
+	changeState(Region1::Instance());
 	_state->set_pT(*this,p,T,0.0);
 
 }
 
 void
 SteamCalculator::setRegion2_pT(const Pressure &p, const Temperature &T){
-
-	ASSERT(whichRegion() == 2);
 	ASSERT(Boundaries::isRegion2_pT(p,T));
+
+	changeState(Region2::Instance());
 	_state->set_pT(*this,p,T,0.0);
 
 }
 
 void
 SteamCalculator::setRegion4_Tx(const Temperature &T, const Num &x){
+	try{
+		Boundaries::isSat_Tx(T,x, true);
+		ASSERT(T>=T_TRIPLE);
+		ASSERT(T<=T_CRIT);
 
-	ASSERT(whichRegion() == 4);
+		changeState(Region4::Instance());
 
+		gas = new SteamCalculator();
+		gas->setSatSteam_T(T);
+		liq = new SteamCalculator();
+		liq->setSatWater_T(T);
+
+		this->x=x;
+		this->T=T;
+		isset=true;
+	}catch(Exception *E){
+		stringstream s;
+		s << "SteamCalculator::setRegion4_Tx: " << E->what();
+		throw new Exception(s.str());
+	}
 }

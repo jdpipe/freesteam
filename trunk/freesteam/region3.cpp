@@ -64,7 +64,7 @@ const Num REGION3_N[REG3_COUNT] = {
 	I think this is how this is (vertical lines only approximately vertical)
 
 	^
-	|	
+	|
   p	|s~5.1                   |T~T13
 	|                        |
 	|          crit          |
@@ -89,48 +89,48 @@ void Region3::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T
 	c.reg3_target_pressure = p;
 
 	Pressure pb = Boundaries::getpbound_T(T);
-	
+
 	//cerr << endl << "p_bound(T) = " << pb / MPa << " MPa. ";
-	
+
 	SteamCalculator S2;
-	
-	
+
+
 	if(p > P_CRIT){
 		//cerr << endl << "Region3::set_pT: above P_CRIT. ";
-		
+
 		// We are above the saturation pressure, clearly out in the open in region 3
 		S2.set_pT(pb, T);
-		
+
 		//cerr << endl << "region(p_bount(T),T) is " << S2.whichRegion() << ". ";
 		z.setLowerBound(S2.dens());
 		z.setUpperBound(REG3_ZEROIN_DENS_MAX);
 	}else{
 		if(T < T_CRIT){
-			
+
 			//cerr << endl << "Region3::set_pT: p < P_CRIT, T < T_CRIT";
-						
+
 			z.setLowerBound(RHO_CRIT);
 			z.setUpperBound(REG3_ZEROIN_DENS_MAX);
-			
+
 		}else{
 			//cerr << endl << "Region3::set_pT: p < P_CRIT, T >= T_CRIT";
-			
+
 			// We are to the left of the saturation curve on the p-rho chart
 			z.setUpperBound(RHO_CRIT);
 			z.setLowerBound(0.0001 * kg_m3);
 		}
 	}
-	
+
 	//cerr << endl << "Lower bound is " << z.getLowerBound() << ". ";
 	//cerr << endl << "Upper bound is " << z.getUpperBound() << ". ";
-	
+
 	z.setTolerance(REG3_ZEROIN_TOL);
 	z.setMethod(&SteamCalculator::getRegion3PressureError);
 
 	z.visit(&c);
 
 	Pressure maxerror = 0.001 * Pascal;
-	
+
 	if (!z.isSolved(maxerror)) {
 		stringstream s;
 		s << "Region3::set_pT: Couldn't solve for p = " << p/MPa << "MPa, T = " << T;
@@ -154,92 +154,92 @@ void Region3::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T
 // In this region, need to overrride the following default methods defined in SteamState.
 
 SpecificVolume
-Region3::specvol(SteamCalculator *c){
-	return 1.0 / c->rho;
+Region3::specvol(const SteamCalculator &c) const{
+	return 1.0 / c.rho;
 }
 
 Density
-Region3::dens(SteamCalculator *c){
-	return c->rho;
+Region3::dens(const SteamCalculator &c) const{
+	return c.rho;
 }
 
 Pressure
-Region3::pres(SteamCalculator *c){
-	return c->rho * R * c->T * c->del * phidel(c);
+Region3::pres(const SteamCalculator &c) const{
+	return c.rho * R * c.T * c.del * phidel(c);
 }
 
 SpecificEnergy
-Region3::specienergy(SteamCalculator *c){
-	return R * c->T * c->tau * phitau(c);
+Region3::specienergy(const SteamCalculator &c) const{
+	return R * c.T * c.tau * phitau(c);
 }
 
 SpecificEntropy
-Region3::specentropy(SteamCalculator *c){
-	return R * (c->tau * phitau(c) - phi(c));
+Region3::specentropy(const SteamCalculator &c) const{
+	return R * (c.tau * phitau(c) - phi(c));
 }
 
 SpecificEnergy
-Region3::specenthalpy(SteamCalculator *c){
-	return R * c->T * (c->tau * phitau(c) + c->del * phidel(c));
+Region3::specenthalpy(const SteamCalculator &c) const{
+	return R * c.T * (c.tau * phitau(c) + c.del * phidel(c));
 }
 
 SpecHeatCap
-Region3::speccp(SteamCalculator *c){ 
+Region3::speccp(const SteamCalculator &c) const{
 	return R * (
-		-sq(c->tau) * phitautau(c) 
+		-sq(c.tau) * phitautau(c)
 		+ (
-			pow (c->del * phidel(c) - c->del * c->tau * phideltau(c), 2) 
-			/ (2 * c->del * phidel(c) + sq(c->del) * phideldel(c))
+			pow (c.del * phidel(c) - c.del * c.tau * phideltau(c), 2)
+			/ (2 * c.del * phidel(c) + sq(c.del) * phideldel(c))
 		)
 	);
 }
 
 SpecHeatCap
-Region3::speccv(SteamCalculator *c){
-	R * (-sq(c->tau) * phitautau(c));
+Region3::speccv(const SteamCalculator &c) const{
+	R * (-sq(c.tau) * phitautau(c));
 }
 
 
 LOOP_EVAL_REG3(phi
-	, REGION3_N[0] * log(c->del)
-	, +REGION3_N[i] * pow(c->del, REGION3_I [i]) * pow(c->tau, REGION3_J[i]));
+	, REGION3_N[0] * log(c.del)
+	, +REGION3_N[i] * pow(c.del, REGION3_I [i]) * pow(c.tau, REGION3_J[i]));
 
 LOOP_EVAL_REG3(phidel
-	, REGION3_N[0] / c->del
-	, +REGION3_N[i] * REGION3_I[i] * pow(c->del, REGION3_I[i] - 1) * pow(c->tau, REGION3_J[i]));
+	, REGION3_N[0] / c.del
+	, +REGION3_N[i] * REGION3_I[i] * pow(c.del, REGION3_I[i] - 1) * pow(c.tau, REGION3_J[i]));
 
 LOOP_EVAL_REG3(phideldel
-	, -REGION3_N[0] / sq(c->del)
-	, +REGION3_N[i] * REGION3_I[i] * (REGION3_I[i] - 1) * pow(c->del, REGION3_I[i] - 2) * pow(c->tau, REGION3_J [i])
+	, -REGION3_N[0] / sq(c.del)
+	, +REGION3_N[i] * REGION3_I[i] * (REGION3_I[i] - 1) * pow(c.del, REGION3_I[i] - 2) * pow(c.tau, REGION3_J [i])
 );
 
 
 LOOP_EVAL_REG3(phitau
 	, 0
-	, +REGION3_N[i] * pow(c->del, REGION3_I[i]) * REGION3_J[i] * pow(c->tau, REGION3_J[i] - 1)
+	, +REGION3_N[i] * pow(c.del, REGION3_I[i]) * REGION3_J[i] * pow(c.tau, REGION3_J[i] - 1)
 );
 
 LOOP_EVAL_REG3(phitautau
 	, 0
-	, +REGION3_N[i] * pow(c->del, REGION3_I[i]) * REGION3_J[i] * (REGION3_J[i] - 1) * pow(c->tau, REGION3_J[i] - 2)
+	, +REGION3_N[i] * pow(c.del, REGION3_I[i]) * REGION3_J[i] * (REGION3_J[i] - 1) * pow(c.tau, REGION3_J[i] - 2)
 );
 
 LOOP_EVAL_REG3(phideltau
 	, 0
-	, +REGION3_N[i] * REGION3_I[i] * pow(c->del, REGION3_I[i] - 1) * REGION3_J[i] * pow(c->tau, REGION3_J[i] - 1)
+	, +REGION3_N[i] * REGION3_I[i] * pow(c.del, REGION3_I[i] - 1) * REGION3_J[i] * pow(c.tau, REGION3_J[i] - 1)
 );
 
 
 // NOTE: factor of 1e6 removed.
 //EVAL_REG3(pitau_iaps85, \
-//      IAPS85_TEMP_REF * R * sq(c->del_iaps85()*IAPS85_DENS_REF) * (phidel(c) - (REG3_TEMP_REF / c->T) * phideltau(c)) / //(IAPS85_PRES_REF * REG3_DENS_REF) \
+//      IAPS85_TEMP_REF * R * sq(c.del_iaps85()*IAPS85_DENS_REF) * (phidel(c) - (REG3_TEMP_REF / c.T) * phideltau(c)) / //(IAPS85_PRES_REF * REG3_DENS_REF) \
 //);
-Num Region3::pitau_iaps85(SteamCalculator * c) {
+Num Region3::pitau_iaps85(const SteamCalculator &c) const {
 	Num pitau_iaps85 = 0;
 	pitau_iaps85 =
-	    (IAPS85_TEMP_REF * R * sq(c->del_iaps85() * IAPS85_DENS_REF) *
+	    (IAPS85_TEMP_REF * R * sq(c.del_iaps85() * IAPS85_DENS_REF) *
 	     (phidel(c) -
-	      (REG3_TEMP_REF / c->T) * phideltau(c)) / (IAPS85_PRES_REF *
+	      (REG3_TEMP_REF / c.T) * phideltau(c)) / (IAPS85_PRES_REF *
 	              REG3_DENS_REF));
 	ENSURE(!isinf(pitau_iaps85));
 	return pitau_iaps85;
@@ -248,10 +248,10 @@ Num Region3::pitau_iaps85(SteamCalculator * c) {
 
 // NOTE: factor of 1e6 removed.
 Num
-Region3::delpi_iaps85(SteamCalculator *c){
+Region3::delpi_iaps85(const SteamCalculator &c) const{
 	return (IAPS85_PRES_REF * REG3_DENS_REF)
-		/ (IAPS85_DENS_REF * c->del_iaps85() * IAPS85_DENS_REF * R * c->T * (
-			2 * phidel(c) + (c->del_iaps85() * IAPS85_DENS_REF / REG3_DENS_REF) * phideldel(c)
+		/ (IAPS85_DENS_REF * c.del_iaps85() * IAPS85_DENS_REF * R * c.T * (
+			2 * phidel(c) + (c.del_iaps85() * IAPS85_DENS_REF / REG3_DENS_REF) * phideldel(c)
 		)
 	);
 }

@@ -3,50 +3,44 @@
 
 #include "steamcalculator.h"
 
-#define METHOD_STST(fun,type) type fun(SteamCalculator *c)
-#define METHOD_STST_NUM(fun)  Num fun(SteamCalculator *c)
-
 class SteamState:public DesignByContract {
 	public:
 
 		virtual int getRegion(void) const;
 
-		virtual METHOD_STST(specvol,      SpecificVolume);
-		virtual METHOD_STST(specienergy,  SpecificEnergy);
-		virtual METHOD_STST(specentropy,  SpecificEntropy);
-		virtual METHOD_STST(specenthalpy, SpecificEnergy);
-		virtual METHOD_STST(speccp,       SpecHeatCap);
-		virtual METHOD_STST(speccv,       SpecHeatCap);
+		virtual SpecificVolume specvol(const SteamCalculator &c) const;
+		virtual SpecificEnergy specienergy(const SteamCalculator &c) const;
+		virtual SpecificEntropy specentropy(const SteamCalculator &c) const;
+		virtual SpecificEnergy specenthalpy(const SteamCalculator &c) const;
+		virtual SpecHeatCap speccp(const SteamCalculator &c) const;
+		virtual SpecHeatCap speccv(const SteamCalculator &c) const;
 
-		virtual METHOD_STST(temp,         Temperature);
-		virtual METHOD_STST(pres,         Pressure);
-		virtual METHOD_STST(dens,         Density);
-
-		//virtual METHOD_STST(dynvisc,      DynamicViscosity);
-		//virtual METHOD_STST(conductivity, Conductivity);
+		virtual Temperature temp(const SteamCalculator &c) const;
+		virtual Pressure pres(const SteamCalculator &c) const;
+		virtual Density dens(const SteamCalculator &c) const;
 
 	protected:
 
 		friend class SteamCalculator;
-		
+
 		static SteamState *Instance();
 		virtual void set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x = -1);
 
-		virtual METHOD_STST_NUM(pitau_iaps85) {}
-		virtual METHOD_STST_NUM(delpi_iaps85) {}		
+		virtual Num pitau_iaps85(const SteamCalculator &c) const {}
+		virtual Num delpi_iaps85(const SteamCalculator &c) const {}
 
-		virtual METHOD_STST_NUM(phi) {}
-		virtual METHOD_STST_NUM(phidel) {}
-		virtual METHOD_STST_NUM(phideldel) {}
-		virtual METHOD_STST_NUM(phitau) {}
-		virtual METHOD_STST_NUM(phitautau) {}
-		virtual METHOD_STST_NUM(phideltau) {}
-		virtual METHOD_STST_NUM(gam) {}
-		virtual METHOD_STST_NUM(gamtau) {}
-		virtual METHOD_STST_NUM(gamtautau) {}
-		virtual METHOD_STST_NUM(gampi) {}
-		virtual METHOD_STST_NUM(gampipi) {}
-		virtual METHOD_STST_NUM(gampitau) {}
+		virtual Num phi(const SteamCalculator &c) const {}
+		virtual Num phidel(const SteamCalculator &c) const {}
+		virtual Num phideldel(const SteamCalculator &c) const {}
+		virtual Num phitau(const SteamCalculator &c) const {}
+		virtual Num phitautau(const SteamCalculator &c) const {}
+		virtual Num phideltau(const SteamCalculator &c) const {}
+		virtual Num gam(const SteamCalculator &c) const {}
+		virtual Num gamtau(const SteamCalculator &c) const {}
+		virtual Num gamtautau(const SteamCalculator &c) const {}
+		virtual Num gampi(const SteamCalculator &c) const {}
+		virtual Num gampipi(const SteamCalculator &c) const {}
+		virtual Num gampitau(const SteamCalculator &c) const {}
 
 		SteamState() {}
 

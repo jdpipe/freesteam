@@ -9,14 +9,15 @@ class Region4:public SteamState {
 	public:
 		int getRegion() const;
 
-		METHOD_STST(specvol,      SpecificVolume);
-		METHOD_STST(specienergy,  SpecificEnergy);
-		METHOD_STST(specentropy,  SpecificEntropy);
-		METHOD_STST(specenthalpy, SpecificEnergy);
-		METHOD_STST(speccp,       SpecHeatCap);
-		METHOD_STST(speccv,       SpecHeatCap);
+		SpecificVolume specvol(const SteamCalculator &c) const;
+		SpecificEnergy specienergy(const SteamCalculator &c) const;
+		SpecificEntropy specentropy(const SteamCalculator &c) const;
+		SpecificEnergy specenthalpy(const SteamCalculator &c) const;
+		SpecHeatCap speccp(const SteamCalculator &c) const;
+		SpecHeatCap speccv(const SteamCalculator &c) const;
 
-		METHOD_STST(dens,         Density);
+		Density dens(const SteamCalculator &c) const;
+		Pressure pres(const SteamCalculator &c) const;
 
 	protected:
 		friend class SteamCalculator;

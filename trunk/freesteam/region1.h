@@ -10,7 +10,7 @@ class Region1:public SteamState {
 	protected:
 		friend class SteamCalculator;
 		friend class Region4;
-		
+
 		static SteamState *Instance();
 		int Region1::getRegion() const;
 		virtual void set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x);
@@ -19,15 +19,15 @@ class Region1:public SteamState {
 		Region1();
 		static Region1 *_instance;
 
-		METHOD_H_OBJ(gam);
-		METHOD_H_OBJ(gampi);
-		METHOD_H_OBJ(gampipi);
-		METHOD_H_OBJ(gamtau);
-		METHOD_H_OBJ(gamtautau);
-		METHOD_H_OBJ(gampitau);
+		Num gam(const SteamCalculator &c) const;
+		Num gampi(const SteamCalculator &c) const;
+		Num gampipi(const SteamCalculator &c) const;
+		Num gamtau(const SteamCalculator &c) const;
+		Num gamtautau(const SteamCalculator &c) const;
+		Num gampitau(const SteamCalculator &c) const;
 
-		METHOD_H_OBJ(pitau_iaps85);
-		METHOD_H_OBJ(delpi_iaps85);
+		Num pitau_iaps85(const SteamCalculator &c) const;
+		Num delpi_iaps85(const SteamCalculator &c) const;
 
 };
 

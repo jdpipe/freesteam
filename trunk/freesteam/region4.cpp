@@ -41,7 +41,7 @@ void Region4::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T
 	c.liq = new SteamCalculator();
 	c.liq->setSatWater_T(T);
 	c.x = x;
-	c.p = p;
+	c.p = c.gas->pres();
 	c.T = T;
 	c.isset = true;
 
@@ -53,14 +53,14 @@ void Region4::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T
 // Pass the common 'c' object to the SteamState instances.
 
 #define INTERP_REGION4(FUNC,TYPE) \
-	TYPE Region4::FUNC(SteamCalculator *c){ \
-		ASSERT(c->x >= 0); \
-		ASSERT(c->x <= 1); \
-		SteamCalculator *g=c->gas; \
-		SteamCalculator *l=c->liq; \
-		TYPE sub=l->FUNC(); \
-		TYPE sup=g->FUNC(); \
-		return sub*(1 - c->x)+sup*(c->x); \
+	TYPE Region4::FUNC(const SteamCalculator &c) const{ \
+		ASSERT(c.x >= 0); \
+		ASSERT(c.x <= 1); \
+		SteamCalculator *g = c.gas; \
+		SteamCalculator *l = c.liq; \
+		TYPE sub = l->FUNC(); \
+		TYPE sup = g->FUNC(); \
+		return sub*(1 - c.x)+sup*(c.x); \
 	}
 
 INTERP_REGION4(specvol,      SpecificVolume);
@@ -71,3 +71,7 @@ INTERP_REGION4(speccp,       SpecHeatCap);
 INTERP_REGION4(speccv,       SpecHeatCap);
 INTERP_REGION4(dens,         Density);
 
+Pressure
+Region4::pres(const SteamCalculator &c) const{
+	return c.gas->pres();
+}

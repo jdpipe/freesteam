@@ -17,31 +17,31 @@ class Region2:public SteamState {
 		Region2();
 		static Region2 *_instance;
 
-		METHOD_STST_NUM(gam);
-		METHOD_STST_NUM(gampi);
-		METHOD_STST_NUM(gamtau);
-		METHOD_STST_NUM(gampipi);
-		METHOD_STST_NUM(gamtautau);
-		METHOD_STST_NUM(gampitau);
+		Num gam(const SteamCalculator &c) const;
+		Num gampi(const SteamCalculator &c) const;
+		Num gamtau(const SteamCalculator &c) const;
+		Num gampipi(const SteamCalculator &c) const;
+		Num gamtautau(const SteamCalculator &c) const;
+		Num gampitau(const SteamCalculator &c) const;
 
 
-		METHOD_STST_NUM(gam0);
-		METHOD_STST_NUM(gam0sum);
-		METHOD_STST_NUM(gampi0);
-		METHOD_STST_NUM(gamtau0);
-		METHOD_STST_NUM(gampipi0);
-		METHOD_STST_NUM(gamtautau0);
-		METHOD_STST_NUM(gampitau0);
+		Num gam0(const SteamCalculator &c) const;
+		Num gam0sum(const SteamCalculator &c) const;
+		Num gampi0(const SteamCalculator &c) const;
+		Num gamtau0(const SteamCalculator &c) const;
+		Num gampipi0(const SteamCalculator &c) const;
+		Num gamtautau0(const SteamCalculator &c) const;
+		Num gampitau0(const SteamCalculator &c) const;
 
-		METHOD_STST_NUM(gamr);
-		METHOD_STST_NUM(gampir);
-		METHOD_STST_NUM(gamtaur);
-		METHOD_STST_NUM(gampipir);
-		METHOD_STST_NUM(gamtautaur);
-		METHOD_STST_NUM(gampitaur);
+		Num gamr(const SteamCalculator &c) const;
+		Num gampir(const SteamCalculator &c) const;
+		Num gamtaur(const SteamCalculator &c) const;
+		Num gampipir(const SteamCalculator &c) const;
+		Num gamtautaur(const SteamCalculator &c) const;
+		Num gampitaur(const SteamCalculator &c) const;
 
-		METHOD_STST_NUM(pitau_iaps85);
-		METHOD_STST_NUM(delpi_iaps85);
+		Num pitau_iaps85(const SteamCalculator &c) const;
+		Num delpi_iaps85(const SteamCalculator &c) const;
 
 };
 

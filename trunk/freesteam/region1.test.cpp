@@ -9,20 +9,20 @@
 using namespace std;
 
 class Region1TestPoint : public SteamTestPoint{
-	
+
 	public:
-	
+
 	Region1TestPoint(double t, double p, double v, double h, double u, double s, double cp, double w)
 		: SteamTestPoint(t,p,v,h,u,s,cp,w){}
-	
+
 	void test(double tol) const{
 		SteamCalculator S;
 
 		//cerr.flags(ios_base::showbase);
 		//cerr << "    p = " << pres << ", T = " << temp << endl;
-		
-		S.set_pT(pres, temp);
-		
+
+		S.set_pT(pres, temp, 0.0);
+
 		CPPUNIT_ASSERT_EQUAL(1, S.whichRegion());
 
 		// tol as a fraction of the expected value (eg 'v')
@@ -31,14 +31,14 @@ class Region1TestPoint : public SteamTestPoint{
 		CHECK_RESULT(specienergy,  u);
 		CHECK_RESULT(specentropy,  s);
 		CHECK_RESULT(speccp,       cp);
-		
+
 	}
 
 };
-	
-	
+
+
 class Region1RefDataTest : public BatchTest<Region1TestPoint > {
-		
+
 	public:
 
 		// Invoke CPPUNIT macros to add tests to a suite:

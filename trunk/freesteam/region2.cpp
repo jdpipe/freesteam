@@ -94,20 +94,20 @@ EVAL_REG2(gampipi, gampipi0(c) + gampipir(c))
 
 EVAL_REG2(gampitau, gampitau0(c) + gampitaur(c))
 // ideal gas part
-EVAL_REG2(gam0, log(c->pi) + gam0sum(c))
+EVAL_REG2(gam0, log(c.pi) + gam0sum(c))
 
-EVAL_REG2(gampi0, 1 / c->pi)
+EVAL_REG2(gampi0, 1 / c.pi)
 
-EVAL_REG2(gampipi0, -1 / sq(c->pi))
+EVAL_REG2(gampipi0, -1 / sq(c.pi))
 // ideal gas part: series expansions:
-LOOP_REG2I(gam0sum, REGION2_N0[i] * pow(c->tau, REGION2_J0[i]));
+LOOP_REG2I(gam0sum, REGION2_N0[i] * pow(c.tau, REGION2_J0[i]));
 
 LOOP_REG2I(gamtau0,
-           REGION2_N0[i] * REGION2_J0[i] * pow(c->tau, REGION2_J0[i] - 1));
+           REGION2_N0[i] * REGION2_J0[i] * pow(c.tau, REGION2_J0[i] - 1));
 
 LOOP_REG2I(gamtautau0,
            REGION2_N0[i] * REGION2_J0[i] * (REGION2_J0[i] -
-                                            1) * pow(c->tau,
+                                            1) * pow(c.tau,
                                                      REGION2_J0[i] - 2));
 
 LOOP_REG2I(gampitau0, 0);
@@ -115,60 +115,60 @@ LOOP_REG2I(gampitau0, 0);
 // residual parts
 
 LOOP_REG2R(gamr,
-           REGION2_N[i] * pow(c->pi, REGION2_I[i]) * pow(c->tau - 0.5,
+           REGION2_N[i] * pow(c.pi, REGION2_I[i]) * pow(c.tau - 0.5,
                    REGION2_J[i]));
 
 LOOP_REG2R(gampir,
-           REGION2_N[i] * REGION2_I[i] * pow(c->pi,
+           REGION2_N[i] * REGION2_I[i] * pow(c.pi,
                                              REGION2_I[i] -
-                                             1) * pow(c->tau - 0.5,
+                                             1) * pow(c.tau - 0.5,
                                                       REGION2_J[i]));
 
 LOOP_REG2R(gampipir,
-           REGION2_N[i] * REGION2_I[i] * (REGION2_I[i] - 1) * pow(c->pi,
+           REGION2_N[i] * REGION2_I[i] * (REGION2_I[i] - 1) * pow(c.pi,
                    REGION2_I
                    [i] -
                    2) *
-           pow(c->tau - 0.5, REGION2_J[i]));
+           pow(c.tau - 0.5, REGION2_J[i]));
 
 LOOP_REG2R(gamtaur,
-           REGION2_N[i] * pow(c->pi,
-                              REGION2_I[i]) * REGION2_J[i] * pow(c->tau -
+           REGION2_N[i] * pow(c.pi,
+                              REGION2_I[i]) * REGION2_J[i] * pow(c.tau -
                                                                  0.5,
                                                                  REGION2_J
                                                                  [i] - 1));
 
 LOOP_REG2R(gamtautaur,
-           REGION2_N[i] * pow(c->pi,
+           REGION2_N[i] * pow(c.pi,
                               REGION2_I[i]) * REGION2_J[i] *
-           (REGION2_J[i] - 1) * pow(c->tau - 0.5, REGION2_J[i] - 2));
+           (REGION2_J[i] - 1) * pow(c.tau - 0.5, REGION2_J[i] - 2));
 
 LOOP_REG2R(gampitaur,
-           REGION2_N[i] * REGION2_I[i] * pow(c->pi,
+           REGION2_N[i] * REGION2_I[i] * pow(c.pi,
                                              REGION2_I[i] -
                                              1) * REGION2_J[i] *
-           pow(c->tau - 0.5, REGION2_J[i] - 1));
+           pow(c.tau - 0.5, REGION2_J[i] - 1));
 
 // for thermal conductivity...
 
 /**
 	@see http://www.cheresources.com/iapwsif972.pdf#page=5 at 'Region 2':
 */
-Num Region2::pitau_iaps85(SteamCalculator * c) {
+Num Region2::pitau_iaps85(const SteamCalculator &c) const {
 	Num pitau_iaps85 = 0;
-	IS_VALID(c);
-	REQUIRE(c->T > 0.0*Kelvin);
+	IS_VALID_REF(c);
+	REQUIRE(c.T > 0.0*Kelvin);
 	REQUIRE(gampipi(c) != 0);
 	REQUIRE(!isinf(gampitau(c)));
 	REQUIRE(!isinf(gampi(c)));
-	REQUIRE(!isinf(c->T));
-	
+	REQUIRE(!isinf(c.T));
+
 	pitau_iaps85 = IAPS85_TEMP_REF / IAPS85_PRES_REF \
-		* REG1_PRES_REF * (gampitau(c) * IAPS85_TEMP_REG2_REF - gampi(c) * c->T) \
-		/ (sq(c->T) * gampipi(c));
-	                        
+		* REG1_PRES_REF * (gampitau(c) * IAPS85_TEMP_REG2_REF - gampi(c) * c.T) \
+		/ (sq(c.T) * gampipi(c));
+
 	//cerr << "pitau_iaps85 evaluation... value = " << pitau_iaps85 << endl;
-	
+
 	ENSURE(!isinf(pitau_iaps85));
 	ENSURE(!isnan(pitau_iaps85));
 	return pitau_iaps85;
@@ -178,10 +178,10 @@ Num Region2::pitau_iaps85(SteamCalculator * c) {
 /**
 	@see http://www.cheresources.com/iapwsif972.pdf#page=5 at 'Region 2':
 */
-Num Region2::delpi_iaps85(SteamCalculator * c) {
+Num Region2::delpi_iaps85(const SteamCalculator &c) const {
 	Num delpi_iaps85 = 0;
 	//Num gp = gampi(c);
-	delpi_iaps85 = -IAPS85_PRES_REF / IAPS85_DENS_REF / R / c->T * gampipi(c) / sq(gampi(c));
+	delpi_iaps85 = -IAPS85_PRES_REF / IAPS85_DENS_REF / R / c.T * gampipi(c) / sq(gampi(c));
 	ENSURE(!isnan(delpi_iaps85));
 	return delpi_iaps85;
 }

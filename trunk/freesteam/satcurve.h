@@ -8,129 +8,178 @@
 #include "zeroin.h"
 #include "exception.h"
 
-const bool SAT_WATER=0;
-const bool SAT_STEAM=1;
+const int SAT_WATER=0;
+const int SAT_STEAM=1;
+
+const int SAT_LOW_TEMP=2;
 
 /// Base class used to derive SatCurve
-template<class Ordinate,class Abscissa,int OrdinateAlternative=0, int AbscissaAlternative=0>
+template<class Ordinate,class Abscissa,int OrdinateAlt=0, int AbscissaAlt=0>
 class SatCurveBase{
-	
+
 	public:
-	
-		virtual Ordinate solve(Abscissa target, bool state=SAT_WATER){}
+
+		virtual Ordinate solve(Abscissa target, int flags=SAT_WATER){}
 
 	protected:
-	
+
 		SatCurveBase(){}
-				
+
 		Ordinate getOrdinate(SteamCalculator S){
-			return SteamProperty<Ordinate,OrdinateAlternative>::get(S);
+			return SteamProperty<Ordinate,OrdinateAlt>::get(S);
 		}
-		
+
 		Abscissa getAbscissa(SteamCalculator S){
-			return SteamProperty<Abscissa,AbscissaAlternative>::get(S);
+			return SteamProperty<Abscissa,AbscissaAlt>::get(S);
 		}
-		
+
 };
 
 /// Saturation curve solver for arbitrary variables
 /**
 	@example
 		To solve for the internal energy of saturated steam at rho=3.6 kg/m3, use:
-		
+
 		@code
 			SatCurve<SpecificEnergy,Density> C;
 			SpecificEnergy u = C.solve(3.6 * kg_m3,SAT_STEAM);
 		@endcode
-		
+
+	@warning
+		This function makes no allowance for expansion of water at temperatures close to zero, so you will get wrong temperatures in this region when solving for <xxx,v>
 */
-template<class Ordinate,class Abscissa,int OrdinateAlternative=0, int AbscissaAlternative=0>
-class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlternative,AbscissaAlternative>{
+template<class Ordinate,class Abscissa,int OrdinateAlt=0, int AbscissaAlt=0>
+class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 
 	// ZeroIn will be finding the TEMPERATURE at which SatCurve's ABSCISSA has the desired value:
 	friend class ZeroIn<SatCurve,Temperature,Abscissa>;
-	
+
 	public:
-	
-		Ordinate solve(const Abscissa &target,bool state=SAT_WATER){
+
+		static Temperature getLowerBound(const int &flags){
+			/*
+			if(flags & SAT_WATER
+				&& !(flags & SAT_LOW_TEMP)
+			){
+				return T_TRIPLE;
+			}
+			*/
+			return T_TRIPLE;
+		}
+
+		static Temperature getUpperBound(const int &flags){
+			/*
+			if(flags & SAT_WATER
+				&& !(flags & SAT_LOW_TEMP)
+			){
+				return T_MIN_VOL;
+			}
+			*/
+			return T_CRIT;
+		}
+
+		/**
+			@param target Value of the Abscissa variable which is sought
+			@param flags SAT_WATER or SAT_STEAM
+			@return the value of the Ordinate variable for saturated steam/water where the Abscissa fulfil the target value.
+
+			Note that this function will not solve for T < 3.984°C so you will get some errors there
+		*/
+		Ordinate solve(const Abscissa &target,int flags=SAT_WATER){
 
 			ZeroIn<SatCurve,Abscissa,Temperature> z;
 			Boundaries B;
 
 			try{
-				
-				//cerr << endl << "Trying to solve for Abscissa = " << target << endl;
+
+				//cerr << endl << "SatCurve<" << SteamProperty<Ordinate,OrdinateAlt>::name() << "," << SteamProperty<Abscissa,AbscissaAlt>::name() << ">::solve: Trying to solve for " << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << target;
 
 				this->target=target;
-				this->state=state;
 
 				// Always try to solve to accuracy of 0.001% of the target value:
-				Abscissa maxerror = target * 0.001 * Percent;
+				Abscissa maxerror = fabs(target) * 0.002 * Percent;
 
-				z.setLowerBound(T_TRIPLE);
-				z.setUpperBound(T_CRIT);
-				z.setTolerance(0.00001 * Kelvin);
+				//z.setLowerBound(fromcelsius(3.984));
+				z.setLowerBound(getLowerBound(flags));
 
-				z.setMethod(&SatCurve::getAbscissaError_T);
+				z.setUpperBound(getUpperBound(flags));
+				//z.setUpperBound(fromcelsius(3.984));
+
+				z.setTolerance(0.000001 * Kelvin);
+
+				if(flags & SAT_STEAM){
+					z.setMethod(&SatCurve::getAbscissaErrorSteam_T);
+				}else{
+					z.setMethod(&SatCurve::getAbscissaErrorWater_T);
+				}
 
 				z.visit(this);
 
-				if(!z.isSolved(maxerror)){	
+				if(!z.isSolved(maxerror)){
 					stringstream s;
 					s.flags(ios_base::showbase);
-					s << "In SatCurve::solve, unable to solve for target " << target << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
+					s << "Unable to solve for target " << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << target << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
 					throw new Exception(s.str());
+				}
+
+				//cerr << endl << "SatCurve<" << SteamProperty<Ordinate,OrdinateAlt>::name() << "," << SteamProperty<Abscissa,AbscissaAlt>::name() << ">::solve: found solution at T = " << z.getSolution();
+
+				if(flags & SAT_STEAM){
+					S.setSatSteam_T(z.getSolution());
+				}else{
+					S.setSatWater_T(z.getSolution());
 				}
 
 				return getOrdinate(S);
 
 			}catch(Exception *e){
 				stringstream s;
-				s << "SatCurve::solve: " << e->what();
+				s << "SatCurve<" << SteamProperty<Ordinate,OrdinateAlt>::name() << "," << SteamProperty<Abscissa,AbscissaAlt>::name() << ">::solve: " << e->what();
 				throw new Exception(s.str());
-			}	
+			}
 		}
-		
+
 	private:
-	
-		Abscissa getAbscissaError_T(const Temperature &T){
-			
-			//cerr << "Trying with T = " << T << ": ";
-			
-			if(state==SAT_WATER){
-				//cerr << "(water) ";
-				S.setSatWater_T(T);
-			}else if(state=SAT_STEAM){
-				//cerr << "(steam) ";
-				S.setSatSteam_T(T);
-			}				
-			
-			//cerr << "Abscissa = " << getAbscissa(S) << endl;
-			
+
+		Abscissa getAbscissaErrorWater_T(const Temperature &T){
+
+			//cerr << endl << "SatCurve::getAbscissaErrorWater_T: Trying with T = " << T << ": ";
+
+			S.setSatWater_T(T);
+			//cerr << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << getAbscissa(S);
+
+			return getAbscissa(S) - target;
+		}
+
+		Abscissa getAbscissaErrorSteam_T(const Temperature &T){
+
+			//cerr << "SatCurve::getAbscissaErrorSteam_T: Trying with T = " << T << ": ";
+
+			S.setSatSteam_T(T);
+			//cerr << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << getAbscissa(S);
+
 			return getAbscissa(S) - target;
 		}
 
 		SteamCalculator S;
 		Abscissa target;
-		bool state;
-
 };
 
 /// SatCurve for case where Abscissa is temperature
 /**
 	Use p_sat(T) directly then return Ordinate(p_sat,T)
 */
-template<class Ordinate,int OrdinateAlternative>
-class SatCurve<Ordinate,Temperature,OrdinateAlternative,0> 
-	: public SatCurveBase<Ordinate,Temperature,OrdinateAlternative,0>{
-	
-	public:
-	
-		SatCurve() : SatCurveBase<Ordinate,Temperature,OrdinateAlternative,0>(){}
+template<class Ordinate,int OrdinateAlt>
+class SatCurve<Ordinate,Temperature,OrdinateAlt,0>
+	: public SatCurveBase<Ordinate,Temperature,OrdinateAlt,0>{
 
-		virtual Ordinate solve(const Temperature &T, bool state=SAT_WATER){
+	public:
+
+		SatCurve() : SatCurveBase<Ordinate,Temperature,OrdinateAlt,0>(){}
+
+		virtual Ordinate solve(const Temperature &T, int flags=SAT_WATER){
 			SteamCalculator S;
-			if(state==SAT_STEAM){
+			if(flags & SAT_STEAM){
 				S.setSatSteam_T(T);
 			}else{
 				S.setSatWater_T(T);
@@ -144,17 +193,17 @@ class SatCurve<Ordinate,Temperature,OrdinateAlternative,0>
 /**
 	Use T_sat(p) directly then return Ordinate(p,T_sat) - i.e. using the Region 4 backward equation
 */
-template<class Ordinate,int OrdinateAlternative>
-class SatCurve<Ordinate,Pressure,OrdinateAlternative,0> 
-	: public SatCurveBase<Ordinate,Pressure,OrdinateAlternative,0>{
-	
-	public:
-	
-		SatCurve() : SatCurveBase<Ordinate,Pressure,OrdinateAlternative,0>(){}
+template<class Ordinate,int OrdinateAlt>
+class SatCurve<Ordinate,Pressure,OrdinateAlt,0>
+	: public SatCurveBase<Ordinate,Pressure,OrdinateAlt,0>{
 
-		virtual Ordinate solve(const Pressure &p,bool state=SAT_WATER){
+	public:
+
+		SatCurve() : SatCurveBase<Ordinate,Pressure,OrdinateAlt,0>(){}
+
+		virtual Ordinate solve(const Pressure &p,int flags=SAT_WATER){
 			SteamCalculator S;
-			if(state==SAT_STEAM){
+			if(flags & SAT_STEAM){
 				S.setSatSteam_p(p);
 			}else{
 				S.setSatWater_p(p);

@@ -23,6 +23,10 @@ class CriticalPointTest : public CppUnit::TestFixture{
 
 		SteamCalculator S;
 
+		void testSetRhoT(){
+			S.setRegion3_rhoT(RHO_CRIT,T_CRIT);
+		}
+
 		void testSetAsSteamT(){
 			S.setSatSteam_T(T_CRIT);
 			cerr << " (region = " << S.whichRegion() << ")";
@@ -105,6 +109,13 @@ class CriticalPointTest : public CppUnit::TestFixture{
 		CPPUNIT_TEST(testU);
 		CPPUNIT_TEST(testH);
 		CPPUNIT_TEST(testS);
+
+		CPPUNIT_TEST(testSetRhoT);
+		CPPUNIT_TEST(testV);
+		CPPUNIT_TEST(testU);
+		CPPUNIT_TEST(testH);
+		CPPUNIT_TEST(testS);
+
 		/*
 		CPPUNIT_TEST(testSetAsWaterP);
 		CPPUNIT_TEST(testV);

@@ -1,10 +1,11 @@
-
 #ifndef BOUNDARIES_H
 #define BOUNDARIES_H
 
-#include "steamcalculator.h"
+#include "designbycontract.h"
+#include "units.h"
+#include "common.h"
 
-class Boundaries:public DesignByContract {
+class Boundaries : public DesignByContract {
 
 	public:
 
@@ -18,6 +19,8 @@ class Boundaries:public DesignByContract {
 		                             false);
 		//static bool isSat_pT(Pressure p, Temperature T, bool throw_me = false);	// (region 4)
 		static bool isBound_pT(Pressure p, Temperature T, bool throw_me = false);	// curved boundary roughly below region 2
+
+		static bool isSat_Tx(const Temperature &T, const Num &x, const bool throw_me=false);
 
 		// Region 4 boundary: the following should be 100% consistent, FPU errors aside:
 		static Pressure getSatPres_T(Temperature T);	// Forwards equation

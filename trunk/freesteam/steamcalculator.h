@@ -28,9 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "state.h"
 #include "zeroin.h"
 
-#define METHOD_SC(funcname,units) units funcname()
-#define METHOD_SC_NUM(funcname) Num funcname()
-
 typedef enum { STEAM_SUBCOOLED =
                    0, STEAM_SUPERHEATED, STEAM_SATURATED, STEAM_SUPERCRITICAL,
                STEAM_STATE_UNKNOWN = -1 } SteamStateCode;
@@ -101,7 +98,7 @@ class SteamCalculator:public DesignByContract {
 		~SteamCalculator();
 
 		// Defining state, simple methods
-		void set_pT(const Pressure &p, const Temperature &T, double x = -1);	// pressure [MPa]
+		void set_pT(const Pressure &p, const Temperature &T, double x = 1.0);	// pressure [MPa]
 		void setRegion3_rhoT(const Density &rho, const Temperature &T);	// will throw an error if not valid point in region 3
 
 		void changeState(SteamState * state);
@@ -122,7 +119,7 @@ class SteamCalculator:public DesignByContract {
 
 		#ifndef NDEBUG
 		// Design by contract stuff...
-		virtual bool isValid(void);
+		virtual bool isValid(void) const;
 		#endif
 
 		// Methods to return properties and state
@@ -132,19 +129,19 @@ class SteamCalculator:public DesignByContract {
 		SteamStateCode whichState(void);
 		const char *SteamCalculator::whichStateStr(void);
 
-		METHOD_SC(temp, Temperature);	// Temperature [K]
-		METHOD_SC(pres, Pressure);	    // Pressure    [MPa]
-		METHOD_SC(dens, Density);       // Density     [kg/m³]
+		Temperature temp() const;               // Temperature
+		Pressure pres() const;                  // Pressure
+		Density dens() const;                   // Density
 
-		METHOD_SC(specvol,       SpecificVolume);	// Specific volume                  [m³/kg]
-		METHOD_SC(specienergy,   SpecificEnergy);	// Specific internal energy         [kJ/kg]
-		METHOD_SC(specentropy,   SpecificEntropy);	// Specific entropy                 [kJ/kgK]
-		METHOD_SC(specenthalpy,  SpecificEnergy);	// Specific enthalpy                [kJ/kg]
-		METHOD_SC(speccp,        SpecHeatCap);	    // Sepcific isobaric heat capacity  [kJ/kgK]
-		METHOD_SC(speccv,        SpecHeatCap);	    // Specific isochoric heat capacity [kJ/kgK]
-		METHOD_SC(quality,       Num);	            // Steam quality
-		METHOD_SC(dynvisc,       DynamicViscosity);	// Dynamic viscosity, mu            [Pa.s]
-		METHOD_SC(conductivity,  Conductivity);	    // Conductivity
+		SpecificVolume specvol() const;         // Specific volume
+		SpecificEnergy specienergy() const;     // Specific internal energy
+		SpecificEntropy specentropy() const;    // Specific entropy
+		SpecificEnergy specenthalpy() const;    // Specific entropy
+		SpecHeatCap speccp() const;             // Specific isobaric heat capacity  [kJ/kgK]
+		SpecHeatCap speccv() const;             // Specific isochoric heat capacity [kJ/kgK]
+		Num quality() const;                    // Steam quality
+		DynamicViscosity dynvisc() const;       // Dynamic viscosity, mu            [Pa.s]
+		Conductivity conductivity() const;      // Conductivity
 
 		//void setTarget(SteamPropertyCode p, Num value);
 
@@ -182,21 +179,21 @@ class SteamCalculator:public DesignByContract {
 		friend class ZeroIn < SteamCalculator, SpecificEnergy, Pressure >;
 		friend class ZeroIn < SteamCalculator, Pressure, Density >;
 
-		METHOD_SC_NUM(tau_iaps85);
-		METHOD_SC_NUM(del_iaps85);
-		METHOD_SC_NUM(pi_iaps85);
-		METHOD_SC_NUM(delpi_iaps85);
-		METHOD_SC_NUM(pitau_iaps85);
+		Num tau_iaps85() const;
+		Num del_iaps85() const;
+		Num pi_iaps85() const;
+		Num delpi_iaps85() const;
+		Num pitau_iaps85() const;
 
-		METHOD_SC_NUM(lam);	// for thermal conductivity.
-		METHOD_SC_NUM(lam0);
-		METHOD_SC_NUM(lam1);
-		METHOD_SC_NUM(lam2);
+		Num lam() const;	// for thermal conductivity.
+		Num lam0() const;
+		Num lam1() const;
+		Num lam2() const;
 
-		METHOD_SC_NUM(mu);
-		METHOD_SC_NUM(mu0);
-		METHOD_SC_NUM(mu1);
-		METHOD_SC_NUM(mu2);
+		Num mu() const;
+		Num mu0() const;
+		Num mu1() const;
+		Num mu2() const;
 
 		Pressure getRegion3PressureError(const Density &test_rho);
 

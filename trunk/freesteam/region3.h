@@ -12,15 +12,16 @@ class Region3:public SteamState {
 	public:
 		int getRegion() const;
 
-		METHOD_STST(specvol,      SpecificVolume);
-		METHOD_STST(specienergy,  SpecificEnergy);
-		METHOD_STST(specentropy,  SpecificEntropy);
-		METHOD_STST(specenthalpy, SpecificEnergy);
-		METHOD_STST(speccp,       SpecHeatCap);
-		METHOD_STST(speccv,       SpecHeatCap);
+		SpecificVolume specvol(const SteamCalculator &c) const;
+		SpecificEnergy specienergy(const SteamCalculator &c) const;
+		SpecificEntropy specentropy(const SteamCalculator &c) const;
+		SpecificEnergy specenthalpy(const SteamCalculator &c) const;
+		SpecHeatCap speccp(const SteamCalculator &c) const;
+		SpecHeatCap speccv(const SteamCalculator &c) const;
 
-		METHOD_STST(pres,         Pressure);
-		METHOD_STST(dens,         Density);
+		Pressure pres(const SteamCalculator &c) const;
+		Density dens(const SteamCalculator &c) const;
+
 
 	protected:
 		friend class SteamCalculator;
@@ -34,15 +35,15 @@ class Region3:public SteamState {
 		Region3();
 		static Region3 *_instance;
 
-		METHOD_H_OBJ(phi);
-		METHOD_H_OBJ(phidel);
-		METHOD_H_OBJ(phideldel);
-		METHOD_H_OBJ(phitau);
-		METHOD_H_OBJ(phitautau);
-		METHOD_H_OBJ(phideltau);
+		Num phi(const SteamCalculator &c) const;
+		Num phidel(const SteamCalculator &c) const;
+		Num phideldel(const SteamCalculator &c) const;
+		Num phitau(const SteamCalculator &c) const;
+		Num phitautau(const SteamCalculator &c) const;
+		Num phideltau(const SteamCalculator &c) const;
 
-		METHOD_H_OBJ(pitau_iaps85);
-		METHOD_H_OBJ(delpi_iaps85);
+		Num pitau_iaps85(const SteamCalculator &c) const;
+		Num delpi_iaps85(const SteamCalculator &c) const;
 
 };
 

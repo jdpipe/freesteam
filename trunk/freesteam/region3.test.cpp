@@ -37,7 +37,7 @@ class Region3TestPoint : public SteamTestPoint {
 
 				//cerr << endl << "TESTPOINT: p = " << pres << ", T = " << temp;
 
-				S.set_pT(pres, temp);
+				S.set_pT(pres, temp, 1.0);
 
 				CPPUNIT_ASSERT_EQUAL(3,S.whichRegion());
 
