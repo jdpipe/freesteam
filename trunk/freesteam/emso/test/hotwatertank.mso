@@ -21,18 +21,25 @@ Model HotWaterTank as SteamEquipment_ps
 	T as Temperature(Brief="Temperature of water in tank", Lower=273.15);
 	
 	EQUATIONS
+	# mass is density by volume
 	m = rho * A * y;
+	
+	# total enthalpy
 	H = m * h;
 	
+	# Even mixing: what comes out is the average enthalpy and temperature
 	Out.h = h;
 	Out.T = T;
 	
+	# Pressure at base is ambient plus static head
 	Out.p = p_amb + rho * 9.8 * "N/kg" * y;
 	
 	# No heating and no work
 	Qdot = 0 * "W";
 	Wdot = 0 * "W";
 	
+	# density can be calculated using the outlet state, because of the mixing
+	# (assume that variation with pressure is negl)
 	rho = Out.freesteam.rho_ps(Out.p,Out.s);
 	
 end
