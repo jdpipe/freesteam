@@ -16,25 +16,25 @@ FlowSheet TestCondenser
 	freesteam as CalcObject(File="emsofreesteam");
 	
 	DEVICES
-	S as Stream_pT;
-	CO as Condenser_pT;
+	S as Stream_pT; # 5 - 2       = 3
+	CO as Condenser_pT; # 14 - 5 - 2 = 7
 	#CO as Condenser;
 	
 	CONNECTIONS
-	S to CO.In;
+	S to CO.In; # (-5) - 0        = -5 DF
 	
 	SPECIFY
 	S.mdot = 1 * "kg/s";
 	#S.h = 3000 * "kJ/kg";
-	S.p = 0.05 * "bar";
-	S.T = 306 * "K";
+	S.p = 2.0 * "bar";
+	S.T = (150 + 273.15) * "K";
 	
 	# CO.q = 1700 * "kJ/s";
-	# CO.DT = -50 * "K";
+	#CO.DT = -50 * "K";
 	#CO.UA = 30 * "kW/K";
 	#CO.DT = -50 * "K";
-	CO.Out.p = 0.05 * "bar";
-	CO.Out.T = (140 + 273.15) * "K";
+	CO.Out.p = 1.0 * "bar";
+	CO.Out.T = (40 + 273.15) * "K";
 	
 	GUESS 
 	# FIXME: [rafael] this is required when DT is specified instead of q:

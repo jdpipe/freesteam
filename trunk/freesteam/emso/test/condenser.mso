@@ -34,7 +34,7 @@ Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
     q = - (Out.mdot * Out.h - In.mdot * In.h);
     
     "Heat transfer coefficient"
-    UA = -q / DT;
+    q = -UA * DT;
     
     "Temperature difference"
     DT = Out.T - In.T;
@@ -47,7 +47,7 @@ Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
 
 end
 
-Model Condenser_pT as SteamEquipment_pT # 8 + 2 - 3 = 7
+Model Condenser_pT as SteamEquipment_pT # 8 + 4 - 5 = 7
     
     VARIABLES
     q   as HeatRate(Brief="Heat removed from the stream");
@@ -63,7 +63,7 @@ Model Condenser_pT as SteamEquipment_pT # 8 + 2 - 3 = 7
     q = - (Out.mdot * Out.h - In.mdot * In.h);
     
     "Heat transfer coefficient"
-    UA = -q / DT;
+    q = -UA * DT;
     
     "Temperature difference"
     DT = Out.T - In.T;

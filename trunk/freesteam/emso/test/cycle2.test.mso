@@ -31,29 +31,33 @@ FlowSheet CycleTest
 	BO.Out	to	TU.In; # -5
 	TU.Out	to  CO.In; # -5 
 	CO.Out	to  PU.In; # -5
-	#PU.Out	to  BO.In; # -5
+	PU.Out	to  S1; # -5
 	
 	SPECIFY # -8 DF
 	
 	S1.mdot = 38 * "kg/s";
-	S1.p = 60 * "bar";
+	#S1.p = 60 * "bar";
 	S1.T = (121 + 273.15) * "K";	
 
 	# Boiler
-	BO.Out.p = 58 * "bar";
+	#BO.Out.p = 58 * "bar";
+	BO.Dp = -2 * "bar";
 	BO.Out.T = (500 + 273.15) * "K";
 	
 	# Turbine
 	TU.eta = 0.85;
-	TU.Out.p = 2.0 * "bar";
+	#TU.Out.p = 2.0 * "bar";
 	
 	# Condenser
-	CO.Out.p = 1.5 * "bar";
+	#CO.Out.p = 1.5 * "bar";
 	CO.Out.T = (40 + 273.15) * "K";
 	
 	# Pump
 	PU.eta = 0.65;
-	PU.Out.p = 60 * "bar";
+	#PU.Out.p = 60 * "bar";
+	
+	GUESS
+	S1.p = 60 * "bar";
 	
 	OPTIONS
 	mode = "steady";
