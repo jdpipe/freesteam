@@ -26,7 +26,17 @@
 	
 */
 
-$variables=array();
+//-------------------------------------
+
+$equations=array();
+$A=array();
+$b=array();
+$x=array();
+
+//-------------------------------------
+// Read variable names from 'rlt' file
+// (alternatively you can replace this section with just $variables=array();
+// and the variables will be left un-named.)
 
 $res =& readResults("cycletest2.rlt");
 
@@ -43,14 +53,11 @@ $res->addIndepNodes();
 
 $variables =& $res->getIndepVarList();
 
+//-------------------------------------
+// Read equations from stdin
+
 $f = file("php://stdin");
 
-
-
-$equations=array();
-$A=array();
-$b=array();
-$x=array();
 
 //-------------------------------------
 // No need to change from here onwards
@@ -195,10 +202,14 @@ if(count($x)==count($variables)){
 	print("\n\nReported solution was invalid\n");
 }
 
-//print_r($A);
 
-// Stuff for reading EMSO 'rlt' files...
 
+//-------------------------------------------
+// Classes to hold results for EMSO '*.rlt' files
+
+/**
+	Results node: could be either a value node, a model node, or a flowsheet node
+*/
 class Node{
 	var $name;
 	var $parent;
@@ -370,6 +381,9 @@ class Node{
 	}	
 }
 
+/**
+	Value node also has a value
+*/
 class ValueNode extends Node{
 	var $value;
 	
@@ -384,6 +398,9 @@ class ValueNode extends Node{
 
 }
 
+/**
+	Model node can have child nodes
+*/
 class ModelNode extends Node{
 	var $nodes;
 
@@ -396,6 +413,10 @@ class ModelNode extends Node{
 	}	
 }
 
+/**
+	Flowsheet node doesn't put its name into the path
+	Names of all the independent variables can be stored here too.
+*/
 class FlowSheet extends ModelNode{
 	var $indepnodes;
 	
@@ -465,6 +486,9 @@ class FlowSheet extends ModelNode{
 	}
 }
 
+/**
+	Read and parse a *.rlt file from EMSO
+*/
 function readResults($filename){
 	
 	$lines = file($filename);
