@@ -22,6 +22,14 @@ class SolverBase : public DesignByContract
 
 	friend class ZeroIn<SolverBase,VaryProp,OtherProp>;
 	
+	protected:
+		/// Create the solver and assign fixed and target properties
+		SolverBase(MainProp mp,OtherProp op){
+			//cerr << "Running SolverBase creator" << endl;
+			this->mp=mp;
+			this->op=op;
+		}
+	
 	public:
 
 		virtual VaryProp setLowerBound(VaryProp lowerbound){
@@ -31,12 +39,6 @@ class SolverBase : public DesignByContract
 			this->upperbound = upperbound;
 		}		
 		
-		/// Create the solver and assign fixed and target properties
-		SolverBase(MainProp mp,OtherProp op){
-			//cerr << "Running SolverBase creator" << endl;
-			this->mp=mp;
-			this->op=op;
-		}
 	
 		/// Set the target property
 		void setTarget(OtherProp op){
@@ -116,12 +118,9 @@ class SolverBase : public DesignByContract
 		VaryProp upperbound;
 };
 
+/// Single-property steam solver
 /**
-	This class will solve for 
-	
-
-	temperature | or plus another variable in SteamCalculator, by varying | pressure
-	pressure    |                                                         | temperature
+	This class will solve for (temperature or pressure) plus another steam property, by varying (pressure or temperature) until the desired value of the other steam property is found.
 	
 	@example
 		To find p such that (T=600K, u=1500 kJ/kg):

@@ -7,13 +7,19 @@
 #include "exception.h"
 #include "convergencetest.h"
 
+/// Base class for all two-property solvers
 /**
-	Base class for all property solvers
+	@param FirstProp (Units of) first property to be solved for
+	@param SecondProp (Units of) second property to be solved for
+	@param FirstPropAlt First property alternative, used to distinguish two properties having the same units
+	@param SecondPropAlt Second property alternative, used to distinguish two properties having the same units
 */
 template<class FirstProp,class SecondProp,int FirstPropAlt=0, int SecondPropAlt=0>
 class Solver2Base{
 
 	protected:
+	
+		Solver2Base(){}
 	
 		virtual int whichRegion(const FirstProp &fp,const SecondProp &sp) const{
 			throw new Exception("Solver2Base::whichRegion() not implemented!");
@@ -33,27 +39,33 @@ class Solver2Base{
 
 };
 
-/**
-	Solver class for the steam tables
-	
+///	Solver class for the steam tables
+/**	
 	This is intended to be a general purpose way of defining steam state in terms of any combination of properties, eg to find the pressure at which rho = 1.1 kg/m3 and u = 2500 kJ/kg, use:
 	
-		Solver2<Density,SpecificEnergy> SS;
-		SteamCalculator S = SS.solve(1.1 * kg_m3, 2500.0 * kJ_kg);
-		cerr << S->pres() << endl;
+		@code
+			Solver2<Density,SpecificEnergy> SS;
+			SteamCalculator S = SS.solve(1.1 * kg_m3, 2500.0 * kJ_kg);
+			cerr << S->pres() << endl;
+		@endcode
 		
 	Likewise, even with one of the properties being a correlation property, just use
 	
-		Solver2<Temperature,SpecificEnergy> SS;
-		SteamCalculator S = SS.solve(450.0 * Kelvin, 2500.0 * kJ_kg);
-		cerr << S->pres() << endl;
-
+		@code
+			Solver2<Temperature,SpecificEnergy> SS;
+			SteamCalculator S = SS.solve(450.0 * Kelvin, 2500.0 * kJ_kg);
+			cerr << S->pres() << endl;
+		@endcode
+		
 	Or even,
 	
-		Solver2<Temperature,Pressure> SS;
-		SteamCalculator S = SS.solve(450.0 * Kelvin, 10.0 * bar);
-		cerr << S->dens() << endl;
-	
+		@code
+			Solver2<Temperature,Pressure> SS;
+			SteamCalculator S = SS.solve(450.0 * Kelvin, 10.0 * bar);
+			cerr << S->dens() << endl;
+		@endcode
+
+	@see Solver (solving for one un-correlated property)
 */		
 template<class FirstProp,class SecondProp,int FirstPropAlt=0, int SecondPropAlt=0>
 class Solver2 
@@ -68,6 +80,20 @@ class Solver2
 			//cerr << endl <<"Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::Solver2()";
 		}
 		
+		/// Give the IAPWS-IF97 region number given (any combination of) property values
+		/**
+			Used in the same way as Solver2::solve but the solution is not done, only the region is found.
+			
+			@param fp Value of FirstProp property
+			@param sp Value of SecondProp property
+
+			@example
+			To find the region for steam with u = 1500 kJ/kg and v = 0.02 m³/kg, use the following:
+@code
+Solver2<SpecificEnergy,SpecificVolume> SS;
+cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
+@endcode
+		*/
 		int whichRegion(const FirstProp &fp, const SecondProp &sp);
 		
 		/// Solve with no first guess provided
@@ -131,7 +157,9 @@ class Solver2
 				throw new Exception(s.str());
 			}
 		}
-		
+	
+	private:
+	
 		SteamCalculator solveRegion3(const FirstProp &f1, const SecondProp &s1,const SteamCalculator &firstguess){
 			throw new Exception("solveRegion3 not implemented");
 		}

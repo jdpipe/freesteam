@@ -39,6 +39,37 @@ typedef enum { STEAM_TEMPERATURE =
                    0, STEAM_PRESSURE, STEAM_VOLUME, STEAM_INTERNAL_ENERGY,
                STEAM_ENTHALPY, STEAM_ENTROPY } SteamPropertyCode;
 
+/**
+	@mainpage
+	
+	@section intro Introduction
+	
+	This is the C++ class documentation for freesteam, generated using the doxygen tool. Please visit http://freesteam.sf.net/ for the latest information on freesteam.
+	
+	Freesteam implements the international-standard steam tables from the International Association for the Properties of Water and Steam, IAPWS. The correlations for both IAPWS-IF97 and IAPWS-95 are provided, although the emphasis is on the use of the IAPWS-IF97 correlation.
+	
+	@section license License
+	
+	freesteam - IAPWS-IF97 steam tables library \n
+	Copyright (C) 2004-2005  John Pye
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+	
+	@see http://www.gnu.org/copyleft/copyleft.html		
+*/
+
 /// Core class - define steam state in terms of p,T and optionally x
 /**
 	@example

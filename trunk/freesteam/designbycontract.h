@@ -3,8 +3,7 @@
 
 #ifndef NDEBUG
 
-// Design-by-contract base class
-
+/// Design-by-contract base class
 /**
 	Base class for all objects in the system. All classes inheriting from this class need to define a method IsValid. This method should perform a consistency check on the state of the object. Note that this method needs to be defined only when a debug build is made.
 	

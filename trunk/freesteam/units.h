@@ -14,7 +14,7 @@
 // All of the reinterpret casts are work-arounds to let us make
 // val & Units(double) private without using friends
 
-/// UNIT CHECKING / TRACKING CLASS
+/// Unit Checking/tracking Class
 /**
 	Purpose: Template class to create a 'Units' data type.
 		- It checks that units are correct at *COMPILE* time.
@@ -22,7 +22,7 @@
 		- It enforces self documenting code.
 
 	Original Author:  Christopher Rettig ( rettigcd@bigfoot.com )
-	(This is not the original version)
+	\n (This is not the original version)
 
 	Dev platform:
 		. Win2k -- gcc version 3.3.1 (cygming special)
@@ -37,9 +37,9 @@
 		all pressures get output in MPa, all temperatures in °C, etc etc.
 	
 	@see
-		http://www.embedded.com/shared/printableArticle.jhtml?articleID=9900094
-		http://www.embedded.com/code/2001code.htm
-		http://www.experts-exchange.com/Programming/Programming_Languages/Cplusplus/Q_21215508.html
+		http://www.embedded.com/shared/printableArticle.jhtml?articleID=9900094 \n
+		http://www.embedded.com/code/2001code.htm \n
+		http://www.experts-exchange.com/Programming/Programming_Languages/Cplusplus/Q_21215508.html \n
 		http://www.experts-exchange.com/Programming/Programming_Languages/Cplusplus/Q_21199495.html
 */
 
