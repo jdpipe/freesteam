@@ -34,3 +34,26 @@ Model Boiler as SteamEquipment_ph # 7
     Dp = Out.p - In.p;
     
 end
+
+#*
+    Boiler
+
+    Specify outlet pressure plus q or outlet temperature
+*#
+Model Boiler_pT as SteamEquipment_pT # 7
+    
+    VARIABLES
+    q   as HeatRate;
+	Dp  as PressureDifference;
+	
+    EQUATIONS
+    "Mass balance"
+    Out.mdot = In.mdot;
+
+    "Energy balance"
+    q = Out.mdot * Out.h - In.mdot * In.h;
+    
+    "Pressure difference"
+    Dp = Out.p - In.p;
+    
+end

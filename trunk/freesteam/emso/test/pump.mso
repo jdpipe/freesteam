@@ -19,7 +19,7 @@ using "steamequipment";
 
     You can specify one of the pressures (In or Out) plus P or eta
 *#
-Model Pump as SteamEquipment_ph
+Model Pump as SteamEquipment_ph # 8 + 3 - 4 = 7
 	
 	PARAMETERS
 	freesteam as CalcObject(File="emsofreesteam");

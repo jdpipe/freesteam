@@ -16,19 +16,26 @@ using "boiler";
 FlowSheet BoilerTest # 0
 		
 	DEVICES
-	s as Stream_pT; # 3
-	BO as Boiler; # 7
+	S1 as Stream_pT; # 3
+	BO as Boiler_pT; # 7
 	
 	CONNECTIONS # -5
-	s to BO.In; 
+	S1 to BO.In; 
 	
 	SPECIFY # -5
-	s.mdot = 1 * "kg/s";
-	s.T = 300 * "K";
-	s.p = 10 * "bar";
+	S1.mdot = 38 * "kg/s";
+	S1.p = 60 * "bar";
+	S1.T = (121 + 273.15) * "K";	
+
+	#s.mdot = 1 * "kg/s";
+	#s.T = 300 * "K";
+	#s.p = 10 * "bar";
 	
-	BO.Dp = -2 * "bar";
-	BO.q = 3 * "kJ/s";
+	BO.Out.p = 60 * "bar";
+	BO.Out.T = (500 + 273.15) * "K";
+
+	#BO.Dp = -2 * "bar";
+	#BO.q = 3 * "kJ/s";
 	
 	OPTIONS
 	mode = "steady";

@@ -15,7 +15,7 @@ using "steamequipment";
 #* 
     Ideal (isentropic) turbine
 *#
-Model Turbine_ideal as SteamEquipment_ps # DF = 10 -5 +1 -3 = 3 
+Model Turbine_ideal as SteamEquipment_ps # 8 + 1 - 3 = 6 DF
 
     VARIABLES
     P  as Power(Brief="Turbine Power");
@@ -35,7 +35,7 @@ end
 #* 
     Turbine (non-isentropic, with efficiency specified)
 *#
-Model Turbine as SteamEquipment_ph # DF = 8 + 2 - 3 = 7; need to specific input (3) plus eta,  plus 
+Model Turbine as SteamEquipment_ph # 8 + 2 - 3 = 7 DF
 
 	PARAMETERS
 	freesteam as CalcObject(File="emsofreesteam");

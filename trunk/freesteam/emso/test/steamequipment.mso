@@ -55,3 +55,11 @@ Model SteamEquipment_Th # DF = 8
 	out Out as Stream_Th;   
 
 end
+
+Model SteamEquipment_pT # DF = 8
+
+    VARIABLES
+	in  In  as Stream;
+	out Out as Stream_pT;   
+
+end

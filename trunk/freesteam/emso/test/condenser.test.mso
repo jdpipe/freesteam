@@ -20,6 +20,7 @@ FlowSheet TestCondenser
 	
 	DEVICES
 	S as Stream_ph;
+	#CO as Condenser_pT;
 	CO as Condenser;
 	
 	CONNECTIONS
@@ -30,7 +31,9 @@ FlowSheet TestCondenser
 	S.h = 3000 * "kJ/kg";
 	S.T = (264 + 273.15) * "K";
 	
-	CO.q = 1700 * "kJ/s";
+	# CO.q = 1700 * "kJ/s";
+	# CO.DT = -50 * "K";
+	CO.UA = 30 * "kW/K";
 	CO.DT = -50 * "K";
 	
 	GUESS 

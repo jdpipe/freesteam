@@ -21,25 +21,57 @@ using "steamequipment";
     should be prefered, once a bad specificafion of dt can lead singular
     systems (infinite solutions if the Out stream became saturated).
 *#
-Model Condenser as SteamEquipment_ph
+Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
     
     VARIABLES
     q   as HeatRate(Brief="Heat removed from the stream");
     DT  as Temperature(Brief="Temperature difference");
-
+    Dp  as PressureDifference(Brief="Pressure difference");
+	UA  as HeatRatePerTemperature(Brief="Condenser UA value");
+	
     EQUATIONS
     "Mass balance"
     Out.mdot = In.mdot;
     
     "Energy balance (q extracted > 0)"
-    q = In.mdot * In.h - Out.mdot * Out.h;
+    q = - (Out.mdot * Out.h - In.mdot * In.h);
+    
+    "Heat transfer coefficient"
+    UA = -q / DT;
     
     "Temperature difference"
     DT = Out.T - In.T;
+    
+    "Pressure difference"
+    Dp = Out.p - In.p;
     
 #   GUESS # FIXME: implement GUESS on models!!
 #   Out.h = 300 * "kJ/kg";
 
 end
 
-# CondenserPT removed...
+Model Condenser_pT as SteamEquipment_pT # 8 + 2 - 3 = 7
+    
+    VARIABLES
+    q   as HeatRate(Brief="Heat removed from the stream");
+    DT  as Temperature(Brief="Temperature difference");
+    Dp  as PressureDifference(Brief="Pressure difference");
+	UA  as HeatRatePerTemperature(Brief="Condenser UA value");
+	
+    EQUATIONS
+    "Mass balance"
+    Out.mdot = In.mdot;
+    
+    "Energy balance (q extracted > 0)"
+    q = - (Out.mdot * Out.h - In.mdot * In.h);
+    
+    "Heat transfer coefficient"
+    UA = -q / DT;
+    
+    "Temperature difference"
+    DT = Out.T - In.T;
+    
+    "Pressure difference"
+    Dp = Out.p - In.p;
+    
+end

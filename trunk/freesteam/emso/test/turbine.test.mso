@@ -17,7 +17,7 @@ using "turbine";
 FlowSheet TurbineTest_ideal # DF = 0 ?
 		
 	DEVICES # DF = 11
-	S1 as Stream_ps;      # DF = 3
+	S1 as Stream_pT;      # DF = 3
 	S2 as Stream;
 	TU as Turbine_ideal;  # DF = 8
 	
@@ -48,7 +48,7 @@ end
 FlowSheet TurbineTest 
 	
 	DEVICES
-	S1 as Stream_ph;
+	S1 as Stream_pT;
 	S2 as Stream;
 	TU as Turbine;
 	

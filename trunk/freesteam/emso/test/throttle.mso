@@ -15,9 +15,10 @@ using "steamequipment"
 #*
     Isenthalpic throttle
 *#
-Model Throttle as SteamEquipment
+Model Throttle as SteamEquipment_ph # 8 - 2 = 6
 
     EQUATIONS
     Out.h = In.h;
+    Out.mdot = In.mdot;
     
 end

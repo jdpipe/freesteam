@@ -11,16 +11,16 @@
 *#
 
 using "streams";
-using "pump";
+using "throttle";
 
-FlowSheet TestPump
-	
+FlowSheet TestThrottle
+		
 	DEVICES
-	S1 as Stream_pT;
-	PU as Pump;
+	S1 as Stream_ph;
+	TH as Throttle;
 	
 	CONNECTIONS
-	S1 to PU.In;
+	S1 to TH.In;
 	
 	SPECIFY
 	"Flow rate"
@@ -29,14 +29,11 @@ FlowSheet TestPump
 	"Inlet pressure"
 	S1.p = 50 * "bar";
 	
-	"Inlet temperature"
-	S1.T = 450 * "K";
-	
-	"Efficiency"
-	PU.eta = 0.9;
+	"Inlet enthalpy"
+	S1.h = 3500 * "kJ/kg";
 	
 	"Output pressure"
-	PU.Out.p = 65 * "bar";
+	TH.Out.p = 65 * "bar";
 	
 	OPTIONS
 	mode = "steady";

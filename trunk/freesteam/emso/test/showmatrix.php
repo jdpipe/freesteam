@@ -43,7 +43,6 @@ $variables[]="CO.Out.s";
 $variables[]="CO.Out.mdot";
 $variables[]="CO.q";
 $variables[]="CO.DT";
-*/
 
 // turbine.test.mso
 $variables[]="S1.T";
@@ -58,7 +57,46 @@ $variables[]="S2.s";
 $variables[]="S2.mdot";
 $variables[]="TU.eta";
 $variables[]="TU.h_es";
-//$variables[]="TU.P";
+*/
+
+
+// cycle.test.mso
+$variables[]="S1.T";
+$variables[]="S1.p";
+$variables[]="S1.h";
+$variables[]="S1.s";
+$variables[]="S1.mdot";
+$variables[]="BO.Out.T";
+$variables[]="BO.Out.p";
+$variables[]="BO.Out.h";
+$variables[]="BO.Out.s";
+$variables[]="BO.Out.mdot";
+$variables[]="BO.q";
+$variables[]="BO.Dp";
+$variables[]="TU.Out.T";
+$variables[]="TU.Out.p";
+$variables[]="TU.Out.h";
+$variables[]="TU.Out.s";
+$variables[]="TU.Out.mdot";
+$variables[]="TU.eta";
+$variables[]="TU.h_es";
+$variables[]="CO.Out.T";
+$variables[]="CO.Out.p";
+$variables[]="CO.Out.h";
+$variables[]="CO.Out.s";
+$variables[]="CO.Out.mdot";
+$variables[]="CO.q";
+$variables[]="CO.DT";
+$variables[]="CO.Dp";
+$variables[]="CO.UA";
+$variables[]="PU.Out.T";
+$variables[]="PU.Out.p";
+$variables[]="PU.Out.h";
+$variables[]="PU.Out.s";
+$variables[]="PU.Out.mdot";
+$variables[]="PU.P";
+$variables[]="PU.eta";
+$variables[]="PU.v";
 
 $equations=array();
 $A=array();
@@ -70,7 +108,7 @@ $x=array();
 
 reset($f);
 while(list($n,$line)=each($f)){
-	if(preg_match("#^([0-9]+)\\s*:(\\s+(-?[0-9]\\.[0-9]+e[+-][0-9]{3})\\(([0-9]+)\\))*\\s*$#",$line,$matches)){		
+	if(preg_match("@^([0-9]+)\\s*:(\\s+(-?[0-9]\\.([0-9]+|#I0+)e[+-][0-9]{3})\\(([0-9]+)\\))*\\s*$@",$line,$matches)){		
 	
 		$e=$matches[1];
 		
@@ -84,12 +122,12 @@ while(list($n,$line)=each($f)){
 		
 		list($head,$tail)=preg_split("#:#",$line);
 		
-		if(!preg_match_all("#\\s+(-?[0-9]\\.[0-9]+e[+-][0-9]{3})\\(([0-9]+)\\)#",$tail,$matches1,PREG_SET_ORDER)){
+		if(!preg_match_all("@\\s+(-?[0-9]\\.([0-9]+|#I0+)e[+-][0-9]{3})\\(([0-9]+)\\)@",$tail,$matches1,PREG_SET_ORDER)){
 			die("Invalid equation line\n$line\n");
 		}
 		
 		for($i=0;$i<count($matches1);$i++){
-			$v = $matches1[$i][2];
+			$v = $matches1[$i][3];
 			if(!array_key_exists($v,$variables)){
 				$variables[$v]="x_".$v;
 			}
@@ -103,7 +141,7 @@ while(list($n,$line)=each($f)){
 		//print_r($matches1);
 	}elseif(preg_match("#^b\\s*:#",$line)){
 		list($head,$tail)=preg_split("#:#",$line);
-		if(!preg_match_all("#\\s+(-?[0-9]\\.[0-9]+e[+-][0-9]{3})#",$tail,$matches1,PREG_SET_ORDER)){
+		if(!preg_match_all("@\\s+(-?[0-9]\\.([0-9]+|#I0+)e[+-][0-9]{3})@",$tail,$matches1,PREG_SET_ORDER)){
 			die("Invalid 'b' line:\n$line\n");
 		}
 		for($i=0;$i<count($matches1);$i++){
@@ -118,7 +156,7 @@ while(list($n,$line)=each($f)){
 		}
 	}elseif(preg_match("#x\\s*:#",$line)){
 		list($head,$tail)=preg_split("#:#",$line);
-		if(!preg_match_all("#\\s+(-?[0-9]\\.[0-9]+e[+-][0-9]{3})#",$tail,$matches1,PREG_SET_ORDER)){
+		if(!preg_match_all("@\\s+(-?[0-9]\\.([0-9]+|#I0)e[+-][0-9]{3})@",$tail,$matches1,PREG_SET_ORDER)){
 			die("Invalid 'x' line:\n$line\n");
 		}
 		for($i=0;$i<count($matches1);$i++){
