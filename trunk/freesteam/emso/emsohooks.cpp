@@ -197,15 +197,16 @@ class EMSOfreesteam : public ExternalObjectBase {
 						*numOfOutputs = 2;
 						break;
 
+					case psh:
+						*numOfOutputs = 3;
+						break;
+
 					case Tsvx:
 					case Tuvx:
 					case Thvx:
 					case psvx:
+					case pshT:
 						*numOfOutputs = 4;
-						break;
-
-					case psh:
-						*numOfOutputs = 3;
 						break;
 
 					case psvhx:
@@ -407,6 +408,14 @@ class EMSOfreesteam : public ExternalObjectBase {
 						strcpy(outputUnits[1], "kJ/kg/K");
 						strcpy(outputUnits[2], "m^3/kg");
 						break;
+
+					case pshT:
+						strcpy(outputUnits[0], "MPa");
+						strcpy(outputUnits[1], "kJ/kg/K");
+						strcpy(outputUnits[2], "kJ/kg");
+						strcpy(outputUnits[3], "K");
+						break;
+
 
 					// Five outputs:
 					case psvhx:
@@ -697,6 +706,17 @@ class EMSOfreesteam : public ExternalObjectBase {
 						#endif
 						break;
 
+					case pshT:
+						outputValues[0] = S.pres() / MPa;
+						outputValues[1] = S.specentropy() / kJ_kgK;
+						outputValues[2] = S.specenthalpy() / kJ_kg;
+						outputValues[3] = S.temp() / Kelvin;
+
+						#ifdef EMSO_DEBUG
+							cerr << " => p=" << S.pres() << ", s=" << S.specentropy() << ", h=" << S.specenthalpy() << ", T=" << S.temp() << endl;
+						#endif
+						break;
+
 					// Five outputs
 					case psvhx:
 						outputValues[0] = S.pres() / MPa;
@@ -794,6 +814,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			,psh	= 0x09000000
 			,ph     = 0x0A000000
 			,ps     = 0x0B000000
+			,pshT   = 0x0C000000
 			,region = 0x10000000
 
 			,OutputMask = 0xffff0000
@@ -898,6 +919,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			, EF_DECLARE(hs,uv)
 			, EF_DECLARE(psh,uv)
 			, EF_DECLARE(ps,uv)
+			, EF_DECLARE(pshT,uv)
 			, EF_DECLARE(p,Ts)
 			, EF_DECLARE(x,Ts)
 			, EF_DECLARE(v,Ts)
@@ -1036,6 +1058,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 				EF_ASSIGN(hs,uv);
 				EF_ASSIGN(psh,uv);
 				EF_ASSIGN(ps,uv);
+				EF_ASSIGN(pshT,uv);
 				EF_ASSIGN(p,Ts);
 				EF_ASSIGN(x,Ts);
 				EF_ASSIGN(v,Ts);
