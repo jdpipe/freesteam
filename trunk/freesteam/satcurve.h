@@ -6,38 +6,12 @@
 #include "zeroin.h"
 #include "steamcalculator.h"
 #include "exception.h"
+#include "steamproperty.h"
 
 const bool SAT_WATER=0;
 const bool SAT_STEAM=1;
 
-// Property 'Alternative' codes
-
-const int SOLVE_IENERGY=0;
-const int SOLVE_ENTHALPY=1;
-
-const int SOLVE_ENTROPY=0;
-const int SOLVE_CV=1;
-const int SOLVE_CP=2;
-
-template<class Property,int PropertyAlternative=0>
-class SteamProperty{
-	public:
-		static Property get(SteamCalculator &S);
-};
-
-
-
-/// Saturation curve solver for arbitrary variables
-/**
-	This needs to be high-precision, hopefully comparable to the Boundaries::isSat_pT test.
-	
-	@usage
-		To solve for the internal energy of saturated steam at rho=3.6 kg/m3, use:
-		
-		SatCurve<SpecificEnergy,Density> C;
-		SpecificEnergy u = C.solve(3.6 * kg_m3,SAT_STEAM);
-		
-*/
+/// Base class used to derive SatCurve
 template<class Ordinate,class Abscissa,int OrdinateAlternative=0, int AbscissaAlternative=0>
 class SatCurveBase{
 	
@@ -59,11 +33,17 @@ class SatCurveBase{
 		
 };
 
-/// SatCurve for case where Abscissa is neither temperature nor pressure
+/// Saturation curve solver for arbitrary variables
 /**
-	Use a root solving process to first find T where Abscissa(p_sat(T),T) = target
-*/
-template<class Ordinate,class Abscissa,int OrdinateAlternative=0, int AbscissaAlternative=0>
+	@example
+		To solve for the internal energy of saturated steam at rho=3.6 kg/m3, use:
+		
+		@code
+			SatCurve<SpecificEnergy,Density> C;
+			SpecificEnergy u = C.solve(3.6 * kg_m3,SAT_STEAM);
+		@endcode
+		
+*/template<class Ordinate,class Abscissa,int OrdinateAlternative=0, int AbscissaAlternative=0>
 class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlternative,AbscissaAlternative>{
 
 	// ZeroIn will be finding the TEMPERATURE at which SatCurve's ABSCISSA has the desired value:

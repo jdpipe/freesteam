@@ -273,7 +273,12 @@ void SteamCalculator::setSatSteam_T(Temperature T) {
 	// ASSERT(p >= REG4_P_MIN);
 	ASSERT(Boundaries::isSat_pT(p, T));
 
-	changeState(Region2::Instance());
+	if(T< TB_LOW){
+		changeState(Region2::Instance());
+	}else{
+		changeState(Region3::Instance());
+	}
+
 	_state->set_pT(this, p, T, 1);
 }
 

@@ -13,6 +13,15 @@ using namespace std;
 
 	temperature | or plus another variable in SteamCalculator, by varying | pressure
 	pressure    |                                                         | temperature
+	
+	@example
+		To find p such that (T=600K, u=1500 kJ/kg):
+		
+		@code
+			Solver<Temperature,SpecificEnergy,Pressure> PS1(600 * Kelvin,1500 * kJ_kg);
+			SteamCalculator S = PS1.solve(0.00001 * kJ_kg, 0.1 * Pascal);
+			cout << S.pres() << end;
+		@endcode	
 */
 template<class MainQuantity, class OtherQuantity, class VaryingQuantity>
 class Solver : public DesignByContract {
@@ -36,7 +45,13 @@ class Solver : public DesignByContract {
 		
 		VaryingQuantity getLowerBound();
 		VaryingQuantity getUpperBound();
-
+		
+		/// Peform the iterations
+		/**
+			@param maxerror Seek value of OtherQuantity to within this maximum error
+			@param tol Stop iterating when steps of VaryingQuantity are less than this
+			@return SteamCalculator containing state of steam with the desired conditions of (MainQuantity,OtherQuantity)
+		*/
 		SteamCalculator
 		solve(
 			OtherQuantity 		maxerror

@@ -11,3 +11,10 @@ gmon.out
 critsurf.m
 criticalsurface.m
 pboundt.m
+ctest.skip
+DOCS.lnk
+doxygen.log
+satwater.data.txt
+b13.data.txt
+pboundt.data.txt
+doc

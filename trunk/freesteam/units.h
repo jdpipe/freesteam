@@ -411,7 +411,11 @@ const double Percent = 1.0 / 100;
 // THERMODYNAMIC MEASURES
 
 const SpecificEnergy kJ_kg = kilo * Joule / kilogram;
+const SpecificEnergy J_kg = Joule / kilogram;
+
 const SpecificEntropy kJ_kgK = kilo * Joule / kilogram / Kelvin;
+const SpecificEntropy J_kgK = Joule / kilogram / Kelvin;
+
 const HeatTransferCoefficient W_m2K = Watt / metre2 / Kelvin;
 const Conductivity W_mK = Watt / metre / Kelvin;
 const Conductivity mW_mK = milli * W_mK;

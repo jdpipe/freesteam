@@ -9,6 +9,7 @@ using namespace std;
 
 #define DBL_EPSILON 2e-16
 
+/// Root-finding by Brent algorithm
 /**
 	Whacko, this class does root finding with units intact!
 	
@@ -19,6 +20,36 @@ using namespace std;
 	@param Abscissa x-value type
 	
 	@see units.h
+	@see ZeroIn::visit
+	
+	@example
+		To solve the quadratic x²-4x-4=0 in the region x in [-10,4.566] by iteration (@see zeroin.test.cpp):
+		
+		@code
+			
+			class Quad{
+				double eval(double x){
+					return x*x-4*x-4;
+				}
+			};
+			
+			// ...
+			
+			Quad q;
+			
+			ZeroIn<Quad> z;
+			z.setLowerBound(-10);
+			z.setUpperBound(4.566);
+			z.setMethod(&ZeroInTest::eval);
+			z.setTolerance(1e-10);
+			z.visit(q);
+			
+			if(z.isSolved(0.001)){
+				cerr << "Quadratic was solved, x = " << z.getSolution() << endl;
+			}
+			
+			cerr << "Unable to solve quadratic over given region" << endl;
+		@endcode	
 */
 template < class Subject, class Ordinate = double, class Abscissa = double >
 class ZeroIn : public DesignByContract {
@@ -74,7 +105,9 @@ class ZeroIn : public DesignByContract {
 		The method Ordinate(Subject::*method)(Abscissa) returns values like y(x)
 		
 		@example
-		z->setMethod(&Quadratic::evaluate);
+			@code
+				z->setMethod(&Quadratic::evaluate);
+			@endcode
      */
     void setMethod(Ordinate(Subject::*method) (Abscissa)) {
 	    this->method = method;
@@ -86,8 +119,6 @@ class ZeroIn : public DesignByContract {
     	
     	USAGE
     	
-    		
-
     	@see brent.shar at http://www.netlib.org/c/
     		
     	Original documentation:

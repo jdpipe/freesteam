@@ -39,6 +39,17 @@ typedef enum { STEAM_TEMPERATURE =
                    0, STEAM_PRESSURE, STEAM_VOLUME, STEAM_INTERNAL_ENERGY,
                STEAM_ENTHALPY, STEAM_ENTROPY } SteamPropertyCode;
 
+/// Core class - define steam state in terms of p,T and optionally x
+/**
+	@example
+		To find the enthalpy of steam at p = 10 bar, T = 250 °C,
+		
+		@code
+			SteamCalculator S;
+			S.set_pT(10.0 * bar, fromcelsius(250));
+			cerr << S.specenthalpy() << endl;
+		@endcode
+*/
 class SteamCalculator:public DesignByContract {
 
 	public:

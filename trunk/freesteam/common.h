@@ -27,7 +27,7 @@ const Temperature REG2_T_LOW = T_0DEGC;
 const Temperature REG2_T_HIGH = T_MAX;
 
 const Temperature T_REG1_REG3 = 623.15 * Kelvin;
-
+const Temperature TB_LOW = T_REG1_REG3;
 
 const Pressure P_MAX = 100.0 * MPa;
 const Pressure PB_LOW = 16.5292 * MPa;
@@ -88,6 +88,15 @@ const Density REG3_ZEROIN_TOL= 1e-12 * kg_m3;
 const Acceleration GRAV = 9.81 * Newton / kg;	// N/kg, gravitation acceleration
 
 #define PI 3.14159265358
+
+// Property 'Alternative' codes for use with SatCurve and B23Curve and Solver2
+
+const int SOLVE_IENERGY=0;
+const int SOLVE_ENTHALPY=1;
+
+const int SOLVE_ENTROPY=0;
+const int SOLVE_CV=1;
+const int SOLVE_CP=2;
 
 // square a value but only evaluate it once in GNU C's CPP.
 
