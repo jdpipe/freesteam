@@ -71,7 +71,7 @@ Conductivity as Real (Brief = "Thermal Conductivity", Default=1.0, Lower=0.001, 
 DynamicViscosity as Positive(Brief = "Viscosity", Default=1, Lower=1e-30, Upper=1e5, Unit = "Pa * s");
 
 SpecHeatCap as Real (Brief = "Specific Heat Capacity", Default=1.0, Lower=0.1, Upper=10.0, Unit = "kJ/kg/K");  
-SpecificEntropy as SpecHeatCap (Brief = "Specific entropy");
+SpecificEntropy as SpecHeatCap (Brief = "Specific entropy", Lower=0, Upper=10, Unit="kJ/kg/K", Default=5);
 
 SpecificEnergy as Real(Brief = "SpecificEnergy", Unit = "kJ/kg");
 SpecificEnthalpy as SpecificEnergy(Brief = "Mass Enthalpy", Default=500, Lower=-10000, Upper=10000, Unit = "kJ/kg");
