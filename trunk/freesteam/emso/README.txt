@@ -1,7 +1,7 @@
 freesteam/emso/README.txt
 
 INTEGRATION OF FREESTEAM WITH EMSO
-----------------------------------
+==================================
 
 A DLL which exposes freesteam methods to the system modelling
 package EMSO is under development currently.
@@ -10,15 +10,35 @@ Please follow these exact steps when building the DLL (or
 shared object, '.so' file in the case of linux) for EMSO.
 That way we can diagnose any problems which arise.
 
--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-IMPORTANT NOTE:
-emsofreesteam does NOT build
-correctly under cygwin at the
-moment. You need to download
-and install MinGW and MSYS
-then type 'make emso' under
-that environment
--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    IMPORTANT NOTE:
+    emsofreesteam does NOT build
+    correctly under cygwin at the
+    moment. You need to download
+    and install MinGW and MSYS
+    then type 'make emso' under
+    that environment
+    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+INSTALLING: OVERVIEW
+--------------------
+
+For MSYS/MinGW and Linux:
+
+ .  install EMSO, copy files from the EMSO 'interface'
+    directory
+        <emso/emso_types.h>
+        <emso/external_object.h>
+    to your include path.
+
+ .  cd freesteam/emso
+
+ .  make install
+
+
+INSTALLING: DETAILED STEPS
+--------------------------
 
 1. Build and test freesteam (you will need to have CppUnit
    installed, this is probably rather tricky on mingw, so you
@@ -35,8 +55,11 @@ that environment
    they are accessible as <emso/emso_types.h> and
    <emso/external_object.h>
 
-       On Windows, this would be
-       c:\Windows\usr\local\include\emso
+       On MinGW, this would be
+       c:\MinGW\include\emso
+
+       On Cygwin it would depend on your -mno-cygwin
+       setting, you'll have to check.
 
        On Linux, this would be /usr/local/include/emso
 
@@ -80,8 +103,8 @@ that environment
    placing it in the 'interface' directory within the EMSO
    base directory.
 
-       On windows, this would be c:\Program
-       Files\EMSO\interface\emsofreesteam.dll
+       On windows, this would be
+       c:\Program Files\EMSO\interface\emsofreesteam.dll
 
        On Linux, this would be
        /usr/local/emso/interface/libemsofreesteam.so
@@ -153,12 +176,31 @@ waterT        cv  region
 
 Bear in mind that some of these input parameter combinations
 will invoke two-way solvers and thus could be be
-computationally much more expensive that other options. If
+computationally much more expensive than other options. If
 possible, choose an input parameter combination that will be
 cheap in the steam region(s) of interest, and set appropriate
 default values of the steam variables.
 
+
+CONVERGENCE AND OUT-OF-RANGE ISSUES
+-----------------------------------
+
+freesteam has been designed to report an exception and error
+message in cases where input properties are out of the
+acceptable ranges specified in IAPWS-IF97. This can make it
+difficult to get robust convergent solutions in some cases.
+
+Usually convergence will occur once you choose feasible values
+of the input paramters, however sometimes you may need to
+switch to a different set of independent variables, eg instead
+of (p,s) choose (p,h).
+
+Rafeal is working on improving the debugging messages in EMSO
+so that these problems will be easier to alleviate.
+
+
 ---------------------------------
 John Pye
-Wednesday, 2 March 2005
+mailto:john_DOT_pye#student-unsw-edu-au
+Thursday, 31 March 2005
 
