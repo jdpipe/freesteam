@@ -29,7 +29,6 @@ $f = file("php://stdin");
 
 $variables=array();
 
-/*
 // Condenser.test.mso:
 $variables[]="S.T";
 $variables[]="S.p";
@@ -43,7 +42,10 @@ $variables[]="CO.Out.s";
 $variables[]="CO.Out.mdot";
 $variables[]="CO.q";
 $variables[]="CO.DT";
+$variables[]="CO.Dp";
+$variables[]="CO.UA";
 
+/*
 // turbine.test.mso
 $variables[]="S1.T";
 $variables[]="S1.p";
@@ -57,8 +59,6 @@ $variables[]="S2.s";
 $variables[]="S2.mdot";
 $variables[]="TU.eta";
 $variables[]="TU.h_es";
-*/
-
 
 // cycle.test.mso
 $variables[]="S1.T";
@@ -97,6 +97,7 @@ $variables[]="PU.Out.mdot";
 $variables[]="PU.P";
 $variables[]="PU.eta";
 $variables[]="PU.v";
+*/
 
 $equations=array();
 $A=array();
@@ -149,7 +150,7 @@ while(list($n,$line)=each($f)){
 				$equations[$i]="Equation ".$i;
 			}
 			if(array_key_exists($i,$b)){
-				die("Error, 'b' element already defined for variable $i");
+				die("Error, 'b' element already defined for variable $i (check you don't have multiple 'b:' lines)");
 			}
 			
 			$b[$i]=$matches1[$i][1];
@@ -164,7 +165,7 @@ while(list($n,$line)=each($f)){
 				$variables[$i]="x_".$i;
 			}
 			if(array_key_exists($i,$x)){
-				die("Error, 'x' element already defined for variable $i");
+				die("Error, 'x' element already defined for variable $i (check you don't have multiple 'x:' lines)");
 			}
 			
 			$x[$i]=$matches1[$i][1];

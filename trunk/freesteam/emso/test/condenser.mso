@@ -2,12 +2,9 @@
     freesteam stream integration for use in steam system calculations
     
     Based on steam.mso by Rafael de Pelegrini Soares,
-
     Copyright 2002-2005 Rafael de Pelegrini Soares.
-    Modified by John Pye 2005 http://freesteam.sf.net
-    
-    This copyright statement must not be deleted and must be
-    included in any modification or adaptation of this Model.
+
+	Modified by John Pye 2005 http://freesteam.sf.net
 *#
 
 using "steamequipment";
@@ -20,7 +17,7 @@ using "steamequipment";
     Specification for this model can be q or dt. The specification of q
     should be prefered, once a bad specificafion of dt can lead singular
     systems (infinite solutions if the Out stream became saturated).
-*#
+*#h
 Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
     
     VARIABLES

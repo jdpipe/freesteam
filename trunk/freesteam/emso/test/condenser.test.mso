@@ -2,12 +2,9 @@
 	freesteam stream integration for use in steam system calculations
 	
 	Based on steam.mso by Rafael de Pelegrini Soares,
-
 	Copyright 2002-2005 Rafael de Pelegrini Soares.
+
 	Modified by John Pye 2005 http://freesteam.sf.net
-	
-	This copyright statement must not be deleted and must be
-	included in any modification or adaptation of this Model.
 *#
 
 using "streams";
@@ -19,22 +16,25 @@ FlowSheet TestCondenser
 	freesteam as CalcObject(File="emsofreesteam");
 	
 	DEVICES
-	S as Stream_ph;
-	#CO as Condenser_pT;
-	CO as Condenser;
+	S as Stream_pT;
+	CO as Condenser_pT;
+	#CO as Condenser;
 	
 	CONNECTIONS
 	S to CO.In;
 	
 	SPECIFY
 	S.mdot = 1 * "kg/s";
-	S.h = 3000 * "kJ/kg";
-	S.T = (264 + 273.15) * "K";
+	#S.h = 3000 * "kJ/kg";
+	S.p = 0.05 * "bar";
+	S.T = 306 * "K";
 	
 	# CO.q = 1700 * "kJ/s";
 	# CO.DT = -50 * "K";
-	CO.UA = 30 * "kW/K";
-	CO.DT = -50 * "K";
+	#CO.UA = 30 * "kW/K";
+	#CO.DT = -50 * "K";
+	CO.Out.p = 0.05 * "bar";
+	CO.Out.T = (140 + 273.15) * "K";
 	
 	GUESS 
 	# FIXME: [rafael] this is required when DT is specified instead of q:
