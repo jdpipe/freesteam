@@ -25,7 +25,7 @@ FlowSheet TestStreams_ps
 	#T_error as RelativeTemperature(Default = 200);
 	
 	DEVICES
-	S as SteamStream_ps;
+	S as Stream_ps;
 	
 	SPECIFY
 	"Flow rate"
@@ -64,7 +64,7 @@ FlowSheet TestTurbine
 	freesteam as CalcObject(File="emsofreesteam");
 	
 	DEVICES
-	s as SteamStream_ps;
+	s as Stream_ps;
 	#t as TurbineIdeal;
 	TU as Turbine;
 	
@@ -100,7 +100,7 @@ FlowSheet TestCondenser
 	freesteam as CalcObject(File="emsofreesteam");
 	
 	DEVICES
-	S as SteamStream_ps;
+	S as Stream_ps;
 	CO as Condenser;
 	
 	CONNECTIONS
@@ -129,7 +129,7 @@ FlowSheet TestCondenser_ps
 	freesteam as CalcObject(File="emsofreesteam");
 	
 	DEVICES
-	s as SteamStream_ps;
+	s as Stream_ps;
 	cond as Condenser;
 	
 	CONNECTIONS
@@ -155,7 +155,7 @@ FlowSheet TestPump
 	freesteam as CalcObject(File="emsofreesteam");
 	
 	DEVICES
-	s as SteamStream_ps;
+	s as Stream_ps;
 	pump as Pump;
 	
 	CONNECTIONS
@@ -180,7 +180,7 @@ FlowSheet TestGenerator
 	freesteam as CalcObject(File="emsofreesteam");
 	
 	DEVICES
-	s as SteamStream_ps;
+	s as Stream_ps;
 	BO as Boiler;
 	
 	CONNECTIONS

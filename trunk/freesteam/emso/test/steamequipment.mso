@@ -21,8 +21,8 @@ Model SteamEquipment
 	ext freesteam as CalcObject(Brief="Steam Physical Properties");
 
 	VARIABLES
-in	In  as SteamStream_Base;
-out	Out as SteamStream_ps;	
+in	In  as Stream_Base;
+out	Out as Stream_ps;	
 end
 
 
