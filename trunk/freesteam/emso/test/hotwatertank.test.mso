@@ -1,0 +1,49 @@
+#*
+	Model of simple hot water tank
+*#
+
+using "hotwatertank";
+
+#*
+	Simple test of tank which starts filled to a level of 1 m.
+	Water is flowing in at atm pressure and 80*C. After 10s	
+	the TA outlet is opened and flow fo 10 kg/s starts to exit
+	the tank.
+*#
+FlowSheet HotWaterTankTest
+	
+	DEVICES
+	S1 as Stream_pT;
+	TA as HotWaterTank;
+		
+	CONNECTIONS
+	S1 to TA.In;
+	
+	SPECIFY	
+	S1.p = 1 * "atm";
+	S1.T = (273.15 + 80) * "K";
+	S1.mdot = 10 * "kg/s";
+	
+	TA.A = 1 * "m^2";
+	TA.p_amb = 1 * "atm";
+	
+	EQUATIONS
+	if time < 30 * "s" then
+		TA.Out.mdot=0 * "kg/s";
+	else
+		TA.Out.mdot=10 * "kg/s";
+	end
+
+	GUESS
+	TA.rho = 1000 * "kg/m^3";
+	TA.H = 1* "m" * 1 * "m^2" * 800 * "kJ/kg" / (1000 * "kg/m^3");
+	
+	INITIAL
+	TA.y = 1 * "m";
+	TA.T = (273.15 + 20) * "K";
+	
+	OPTIONS
+	differentiation="numeric";
+	outputLevel="all";
+	time = [0 : 0.01 : 60] * "s";
+end

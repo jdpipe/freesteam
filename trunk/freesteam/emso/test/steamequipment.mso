@@ -25,9 +25,11 @@ Model SteamEquipment # DF = 10
 	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
 	Wdot as Power(Brief = "Work done by fluid on environment");
 	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
+	m as Mass(Brief = "Mass of fluid in the control volume");
 	
 	SPECIFY
 	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
+	diff(m) = In.mdot - Out.mdot;
 	
 end
 
@@ -39,9 +41,13 @@ Model SteamEquipment_ph # DF = 8
 	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
 	Wdot as Power(Brief = "Work done by fluid on environment");
 	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
+	m as Mass(Brief = "Mass of fluid in the control volume");
 	
 	SPECIFY
 	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
+	diff(m) = In.mdot - Out.mdot;
+	
+	
 
 end
 
@@ -53,9 +59,12 @@ Model SteamEquipment_ps # DF = 8
 	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
 	Wdot as Power(Brief = "Work done by fluid on environment");
 	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
+	m as Mass(Brief = "Mass of fluid in the control volume");
 	
 	SPECIFY
 	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
+	diff(m) = In.mdot - Out.mdot;
+	
 
 end
 
@@ -67,9 +76,12 @@ Model SteamEquipment_Ts # DF = 8
 	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
 	Wdot as Power(Brief = "Work done by fluid on environment");
 	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
+	m as Mass(Brief = "Mass of fluid in the control volume");
 	
 	SPECIFY
 	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
+	diff(m) = In.mdot - Out.mdot;
+	
 
 end
 
@@ -81,9 +93,12 @@ Model SteamEquipment_Th # DF = 8
 	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
 	Wdot as Power(Brief = "Work done by fluid on environment");
 	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
+	m as Mass(Brief = "Mass of fluid in the control volume");
 	
 	SPECIFY
 	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
+	diff(m) = In.mdot - Out.mdot;
+	
 
 end
 
@@ -95,8 +110,10 @@ Model SteamEquipment_pT # DF = 8
 	Qdot as HeatRate(Brief = "Heat supplied to component from environment");
 	Wdot as Power(Brief = "Work done by fluid on environment");
 	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
+	m as Mass(Brief = "Mass of fluid in the control volume");
 	
 	SPECIFY
 	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
-
+	diff(m) = In.mdot - Out.mdot;
+	
 end

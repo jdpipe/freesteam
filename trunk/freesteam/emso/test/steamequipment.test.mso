@@ -31,8 +31,9 @@ FlowSheet SteamEquipmentTest # 0
 	EQ.In.p = EQ.Out.p;
 	EQ.In.s = EQ.Out.s;
 	EQ.In.T = EQ.Out.T;
-	EQ.In.mdot= EQ.Out.mdot;
 	EQ.H = 0 * "J";
+	EQ.m = 0 * "kg";
+	
 	EQ.Qdot = 0 * "W";
 	EQ.Wdot = 0 * "W";
 	
@@ -72,13 +73,12 @@ FlowSheet SteamEquipmentTest2
 	S1.T = 300 * "K";
 	S1.mdot = 0.1 * "kg/s";
 
-	EQ.In.p = EQ.Out.p;
-	EQ.In.s = EQ.Out.s;
-	EQ.In.T = EQ.Out.T;
-	EQ.In.mdot= EQ.Out.mdot;
 	EQ.Qdot = 100 * "kJ/kg" * 0.1 * "kg/s";
 	EQ.Wdot = 0 * "W";
+	
+	INITIAL
 	EQ.H = 0 * "J";
+	EQ.m = 0 * "kg";
 	
 	OPTIONS
 	outputLevel = "all";

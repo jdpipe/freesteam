@@ -55,9 +55,6 @@ end
 
 Model Steam_pu as Steam # 6 - 4 = 2 DF
 
-	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
-	
 	VARIABLES
 	u as SpecificInternalEnergy;
 	
@@ -86,9 +83,6 @@ end
 
 Model Steam_pT as Steam
 
-	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
-		
 	EQUATIONS
 	"Steam properties"
 	[h, s] = freesteam.hs_pT(p,T);

@@ -1,0 +1,38 @@
+#*
+	Model of simple hot water tank
+	
+	waterflows in and out and the temperature of the water in the tank changes
+    assuming constant mixing, no stratification etc.
+
+	Tank is assumed open at the top so that the outlet pressure is determined 
+	only by the level of water in the tank
+*#
+
+using "steamequipment";
+
+Model HotWaterTank as SteamEquipment_ps
+	
+	VARIABLES
+	y as Length(Brief="Height of water in tank", Unit="m", Lower=0, Upper=10);
+	rho as Density(Brief="Density of water in tank", Lower=600, Upper=1300, Unit="kg/m^3");
+	A as Area(Brief="Area of tank crosssection (horizontal plane)");
+	h as SpecificEnthalpy(Brief="Average specific enthalpy in tank");
+	p_amb as Pressure(Brief="Ambient pressure (tank is open at top)", Lower=0);
+	T as Temperature(Brief="Temperature of water in tank", Lower=273.15);
+	
+	EQUATIONS
+	m = rho * A * y;
+	H = m * h;
+	
+	Out.h = h;
+	Out.T = T;
+	
+	Out.p = p_amb + rho * 9.8 * "N/kg" * y;
+	
+	# No heating and no work
+	Qdot = 0 * "W";
+	Wdot = 0 * "W";
+	
+	rho = Out.freesteam.rho_ps(Out.p,Out.s);
+	
+end
