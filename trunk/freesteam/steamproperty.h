@@ -87,11 +87,10 @@ SteamProperty<SpecificEntropy,SOLVE_ENTROPY>::get(const SteamCalculator &S){
 	return S.specentropy();
 
 	#ifndef NDEBUG
-		}catch(Exception *E){
+		}catch(Exception &E){
 			std::stringstream s;
-			s << "SteamProperty<s>::get: " << E->what();
-			delete E;
-			throw new Exception(s.str());
+			s << "SteamProperty<s>::get: " << E.what();
+			throw Exception(s.str());
 		}
 	#endif
 }

@@ -167,7 +167,7 @@ SteamCalculator::set_pT(const Pressure &p, const Temperature &T, Num x) {
 		*/
 
 		if(p < P_MIN){
-			throw new Exception("SteamCalculator::set_pT: p < P_MIN");
+			throw Exception("SteamCalculator::set_pT: p < P_MIN");
 		}
 
 		//REQUIRE(p >= P_MIN);
@@ -211,11 +211,10 @@ SteamCalculator::set_pT(const Pressure &p, const Temperature &T, Num x) {
 
 		ENSURE(_state->getRegion() == whichRegion());
 
-	}catch(Exception *E){
+	}catch(Exception &E){
 		stringstream s;
-		s << "SteamCalculator::set_pT(p = " << p << ",T = " << T <<"): " << E->what();
-		delete E;
-		throw new Exception(s.str());
+		s << "SteamCalculator::set_pT(p = " << p << ",T = " << T <<"): " << E.what();
+		throw Exception(s.str());
 	}
 }
 
@@ -231,7 +230,7 @@ SteamCalculator::set_pT(const Pressure &p, const Temperature &T, Num x) {
 void
 SteamCalculator::setSatWater_p(const Pressure &p) {
 
-	throw new Exception("SteamCalculator::setSatWater_p: disabled for numerical consistence on sat line");
+	throw Exception("SteamCalculator::setSatWater_p: disabled for numerical consistence on sat line");
 
 	Temperature T;
 
@@ -264,7 +263,7 @@ SteamCalculator::setSatWater_p(const Pressure &p) {
 void
 SteamCalculator::setSatSteam_p(const Pressure &p) {
 
-	throw new Exception("SteamCalculator::setSatSteam_p: disabled for numerical consistence on sat line");
+	throw Exception("SteamCalculator::setSatSteam_p: disabled for numerical consistence on sat line");
 
 	Temperature T;
 
@@ -335,7 +334,7 @@ SteamCalculator::setB23_T(const Temperature &T){
 	if(T < TB_LOW || T > TB_HIGH){
 		stringstream s;
 		s << "Invalid temperature in setB23_T, T = " << T;
-		throw new Exception(s.str());
+		throw Exception(s.str());
 	}
 
 	Pressure p = Boundaries::getpbound_T(T);
@@ -360,7 +359,7 @@ SteamCalculator::setB23_p(const Pressure &p){
 	if(p < PB_LOW){
 		stringstream s;
 		s << "Invalid pressure in setB23_p, p = " << p;
-		throw new Exception(s.str());
+		throw Exception(s.str());
 	}
 
 	Temperature T = Boundaries::getTbound_p(p);
@@ -424,7 +423,7 @@ SteamStateCode SteamCalculator::whichState(void){
 				case 2:
 					return STEAM_SUPERHEATED;
 				default:
-					throw new Exception("Invalid state with T<TB_LOW");
+					throw Exception("Invalid state with T<TB_LOW");
 			}
 		}else{
 			if(pres() > Boundaries::getpbound_T(temp())){
@@ -452,15 +451,15 @@ SteamStateCode SteamCalculator::whichState(void){
 							return STEAM_SATURATED;
 						}
 					default:
-						throw new Exception("Invalid state with T>TB_LOW");
+						throw Exception("Invalid state with T>TB_LOW");
 				}
 			}else{
 				return STEAM_SUPERHEATED;
 			}
 		}
-		throw new Exception("Did not determine state!");
+		throw Exception("Did not determine state!");
 	} else {
-		throw new Exception("State is not yet set");
+		throw Exception("State is not yet set");
 	}
 }
 
@@ -471,7 +470,7 @@ const char *SteamCalculator::whichStateStr(void){
 	SteamStateCode st = this->whichState();
 
 	if (!isset) {
-		throw new Exception("State is not set at whichStateStr");
+		throw Exception("State is not set at whichStateStr");
 	}
 
 	switch(st){
@@ -494,7 +493,7 @@ const char *SteamCalculator::whichStateStr(void){
 		case STEAM_SUPERCRITICAL:
 			return "SUPERCRITICAL";
 		default:
-			throw new Exception("Invalid state!");
+			throw Exception("Invalid state!");
 	}
 }
 
@@ -1011,11 +1010,10 @@ SteamCalculator::setRegion4_Tx(const Temperature &T, const Num &x){
 		this->x=x;
 		this->T=T;
 		isset=true;
-	}catch(Exception *E){
+	}catch(Exception &E){
 		stringstream s;
-		s << "SteamCalculator::setRegion4_Tx: " << E->what();
-		delete E;
-		throw new Exception(s.str());
+		s << "SteamCalculator::setRegion4_Tx: " << E.what();
+		throw Exception(s.str());
 	}
 }
 

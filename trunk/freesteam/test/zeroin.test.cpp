@@ -51,8 +51,8 @@ class ZeroInTest: public CppUnit::TestFixture{
 					CPPUNIT_FAIL(s.str());
 				}
 
-			}catch(Exception *e){
-				CPPUNIT_FAIL(e->what());
+			}catch(Exception &e){
+				CPPUNIT_FAIL(e.what());
 			}
 		}
 

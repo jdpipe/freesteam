@@ -34,7 +34,7 @@ class Solver2Test : public CppUnit::TestFixture
 				if(region != asserted_region){
 					stringstream ss;
 					ss << "Expected region was " << asserted_region << " but whichRegion(" << f << ", " << s << ") gave " << region;
-					throw new Exception(ss.str());
+					throw Exception(ss.str());
 				}
 
 				SteamCalculator S2 = SS.solve(f, s);
@@ -43,10 +43,9 @@ class Solver2Test : public CppUnit::TestFixture
 				SteamPropertyTest<Temperature>::test( S2, T, 0.01 * Kelvin);
 				SteamPropertyTest<Density>::test( S2, rho, rho * 0.001 * Percent);
 
-			}catch(Exception *E){
+			}catch(Exception &E){
 				stringstream ss;
-				ss << "Solver2Test<" <<  SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">:testWith(p = " << p << ", T = " << T << ", rho = " << rho << "): " << E->what();
-				delete E;
+				ss << "Solver2Test<" <<  SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">:testWith(p = " << p << ", T = " << T << ", rho = " << rho << "): " << E.what();
 				CPPUNIT_FAIL(ss.str());
 			}
 		}
@@ -191,10 +190,9 @@ class Solver2Test : public CppUnit::TestFixture
 						testWith(S,3);
 					}
 				}
-			}catch(Exception *E){
+			}catch(Exception &E){
 				stringstream s;
-				s << "Solver2Test::testRegion3: " << E->what();
-				delete E;
+				s << "Solver2Test::testRegion3: " << E.what();
 				CPPUNIT_FAIL(s.str());
 			}
 		}

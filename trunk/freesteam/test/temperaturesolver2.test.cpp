@@ -75,12 +75,11 @@ class TemperatureSolverTest2Point{
 				S = VS.solve(0.00001 * metre3 / kilogram, 1e-8 * Kelvin);
 				TSOLVE2_COMPARE(v);
 
-			}catch(Exception *e){
+			}catch(Exception &e){
 				stringstream s;
 				s.flags(ios_base::showbase);
-				s << "TemperatureSolverTest2Point::test: " << e->what();
+				s << "TemperatureSolverTest2Point::test: " << e.what();
 				s << "(expected value of T was " << T << " = " << tocelsius(T) << "°C)";
-				delete e;
 				CPPUNIT_FAIL(s.str());
 			}
 		}

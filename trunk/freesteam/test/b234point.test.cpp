@@ -36,8 +36,8 @@ class B234Point : public CppUnit::TestFixture{
 				//cerr << endl << "Verifying u, h, s, v... ";
 				checkValues(S);
 
-			}catch(Exception *E){
-				CPPUNIT_FAIL(E->what());
+			}catch(Exception &E){
+				CPPUNIT_FAIL(E.what());
 			}
 		}
 
@@ -53,8 +53,8 @@ class B234Point : public CppUnit::TestFixture{
 				//cerr << endl << "Verifying u, h, s, v... ";
 				checkValues(S);
 
-			}catch(Exception *E){
-				CPPUNIT_FAIL(E->what());
+			}catch(Exception &E){
+				CPPUNIT_FAIL(E.what());
 			}
 		}
 	public:

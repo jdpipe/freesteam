@@ -51,7 +51,7 @@ DiagramBase::newDiagram(const std::string &type){
 	}else{
 		std::stringstream ss;
 		ss << "Invalid diagram requested: " << type;
-		throw new Exception(ss.str());
+		throw Exception(ss.str());
 	}
 
 }

@@ -214,9 +214,8 @@ class Diagram : public DiagramBase{
 				try{
 					Abscissa a = SteamProperty<Abscissa,AbsAlt>::get(SC);
 					ss << a;
-				}catch(Exception *E){
+				}catch(Exception &E){
 					ss << "1.0e+1025";
-					delete E;
 				}
 
 				ss << "\t";
@@ -224,10 +223,9 @@ class Diagram : public DiagramBase{
 				try{
 					Ordinate o = SteamProperty<Ordinate,OrdAlt>::get(SC);
 					ss << o;
-				}catch(Exception *E){
+				}catch(Exception &E){
 					ss << "1.0e+1025";
-					std::cerr << E->what();
-					delete E;
+					std::cerr << E.what();
 				}
 			}
 			ss << std::endl << "];" << std::endl;

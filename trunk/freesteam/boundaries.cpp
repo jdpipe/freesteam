@@ -74,7 +74,7 @@ const Num REGION43_C[7]
 Temperature
 Boundaries::getSatTemp_p(Pressure p) {
 
-	throw new Exception("Boundaries::getSatTemp_p: disabled due for numerical consistency on saturation line");
+	throw Exception("Boundaries::getSatTemp_p: disabled due for numerical consistency on saturation line");
 
 	Num b = beta(p);
 	Num d = D(E(b), F(b), G(b));
@@ -165,7 +165,7 @@ Boundaries::getSatDensSteam_T(const Temperature &T){
 	REQUIRE(T >= T_TRIPLE);
 	//REQUIRE(T > TB_LOW);
 	if(T > T_CRIT){
-		throw new Exception("Boundaries::getSatDensSteam_T: T > T_CRIT, not allowed");
+		throw Exception("Boundaries::getSatDensSteam_T: T > T_CRIT, not allowed");
 	}
 
 	Num tau = 1 - T / T_CRIT;
@@ -199,11 +199,11 @@ Boundaries::getpbound_T(Temperature T, bool throw_me) {
 
 	if (T < T_REG1_REG3) {
 		if (throw_me) {
-			throw new SteamCalculatorException(-1.0 * MPa, T, REG2_RANGE_TB_LOW);
+			throw SteamCalculatorException(-1.0 * MPa, T, REG2_RANGE_TB_LOW);
 		}
 	} else if (T > TB_HIGH) {
 		if (throw_me) {
-			throw new SteamCalculatorException(-1.0 * MPa, T, REG2_RANGE_TB_HIGH);
+			throw SteamCalculatorException(-1.0 * MPa, T, REG2_RANGE_TB_HIGH);
 		}
 	}
 
@@ -222,11 +222,11 @@ Boundaries::getTbound_p(Pressure p, bool throw_me) {
 
 	if (p < PB_LOW) {
 		if (throw_me) {
-			throw new SteamCalculatorException(p, -1.0 * Kelvin, REG2_RANGE_PB_LOW);
+			throw SteamCalculatorException(p, -1.0 * Kelvin, REG2_RANGE_PB_LOW);
 		}
 	} else if (p > REG2_P_HIGH) {
 		if (throw_me) {
-			throw new SteamCalculatorException(p, -1.0 * Kelvin, REG2_RANGE_PB_HIGH);
+			throw SteamCalculatorException(p, -1.0 * Kelvin, REG2_RANGE_PB_HIGH);
 		}
 	}
 
@@ -253,19 +253,19 @@ Boundaries::isValid_pT(Pressure p, Temperature T,
 
 	if (p < P_MIN) {
 		if (throw_me)
-			throw new SteamCalculatorException(p, T, STM_PRESSURE_LOW);
+			throw SteamCalculatorException(p, T, STM_PRESSURE_LOW);
 		isvalid = false;
 	} else if (p > P_MAX + STEAM_P_EPS) {
 		if (throw_me)
-			throw new SteamCalculatorException(p, T, STM_PRESSURE_HIGH);
+			throw SteamCalculatorException(p, T, STM_PRESSURE_HIGH);
 		isvalid = false;
 	} else if (T > T_MAX + STEAM_T_EPS) {
 		if (throw_me)
-			throw new SteamCalculatorException(p, T, STM_TEMPERATURE_HIGH);
+			throw SteamCalculatorException(p, T, STM_TEMPERATURE_HIGH);
 		isvalid = false;
 	} else if (T < T_MIN - STEAM_T_EPS) {
 		if (throw_me)
-			throw new SteamCalculatorException(p, T, STM_TEMPERATURE_LOW);
+			throw SteamCalculatorException(p, T, STM_TEMPERATURE_LOW);
 		isvalid = false;
 	}
 
@@ -278,14 +278,14 @@ Boundaries::isSat_Tx(const Temperature &T, const Num &x, const bool throw_me){
 	if(isnan(T)){
 		if(throw_me){
 			stringstream s;s << "Boundaries::isSat_Tx: T is not a number: T = " << T << ", x = " << x;
-			throw new Exception(s.str());
+			throw Exception(s.str());
 		}
 		return false;
 	}
 	if(isnan(x)){
 		if(throw_me){
 			stringstream s;s << "Boundaries::isSat_Tx: x is not a number: T = " << T << ", x = " << x;
-			throw new Exception(s.str());
+			throw Exception(s.str());
 		}
 		return false;
 	}
@@ -293,25 +293,25 @@ Boundaries::isSat_Tx(const Temperature &T, const Num &x, const bool throw_me){
 	if(T < T_TRIPLE){
 		if(throw_me){
 			stringstream s;s << "Boundaries::isSat_Tx: T < T_TRIPLE: T = " << T << ", x = " << x;
-			throw new Exception(s.str());
+			throw Exception(s.str());
 		}
 		return false;
 	}else if(T > T_CRIT){
 		if(throw_me){
 			stringstream s;s << "Boundaries::isSat_Tx: T > T_CRIT: T = " << T << ", x = " << x;
-			throw new Exception(s.str());
+			throw Exception(s.str());
 		}
 		return false;
 	}else if(x < 0.0){
 		if(throw_me){
 			stringstream s;s << "Boundaries::isSat_Tx: x < 0.0: T = " << T << ", x = " << x;
-			throw new Exception(s.str());
+			throw Exception(s.str());
 		}
 		return false;
 	}else if(x > 1.0){
 		if(throw_me){
 			stringstream s;s << "Boundaries::isSat_Tx: x > 1.0: T = " << T << ", x = " << x;
-			throw new Exception(s.str());
+			throw Exception(s.str());
 		}
 		return false;
 	}
@@ -415,7 +415,7 @@ Boundaries::isRegion1_pT(Pressure p, Temperature T,
 		//MESSAGE("  NO, TEMPERATURE > T_REG1_REG3");
 
 		if (throw_me)
-			throw new SteamCalculatorException(p, T, REG1_RANGE_T_HIGH);
+			throw SteamCalculatorException(p, T, REG1_RANGE_T_HIGH);
 		return false;
 
 	}else{
@@ -431,7 +431,7 @@ Boundaries::isRegion1_pT(Pressure p, Temperature T,
 
 			if (throw_me) {
 				cerr << "  Pressure is too high, by " << (p - p_sat) << endl;
-				throw new SteamCalculatorException(p, T, REG1_RANGE_P_LOW);
+				throw SteamCalculatorException(p, T, REG1_RANGE_P_LOW);
 			}
 			return false;
 		}
@@ -459,7 +459,7 @@ Boundaries::isRegion2_pT(Pressure p, Temperature T,
 		if (p > getSatPres_T(T)/* T < getSatTemp_p(p) - STM_SATURATION_TOL * T*/) {
 			//MESSAGE("  p > PSAT");
 			if (throw_me)
-				throw new SteamCalculatorException(p,T,REG2_RANGE_T_LOW_TS);
+				throw SteamCalculatorException(p,T,REG2_RANGE_T_LOW_TS);
 			return false;
 		}
 		// check region 2 under region 3
@@ -467,7 +467,7 @@ Boundaries::isRegion2_pT(Pressure p, Temperature T,
 		if (p > getpbound_T(T)) {
 			//MESSAGE("  NOT REG 2: p > PBOUND");
 			if (throw_me)
-				throw new SteamCalculatorException(p,T,REG2_RANGE_P_HIGH_PB);
+				throw SteamCalculatorException(p,T,REG2_RANGE_P_HIGH_PB);
 			return false;
 		}
 	}
@@ -493,12 +493,12 @@ Boundaries::isRegion3_pT(Pressure p, Temperature T,
 
 	if (T < T_REG1_REG3) {
 		if (throw_me)
-			throw new SteamCalculatorException(p, T, REG3_RANGE_T_LOW_TB);
+			throw SteamCalculatorException(p, T, REG3_RANGE_T_LOW_TB);
 		return false;
 
 	}else if(getpbound_T(T, throw_me) > p) {
 		if (throw_me)
-			throw new SteamCalculatorException(p, T, REG3_RANGE_P_LOW_PB);
+			throw SteamCalculatorException(p, T, REG3_RANGE_P_LOW_PB);
 		return false;
 	}
 

@@ -142,7 +142,7 @@ class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 					stringstream s;
 					s.flags(ios_base::showbase);
 					s << "Unable to solve for target " << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << target << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
-					throw new Exception(s.str());
+					throw Exception(s.str());
 				}
 
 				//cerr << endl << "SatCurve<" << SteamProperty<Ordinate,OrdinateAlt>::name() << "," << SteamProperty<Abscissa,AbscissaAlt>::name() << ">::solve: found solution at T = " << z.getSolution();
@@ -155,11 +155,10 @@ class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 
 				return SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>::getOrdinate(S);
 
-			}catch(Exception *e){
+			}catch(Exception &e){
 				stringstream s;
-				s << "SatCurve<" << SteamProperty<Ordinate,OrdinateAlt>::name() << "," << SteamProperty<Abscissa,AbscissaAlt>::name() << ">::solve(" << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << target << "," << (flags & SAT_STEAM ? "SAT_STEAM" : "SAT_WATER") << "): " << e->what();
-				delete e;
-				throw new Exception(s.str());
+				s << "SatCurve<" << SteamProperty<Ordinate,OrdinateAlt>::name() << "," << SteamProperty<Abscissa,AbscissaAlt>::name() << ">::solve(" << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << target << "," << (flags & SAT_STEAM ? "SAT_STEAM" : "SAT_WATER") << "): " << e.what();
+				throw Exception(s.str());
 			}
 		}
 

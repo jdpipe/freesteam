@@ -96,10 +96,9 @@ class IAPWS9795TestPoint{
 				SpecHeatCap cv95 = S95.cv(T/Kelvin, rho/kg_m3) * kJ_kgK;
 				IAPWS9795_COMPARE(cv97,cv95, 0.45 * Percent);
 
-			}catch(Exception *e){
+			}catch(Exception &e){
 				stringstream ss;
-				ss << "IAPWS9795TestPoint::test: " << e->what();
-				delete e;
+				ss << "IAPWS9795TestPoint::test: " << e.what();
 				CPPUNIT_FAIL(ss.str());
 			}
 		}

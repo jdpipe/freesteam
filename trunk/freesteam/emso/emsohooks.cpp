@@ -73,10 +73,9 @@ class EMSOfreesteam : public ExternalObjectBase {
 
 				*retval = emso_ok;
 
-			}catch(Exception *E){
+			}catch(Exception &E){
 				stringstream ss;
-				ss << "EMSOfreesteam::create: " << E->what();
-				delete E;
+				ss << "EMSOfreesteam::create: " << E.what();
 				report_error(msg, ss.str());
 				*retval = emso_error;
 			}
@@ -94,10 +93,9 @@ class EMSOfreesteam : public ExternalObjectBase {
 
 				*retval = emso_ok;
 
-			}catch(Exception *E){
+			}catch(Exception &E){
 				stringstream ss;
-				ss << "EMSOfreesteam::destroy: " << E->what();
-				delete E;
+				ss << "EMSOfreesteam::destroy: " << E.what();
 				report_error(msg, ss.str());
 				*retval = emso_error;
 			}
@@ -142,7 +140,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 				if(method == 0){
 					stringstream s;
 					s << "Method '" << methodName << "' not found. Valid methods are: " << getValidMethodNames();
-					throw new Exception(s.str());
+					throw Exception(s.str());
 				}
 
 				input = method & InputMask;
@@ -170,7 +168,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 
 					default:
-						throw new Exception("Invalid input parameter combo");
+						throw Exception("Invalid input parameter combo");
 				}
 
 				// Number of output parameters:
@@ -216,15 +214,14 @@ class EMSOfreesteam : public ExternalObjectBase {
 
 
 					default:
-						throw new Exception("Invalid output parameter combo");
+						throw Exception("Invalid output parameter combo");
 				}
 
 				*retval = emso_ok;
 
-			}catch(Exception *E){
+			}catch(Exception &E){
 				stringstream s;
-				s << "EMSOfreesteam::checkMethod: " << E->what();
-				delete E;
+				s << "EMSOfreesteam::checkMethod: " << E.what();
 				report_error(msg, s.str());
 				*retval = emso_error;
 			}
@@ -262,7 +259,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 				if(method == 0){
 					stringstream s;
 					s << "Method '" << methodName << "' not found.";
-					throw new Exception(s.str());
+					throw Exception(s.str());
 				}
 
 				input = method & InputMask;
@@ -310,7 +307,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 
 					default:
-						throw new Exception("Invalid input param combination (when giving EMSO units for method inputs)");
+						throw Exception("Invalid input param combination (when giving EMSO units for method inputs)");
 				};
 
 				// the outputs
@@ -423,15 +420,14 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 
 					default:
-						throw new Exception("Invalid output param combination (when giving EMSO units for method outputs)");
+						throw Exception("Invalid output param combination (when giving EMSO units for method outputs)");
 				}
 
 				*retval = emso_ok;
 
-			}catch(Exception *E){
+			}catch(Exception &E){
 				stringstream s;
-				s << "EMSOfreesteam::calc: " << E->what();
-				delete E;
+				s << "EMSOfreesteam::calc: " << E.what();
 				report_error(msg, s.str());
 				*retval = emso_error;
 			}
@@ -492,7 +488,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 				if(method == 0){
 					stringstream s;
 					s << "Method '" << methodName << " not found";
-					throw new Exception(s.str());
+					throw Exception(s.str());
 				}
 				input = method & InputMask;
 				output = method & OutputMask;
@@ -567,12 +563,12 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 
 					default:
-						throw new Exception("EMSOfreesteam::calc: Un-handled input option (may be not yet implemented)");
+						throw Exception("EMSOfreesteam::calc: Un-handled input option (may be not yet implemented)");
 				}
 
 				#ifdef EMSO_DEBUG
-					}catch(Exception *E){
-						cerr << "): error while setting state: " << E->what() << endl;
+					}catch(Exception &E){
+						cerr << "): error while setting state: " << E.what() << endl;
 						throw;
 					}
 					cerr << "): (region " << S.whichRegion() << ")";
@@ -715,22 +711,21 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 
 					default:
-						throw new Exception("Invalid output option (should never happen)");
+						throw Exception("Invalid output option (should never happen)");
 				}
 
 				#ifdef EMSO_DEBUG
-					}catch(Exception *E){
-						cerr << ": error while getting property values: " << E->what() << endl;
+					}catch(Exception &E){
+						cerr << ": error while getting property values: " << E.what() << endl;
 						throw;
 					}
 				#endif
 				*retval = emso_ok;
 				lastState = S;
 
-			}catch(Exception *E){
+			}catch(Exception &E){
 				stringstream s;
-				s << "EMSOfreesteam::calc: " << E->what();
-				delete E;
+				s << "EMSOfreesteam::calc: " << E.what();
 
 				report_error(msg, s.str());
 				*retval = emso_error;

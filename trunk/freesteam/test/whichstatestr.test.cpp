@@ -57,10 +57,9 @@ class WhichStateStrTest : public CppUnit::TestFixture{
 			S.setSatWater_T(T_CRIT);
 			checkState(S,"SATURATED");
 
-			}catch(Exception *E){
+			}catch(Exception &E){
 				stringstream s;
-				s << "WhichStateStrTest:testSaturated: " << E->what();
-				delete E;
+				s << "WhichStateStrTest:testSaturated: " << E.what();
 				CPPUNIT_FAIL(s.str());
 			}
 		}
@@ -71,10 +70,9 @@ class WhichStateStrTest : public CppUnit::TestFixture{
 			S.set_pT(25.0 * MPa,fromcelsius(400));
 			checkState(S,"SUPERCRITICAL");
 
-			}catch(Exception *E){
+			}catch(Exception &E){
 				stringstream s;
-				s << "WhichStateStrTest:testSupercritical: " << E->what();
-				delete E;
+				s << "WhichStateStrTest:testSupercritical: " << E.what();
 				CPPUNIT_FAIL(s.str());
 			}
 		}
@@ -92,10 +90,9 @@ class WhichStateStrTest : public CppUnit::TestFixture{
 
 			S.set_pT(P_MAX, fromcelsius(100),0.0);
 			checkState(S,"SUBCOOLED");
-			}catch(Exception *E){
+			}catch(Exception &E){
 				stringstream s;
-				s << "WhichStateStrTest:testSubcooled: " << E->what();
-				delete E;
+				s << "WhichStateStrTest:testSubcooled: " << E.what();
 				CPPUNIT_FAIL(s.str());
 			}
 		}
@@ -110,10 +107,9 @@ class WhichStateStrTest : public CppUnit::TestFixture{
 
 			S.set_pT(6.0 * MPa,fromcelsius(280),1.0);
 			checkState(S,"SUPERHEATED");
-			}catch(Exception *E){
+			}catch(Exception &E){
 				stringstream s;
-				s << "WhichStateStrTest:testSuperheated: " << E->what();
-				delete E;
+				s << "WhichStateStrTest:testSuperheated: " << E.what();
 				CPPUNIT_FAIL(s.str());
 			}
 		}

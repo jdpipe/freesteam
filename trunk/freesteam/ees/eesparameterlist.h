@@ -33,15 +33,14 @@ const int EES_MSG_LENGTH=256;
 			if(NInputs != EES_NUM_INPUTS){ \
 				stringstream ss; \
 				ss << "Expected " << EES_NUM_INPUTS << " but received " << NInputs << "."; \
-				throw new Exception(ss.str()); \
+				throw Exception(ss.str()); \
 			}
 
 
 #define EES_FUNCTION_END(EES_NAME) \
-		}catch(Exception *E){ \
+		}catch(Exception &E){ \
 			stringstream ss; \
-			ss << #EES_NAME << ": " << E->what(); \
-			delete E; \
+			ss << #EES_NAME << ": " << E.what(); \
 			EES_FUNCTION_STRING(ss.str().c_str()); \
 		} \
 	}

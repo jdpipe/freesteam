@@ -47,9 +47,8 @@ int main(const int argc, char *argv[]){
 		std::cout << D->plot();
 
 		delete D;
-	}catch(Exception *E){
-		cerr << "main: " << E->what();
-		delete E;
+	}catch(Exception &E){
+		cerr << "main: " << E.what();
 		exit(1);
 	}
 }

@@ -106,17 +106,16 @@ class SolverBase : public DesignByContract
 					s << "Failed solution: target "<< SteamProperty<OtherProp,OtherPropAlt>::name() << " = " << op << ", with " << SteamProperty<MainProp,MainPropAlt>::name() << " fixed at " << mp << endl;
 
 					s << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
-					throw new Exception(s.str());
+					throw Exception(s.str());
 				}
 
 				setVaryProp(z.getSolution());
 
 				return S;
-			}catch(Exception *e){
+			}catch(Exception &e){
 				stringstream s;
-				s << "Solver<" << SteamProperty<MainProp,MainPropAlt>::name() << "," << SteamProperty<OtherProp,OtherPropAlt>::name() << "," << SteamProperty<VaryProp,VaryPropAlt>::name() << ">::solve: " << e->what();
-				delete e;
-				throw new Exception(s.str());
+				s << "Solver<" << SteamProperty<MainProp,MainPropAlt>::name() << "," << SteamProperty<OtherProp,OtherPropAlt>::name() << "," << SteamProperty<VaryProp,VaryPropAlt>::name() << ">::solve: " << e.what();
+				throw Exception(s.str());
 			}
 		}
 	protected:
@@ -170,7 +169,7 @@ class Solver
 		Solver(const MainProp &mp,const OtherProp &op)
 			: SolverBase<MainProp,OtherProp,VaryProp,MainPropAlt,OtherPropAlt,VaryPropAlt>(mp,op){
 			// not implemented
-			throw new Exception("Not implemented");
+			throw Exception("Not implemented");
 		}
 
 

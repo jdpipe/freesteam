@@ -122,12 +122,11 @@ iapws_pT_uv(
 
 		return;
 
-	}catch(Exception *E){
+	}catch(Exception &E){
 		std::stringstream ss;
-		ss << E->what();
+		ss << E.what();
 		std::strncpy(s,ss.str().c_str(),EES_MSG_LENGTH-1);
 		s[EES_MSG_LENGTH-1]='\0';
-		delete E;
 		return;
 	}
 }

@@ -39,7 +39,7 @@ Solver2<Pressure,Temperature,0,0>::whichRegion(const Pressure &p, const Temperat
 	int region = S.whichRegion();
 
 	if(region==4){
-		throw new Exception("Solver2<p,T>::whichRegion: invalid region for this solver.");
+		throw Exception("Solver2<p,T>::whichRegion: invalid region for this solver.");
 	}
 	return S.whichRegion();
 
@@ -55,11 +55,10 @@ Solver2<Pressure,Temperature,0,0>::solveRegion3(const Pressure &p, const Tempera
 	try{
 		S.set_pT(p,T);
 		return S;
-	}catch(Exception *E){
+	}catch(Exception &E){
 		stringstream s;
-		s << "Solver2<p,T>::solverRegion3: " << E->what();
-		delete E;
-		throw new Exception(s.str());
+		s << "Solver2<p,T>::solverRegion3: " << E.what();
+		throw Exception(s.str());
 	}
 }
 
@@ -104,11 +103,10 @@ int Solver2<Temperature, SpecificEnergy, 0, SOLVE_ENTHALPY>::whichRegion(const T
 
 		return 2;
 
-	}catch(Exception *E){
+	}catch(Exception &E){
 		stringstream ss;
-		ss << "Solver2<T,h>::whichRegion(T = " << T << ", h = " << h/kJ_kg << " kJ/kgK): " << E->what();
-		delete E;
-		throw new Exception(ss.str());
+		ss << "Solver2<T,h>::whichRegion(T = " << T << ", h = " << h/kJ_kg << " kJ/kgK): " << E.what();
+		throw Exception(ss.str());
 	}
 }
 
@@ -128,7 +126,7 @@ Solver2<Temperature,SpecificEntropy,0,SOLVE_ENTROPY>::whichRegion(const Temperat
 		if(s < s_min){
 			stringstream ss;
 			ss << "Specific entropy out of range, too low: s = " << s << " (min at T = " << T << " is " << s_min << ")";
-			throw new Exception(ss.str());
+			throw Exception(ss.str());
 		}
 
 		if(T <= T_CRIT){
@@ -165,11 +163,10 @@ Solver2<Temperature,SpecificEntropy,0,SOLVE_ENTROPY>::whichRegion(const Temperat
 
 		return 2;
 
-	}catch(Exception *E){
+	}catch(Exception &E){
 		stringstream ss;
-		ss << "Solver2<T,s>::whichRegion: " << E->what();
-		delete E;
-		throw new Exception(ss.str());
+		ss << "Solver2<T,s>::whichRegion: " << E.what();
+		throw Exception(ss.str());
 	}
 }
 
@@ -195,7 +192,7 @@ Solver2<Pressure,SpecificEntropy,0,SOLVE_ENTROPY>::whichRegion(const Pressure &p
 		if(s > s_max){
 			stringstream ss;
 			ss << "s=" << s << " exceeds maximum (s_max=" << s_max << " at p=" << p << ").";
-			throw new Exception(ss.str());
+			throw Exception(ss.str());
 		}
 
 		REQUIRE(p > P_MIN);
@@ -237,11 +234,10 @@ Solver2<Pressure,SpecificEntropy,0,SOLVE_ENTROPY>::whichRegion(const Pressure &p
 
 		return 3;
 
-	}catch(Exception *E){
+	}catch(Exception &E){
 		stringstream ss;
-		ss << "Solver2<p,s>::whichRegion(p = " << p/MPa << " MPa, s = " << s/kJ_kgK << " kJ/kgK): " << E->what();
-		delete E;
-		throw new Exception(ss.str());
+		ss << "Solver2<p,s>::whichRegion(p = " << p/MPa << " MPa, s = " << s/kJ_kgK << " kJ/kgK): " << E.what();
+		throw Exception(ss.str());
 	}
 }
 
@@ -298,11 +294,10 @@ Solver2<Pressure,SpecificEnergy,0,SOLVE_IENERGY>::whichRegion(const Pressure &p,
 
 		return 3;
 
-	}catch(Exception *E){
+	}catch(Exception &E){
 		stringstream s;
-		s << "Solver2<p,u>::whichRegion(p = " << p/MPa << " MPa, u = " << u/kJ_kg << " kJ/kg): " << E->what();
-		delete E;
-		throw new Exception(s.str());
+		s << "Solver2<p,u>::whichRegion(p = " << p/MPa << " MPa, u = " << u/kJ_kg << " kJ/kg): " << E.what();
+		throw Exception(s.str());
 	}
 }
 
@@ -321,7 +316,7 @@ Solver2<Pressure, SpecificEnergy, 0, SOLVE_ENTHALPY>::whichRegion(const Pressure
 		if(h > h_max){
 			stringstream ss;
 			ss << "h=" << h << " exceeds maximum (h_max = " << h_max << " at p = " << p << ").";
-			throw new Exception(ss.str());
+			throw Exception(ss.str());
 		}
 
 		S.set_pT(p,T_TRIPLE);
@@ -329,7 +324,7 @@ Solver2<Pressure, SpecificEnergy, 0, SOLVE_ENTHALPY>::whichRegion(const Pressure
 		if(h < h_min){
 			stringstream ss;
 			ss << "h=" << h << " is less than minumum (h_min = " << h_min << " at p = " << p << ").";
-			throw new Exception(ss.str());
+			throw Exception(ss.str());
 		}
 
 
@@ -373,11 +368,10 @@ Solver2<Pressure, SpecificEnergy, 0, SOLVE_ENTHALPY>::whichRegion(const Pressure
 
 		return 3;
 
-	}catch(Exception *E){
+	}catch(Exception &E){
 		stringstream s;
-		s << "Solver2<p,h>::whichRegion(p = " << p/MPa << " MPa, h = " << h/kJ_kg << " kJ/kg): " << E->what();
-		delete E;
-		throw new Exception(s.str());
+		s << "Solver2<p,h>::whichRegion(p = " << p/MPa << " MPa, h = " << h/kJ_kg << " kJ/kg): " << E.what();
+		throw Exception(s.str());
 	}
 
 }
@@ -512,7 +506,7 @@ Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const Specif
 			//cerr << endl << "Solver2<u,v>:whichRegion: u > u_b13_pmax ( = " << u_b13_pmax << ")";
 
 			if(v < v_b13_pmax){
-				throw new Exception("Solver2<u,v>::whichRegion: Invalid u,v: u > u_b13_pmax but v < v_b13_pmax");
+				throw Exception("Solver2<u,v>::whichRegion: Invalid u,v: u > u_b13_pmax but v < v_b13_pmax");
 			}
 
 			//cerr << endl <<"Solver2<u,v>::whichRegion: checking u <= u_b134:";
@@ -538,11 +532,10 @@ Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const Specif
 			return 1;
 		}
 
-	}catch(Exception *E){
+	}catch(Exception &E){
 		stringstream s;
-		s << "Solver2<u,v>::whichRegion(u = " << u / kJ_kg << "kJ_kg, v = " << v << "): " << E->what();
-		delete E;
-		throw new Exception(s.str());
+		s << "Solver2<u,v>::whichRegion(u = " << u / kJ_kg << "kJ_kg, v = " << v << "): " << E.what();
+		throw Exception(s.str());
 	}
 }
 
@@ -563,9 +556,9 @@ Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const Specif
 					case 4:
 						return solveRegion4(xxx,yyy);
 				}
-			}catch(Exception *E){
+			}catch(Exception &E){
 				stringstream s;
-				s << "Solver2::solve: " << E->what();
+				s << "Solver2::solve: " << E.what();
 				throw new Exception(s.str());
 			}
 		}

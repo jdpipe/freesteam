@@ -80,10 +80,9 @@ class ConductivityTest : public GridTest<Pressure,Temperature,Conductivity>{
 					addVector( fromcelsius(T_raw[i]), p_raw, MPa, k[i], mW_mK, P_COUNT);
 				}
 
-			}catch(Exception *e){
+			}catch(Exception &e){
 				stringstream ss;
-				ss << "ConductivityTest::setUp: " << e->what();
-				delete e;
+				ss << "ConductivityTest::setUp: " << e.what();
 				CPPUNIT_FAIL(ss.str());
 			}
 

@@ -66,9 +66,8 @@ int main(void){
 			cout << tab << h            << tab << s           << tab << v ;
 			cout << tab << cp           << tab << cv          << endl;
 
-		}catch(Exception *E){
-			cerr << "Exception: " << E->what() << endl;
-			delete E;
+		}catch(Exception &E){
+			cerr << "Exception: " << E.what() << endl;
 		}
 	}
 

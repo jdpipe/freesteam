@@ -56,10 +56,9 @@ int main(void){
 			Pressure p = Boundaries::getpbound_T(T);
 			cout << tab << p/MPa;
 
-		}catch(Exception *E){
-			cerr << "Exception: " << E->what() << endl;
+		}catch(Exception &E){
+			cerr << "Exception: " << E.what() << endl;
 			cout << tab << "0";
-			delete E;
 		}
 
 		cout << endl;

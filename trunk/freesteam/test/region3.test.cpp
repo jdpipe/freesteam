@@ -48,10 +48,9 @@ class Region3TestPoint : public SteamTestPoint {
 				CHECK_RESULT(speccp,      cp);
 				CHECK_RESULT(specienergy, u);
 				CHECK_RESULT(specenthalpy,h);
-			}catch(Exception *E){
+			}catch(Exception &E){
 				stringstream s;
-				s << "Region3TestPoint::test: " << E->what();
-				delete E;
+				s << "Region3TestPoint::test: " << E.what();
 				CPPUNIT_FAIL(s.str());
 			}
 		}

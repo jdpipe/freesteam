@@ -54,7 +54,7 @@ void DesignByContract::__throw_error_(const char *file, const int line,
 	//std::cerr << "Line:      " << line << std::endl;
 	// std::abort();
 
-	throw new Exception(s.str());
+	throw Exception(s.str());
 }
 
 void DesignByContract::__report_Message_(const char *file, const int line, const char *msg){

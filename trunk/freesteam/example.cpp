@@ -78,9 +78,8 @@ int main(){
 
 		exit(0);
 
-	}catch(Exception *E){
-		cerr << "Error: " << E->what();
-		delete E;
+	}catch(Exception &E){
+		cerr << "Error: " << E.what();
 		exit(1);
 	}
 }

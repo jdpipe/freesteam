@@ -59,10 +59,9 @@ class PressureSolverTest: public CppUnit::TestFixture{
 				S = PS3.solve(0.00001 * metre3 / kilogram , 0.1 * Pascal);
 				PSOLVE_COMPARE(v);
 
-			}catch(Exception *e){
+			}catch(Exception &e){
 				stringstream s;
-				s << "PressureSolverTest::Test: " << e->what();
-				delete e;
+				s << "PressureSolverTest::Test: " << e.what();
 				CPPUNIT_FAIL(s.str());
 			}
 		}
