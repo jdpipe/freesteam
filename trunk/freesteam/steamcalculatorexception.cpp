@@ -76,3 +76,7 @@ string SteamAlmostSaturatedException::what() {
 	T / Kelvin<< "K";
 	return s.str();
 }
+
+OverPressureException::OverPressureException(string message) : Exception(message){
+	// Intentionally empty
+}

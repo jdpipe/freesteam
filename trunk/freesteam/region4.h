@@ -4,7 +4,7 @@
 #include "state.h"
 #include "zeroin.h"
 
-class Region4:public SteamState {
+class Region4 : public SteamState {
 
 	public:
 		int getRegion() const;

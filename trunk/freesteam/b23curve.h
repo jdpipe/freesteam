@@ -149,6 +149,7 @@ class B23Curve<Ordinate,Temperature,OrdinateAlternative,0>
 /**
 	Use T_sat(p) directly then return Ordinate(p,T_sat) - i.e. using the Region 4 backward equation
 */
+/*
 template<class Ordinate,int OrdinateAlternative>
 class B23Curve<Ordinate,Pressure,OrdinateAlternative,0>
 	: public B23CurveBase<Ordinate,Pressure,OrdinateAlternative,0>{
@@ -164,5 +165,5 @@ class B23Curve<Ordinate,Pressure,OrdinateAlternative,0>
 			return B23CurveBase<Ordinate,Pressure,OrdinateAlternative,0>::getOrdinate(S);
 		}
 };
-
+*/
 #endif

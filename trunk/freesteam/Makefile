@@ -9,7 +9,7 @@
 # PROJECT
 
 NAME = freesteam
-VERSION = 0.3.1
+VERSION = 0.4
 
 #---------------------------
 # CONFIGURATION
@@ -54,6 +54,10 @@ CPASS = $(wildcard *.cpass.cpp)
 CFAIL = $(wildcard *.cfail.cpp)
 
 TESTOBJS = steamtestpoint.o iapws95.o
+
+CLIS = diagram.cli.exe
+
+CLIOBJS = diagram.o
 
 LIB = libsteam.a
 
@@ -102,6 +106,8 @@ cleanctests:
 -include $(OBJS:.o=.d )
 -include $(TESTS:.o=.d)
 -include $(TESTOBJS:.o=.d)
+-include $(CLIS:.exe=.d)
+-include $(CLIOBJS:.o=.d)
 -include $(CPASS:.cpp=.d)
 -include $(CFAIL:.cpp=.d)
 
@@ -211,13 +217,16 @@ testheading:
 #-----------------------------
 # LITTLE COMMANDLINE DIAGNOSTIC PROGRAMS
 
-%.cli.exe: %.cli.o $(OBJS) 
-	$(CXX) $< $(OBJS) -o $@ $(LDFLAGS)
+%.cli.exe: %.cli.o $(OBJS) $(CLIOBJS)
+	$(CXX) $< $(OBJS) $(CLIOBJS) -o $@ $(LDFLAGS)
 
 critsurf.m: criticalsurface.cli.exe
 	./$< > $@
 
 pboundt.m: pboundt.cli.exe
+	./$< > $@
+
+diagram.m: diagram.cli.exe
 	./$< > $@
 
 #-----------------------------

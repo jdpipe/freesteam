@@ -107,7 +107,7 @@ class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 				z.setUpperBound(getUpperBound(flags));
 				//z.setUpperBound(fromcelsius(3.984));
 
-				z.setTolerance(0.000001 * Kelvin);
+				z.setTolerance(4e-7 * Kelvin);
 
 				if(flags & SAT_STEAM){
 					z.setMethod(&SatCurve::getAbscissaErrorSteam_T);

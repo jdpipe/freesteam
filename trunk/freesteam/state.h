@@ -8,16 +8,16 @@ class SteamState:public DesignByContract {
 
 		virtual int getRegion(void) const;
 
-		virtual SpecificVolume specvol(const SteamCalculator &c) const;
-		virtual SpecificEnergy specienergy(const SteamCalculator &c) const;
-		virtual SpecificEntropy specentropy(const SteamCalculator &c) const;
-		virtual SpecificEnergy specenthalpy(const SteamCalculator &c) const;
-		virtual SpecHeatCap speccp(const SteamCalculator &c) const;
-		virtual SpecHeatCap speccv(const SteamCalculator &c) const;
+		virtual SpecificVolume specvol(const SteamCalculator &c) const = 0;
+		virtual SpecificEnergy specienergy(const SteamCalculator &c) const = 0;
+		virtual SpecificEntropy specentropy(const SteamCalculator &c) const = 0;
+		virtual SpecificEnergy specenthalpy(const SteamCalculator &c) const = 0;
+		virtual SpecHeatCap speccp(const SteamCalculator &c) const = 0;
+		virtual SpecHeatCap speccv(const SteamCalculator &c) const = 0;
 
-		virtual Temperature temp(const SteamCalculator &c) const;
-		virtual Pressure pres(const SteamCalculator &c) const;
-		virtual Density dens(const SteamCalculator &c) const;
+		virtual Temperature temp(const SteamCalculator &c) const = 0;
+		virtual Pressure pres(const SteamCalculator &c) const = 0;
+		virtual Density dens(const SteamCalculator &c) const = 0;
 
 	protected:
 

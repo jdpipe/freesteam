@@ -58,7 +58,7 @@ Boundaries::getSatTemp_p(Pressure p) {
 	Num b = beta(p);
 	Num d = D(E(b), F(b), G(b));
 
-	double thet = (REGION4_N[10] + d - pow(sq(REGION4_N[10] + d) - 4.0 * (REGION4_N[9] + REGION4_N[10] * d), (Num) 0.5)) / 2;
+	double thet = (REGION4_N[10] + d - sqrt(sq(REGION4_N[10] + d) - 4.0 * (REGION4_N[9] + REGION4_N[10] * d))) / 2;
 
 	return thet * Kelvin;
 

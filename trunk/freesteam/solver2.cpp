@@ -79,12 +79,68 @@ Solver2<Pressure,SpecificEnergy,0,SOLVE_IENERGY>::whichRegion(const Pressure &p,
 }
 
 /**
+	whichRegion given p, h
+*/
+int
+Solver2<Pressure, SpecificEnergy, 0, SOLVE_ENTHALPY>::whichRegion(const Pressure &p, const SpecificEnergy &h){
+
+	SteamCalculator S;
+	S.setSatWater_T(T_REG1_REG3);
+	Pressure p_b134 = S.pres();
+
+	if(p <= p_b134){
+		SatCurve<SpecificEnergy,Pressure,SOLVE_ENTHALPY> SC;
+		SpecificEnergy h_f = SC.solve(p,SAT_WATER);
+
+		if(h <= h_f){
+			return 1;
+		}
+
+		SpecificEnergy h_g = SC.solve(p,SAT_STEAM);
+		if(h >= h_g){
+			return 2;
+		}
+
+		return 4;
+	}
+
+	B13Curve<SpecificEnergy,Pressure,SOLVE_ENTHALPY> B13;
+	SpecificEnergy h_b13 = B13.solve(p);
+	if(h <= h_b13){
+		return 1;
+	}
+
+	B23Curve<SpecificEnergy,Pressure,SOLVE_ENTHALPY> B23;
+	SpecificEnergy h_b23 = B23.solve(p);
+	if(h >= h_b23){
+		return 2;
+	}
+
+	// region 3 or region 4...
+
+	SatCurve<SpecificEnergy,Pressure,SOLVE_ENTHALPY> SC3;
+
+	SpecificEnergy h_f3 = SC3.solve(p,SAT_WATER);
+
+	if(h <= h_f3){
+		return 3;
+	}
+
+	SpecificEnergy h_g3 = SC3.solve(p,SAT_STEAM);
+	if(h >= h_g3){
+		return 3;
+	}
+	return 4;
+
+}
+
+/**
 	whichRegion given u, v
 */
 int
 Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const SpecificEnergy &u, const SpecificVolume &v){
 
-	//cerr << endl << "Solver2: whichRegion(u,v)...";
+	//cerr << endl << "Solver2<u,v>: whichRegion(u = " << u << ", v = " << v << ")...";
 
 	try{
 
@@ -139,7 +195,7 @@ Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const Specif
 			u_b34 = SC.solve(v,SAT_STEAM);
 
 			if(u > u_b34){
-				cerr << endl << "Solver2<u,v>::whichRegion: u > u_b34: REGION = 3";
+				//cerr << endl << "Solver2<u,v>::whichRegion: u > u_b34: REGION = 3";
 				return 3;
 			}
 
@@ -166,7 +222,7 @@ Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const Specif
 					}
 				}
 
-				cerr << endl << "Solver2<u,v>::whichRegion: u > u_crit, v < v_b23_Tmax or u < u_b23: REGION = 3";
+				//cerr << endl << "Solver2<u,v>::whichRegion: u > u_crit, v < v_b23_Tmax or u < u_b23: REGION = 3";
 				return 3;
 			}
 			// u < u_crit, v <= v_crit
@@ -214,7 +270,7 @@ Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const Specif
 			//cerr << endl <<"Solver2<u,v>::whichRegion: checking u <= u_b134:";
 
 			if(u > u_b134){
-				cerr << endl <<"Solver2<u,v>::whichRegion: u > u_b134 ( = " << u_b134 << "): REGION = 3";
+				//cerr << endl <<"Solver2<u,v>::whichRegion: u > u_b134 ( = " << u_b134 << "): REGION = 3";
 				return 3;
 			}
 
@@ -226,7 +282,7 @@ Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const Specif
 			v_b13 = B13C.solve(u);
 
 			if(v <= v_b13){
-				cerr << endl <<"Solver2<u,v>::whichRegion: v <= v_b13: REGION = 3";
+				//cerr << endl <<"Solver2<u,v>::whichRegion: v <= v_b13: REGION = 3";
 				return 3;
 			}
 

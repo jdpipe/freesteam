@@ -10,19 +10,35 @@
 #include <sstream>
 #include <string>
 
+/// Steam tables diagrams to plot with MATLAB
+/**
+	This class produces output which can be piped into an 'M-file' for MATLAB. It will generate plots on arbitrary sets of axes, showing the steam region boundaries for B13, B23, saturated steam line, saturated water line, as well as the limits of pressure and temperature according to IAPWS-IF97 release.
+
+	See diagram.cli.cpp for example usage.
+*/
 template<class Abscissa, class Ordinate, int AbsAlt=0, int OrdAlt=0>
 class Diagram{
 
 	public:
 
+		///Constructor
 		Diagram(){
 			// Intentionally empty
 		}
 
-		static const std::string getMatlabPlotType(){
-			return "plot";
-		}
+		/// Get the type for the matlab plot
+		/**
+			Some combinations of variables need to be placed on log-log plots, etc.
+			Use this method to specify the types of axes to be used by Matlab.
 
+			@todo: fix this, it doesn't seem to be working...
+		*/
+		static const std::string getMatlabPlotType();
+
+		/// Generate the M-file text and return it as a string
+		/**
+			This public method calls all the plot data methods and formats the graph with standard MATLAB commands
+		*/
 		std::string plot(){
 			std::stringstream s;
 

@@ -6,6 +6,8 @@
 #include "satcurve.h"
 #include "exception.h"
 #include "convergencetest.h"
+#include "b23curve.h"
+#include "boundaries.h"
 
 /// Base class for all two-property solvers
 /**
@@ -130,7 +132,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				}
 			}catch(Exception *E){
 				stringstream s;
-				s << "Solver2::solve (with region=" << region << "): " << E->what();
+				s << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::solve (no first guess; found region=" << region << "): " << E->what();
 				throw new Exception(s.str());
 			}
 
@@ -159,7 +161,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				}
 			}catch(Exception *E){
 				stringstream s;
-				s << "Solver2::solve (with region="<< region<<"): " << E->what();
+				s << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::solve (given first guess; found region="<< region<<"): " << E->what();
 				throw new Exception(s.str());
 			}
 		}
@@ -167,7 +169,182 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 	private:
 
 		SteamCalculator solveRegion3(const FirstProp &f1, const SecondProp &s1,const SteamCalculator &firstguess){
-			throw new Exception("solveRegion3 not implemented");
+			try{
+				// Iterate on rho, T
+
+				// Just like region 1, except for it's T,x
+
+				//cerr << endl << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::solveRegion3:";
+
+				SteamCalculator guess = firstguess;
+
+				//cerr << endl << "Solver2::solveRegion4: firstguess copied to guess OK";
+
+				if(firstguess.whichRegion()!=3){
+					throw new Exception("Solver2::solveRegion3: First guess is not region3");
+				}
+
+				SteamCalculator petT, petrho;
+				Temperature T,dT;
+				Density rho,drho;
+				FirstProp f,Df, DfT, Dfrho;
+				SecondProp s,Ds,DsT, Dsrho;
+				Pressure p;
+
+				// cerr << endl << "Solver2::solveRegion3: Starting iterations";
+
+
+				int niter=0;
+				while(1){
+
+					T = guess.temp();
+					rho = guess.dens();
+					p = guess.pres();
+
+					//cerr << endl << "Iter " << niter << ": T = " << T << ", rho = " << rho;
+
+					f = SteamProperty<FirstProp,FirstPropAlt>::get(guess);
+					s = SteamProperty<SecondProp,SecondPropAlt>::get(guess);
+
+					//cerr << ": " << SteamProperty<FirstProp,FirstPropAlt>::name() << " = " << f;
+					//cerr << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << " = " << s;
+
+					Df = f1 - f;
+					Ds = s1 - s;
+
+					// In this template it's hard to know the units of the convergence test, so make it as a new, separate, template:
+					if(
+						ConvergenceTest<FirstProp,FirstPropAlt>::test(Df,p,T)
+						&& ConvergenceTest<SecondProp,SecondPropAlt>::test(Ds,p,T)
+					){
+						// cerr << endl << "     ... SOLUTION OK (" << niter << " iterations)" << endl;
+						return guess;
+					}
+
+					dT = T * 0.001;
+
+					if(T + dT > T_MAX){
+						dT = -dT;
+					}
+
+					petT.setRegion3_rhoT(rho, T + dT);
+					ASSERT(petT.whichRegion()==3);
+
+					// ensure we don't go over rho limits
+					drho = rho * 0.001;
+					if(rho + drho > 50.0 * kg_m3){
+						drho = -drho;
+					}
+
+					petrho.setRegion3_rhoT(rho + drho, T);
+					ASSERT(petrho.whichRegion()==3);
+
+					DfT = SteamProperty<FirstProp,FirstPropAlt>::get(petT) - f;
+					DsT = SteamProperty<SecondProp,SecondPropAlt>::get(petT) - s;
+
+					Dfrho = SteamProperty<FirstProp,FirstPropAlt>::get(petrho) - f;
+					Dsrho = SteamProperty<SecondProp,SecondPropAlt>::get(petrho) - s;
+
+					ASSERT(DfT * Dsrho != DsT * Dfrho);
+
+					// Solve new peturbations
+					dT = dT * (Df*Dsrho - Ds*Dfrho) / (DfT*Dsrho - DsT*Dfrho);
+					drho = drho * (DfT*Ds - DsT*Df) / (DfT*Dsrho - DsT*Dfrho);
+
+					ASSERT(!isnan(dT));
+					ASSERT(!isnan(drho));
+
+					// Regulate maximum change in temperature
+
+					Temperature dTMax = 0.1 * T;
+					Temperature dTAbs = fabs(dT);
+					if(dTAbs > dTMax){
+						//cerr << endl << "      ... limiting dT, too great";
+						dT = dT * dTMax/dTAbs;
+					}
+
+					// Regulate max change in pressure
+
+					Density drhoMax = 0.4 * rho;
+					Density drhoAbs = fabs(drho);
+					if(drhoAbs > drhoMax){
+						cerr << endl << "      ... limiting drho, too great";
+						drho = drho * drhoMax/drhoAbs;
+					}
+
+					//cerr << endl << "     ... calculated dT = " << dT << ", drho = " << drho;
+					T = T + dT;
+					rho = rho + drho;
+
+					if(T > T_MAX){
+						cerr << endl << "     .... Applying T_MAX limit";
+						T = T_MAX;
+					}
+
+					if(T < T_REG1_REG3){
+						cerr << endl << "     .... Applying T_REG1_REG3 limit";
+						T = T_REG1_REG3;
+					}
+
+					Density rho_b134;
+					SteamCalculator S;
+					S.setSatWater_T(T_REG1_REG3);
+					rho_b134 = S.dens();
+					if(rho < rho_b134 && T < T_CRIT){
+						if(rho < RHO_CRIT){
+							Density rho_g = Boundaries::getSatDensSteam_T(T);
+							if(rho > rho_g){
+								rho = rho_g;
+							}
+						}else if(rho > RHO_CRIT){
+							Density rho_f = Boundaries::getSatDensWater_T(T);
+							if(rho <  rho_f){
+								rho = rho_f;
+							}
+						}
+
+					}
+
+					B23Curve<Density,Temperature> B23;
+					Density rho_b23 = B23.solve(T);
+					if(rho < rho_b23){
+						rho = rho_b23;
+					}
+
+					S.setRegion3_rhoT(rho,T);
+					int pmaxiter = 0;
+					if(S.pres() > P_MAX){
+						do{
+							cerr << endl << "    ... found p = " << S.pres() / MPa << " MPa";
+
+							drho *= 0.5001;
+							//dT *= 0.5001;
+							rho -= drho;
+							//T -= dT;
+							S.setRegion3_rhoT(rho,T);
+							cerr << endl << "     ... Applying P_MAX limit at T = " << T << ": rho = " << rho;
+							if(++pmaxiter > 20){
+								throw new Exception("Solver2::solveRegion3: Failed to find rho of P_MAX");
+							}
+
+						}while(S.pres() > P_MAX);
+						cerr << endl << "     ... pressure capped to " << S.pres();
+					}
+
+					guess.setRegion3_rhoT(rho,T);
+
+					niter++;
+
+					if(niter > maxiter){
+						throw new Exception("Solver2::solveRegion3: Exceeded maximum iterations");
+					}
+				}
+
+			}catch(Exception *E){
+				stringstream s;
+				s << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">:solveRegion3: " << E->what();
+				throw new Exception(s.str());
+			}
 		}
 
 		SteamCalculator solveRegion4(const FirstProp &f1, const SecondProp &s1,const SteamCalculator &firstguess){
@@ -580,7 +757,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				niter++;
 
 				if(niter > maxiter){
-					throw new Exception("Solver2::solveRegion1: Exceeded maximum iterations");
+					throw new Exception("Solver2::solveRegion2: Exceeded maximum iterations");
 				}
 			}
 

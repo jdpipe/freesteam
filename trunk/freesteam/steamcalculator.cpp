@@ -353,41 +353,6 @@ SteamCalculator::setB23_p(const Pressure &p){
 }
 
 //--------------------------------------------------------------------------
-
-/// Direct setting of rho,T for Region 3
-/**
-	@todo
-		Ensure rho, T are valid for region 3
-*/
-void
-SteamCalculator::setRegion3_rhoT(const Density &rho, const Temperature &T){
-
-	REQUIRE(!isnan(rho));
-
-	changeState(Region3::Instance());
-
-	this->rho = rho;
-	del = rho / REG3_DENS_REF;
-
-	this->T = T;
-	tau = REG3_TEMP_REF / T;
-
-	if(T >= T_CRIT){
-		x = -1;
-	}else{
-		if(rho > RHO_CRIT){
-			x = 0;
-		}else{
-			x = 1;
-		}
-	}
-
-	ENSURE(whichRegion()==3);
-
-	isset = true;
-}
-
-//--------------------------------------------------------------------------
 // Methods for saturated liquid/gas.
 
 /// Has the state of the SteamCalculator been initialised?
@@ -1016,3 +981,39 @@ SteamCalculator::setRegion4_Tx(const Temperature &T, const Num &x){
 		throw new Exception(s.str());
 	}
 }
+
+//--------------------------------------------------------------------------
+
+/// Direct setting of rho,T for Region 3
+/**
+	@todo
+		Ensure rho, T are valid for region 3
+*/
+void
+SteamCalculator::setRegion3_rhoT(const Density &rho, const Temperature &T){
+
+	REQUIRE(!isnan(rho));
+
+	changeState(Region3::Instance());
+
+	this->rho = rho;
+	del = rho / REG3_DENS_REF;
+
+	this->T = T;
+	tau = REG3_TEMP_REF / T;
+
+	if(T >= T_CRIT){
+		x = -1;
+	}else{
+		if(rho > RHO_CRIT){
+			x = 0;
+		}else{
+			x = 1;
+		}
+	}
+
+	ENSURE(whichRegion()==3);
+
+	isset = true;
+}
+

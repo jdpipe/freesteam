@@ -58,4 +58,9 @@ class SteamAlmostSaturatedException:public Exception {
 		Pressure p;
 		Temperature T;
 };
+
+class OverPressureException : public Exception {
+	OverPressureException(string message);
+};
+
 #endif

@@ -18,7 +18,7 @@ class Solver2Test : public CppUnit::TestFixture{
 
 		SteamCalculator S;
 
-		void testUV(const SteamCalculator &S,bool verbose=false){
+		void testUV(const SteamCalculator &S,int asserted_region, bool verbose=false){
 			try{
 				Pressure p = S.pres();
 				Temperature T = S.temp();
@@ -33,6 +33,14 @@ class Solver2Test : public CppUnit::TestFixture{
 				}
 
 				Solver2<SpecificEnergy,SpecificVolume> SS;
+
+				int region = SS.whichRegion(u,v);
+				if(region != asserted_region){
+					stringstream s;
+					s << "testUV: expected region was " << asserted_region << " but whichRegion(u = " << u << ", v = " << v << ") gives " << region;
+					CPPUNIT_FAIL(s.str());
+				}
+
 				SteamCalculator S2 = SS.solve( u, v);
 
 				SteamPropertyTest<Pressure>::test( S2, p, 0.01 * bar);
@@ -58,7 +66,7 @@ class Solver2Test : public CppUnit::TestFixture{
 				for(Pressure p = pmin + pstep * 0.5 ; p <= pmax; p +=pstep){
 					SteamCalculator S;
 					S.setRegion1_pT(p,T);
-					testUV(S);
+					testUV(S,1);
 				}
 			}
 		}
@@ -100,7 +108,7 @@ class Solver2Test : public CppUnit::TestFixture{
 					//cerr << endl << "Solver2Test::testRegion2: p = " << p;
 					SteamCalculator S;
 					S.setRegion2_pT(p,T);
-					testUV(S);
+					testUV(S,2);
 				}
 
 				i++;
@@ -121,17 +129,78 @@ class Solver2Test : public CppUnit::TestFixture{
 				xmin = 0.0;
 				xmax = 1.0;
 
-				xstep = (xmax - xmin) / double(50);
+				xstep = (xmax - xmin) / double(50 - i / 2);
 
 				for(Num x = xmin; x <= xmax; x +=xstep){
 					SteamCalculator S;
 					S.setRegion4_Tx(T,x);
-					testUV(S);
+					testUV(S,4);
 				}
 
 				i++;
 			}
 		}
+
+		/**
+			@todo
+				Fix this so to use some kind of rho_pmax(T) rootfinder...
+		*/
+		void testRegion3(){
+
+			try{
+				Temperature Tmin,Tmax, Tstep;
+				Density rhomin,rhomax, rhostep;
+				SteamCalculator S;
+
+				Tmin = T_REG1_REG3;
+				//Tmin = 735.65 * Kelvin;
+
+				Tmax = TB_HIGH;
+
+				Tstep = (Tmax - Tmin) / double(50);
+
+				for(Temperature T=Tmin + Tstep * 0.5; T<=Tmax - Tstep*0.5; T += Tstep){
+
+					S.setB23_T(T);
+					rhomin = S.dens() + 0.0001 * kg_m3;
+
+					// where is the maximum density???
+
+					Density rhomax = 380.0 * kg_m3 + ( T - 855.0 * Kelvin) / (T_REG1_REG3 - 855.0 * Kelvin) * (750.0 * kg_m3 -  380.0 * kg_m3);
+
+					cerr << endl << "Solver2Test::testRegion3: With T = " << T << " (" << tocelsius(T) << "°C), rhomax = " << rhomax;
+
+					rhostep = (rhomax - rhomin) / double(30);
+					for(Density rho=rhomin + rhostep * 0.5; rho<=rhomax - rhostep*0.5; rho+=rhostep){
+
+						if(T < T_CRIT){
+							// here we need to calculate two different branches, one on either side of the saturated region 4 portion.
+
+							S.setSatSteam_T(T);
+							Density rho_g = S.dens();
+
+							S.setSatWater_T(T);
+							Density rho_f = S.dens();
+
+							if(rho >= rho_g && rho <= rho_f){
+								cerr << endl << "Solver2Test:testRegion3: skipping with rho = " << rho;
+								continue;
+							}
+						}
+
+						S.setRegion3_rhoT(rho,T);
+						cerr << endl << "Solver2Test::testRegion3: rho = " << rho << ", T = " << T << " (" << tocelsius(T) << ";°C)";
+
+						testUV(S,3);
+					}
+				}
+			}catch(Exception *E){
+				stringstream s;
+				s << "Solver2Test::testRegion3: " << E->what();
+				CPPUNIT_FAIL(s.str());
+			}
+		}
+
 
 		public:
 
@@ -141,6 +210,8 @@ class Solver2Test : public CppUnit::TestFixture{
 		CPPUNIT_TEST(testRegion4);
 		CPPUNIT_TEST(testRegion1);
 		CPPUNIT_TEST(testRegion2);
+		CPPUNIT_TEST(testRegion3);
+
 		CPPUNIT_TEST_SUITE_END();
 
 };
