@@ -5,7 +5,7 @@
 #include "steamcalculator.h"
 
 class Boundaries:public DesignByContract {
-	
+
 	public:
 
 		static bool isValid_pT(Pressure p, Temperature T, bool throw_me =
@@ -16,13 +16,16 @@ class Boundaries:public DesignByContract {
 		                             false);
 		static bool isRegion3_pT(Pressure p, Temperature T, bool throw_me =
 		                             false);
-		static bool isSat_pT(Pressure p, Temperature T, bool throw_me = false);	// (region 4)
+		//static bool isSat_pT(Pressure p, Temperature T, bool throw_me = false);	// (region 4)
 		static bool isBound_pT(Pressure p, Temperature T, bool throw_me = false);	// curved boundary roughly below region 2
-	
-	
+
 		// Region 4 boundary: the following should be 100% consistent, FPU errors aside:
 		static Pressure getSatPres_T(Temperature T);	// Forwards equation
 		static Temperature getSatTemp_p(Pressure p);	// Backwards equation
+
+		// Region 4 boundary for T > TB_LOW
+		static Density getSatDensWater_T(const Temperature &T);
+		static Density getSatDensSteam_T(const Temperature &T);
 
 		static Pressure getpbound_T(Temperature T, bool throw_me = false);	// use this function wherever possible
 		static Temperature getTbound_p(Pressure p, bool throw_me = false);	// in preference to this one.

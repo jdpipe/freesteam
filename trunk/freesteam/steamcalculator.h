@@ -41,15 +41,15 @@ typedef enum { STEAM_TEMPERATURE =
 
 /**
 	@mainpage
-	
+
 	@section intro Introduction
-	
+
 	This is the C++ class documentation for freesteam, generated using the doxygen tool. Please visit http://freesteam.sf.net/ for the latest information on freesteam.
-	
+
 	Freesteam implements the international-standard steam tables from the International Association for the Properties of Water and Steam, IAPWS. The correlations for both IAPWS-IF97 and IAPWS-95 are provided, although the emphasis is on the use of the IAPWS-IF97 correlation.
-	
+
 	@section license License
-	
+
 	freesteam - IAPWS-IF97 steam tables library \n
 	Copyright (C) 2004-2005  John Pye
 
@@ -66,15 +66,15 @@ typedef enum { STEAM_TEMPERATURE =
 	You should have received a copy of the GNU General Public License
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-	
-	@see http://www.gnu.org/copyleft/copyleft.html		
+
+	@see http://www.gnu.org/copyleft/copyleft.html
 */
 
 /// Core class - define steam state in terms of p,T and optionally x
 /**
 	@example
 		To find the enthalpy of steam at p = 10 bar, T = 250 °C,
-		
+
 		@code
 			SteamCalculator S;
 			S.set_pT(10.0 * bar, fromcelsius(250));
@@ -87,22 +87,22 @@ class SteamCalculator:public DesignByContract {
 
 		//// Constructor
 		SteamCalculator();
-		
+
 		/// Copy constructor
 		SteamCalculator(const SteamCalculator & original);
-		
+
 		/// Copy operation, virtual
 		virtual void copy(const SteamCalculator & original);
-		
+
 		/// Assignment operator (assigns a copy)
 		SteamCalculator const &operator=(SteamCalculator const &original);
-		
+
 		// Destructor
 		~SteamCalculator();
-		
+
 		// Defining state, simple methods
 		void set_pT(const Pressure &p, const Temperature &T, double x = -1);	// pressure [MPa]
-		void set_rhoT(const Density &rho, const Temperature &T);	// will throw an error if not valid point in region 3
+		void setRegion3_rhoT(const Density &rho, const Temperature &T);	// will throw an error if not valid point in region 3
 
 		void changeState(SteamState * state);
 
@@ -110,13 +110,14 @@ class SteamCalculator:public DesignByContract {
 		void setSatWater_p(const Pressure &p);	// p Pressure [MPa]
 		void setSatWater_T(const Temperature &T);	// T Temperature [K]
 		void setSatSteam_T(const Temperature &T);	// T Temperature [K]
-		
+
 		void setB23_T(const Temperature &T);
 		void setB23_p(const Pressure &p);
-		
+
 		void setRegion1_pT(const Pressure &p, const Temperature &T);
 		void setRegion2_pT(const Pressure &p, const Temperature &T);
-		
+		void setRegion4_Tx(const Temperature &T, const Num &x);
+
 		bool isSet(void) const;
 
 		#ifndef NDEBUG
@@ -127,7 +128,7 @@ class SteamCalculator:public DesignByContract {
 		// Methods to return properties and state
 
 		int whichRegion(void) const;
-		
+
 		SteamStateCode whichState(void);
 		const char *SteamCalculator::whichStateStr(void);
 
@@ -146,17 +147,17 @@ class SteamCalculator:public DesignByContract {
 		METHOD_SC(conductivity,  Conductivity);	    // Conductivity
 
 		//void setTarget(SteamPropertyCode p, Num value);
-		
+
 		/*
 		HOW TO IMPLEMENT THE SOLVER WITH THESE STRONGLY TYPED THINGOS?
-		
+
 		template<SteamPropertyCode prop>
-		Temperature 
+		Temperature
 		solveTemperature(){
-		
+
 			ZeroIn<SteamCalculator,prop,
 		*/
-								
+
 		//Temperature solveTemperature();
 
 		//Pressure solvePressure();
@@ -180,7 +181,7 @@ class SteamCalculator:public DesignByContract {
 		friend class ZeroIn < SteamCalculator, Density, Temperature >;
 		friend class ZeroIn < SteamCalculator, SpecificEnergy, Pressure >;
 		friend class ZeroIn < SteamCalculator, Pressure, Density >;
-					
+
 		METHOD_SC_NUM(tau_iaps85);
 		METHOD_SC_NUM(del_iaps85);
 		METHOD_SC_NUM(pi_iaps85);
@@ -205,7 +206,7 @@ class SteamCalculator:public DesignByContract {
 		Pressure p;			                ///< Pressure MPa
 		Density rho;		                ///< Density, used by Region 3 only
 		Num x;		                        ///< Quality, used by Region 4
-		
+
 		Num tau;	                        ///< Internal variable in IAPWS calcs
 		Num pi;		                        ///< Internal variable in IAPWS calcs
 		Num del;		                    ///< Internal variable in IAPWS calcs
@@ -216,7 +217,7 @@ class SteamCalculator:public DesignByContract {
 		bool isset;		///< boolean flag @see isSet()
 
 		void destroy();
-		
+
 		template <class Abscissa,class Ordinate>
 		void accept(ZeroIn<SteamCalculator, Abscissa, Ordinate> *z){
 			z->visit(this);

@@ -9,11 +9,11 @@
 using namespace std;
 
 class Region4TestPoint{
-	
+
 	public:
 		Pressure p;
 		Temperature T;
-	
+
 		/**
 			Constructor uses doubles to facilitate initialisation from arrays.
 			@param p Pressure / MPa
@@ -23,41 +23,51 @@ class Region4TestPoint{
 			this->T = T * Kelvin;
 			this->p = p * MPa;
 		}
-		
+
 		void test(double tol) const{
-			
-			// Test forwards equation
-			Pressure p_sat = Boundaries::getSatPres_T(T);
-			if(fabs(p - p_sat)/p_sat > tol){
+
+			try{
+
+				// Test forwards equation
+				Pressure p_sat = Boundaries::getSatPres_T(T);
+				if(fabs(p - p_sat)/p_sat > tol){
+					stringstream s;
+					s.flags(ios_base::showbase);
+					s << "Saturation-Pressure Basic Equation gave wrong value at T = " << T;
+					s << "(calculated value was " << p_sat << ", expected " << p << ")";
+					CPPUNIT_FAIL(s.str());
+				}
+
+				/*
+				Temperature T_sat = Boundaries::getSatTemp_p(p);
+				if(fabs(T_sat - T)/T > tol){
+					stringstream s;
+					s.flags(ios_base::showbase);
+					s << "Saturation-Pressure Basic Equation gave wrong value at T = " << T;
+					s << "(calculated value was " << T_sat << ", expected " << T << ", with p = " << p << ")";
+					CPPUNIT_FAIL(s.str());
+				}
+				*/
+
+			}catch(Exception *E){
 				stringstream s;
-				s.flags(ios_base::showbase);
-				s << "Saturation-Pressure Basic Equation gave wrong value at T = " << T;
-				s << "(calculated value was " << p_sat << ", expected " << p << ")";
-				CPPUNIT_FAIL(s.str());
-			}
-			
-			Temperature T_sat = Boundaries::getSatTemp_p(p);
-			if(fabs(T_sat - T)/T > tol){
-				stringstream s;
-				s.flags(ios_base::showbase);
-				s << "Saturation-Pressure Basic Equation gave wrong value at T = " << T;
-				s << "(calculated value was " << T_sat << ", expected " << T << ", with p = " << p << ")";
+				s << "Region4TestPoint::test: " << E->what();
 				CPPUNIT_FAIL(s.str());
 			}
 		}
-		
+
 	public:
-	
+
 };
-	
-	
-class Region4RefDataTest : public BatchTest<Region4TestPoint > {
-		
+
+
+class Region4Test : public BatchTest<Region4TestPoint > {
+
 	public:
 
 		// Invoke CPPUNIT macros to add tests to a suite:
 
-		CPPUNIT_TEST_SUITE(Region4RefDataTest);
+		CPPUNIT_TEST_SUITE(Region4Test);
 		CPPUNIT_TEST(testAllPoints);
 		CPPUNIT_TEST_SUITE_END();
 
@@ -97,4 +107,4 @@ in this table.
 		}
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION(Region4RefDataTest);
+CPPUNIT_TEST_SUITE_REGISTRATION(Region4Test);

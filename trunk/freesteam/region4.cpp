@@ -31,20 +31,20 @@ SteamState *Region4::Instance() {
 void Region4::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T,
                           Num x) {
 	// SteamCalculator will already have checked that these are saturated values:
-	
-	REQUIRE(Boundaries::isSat_pT(p,T));
+
+	//REQUIRE(Boundaries::isSat_pT(p,T));
 	REQUIRE(x >=0);
 	REQUIRE(x <=1);
-	
+
 	c.gas = new SteamCalculator();
-	c.gas->setSatSteam_p(p);
+	c.gas->setSatSteam_T(T);
 	c.liq = new SteamCalculator();
-	c.liq->setSatWater_p(p);
+	c.liq->setSatWater_T(T);
 	c.x = x;
 	c.p = p;
 	c.T = T;
 	c.isset = true;
-	
+
 	ENSURE(c.whichRegion() == 4);
 }
 

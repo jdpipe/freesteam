@@ -18,21 +18,21 @@ template<class FirstProp,class SecondProp,int FirstPropAlt=0, int SecondPropAlt=
 class Solver2Base{
 
 	protected:
-	
+
 		Solver2Base(){}
-	
+
 		virtual int whichRegion(const FirstProp &fp,const SecondProp &sp) const{
 			throw new Exception("Solver2Base::whichRegion() not implemented!");
 		}
-		
+
 		virtual SteamCalculator solve(const FirstProp &fp, const SecondProp &sp){
 			throw new Exception("Solver2Base::solve must be over-ridden");
 		}
-	
+
 		FirstProp getFirstProp(SteamCalculator &S){
 			return SteamProperty<FirstProp,FirstPropAlt>::get(S);
 		}
-		
+
 		SecondProp getSecondProp(SteamCalculator &S){
 			return SteamProperty<SecondProp,SecondPropAlt>::get(S);
 		}
@@ -40,25 +40,25 @@ class Solver2Base{
 };
 
 ///	Solver class for the steam tables
-/**	
+/**
 	This is intended to be a general purpose way of defining steam state in terms of any combination of properties, eg to find the pressure at which rho = 1.1 kg/m3 and u = 2500 kJ/kg, use:
-	
+
 		@code
 			Solver2<Density,SpecificEnergy> SS;
 			SteamCalculator S = SS.solve(1.1 * kg_m3, 2500.0 * kJ_kg);
 			cerr << S->pres() << endl;
 		@endcode
-		
+
 	Likewise, even with one of the properties being a correlation property, just use
-	
+
 		@code
 			Solver2<Temperature,SpecificEnergy> SS;
 			SteamCalculator S = SS.solve(450.0 * Kelvin, 2500.0 * kJ_kg);
 			cerr << S->pres() << endl;
 		@endcode
-		
+
 	Or even,
-	
+
 		@code
 			Solver2<Temperature,Pressure> SS;
 			SteamCalculator S = SS.solve(450.0 * Kelvin, 10.0 * bar);
@@ -66,24 +66,24 @@ class Solver2Base{
 		@endcode
 
 	@see Solver (solving for one un-correlated property)
-*/		
+*/
 template<class FirstProp,class SecondProp,int FirstPropAlt=0, int SecondPropAlt=0>
-class Solver2 
+class Solver2
 	: public Solver2Base<FirstProp,SecondProp,FirstPropAlt,SecondPropAlt>{
-	
+
 	private:
 		static const int maxiter=30;
-		
+
 	public:
-		
+
 		Solver2(){
 			//cerr << endl <<"Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::Solver2()";
 		}
-		
+
 		/// Give the IAPWS-IF97 region number given (any combination of) property values
 		/**
 			Used in the same way as Solver2::solve but the solution is not done, only the region is found.
-			
+
 			@param fp Value of FirstProp property
 			@param sp Value of SecondProp property
 
@@ -95,7 +95,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 @endcode
 		*/
 		int whichRegion(const FirstProp &fp, const SecondProp &sp);
-		
+
 		/// Solve with no first guess provided
 		/**
 			@param fp Value of FirstProp property
@@ -104,12 +104,12 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 		SteamCalculator solve(const FirstProp &fp, const SecondProp &sp){
 			int region = 0;
 			SteamCalculator S;
-			
+
 			try{
 				//cerr << endl << "Solver2: solving for " << SteamProperty<FirstProp,FirstPropAlt>::name() << " = " << fp << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << " = " <<  sp;
 
-				region = whichRegion(fp,sp);		
-				
+				region = whichRegion(fp,sp);
+
 				//cerr << endl << "Solver2: solving in region " << region;
 				switch(region){
 					case 1:
@@ -119,7 +119,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 						S.set_pT(6.0 * MPa, fromcelsius(400));
 						return solveRegion2(fp,sp,S);
 					case 3:
-						S.set_rhoT(1 / 0.00317 * kg_m3, fromcelsius(400));
+						S.setRegion3_rhoT(1 / 0.00317 * kg_m3, fromcelsius(400));
 						return solveRegion3(fp,sp,S);
 					case 4:
 						S.setSatSteam_T(fromcelsius(263.9));
@@ -131,7 +131,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				throw new Exception(s.str());
 			}
 		}
-		
+
 		/// Solve with a first guess provided
 		/**
 			@param fp Value of FirstProp property
@@ -157,36 +157,40 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				throw new Exception(s.str());
 			}
 		}
-	
+
 	private:
-	
+
 		SteamCalculator solveRegion3(const FirstProp &f1, const SecondProp &s1,const SteamCalculator &firstguess){
 			throw new Exception("solveRegion3 not implemented");
 		}
 
 		SteamCalculator solveRegion4(const FirstProp &f1, const SecondProp &s1,const SteamCalculator &firstguess){
+
+			// Just like region 1, except for it's T,x
+
+
 			throw new Exception("solveRegion4 not implemented");
 		}
-	
+
 		SteamCalculator solveRegion1(const FirstProp &f1, const SecondProp &s1,const SteamCalculator &firstguess){
-			
+
 			SteamCalculator guess = firstguess;
-			
+
 			if(firstguess.whichRegion()!=1){
 				throw new Exception("Solver2::solveRegion1: First guess is not region 1");
 			}
-			
+
 			SteamCalculator petT, petp;
 			Temperature T,dT;
 			Pressure p,dp;
 			FirstProp f,Df, DfT, Dfp;
 			SecondProp s,Ds,DsT, Dsp;
-			
+
 			int niter=0;
 			// If we are in region 1, then we will be iterating with pressure and temperature
-			
+
 			while(1){
-				
+
 				T = guess.temp();
 				p = guess.pres();
 
@@ -194,18 +198,18 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 				f = SteamProperty<FirstProp,FirstPropAlt>::get(guess);
 				s = SteamProperty<SecondProp,SecondPropAlt>::get(guess);
-				
+
 				//cerr << ": " << SteamProperty<FirstProp,FirstPropAlt>::name() << " = " << f;
 				//cerr << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << " = " << s;
-				
+
 				Df = f1 - f;
 				Ds = s1 - s;
-					
+
 				// In this template it's hard to know the units of the convergence test, so make it as a new, separate, template:
 				if(
 					ConvergenceTest<FirstProp,FirstPropAlt>::test(Df,p,T)
 					&& ConvergenceTest<SecondProp,SecondPropAlt>::test(Ds,p,T)
-				){	
+				){
 					//cerr << endl << "     ... SOLUTION OK" << endl;
 					return guess;
 				}
@@ -215,10 +219,10 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				if(T + dT < T_TRIPLE){
 					dT = -dT;
 				}
-				
+
 				petT.set_pT(p,T + dT);
 				ASSERT(petT.whichRegion()==1);
-				
+
 				// ensure we don't go over p limits
 				dp = p * 0.001;
 				if(p > 99.0 * MPa){
@@ -228,7 +232,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				petp.set_pT(p + dp, T);
 				ASSERT(petp.whichRegion()==1);
 
-				DfT = SteamProperty<FirstProp,FirstPropAlt>::get(petT) - f; 
+				DfT = SteamProperty<FirstProp,FirstPropAlt>::get(petT) - f;
 				DsT = SteamProperty<SecondProp,SecondPropAlt>::get(petT) - s;
 
 				Dfp = SteamProperty<FirstProp,FirstPropAlt>::get(petp) - f;
@@ -237,25 +241,25 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				// Solve new peturbations
 				dT = dT * (Df*Dsp - Ds*Dfp) / (DfT*Dsp - DsT*Dfp);
 				dp = dp * (DfT*Ds - DsT*Df) / (DfT*Dsp - DsT*Dfp);
-				
+
 				// Regulate maximum change in temperature
-				
+
 				Temperature dTMax = 0.1 * T;
 				Temperature dTAbs = fabs(dT);
 				if(dTAbs > dTMax){
 					//cerr << endl << "      ... limiting dT, too great";
 					dT = dT * dTMax/dTAbs;
 				}
-				
+
 				// Regulate max change in pressure
-				
+
 				Pressure dpMax = 0.2 * p;
 				Pressure dpAbs = fabs(dp);
 				if(dpAbs > dpMax){
 					//cerr << endl << "      ... limiting dp, too great";
 					dp = dp * dpMax/dpAbs;
 				}
-				
+
 				//cerr << endl << "     ... calculated dT = " << dT << ", dp = " << dp;
 				T = T + dT;
 				p = p + dp;
@@ -283,42 +287,42 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 						p = p_sat;
 					}
 				}
-				
+
 				ASSERT(guess.whichRegion()==1);
 				ASSERT(Boundaries::isRegion1_pT(p,T));
-				
+
 				guess.setRegion1_pT(p,T);
-				
+
 				niter++;
-				
+
 				if(niter > maxiter){
 					throw new Exception("Solver2::solveRegion1: Exceeded maximum iterations");
 				}
 			}
 		}
-				
+
 		SteamCalculator solveRegion2(const FirstProp &f1, const SecondProp &s1,const SteamCalculator &firstguess){
-			
+
 			// Most of this is the same as for solveRegion1:
-			
+
 			//cerr << endl << "---------------------------------" << endl << "SOLVE REGION 2";
 			SteamCalculator guess = firstguess;
-			
+
 			if(firstguess.whichRegion()!=2){
 				throw new Exception("Solver2::solveRegion2: First guess is not region 2");
 			}
-			
+
 			SteamCalculator petT, petp;
 			Temperature T,dT;
 			Pressure p,dp;
 			FirstProp f,Df, DfT, Dfp;
 			SecondProp s,Ds,DsT, Dsp;
-			
+
 			int niter=0;
 			// If we are in region 1, then we will be iterating with pressure and temperature
-			
+
 			while(1){
-				
+
 				T = guess.temp();
 				p = guess.pres();
 
@@ -326,17 +330,17 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 				f = SteamProperty<FirstProp,FirstPropAlt>::get(guess);
 				s = SteamProperty<SecondProp,SecondPropAlt>::get(guess);
-				
+
 				//cerr << ": " << SteamProperty<FirstProp,FirstPropAlt>::name() << " = " << f;
 				//cerr << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << " = " << s;
-				
+
 				Df = f1 - f;
 				Ds = s1 - s;
-					
+
 				if(
 					ConvergenceTest<FirstProp,FirstPropAlt>::test(Df,p,T)
 					&& ConvergenceTest<SecondProp,SecondPropAlt>::test(Ds,p,T)
-				){	
+				){
 					//cerr << endl << "     ... SOLUTION OK" << endl;
 					return guess;
 				}
@@ -348,7 +352,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				}
 				petT.set_pT(p,T+ dT);
 				ASSERT(petT.whichRegion()==2);
-				
+
 				// Peturb p but keep above P_TRIPLE
 				dp = -p * 0.001;
 				if(p + dp < P_TRIPLE){
@@ -357,7 +361,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				petp.set_pT(p + dp, T);
 				ASSERT(petp.whichRegion()==2);
 
-				DfT = SteamProperty<FirstProp,FirstPropAlt>::get(petT) - f; 
+				DfT = SteamProperty<FirstProp,FirstPropAlt>::get(petT) - f;
 				DsT = SteamProperty<SecondProp,SecondPropAlt>::get(petT) - s;
 
 				Dfp = SteamProperty<FirstProp,FirstPropAlt>::get(petp) - f;
@@ -366,25 +370,25 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				// Solve new peturbations
 				dT = dT * (Df*Dsp - Ds*Dfp) / (DfT*Dsp - DsT*Dfp);
 				dp = dp * (DfT*Ds - DsT*Df) / (DfT*Dsp - DsT*Dfp);
-				
+
 				// Regulate maximum change in temperature
-				
+
 				Temperature dTMax = 0.1 * T;
 				Temperature dTAbs = fabs(dT);
 				if(dTAbs > dTMax){
 					//cerr << endl << "      ... limiting dT, too great";
 					dT = dT * dTMax/dTAbs;
 				}
-				
+
 				// Regulate max change in pressure
-				
+
 				Pressure dpMax = 0.5 * p;
 				Pressure dpAbs = fabs(dp);
 				if(dpAbs > dpMax){
 					//cerr << endl << "      ... limiting dp, too great";
 					dp = dp * dpMax/dpAbs;
 				}
-				
+
 				//cerr << endl << "     ... calculated dT = " << dT << ", dp = " << dp;
 				T = T + dT;
 				p = p + dp;
@@ -415,20 +419,20 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 						p = psat;
 					}
 				}
-				
+
 				ASSERT(guess.whichRegion()==2);
 				ASSERT(Boundaries::isRegion2_pT(p,T));
-				
+
 				guess.setRegion2_pT(p,T);
-				
+
 				niter++;
-				
+
 				if(niter > maxiter){
 					throw new Exception("Solver2::solveRegion1: Exceeded maximum iterations");
 				}
 			}
 
-		}			
+		}
 };
 
 

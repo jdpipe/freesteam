@@ -16,7 +16,7 @@ using namespace std;
 
 /**
 	In region 3, points are defined in terms of temp,density, so define them that way here
-	
+
 	NOTE this approach will introduce some errors since rootfinding is used to find the target pres value, rather than defining the given rho.
 */
 class Region3TestPoint : public SteamTestPoint {
@@ -29,29 +29,35 @@ class Region3TestPoint : public SteamTestPoint {
 		}
 
 		void test(double tol) const{
-			
-			SteamCalculator S;
-			
-			cerr.flags(ios_base::showbase);
-			
-			//cerr << endl << "TESTPOINT: p = " << pres << ", T = " << temp;
-			
-			S.set_pT(pres, temp);
 
-			CPPUNIT_ASSERT_EQUAL(3,S.whichRegion());
+			try{
+				SteamCalculator S;
 
-			CHECK_RESULT(pres,     pres);
-			CHECK_RESULT(specvol,     v);
-			CHECK_RESULT(specentropy, s);
-			CHECK_RESULT(speccp,      cp);
-			CHECK_RESULT(specienergy, u);
-			CHECK_RESULT(specenthalpy,h);
+				cerr.flags(ios_base::showbase);
+
+				//cerr << endl << "TESTPOINT: p = " << pres << ", T = " << temp;
+
+				S.set_pT(pres, temp);
+
+				CPPUNIT_ASSERT_EQUAL(3,S.whichRegion());
+
+				CHECK_RESULT(pres,     pres);
+				CHECK_RESULT(specvol,     v);
+				CHECK_RESULT(specentropy, s);
+				CHECK_RESULT(speccp,      cp);
+				CHECK_RESULT(specienergy, u);
+				CHECK_RESULT(specenthalpy,h);
+			}catch(Exception *E){
+				stringstream s;
+				s << "Region3TestPoint::test: " << E->what();
+				CPPUNIT_FAIL(s.str());
+			}
 		}
 };
 
 
 
-class Region3RefDataTest : public BatchTest<Region3TestPoint>{
+class Region3Test : public BatchTest<Region3TestPoint>{
 
 	private:
 
@@ -62,7 +68,7 @@ class Region3RefDataTest : public BatchTest<Region3TestPoint>{
 
 	public:
 
-		CPPUNIT_TEST_SUITE(Region3RefDataTest);
+		CPPUNIT_TEST_SUITE(Region3Test);
 		CPPUNIT_TEST(testAllPoints);
 		CPPUNIT_TEST_SUITE_END();
 
@@ -71,9 +77,9 @@ class Region3RefDataTest : public BatchTest<Region3TestPoint>{
 		void setUp() {
 
 			setTolerance(5e-4);
-			
+
 			cerr << setprecision(15);
-			
+
 			data.
 			push_back(Region3TestPoint
 			          (650.00000000, 500.0000, 0.255837018E2,
@@ -101,4 +107,4 @@ class Region3RefDataTest : public BatchTest<Region3TestPoint>{
 
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION(Region3RefDataTest);
+CPPUNIT_TEST_SUITE_REGISTRATION(Region3Test);

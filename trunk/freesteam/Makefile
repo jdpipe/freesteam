@@ -9,7 +9,7 @@
 # PROJECT
 
 NAME = freesteam
-VERSION = 0.2
+VERSION = 0.3
 
 #---------------------------
 # CONFIGURATION
@@ -19,7 +19,7 @@ CXX = g++
 
 CPPFLAGS = -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -W
 CXXFLAGS = -fmessage-length=0 -O3 -ggdb
-LDFLAGS = -lncurses -lc -lm -L/lib/ -O3
+LDFLAGS = -lncurses -lc -lm -L/lib/ -L/usr/local/lib/ -O3
 
 CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
 
@@ -34,8 +34,9 @@ OBJS = steamcalculator.o state.o region1.o region2.o region3.o region4.o boundar
 # Or, define the tests in the order you want:
 TESTS = cppunit.test.o empty.test.o units.test.o batchtest.test.o \
 	zeroin.test.o \
-	region4.test.o b23.test.o boundaries.test.o region1.test.o \
-	region2.test.o region3.test.o \
+	region4.test.o b23.test.o boundaries.test.o \
+	rhosat.test.o \
+	region1.test.o region2.test.o region3.test.o \
 	b234point.test.o \
 	criticalpoint.test.o \
 	lowpressure.test.o \

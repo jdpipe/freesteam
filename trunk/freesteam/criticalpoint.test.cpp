@@ -9,40 +9,40 @@
 using namespace std;
 
 class CriticalPointTest : public CppUnit::TestFixture{
-			
+
 	public:
 
 		void setUp(){
 			S.setSatSteam_T(T_CRIT);
 		}
 		void tearDown(){}
-	
+
 	private:
-	
+
 	protected:
 
 		SteamCalculator S;
-		
+
 		void testSetAsSteamT(){
 			S.setSatSteam_T(T_CRIT);
 			cerr << " (region = " << S.whichRegion() << ")";
 		}
-		
-		void testSetAsSteamP(){
+
+		/*void testSetAsSteamP(){
 			S.setSatSteam_p(P_CRIT);
 			cerr << " (region = " << S.whichRegion() << ")";
 		}
-		
+		*/
 		void testSetAsWaterT(){
 			S.setSatWater_T(T_CRIT);
 			cerr << " (region = " << S.whichRegion() << ")";
 		}
-		
-		void testSetAsWaterP(){
+
+		/*void testSetAsWaterP(){
 			S.setSatWater_p(P_CRIT);
 			cerr << " (region = " << S.whichRegion() << ")";
 		}
-		
+		*/
 		void testV(){
 			SpecificVolume v = 0.00310559 * m3_kg;
 			if(fabs(S.specvol() - v) > 0.00001 * m3_kg){
@@ -93,21 +93,25 @@ class CriticalPointTest : public CppUnit::TestFixture{
 		CPPUNIT_TEST(testU);
 		CPPUNIT_TEST(testH);
 		CPPUNIT_TEST(testS);
+		/*
 		CPPUNIT_TEST(testSetAsSteamP);
 		CPPUNIT_TEST(testV);
 		CPPUNIT_TEST(testU);
 		CPPUNIT_TEST(testH);
 		CPPUNIT_TEST(testS);
+		*/
 		CPPUNIT_TEST(testSetAsWaterT);
 		CPPUNIT_TEST(testV);
 		CPPUNIT_TEST(testU);
 		CPPUNIT_TEST(testH);
 		CPPUNIT_TEST(testS);
+		/*
 		CPPUNIT_TEST(testSetAsWaterP);
 		CPPUNIT_TEST(testV);
 		CPPUNIT_TEST(testU);
 		CPPUNIT_TEST(testH);
 		CPPUNIT_TEST(testS);
+		*/
 		CPPUNIT_TEST_SUITE_END();
 
 };
