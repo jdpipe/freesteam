@@ -102,11 +102,6 @@ testheading:
 	rm -f $@.$$$$;
 
 %.o : %.cpp
-
-%.test.o: %.test.cpp
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_CPPUNIT) -c -o $@ $<
-
-test.o: test.cpp
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(CPPFLAGS_CPPUNIT) -c -o $@ $<
 
 #---------------------------------------------------------
