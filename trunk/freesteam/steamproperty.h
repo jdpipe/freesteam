@@ -12,7 +12,7 @@
 template<class Property,int PropertyAlternative=0>
 class SteamProperty{
 	public:
-		static Property get(const SteamCalculator &S);
+		static inline Property get(const SteamCalculator &S);
 		static const char *name();
 };
 
