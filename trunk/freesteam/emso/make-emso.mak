@@ -20,21 +20,26 @@
 
 EMSO_DEBUG =
 
+OBJS = emsohooks.o
+
 EMSO = $(SO_PREFIX)$(EMSO_NAME)$(SO_SUFFIX)
 
 emsohooks.o: emsohooks.cpp
 ifeq ($(EMSO_DEBUG),1)
-	$(CXX) $(CPPFLAGS) -DEMSO_DEBUG $(CXXFLAGS) -c -o $@ $^
+	$(CXX) $(CPPFLAGS) -DEMSO_DEBUG $(CXXFLAGS) -c -o $@ $<
 else
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 endif
 	
-emso: libcheck $(LIB) $(EMSO)
+emso: $(LIB) $(OBJS) $(EMSO)
 
 $(EMSO): emsohooks.o
 	$(CXX) -shared -o $@ emsohooks.o $(LIB) $(LDFLAGS)
 
-OBJS = emsohooks.o
+#--------------------------
+# MAKEDEPEND
+
+-include $(OBJS:.o=.d )
 
 #-----------------------------------------------------------
 # LIBRARY
@@ -59,7 +64,7 @@ distclean: clean
 #-----------------------------------------------------------
 # INSTALL
 
-install: $(EMSO)
+install: emso	
 ifdef EMSO_INTERFACE_DIR
 	cp $(EMSO) $(EMSO_INTERFACE_DIR)/$(EMSO);
 else

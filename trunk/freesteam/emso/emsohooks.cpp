@@ -1,5 +1,6 @@
 #include "../steamcalculator.h"
 #include "../solver2.h"
+#include "../units.h"
 
 #ifndef HAVE_EMSO
 	#error EMSO NOT CONFIGURED ON YOUR SYSTEM, CHECK CPPFLAGS IN THE FILE PACKAGE_ROOT/make-xxxxx.mak FOR YOUR SYSTEM.
@@ -226,6 +227,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 					case given_pT:
 						strcpy(inputUnits[0], "MPa");
 						strcpy(inputUnits[1], "K");
+						break;
 
 					case given_ph:
 					case given_pu:
