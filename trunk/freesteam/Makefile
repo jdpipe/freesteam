@@ -26,6 +26,7 @@ NAME = freesteam
 VERSION = 0.4.1
 
 EMSO_NAME = emsofreesteam-$(VERSION)
+EES_NAME = eesfreesteam-$(VERSION)
 
 #---------------------------
 # GET PLATFORM SPECIFIC SETTINGS
@@ -79,7 +80,7 @@ CFAIL = $(wildcard *.cfail.cpp)
 TESTEXE = runtest$(EXE_SUFFIX)
 TESTOBJS = steamtestpoint.o iapws95.o
 
-HOOKOBJS = emsohooks.o
+HOOKOBJS = emsohooks.o eeshooks.o eesparameterlist.o
 
 CLIS = diagram.cli.cpp pboundt.cli.cpp
 
@@ -105,16 +106,26 @@ example: example.o $(LIB)
 	$(CXX) -o $@ -static $(LDFLAGS) $^ 
 
 #--------------------------
-# EMSO
+# EMSO integration
 
 EMSO = $(EMSO_NAME)$(SO_SUFFIX)
 
 emso: $(LIB) $(EMSO)
 
 $(EMSO): emsohooks.o Makefile
-	$(EMSO_LD) -shared -o $@ $< $(LIB) $(LDFLAGS) $(EMSO_LD_SONAME)
+	$(SO_LD) -shared -o $@ emsohooks.o $(LIB) $(LDFLAGS) $(EMSO_LD_SONAME)
 
-#-------------------------
+#--------------------------
+# EES integration
+
+EES = $(EES_NAME)$(SO_SUFFIX)
+
+ees: $(LIB) $(EES)
+
+$(EES): eeshooks.o eesparameterlist.o Makefile
+	$(SO_LD) -shared -o $@ eeshooks.o eesparameterlist.o $(LIB) $(LDFLAGS) $(EES_LD_SONAME)
+
+#--------------------------
 # CLEAN
 
 .PHONY: clean mostlyclean cleanobjs cleantests cleanctests

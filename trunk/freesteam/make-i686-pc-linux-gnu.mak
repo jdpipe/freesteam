@@ -6,5 +6,6 @@ EXE_SUFFIX =
 SO_SUFFIX = .so
 
 EMSO_LD_SONAME = -soname=$(EMSO_NAME)
+EES_LD_SONAME = -soname=$(EES_NAME)
 
-EMSO_LD = $(LD)
+SO_LD = $(LD)

@@ -6,5 +6,6 @@ EXE_SUFFIX = .exe
 SO_SUFFIX = .dll
 
 EMSO_LD_SONAME =
+EES_LD_SONAME =
 
-EMSO_LD = $(CXX)
+SO_LD = $(CXX)
