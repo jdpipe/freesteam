@@ -6,8 +6,10 @@
  type="text/css">
 </head>
 <body>
-<h1>freesteam</h1>
-<div class="nav">
+<h1>freesteam<br>
+</h1>
+<div class="nav"><span style="font-weight: bold;">Current version: </span>0.2<br>
+<br>
 Quick links
 <ul>
   <li><a href="http://sf.net/projects/freesteam">SourceForge</a> </li>
@@ -148,21 +150,20 @@ following:</p>
     </tr>
   </tbody>
 </table>
-<p><span style="font-weight: bold;">Example problem</span>: <br>
-</p>
+<h3><span style="font-weight: bold;">1.2 Example usage</span></h3>
+<span style="font-weight: bold;">Problem:</span><br>
 <ol>
   <li>calculate the density of steam at 5 bar and 350 K</li>
   <li>calculate the temperature if the steam from (1) is isentropically
 compressed to 10 bar.</li>
 </ol>
-<span style="font-weight: bold;">Solution:</span><br>
-<pre>#include "steamcalculator.h"<br>#include "solver.h"<br>#include &lt;iostream&gt;<br>using namespace std;<br><br>int main(void){<br>  // trun on display of units<br>  cerr.setflags(iosbase::showbase);<br><br>  // part (1)<br>  SteamCalculator S, S2;<br>  S.set_pT(5 * bar, 350.0 * Kelvin);<br>  Density rho = S.dens();<br>  cerr &lt;&lt; "rho = " &lt;&lt; rho;<br>  <br>  // part (2)<br>  SpecificEntropy s = S.specentropy();<br>  Solver&lt;Pressure,SpecificEntropy,Temperature&gt; PS(10 * bar, s);<br>  S2 = PS.solve(0.0001 * kJ_kgK, 0.0001 * Kelvin);<br>  Temperature T2 = S2.temp();<br>  cerr &lt;&lt; "T2 = " &lt;&lt; T2;<br>}<br></pre>
-<p>We are currently working on enhancing the freesteam code so that you
-will
-be able to calculate these parameters in terms of more different
-combinations of specified variables. This involves enhancing the
-rootsolving capabilities already packaged with the code.</p>
-<h3>1.2 IAPWS-97 Scientific Formulation<br>
+<span style="font-weight: bold;">Solution: </span>(included in
+distribution as example.cpp, use 'make example' to compile it)<br>
+<pre>#include "steamcalculator.h"<br>#include "solver.h"<br>#include &lt;iostream&gt;<br>#include &lt;iomanip&gt;<br>using namespace std;<br><br>int main(){<br>  SteamCalculator S, S2;<br><br>  // turn on display of units<br>  cerr.flags(ios_base::showbase);<br>  <br>  // initialise T1, p1, p2<br>  Temperature T1 = fromcelsius(200.0);<br>  Pressure p1 = 5.0 * bar;<br>  Pressure p2 = 10.0 * bar;  <br><br>  // part (1) - density at know pressure and temperature<br>  S.set_pT(p1, T1);<br>  Density rho = S.dens();<br>  cerr &lt;&lt; "rho = " &lt;&lt; rho &lt;&lt; endl;<br>  SpecificEntropy s1 = S.specentropy();<br>  cerr &lt;&lt; "s1 = " &lt;&lt; s1 &lt;&lt; endl;<br>  <br>  // part (2) - isentropic compression<br>  Solver&lt;Pressure,SpecificEntropy,Temperature&gt; PS(p2, s1);<br>  S2 = PS.solve(0.0001 * kJ_kgK, 0.0001 * Kelvin);<br>  Temperature T2 = S2.temp();<br>  cerr &lt;&lt; "T2 = " &lt;&lt; T2;<br>  cerr &lt;&lt; " (or " &lt;&lt; tocelsius(T2) &lt;&lt; "&deg;C)" &lt;&lt; endl;<br>}<br><br></pre>
+<p><span style="font-weight: bold;">Output:</span><br>
+</p>
+<pre>$ ./example<br>rho = 2.35275 kg/m3<br>s1 = 7061.07 J/kgK<br>T2 = 556.418 K (or 283.268&deg;C)<br><br></pre>
+<h3>1.3 IAPWS-97 Scientific Formulation<br>
 </h3>
 <p>The code for calculating steam properties according to the IAPWS-95
 equations, developed by Don Peterson, is include. In their present
