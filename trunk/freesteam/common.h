@@ -4,7 +4,8 @@
 #include "units.h"
 
 // this is the precision of all the parameters used in the Steam Calculator:
-#define Num double
+typedef double Num;
+#define NUM_DEFINED
 
 // define a method (for use in header files)
 #define METHOD_H_OBJ(funcname) Num funcname(SteamCalculator *c)

@@ -394,6 +394,8 @@ const Energy kJ = kilo * Joule;
 
 const Power Watt = Joule / second;
 
+const double Percent = 1 / 100;
+
 //const ElecPotential volt = Watt / ampere;
 //const Charge Coulomb = ampere * second;
 //const Capacitance Farad = volt / Coulomb;

@@ -10,7 +10,7 @@
 # PROJECT
 
 NAME = steam
-VERSION = 2.2
+VERSION = 0.2
 
 #---------------------------
 # CONFIGURATION
@@ -36,7 +36,7 @@ OBJS = steamcalculator.o state.o region1.o region2.o region3.o region4.o boundar
 # Or, define the tests in the order you want:
 TESTS = cppunit.test.o empty.test.o units.test.o batchtest.test.o \
 	region4.test.o b23.test.o boundaries.test.o region1.test.o \
-	region2.test.o region3.test.o
+	region2.test.o region3.test.o iapws9795.test.o
 
 CPASS = $(wildcard *.cpass.cpp)
 CFAIL = $(wildcard *.cfail.cpp)
@@ -44,7 +44,7 @@ CFAIL = $(wildcard *.cfail.cpp)
 #CPASS = units-1.cpass.cpp
 #CFAIL = units-1.cfail.cpp units-2.cfail.cpp units-
 
-TESTOBJS = steamtestpoint.o
+TESTOBJS = steamtestpoint.o iapws95.o
 
 LIB = libsteam.a
 
