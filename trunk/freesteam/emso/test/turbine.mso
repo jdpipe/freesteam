@@ -35,27 +35,62 @@ end
 #* 
     Turbine (non-isentropic, with efficiency specified)
 *#
-Model Turbine as SteamEquipment_ph # 8 + 2 - 3 = 7 DF
+Model Turbine as SteamEquipment_ph # 8 + 4 - 5 = 7 DF
 
 	PARAMETERS
 	freesteam as CalcObject(File="emsofreesteam");
     
-    VARIABLES
+    VARIABLES # DF = 4
     eta as Efficiency(Brief="Turbine efficiency"); # DF = 1
 	h_es as SpecificEnthalpy(Default = 3000, Lower=150, Upper = 4300);
-    #P as Power; # DF = 1
-    
-    EQUATIONS #DF = -3
+    P as Power(Lower = 0); # DF = 1
+    Dp as PressureDifference(Upper = 0);
+	
+    EQUATIONS # DF = -5
     "Mass Balance"
     In.mdot = Out.mdot;
     
     #"Turbine power"
-    #P = In.mdot * In.h - Out.mdot * Out.h;
+    P = In.mdot * In.h - Out.mdot * Out.h;
     
     "Isentropic output enthalpy"
     h_es = freesteam.h_ps(Out.p, In.s);
     
     "Efficiency"
     (Out.h - In.h) = eta * (h_es - In.h);
+	
+	"Pressure drop"
+	Dp = Out.p - In.p;
 
+end
+
+#* 
+    Turbine (non-isentropic, with efficiency specified)
+*#
+Model Turbine_ps as SteamEquipment_ps # 8 + 4 - 5 = 7 DF
+
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+    
+    VARIABLES # DF = 4
+    eta as Efficiency(Brief="Turbine efficiency");
+	h_es as SpecificEnthalpy(Default = 3000, Lower=150, Upper = 4300);
+    P as Power(Brief="Turbine Power (thermal)", Lower = 0);
+    Dp as PressureDifference(Upper = 0);
+    
+    EQUATIONS #DF = -5
+    "Mass Balance"
+    In.mdot = Out.mdot;
+    
+    #"Turbine power"
+    P = In.mdot * In.h - Out.mdot * Out.h;
+    
+    "Isentropic output enthalpy"
+    h_es = freesteam.h_ps(Out.p, In.s);
+    
+    "Isentropic Efficiency"
+    (Out.h - In.h) = eta * (h_es - In.h);
+
+	"Pressure drop"
+	Dp = In.p - Out.p;
 end

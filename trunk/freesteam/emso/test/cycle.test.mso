@@ -1,5 +1,6 @@
 #* 
-	freesteam stream integration for use in steam system calculations
+	Once-through serial connection of steam components to form	
+	an open cycle.
 	
 	Based on steam.mso by Rafael de Pelegrini Soares,
 	Copyright 2002-2005 Rafael de Pelegrini Soares.

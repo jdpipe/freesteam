@@ -22,25 +22,30 @@ using "steamequipment";
 Model Pump as SteamEquipment_ph # 8 + 3 - 4 = 7
 	
 	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam");
+	freesteam_es as CalcObject(File="emsofreesteam");
+	freesteam_v as CalcObject(File="emsofreesteam");
 	
     VARIABLES
     P   as Power(Brief="Nominal power");
     eta as Efficiency(Brief="Pump efficiency");
     v   as SpecificVolume(Brief="Inlet specific volume", Default=0.001);
+	h_es as SpecificEnthalpy(Brief = "Isentropic output enthalpy");
     
     EQUATIONS
     "Mass balance"
     Out.mdot = In.mdot;
     
-    v = freesteam.v_ps(In.p, In.s);
+    v = freesteam_v.v_ps(In.p, In.s);
     
     # "Energy balance"
     P * eta = In.mdot * (Out.p - In.p) * v;
     
     # FIXME: Volume at In or Out conditions ?
+	
+	"Isentropic output"
+	h_es = freesteam_es.h_ps(Out.p, In.s);
     
     "Efficiency"
-    (Out.h - In.h) = eta * (Out.freesteam.h_ps(Out.p, In.s) - In.h);
+    (Out.h - In.h) = eta * (h_es - In.h);
         
 end

@@ -23,7 +23,7 @@ Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
     VARIABLES
     q   as HeatRate(Brief="Heat removed from the stream");
     DT  as Temperature(Brief="Temperature difference");
-    Dp  as PressureDifference(Brief="Pressure difference");
+    Dp  as PressureDifference(Brief="Pressure difference", Upper=0);
 	UA  as HeatRatePerTemperature(Brief="Condenser UA value");
 	
     EQUATIONS
@@ -41,7 +41,7 @@ Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
     
     "Pressure difference"
     Dp = Out.p - In.p;
-    
+
 #   GUESS # FIXME: implement GUESS on models!!
 #   Out.h = 300 * "kJ/kg";
 

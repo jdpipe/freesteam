@@ -62,8 +62,35 @@ FlowSheet TestCondenser2
 	CO.Out.p = 1 * "bar";
 	
 	GUESS 
+	CO.Out.h = 500 * "kJ/kg";
 	# FIXME: [rafael] this is required when DT is specified instead of q:
 	# CO.Out.h = 300 * "kJ/kg";
+	
+	OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+end
+
+FlowSheet TestCondenser3
+	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
+	DEVICES
+	S as Stream_ph; # 5 - 2       = 3
+	CO as Condenser; # 14 - 5 - 2 = 7
+	
+	CONNECTIONS
+	S to CO.In; # (-5) - 0        = -5 DF
+	
+	SPECIFY
+	S.mdot = 30 * "kg/s";
+	S.h = 2000 * "kJ/kg";
+	S.T = (300 + 273.15) * "K";
+	
+	CO.UA = 140 * "kW/K";
+	# CO.Out.h = 700 * "kJ/kg";
+	CO.Out.p = 0.05 * "bar";
 	
 	OPTIONS
 	mode = "steady";

@@ -1,10 +1,9 @@
 #* 
-	freesteam stream integration for use in steam system calculations
+	Open loop cycle model
+	with all component model specified in terms of intrinsic parameters, 
+	rather than intermediatate steam properties
 	
-	Based on steam.mso by Rafael de Pelegrini Soares,
-	Copyright 2002-2005 Rafael de Pelegrini Soares.
-
-	Modified by John Pye 2005 http://freesteam.sf.net
+	John Pye 2005 http://freesteam.sf.net
 *#
 
 using "streams";
@@ -14,7 +13,7 @@ using "pump";
 using "condenser";
 using "throttle";
 
-FlowSheet CycleTest
+FlowSheet CycleTest3
 	
 	PARAMETERS
 	freesteam as CalcObject(File="emsofreesteam");
@@ -23,37 +22,49 @@ FlowSheet CycleTest
     S1  as Stream_pT;  # 3
 	BO	as Boiler_pT;     # 7
 	TU	as Turbine;    # 7
-	CO	as Condenser_pT;  # 7
-	PU 	as Pump;       # 7
+	CO	as Condenser;  # 7
+	#PU 	as Pump;       # 7
 	
 	CONNECTIONS # BO -> TU -> CO -> TH -> BO  ... -25 DF
 	S1      to  BO.In; # -5
 	BO.Out	to	TU.In; # -5
 	TU.Out	to  CO.In; # -5 
-	CO.Out	to  PU.In; # -5
+	#CO.Out	to  PU.In; # -5
 	#PU.Out	to  BO.In; # -5
 	
-	SPECIFY # -8 DF
+	SPECIFY # -9 DF
 	
-	S1.mdot = 38 * "kg/s";
+	S1.mdot = 30 * "kg/s";
 	S1.p = 60 * "bar";
 	S1.T = (121 + 273.15) * "K";	
 
 	# Boiler
 	BO.Dp = -2 * "bar";
-	BO.q = 130 * "MW";
+	BO.Out.T = (300 + 273.15) * "K";
 	
 	# Turbine
 	TU.eta = 0.85;
-	TU.Out.p = 2.0 * "bar";
+	TU.Dp = -56 * "bar";
 	
 	# Condenser
-	CO.UA = 3090 * "kW/K";
-	CO.Out.p = 1.5 * "bar";
+	CO.UA = 5700 * "kW/K";
+	CO.Dp = -0.5 * "bar";
+	#CO.Out.h = 700 * "kJ/kg";
 	
 	# Pump
-	PU.eta = 0.65;
-	PU.Out.p = 60 * "bar";
+	#PU.eta = 0.65;
+	#PU.Out.p = 60 * "bar";
+	#PU.Out.h = 1000 * "kJ/kg";
+	#PU.Out.p = 10 * "bar";
+	#PU.Out.p = 60 * "bar";
+	#PU.Out.h = 1000 * "kJ/kg";
+	
+	#GUESS
+	#PU.In.s = 7 * "kJ/kg";
+	#PU.In.p = 1.5 * "bar";
+	
+	#PU.Out.s = 9 * "kJ/kg";
+	#PU.Out.h = 1000 * "kJ/kg";
 	
 	OPTIONS
 	mode = "steady";

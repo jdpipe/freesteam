@@ -57,23 +57,43 @@ FlowSheet TurbineTest
 	TU.Out to S2;
 	
 	SPECIFY
-	"Inlet flowrate"
 	S1.mdot = 20000 * "kg/h";
-	
-	"Inlet pressure"
 	S1.p = 4.32 * "MPa";
-	
-	"Inlet temperature"
 	S1.T = 670.65 * "K";
 	
-	"Efficiency"
 	TU.eta = .83;
 	
-	"Outlet pressure"
 	TU.Out.p = 1.569 * "MPa";
 	
-	GUESS
-	TU.Out.h = 500 * "kJ/kg";
+	OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+	
+end
+
+#*
+	Test turbine using intrinsic parameters
+*#
+FlowSheet TurbineTest2
+	
+	DEVICES
+	S1 as Stream_pT;
+	S2 as Stream;
+	TU as Turbine;
+	
+	CONNECTIONS
+	S1 to TU.In;
+	TU.Out to S2;
+	
+	SPECIFY
+	S1.mdot = 10 * "kg/s";
+	S1.p = 58 * "bar";
+	S1.T = (300 + 273.15) * "K";
+	
+	TU.eta = .85;
+	TU.Dp = -50 * "bar";
+	# TU.P = 2 * "MW";
+	#TU.Out.p = 1.569 * "MPa";
 	
 	OPTIONS
 	mode = "steady";
