@@ -54,6 +54,23 @@ class Diagram{
 			Use this method to specify the types of axes to be used by Matlab.
 		*/
 		static const std::string getMatlabPlotType(){
+
+			bool log_Abs = SteamProperty<Abscissa,AbsAlt>::plotOnLogAxis();
+			bool log_Ord = SteamProperty<Ordinate,OrdAlt>::plotOnLogAxis();
+
+			// std::cerr << "Plotting " << SteamProperty<Abscissa,AbsAlt>::name() << " on " << (log_Abs ? "log" : "linear") << " axis." << std::endl;
+
+			// std::cerr << "Plotting " << SteamProperty<Ordinate,OrdAlt>::name() << " on " << (log_Ord ? "log" : "linear") << " axis." << std::endl;
+
+
+			if(log_Abs && log_Ord){
+				return "loglog";
+			}else if(log_Abs){
+				return "semilogx";
+			}else if(log_Ord){
+				return "semilogy";
+			}
+
 			return "plot";
 		}
 
@@ -209,17 +226,5 @@ class Diagram{
 			return ss.str();
 		}
 };
-
-template<>
-const std::string Diagram<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::getMatlabPlotType();
-
-template<>
-const std::string Diagram<SpecificEnergy,Pressure,SOLVE_ENTHALPY,0>::getMatlabPlotType();
-
-template<>
-const std::string Diagram<SpecificEntropy,Pressure,SOLVE_ENTROPY,0>::getMatlabPlotType();
-
-template<>
-const std::string Diagram<Pressure,SpecificEntropy,0,SOLVE_ENTROPY>::getMatlabPlotType();
 
 #endif

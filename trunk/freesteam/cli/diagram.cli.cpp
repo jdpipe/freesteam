@@ -28,11 +28,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 int main(void){
 
 	try{
-		// Diagram<SpecificEnergy, Pressure,SOLVE_ENTHALPY,0> D;
 		// Diagram<SpecificEnergy,SpecificVolume, SOLVE_IENERGY,0> D;
 		// Diagram<Temperature, Pressure> D;
 		// Diagram<SpecificEntropy, Temperature, SOLVE_ENTROPY> D;
-		Diagram<SpecificEntropy, Pressure, SOLVE_ENTROPY, 0> D;
+		// Diagram<SpecificEntropy, Pressure, SOLVE_ENTROPY, 0> D;
+		// Diagram<SpecificEnergy, Temperature, SOLVE_ENTHALPY, 0> D;
+		Diagram<SpecificEnergy, Pressure,SOLVE_ENTHALPY,0> D;
+		// Diagram<SpecificVolume, Temperature> D;
 
 		cout << D.plot();
 	}catch(Exception *E){

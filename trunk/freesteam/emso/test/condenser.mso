@@ -21,7 +21,7 @@ using "steamequipment";
     should be prefered, once a bad specificafion of dt can lead singular
     systems (infinite solutions if the Out stream became saturated).
 *#
-Model Condenser as SteamEquipment_Th
+Model Condenser as SteamEquipment_ph
     
     VARIABLES
     q   as HeatRate(Brief="Heat removed from the stream");
@@ -31,15 +31,12 @@ Model Condenser as SteamEquipment_Th
     "Mass balance"
     Out.mdot = In.mdot;
     
-    "Energy balance"
-    q = (In.h - Out.h) * In.mdot;
+    "Energy balance (q extracted > 0)"
+    q = In.mdot * In.h - Out.mdot * Out.h;
     
     "Temperature difference"
-    DT = In.T - Out.T;
+    DT = Out.T - In.T;
     
-    # "Out Stream"
-    # [Out.T, Out.s, Out.v, Out.x] = freesteam.Tsvx_ph(Out.p, Out.h);
-
 #   GUESS # FIXME: implement GUESS on models!!
 #   Out.h = 300 * "kJ/kg";
 

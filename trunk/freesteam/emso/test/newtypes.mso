@@ -62,7 +62,7 @@ MassFlowRate as Positive (Brief = "Mass Flow Rate", Default=1000, Upper=1e10, Un
 MassFlux as Positive (Brief = "Mass Flux", Default=1, Upper=1e6, Unit = "kg/s/m^2");
 
 Heat as Energy (Brief = "Heat");
-HeatRate as Power (Brief = "Heat Rate");
+HeatRate as Power (Brief = "Heat Rate"); # NB, >= 0!
 
 # THERMAL PROPERTIES (M,L,T,K)
 

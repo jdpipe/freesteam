@@ -189,6 +189,15 @@ Solver2<Pressure,SpecificEntropy,0,SOLVE_ENTROPY>::whichRegion(const Pressure &p
 		S.setSatWater_T(T_REG1_REG3);
 		Pressure p_b1234 = S.pres();
 
+		S.set_pT(p,T_MAX);
+		SpecificEntropy s_max = S.specentropy();
+
+		if(s > s_max){
+			stringstream ss;
+			ss << "s=" << s << " exceeds maximum (s_max=" << s_max << " at p=" << p << ").";
+			throw new Exception(ss.str());
+		}
+
 		REQUIRE(p > P_MIN);
 		REQUIRE(p < P_MAX);
 		REQUIRE(s > 0.0 * kJ_kgK);
@@ -303,69 +312,73 @@ Solver2<Pressure,SpecificEnergy,0,SOLVE_IENERGY>::whichRegion(const Pressure &p,
 int
 Solver2<Pressure, SpecificEnergy, 0, SOLVE_ENTHALPY>::whichRegion(const Pressure &p, const SpecificEnergy &h){
 
-	SteamCalculator S;
-	S.setSatWater_T(T_REG1_REG3);
-	Pressure p_b134 = S.pres();
+	try{
+		SteamCalculator S;
 
-	if(p <= p_b134){
-		SatCurve<SpecificEnergy,Pressure,SOLVE_ENTHALPY> SC;
-		SpecificEnergy h_f = SC.solve(p,SAT_WATER);
+		S.set_pT(p,T_MAX);
+		SpecificEnergy h_max = S.specenthalpy();
 
-		if(h <= h_f){
+		if(h > h_max){
+			stringstream ss;
+			ss << "h=" << h << " exceeds maximum (h_max = " << h_max << " at p = " << p << ").";
+			throw new Exception(ss.str());
+		}
+
+		S.set_pT(p,T_TRIPLE);
+		SpecificEnergy h_min = S.specenthalpy();
+		if(h < h_min){
+			stringstream ss;
+			ss << "h=" << h << " is less than minumum (h_min = " << h_min << " at p = " << p << ").";
+			throw new Exception(ss.str());
+		}
+
+
+		S.setRegion3_rhoT(RHO_CRIT,T_CRIT);
+		Pressure p_crit = S.pres();
+
+		S.setSatWater_T(T_REG1_REG3);
+		Pressure p_b1234 = S.pres();
+
+		if(p <= p_crit){
+			SatCurve<SpecificEnergy,Pressure,SOLVE_ENTHALPY> SC;
+			SpecificEnergy h_f = SC.solve(p,SAT_WATER);
+			SpecificEnergy h_g = SC.solve(p,SAT_STEAM);
+
+			if(p <= p_b1234){
+				if(h <= h_f){
+					return 1;
+				}
+
+				if(h >= h_g){
+					return 2;
+				}
+			}
+
+			if(h >= h_f && h <= h_g){
+				return 4;
+			}
+		}
+
+		B13Curve<SpecificEnergy,Pressure,SOLVE_ENTHALPY> B13;
+		SpecificEnergy h_b13 = B13.solve(p);
+		if(h <= h_b13){
 			return 1;
 		}
 
-		SpecificEnergy h_g = SC.solve(p,SAT_STEAM);
-		if(h >= h_g){
+		B23Curve<SpecificEnergy,Pressure,SOLVE_ENTHALPY> B23;
+		SpecificEnergy h_b23 = B23.solve(p);
+		if(h >= h_b23){
 			return 2;
 		}
 
-		return 4;
-	}
-
-	B13Curve<SpecificEnergy,Pressure,SOLVE_ENTHALPY> B13;
-	SpecificEnergy h_b13 = B13.solve(p);
-	if(h <= h_b13){
-		return 1;
-	}
-
-	B23Curve<SpecificEnergy,Pressure,SOLVE_ENTHALPY> B23;
-	SpecificEnergy h_b23 = B23.solve(p);
-	if(h >= h_b23){
-		SpecificEnergy h_max;
-		S.set_pT(p,T_MAX);
-		h_max = S.specenthalpy();
-		if(h > h_max){
-			throw new Exception("Solver2<p,h>: h exceeds h(p,T_MAX), out of bounds.");
-		}
-
-		return 2;
-	}
-
-	// region 3 or region 4...
-
-	if(p > P_CRIT){
 		return 3;
+
+	}catch(Exception *E){
+		stringstream s;
+		s << "Solver2<p,h>::whichRegion(p = " << p/MPa << " MPa, h = " << h/kJ_kg << " kJ/kg): " << E->what();
+		delete E;
+		throw new Exception(s.str());
 	}
-
-	S.setRegion3_rhoT(RHO_CRIT,T_CRIT);
-	SpecificEnergy h_crit = S.specenthalpy();
-
-	SatCurve<Pressure,SpecificEnergy,0,SOLVE_ENTHALPY> SC3;
-
-	if(h < h_crit){
-		Pressure p_f3 = SC3.solve(h,SAT_WATER);
-		if(p > p_f3){
-			return 3;
-		}
-	}else{
-		Pressure p_g3 = SC3.solve(h,SAT_STEAM);
-		if(p > p_g3){
-			return 3;
-		}
-	}
-
-	return 4;
 
 }
 

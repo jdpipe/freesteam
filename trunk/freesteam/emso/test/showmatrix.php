@@ -28,18 +28,37 @@
 $f = file("php://stdin");
 
 $variables=array();
-$variables[]="s.T";
-$variables[]="s.p";
-$variables[]="s.h";
-$variables[]="s.s";
-$variables[]="s.mdot";
-$variables[]="BO.Out.T";
-$variables[]="BO.Out.p";
-$variables[]="BO.Out.h";
-$variables[]="BO.Out.s";
-$variables[]="BO.Out.mdot";
-$variables[]="BO.q";
-$variables[]="BO.Dp";
+
+/*
+// Condenser.test.mso:
+$variables[]="S.T";
+$variables[]="S.p";
+$variables[]="S.h";
+$variables[]="S.s";
+$variables[]="S.mdot";
+$variables[]="CO.Out.T";
+$variables[]="CO.Out.p";
+$variables[]="CO.Out.h";
+$variables[]="CO.Out.s";
+$variables[]="CO.Out.mdot";
+$variables[]="CO.q";
+$variables[]="CO.DT";
+*/
+
+// turbine.test.mso
+$variables[]="S1.T";
+$variables[]="S1.p";
+$variables[]="S1.h";
+$variables[]="S1.s";
+$variables[]="S1.mdot";
+$variables[]="S2.T";
+$variables[]="S2.p";
+$variables[]="S2.h";
+$variables[]="S2.s";
+$variables[]="S2.mdot";
+$variables[]="TU.eta";
+$variables[]="TU.h_es";
+//$variables[]="TU.P";
 
 $equations=array();
 $A=array();
@@ -120,6 +139,8 @@ while(list($n,$line)=each($f)){
 
 // Print the equations
 
+print ("\nEquations:\n");
+
 for($e=0;$e<count($equations);$e++){
 	print($equations[$e].": ");
 	reset($A[$e]);
@@ -146,7 +167,11 @@ if(count($variables) < 50 && count($equations) < 50){
 		print("|");
 		for($v=0;$v<count($variables);$v++){
 			if(!array_key_exists($v,$A[$e]) || $A[$e][$v]==0){
-				print(" ");
+				if($e==count($equations)-1){
+					print("_");
+				}else{
+					print(" ");
+				}
 			}elseif($A[$e][$v]>0){
 				print("+");
 			}else{
@@ -155,11 +180,6 @@ if(count($variables) < 50 && count($equations) < 50){
 		}
 		print("|\n");
 	}
-	print(" ");
-	for($v=0;$v<count($variables);$v++){
-		print("_");
-	}
-	print(" \n");
 
 }else{
 	print("\nSparsity matrix not printed: too many equations or variables (increase the limit if you want)\n");

@@ -10,7 +10,7 @@
     included in any modification or adaptation of this Model.
 *#
 
-using "steamequipment"
+using "steamequipment";
 
 #*
     Steam pump
@@ -19,23 +19,28 @@ using "steamequipment"
 
     You can specify one of the pressures (In or Out) plus P or eta
 *#
-Model Pump as SteamEquipment
-
+Model Pump as SteamEquipment_ph
+	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
     VARIABLES
-	out Out as Stream_ph;   
-
-    # P   as Power(Brief="Nominal power");
+    P   as Power(Brief="Nominal power");
     eta as Efficiency(Brief="Pump efficiency");
+    v   as SpecificVolume(Brief="Inlet specific volume", Default=0.001);
     
     EQUATIONS
     "Mass balance"
     Out.mdot = In.mdot;
     
+    v = freesteam.v_ps(In.p, In.s);
+    
     # "Energy balance"
-    # P * eta = In.mdot * (Out.p - In.p) * freesteam.v_ps(In.p, In.s);
+    P * eta = In.mdot * (Out.p - In.p) * v;
     
     # FIXME: Volume at In or Out conditions ?
     
     "Efficiency"
-    (Out.h - In.h) = eta * (freesteam.h_ps(Out.p, In.s) - In.h);
+    (Out.h - In.h) = eta * (Out.freesteam.h_ps(Out.p, In.s) - In.h);
+        
 end

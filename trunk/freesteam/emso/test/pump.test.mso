@@ -11,7 +11,7 @@
 *#
 
 using "streams";
-using "turbine";
+using "pump";
 
 FlowSheet TestPump
 	
@@ -19,21 +19,27 @@ FlowSheet TestPump
 	freesteam as CalcObject(File="emsofreesteam");
 	
 	DEVICES
-	S1 as Stream_waterT;
+	S1 as Stream_pT;
 	PU as Pump;
 	
 	CONNECTIONS
 	S1 to PU.In;
 	
 	SPECIFY
-	"flow rate"
-	S1.mdot = 20000 * "kg/h";
+	"Flow rate"
+	S1.mdot = 27 * "kg/min";
 	
-	"temperature"
-	S1.T = 300 * "K";
+	"Inlet pressure"
+	S1.p = 50 * "bar";
 	
-	"efficiency"
+	"Inlet temperature"
+	S1.T = 450 * "K";
+	
+	"Efficiency"
 	PU.eta = 0.9;
+	
+	"Output pressure"
+	PU.Out.p = 65 * "bar";
 	
 	OPTIONS
 	mode = "steady";

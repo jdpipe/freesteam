@@ -40,6 +40,10 @@ class SteamProperty{
 	public:
 		static inline Property get(const SteamCalculator &S);
 		static const char *name();
+
+		static inline const bool plotOnLogAxis(){
+			return false;
+		}
 };
 
 // 'getProperty' hooks
@@ -105,6 +109,18 @@ SteamProperty<SpecHeatCap,SOLVE_CV>::get(const SteamCalculator &S){
 inline Num
 SteamProperty<Num,0>::get(const SteamCalculator &S){
 	return S.quality();
+}
+
+inline
+const bool
+SteamProperty<SpecificVolume,0>::plotOnLogAxis(){
+	return true;
+}
+
+inline
+const bool
+SteamProperty<Pressure,0>::plotOnLogAxis(){
+	return true;
 }
 
 #endif
