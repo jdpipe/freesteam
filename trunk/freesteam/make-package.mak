@@ -151,6 +151,7 @@ $(DISTFILE): # tags
 	mkdir /tmp/$(NAME)-$(VERSION)
 	cp -R * /tmp/$(NAME)-$(VERSION)
 	-rm -Rf /tmp/$(NAME)-$(VERSION)/CVS/
+	-rm -f /tmp/$(NAME)-$(VERSION)/DOCS
 	-rm -Rf /tmp/$(NAME)-$(VERSION)/*/CVS/
 	-rm -Rf /tmp/$(NAME)-$(VERSION)/*/*/CVS/
 	tar -C /tmp -cjvf ./$(DISTFILE) $(NAME)-$(VERSION)
