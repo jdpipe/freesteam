@@ -5,13 +5,14 @@
   <link rel="stylesheet" media="screen" href="freesteam.css"
  type="text/css">
   <meta name="KEYWORDS"
- content="steam tables, IAPWS, density, water, steam, IF97, saturated, superheated, subcooled, properties, enthalpy, entropy, specific heat, thermodynamics, thermo-fluids, IAPWS-95">
+ content="steam tables, IAPWS, steam properties, density, water, steam, IF97, saturated, superheated, subcooled, properties, enthalpy, entropy, specific heat, thermodynamics, thermo-fluids, IAPWS-95">
   <meta name="DESCRIPTION"
  content="Open source implementation of IAPWS-IF97 industry-standard steam tables in C++. IAPWS-95 (scientific use) correlations also included.">
 </head>
 <body>
-<h1>freesteam<br>
-</h1>
+<h1>freesteam<br></h1>
+
+<table><tr><td valign=top>
 <div class="nav"><span style="font-weight: bold;">Current version: </span>0.5.2<br>
 <span style="font-weight: bold;">Released: </span>12 Mar 2005<br>
 <br>
@@ -31,7 +32,8 @@ Tracker</a></li>
  href="http://cvs.sourceforge.net/viewcvs.py/freesteam/freesteam">Browse
 CVS</a></li>
   <li><a title="Code docs generated with Doxygen"
- href="http://pye.dyndns.org/freesteam/docs/">Class Documentation</a><br>
+ href="http://pye.dyndns.org/freesteam/docs/">Class Documentation</a></li>
+  <li><a href="properties/">Property Diagrams</a><br>
   </li>
 </ul>
 Contents
@@ -47,6 +49,9 @@ Contents
   <li><a href="#contactdetails">Contact details</a></li>
 </ul>
 </div>
+
+</td><td valign=top>
+
 <h2>Introduction</h2>
 <p><b>freesteam</b> is an open source implementation of
 international-standard steam
@@ -163,6 +168,10 @@ following:</p>
     </tr>
   </tbody>
 </table>
+<p>You can also create <a href="properties/">property diagrams</a>
+from the freesteam code for most of the above combinations of
+properties.<br>
+<span style="font-weight: bold;"></span></p>
 <h3><span style="font-weight: bold;">1.2 Example usage</span></h3>
 <span style="font-weight: bold;">Problem:</span><br>
 <ol>
@@ -290,6 +299,10 @@ allows the <a href="http://www.rps.eng.br/emso.html">EMSO</a> system
 modelling
 program to use the freesteam library requires a non-GPL license, which
 we are currently preparing.</li>
+  <li>Initial work is being done on an <span style="font-weight: bold;">Excel
+add-in</span> version using the <a href="http://xlw.sourceforge.net/">XLW</a>
+wrapper classes.<br>
+  </li>
   <li>Preliminary work on another <span style="font-weight: bold;">hook
 library</span> to integrate freesteam with the <a
  href="http://www.fchart.com/ees/ees.shtml">EES</a>
@@ -299,14 +312,11 @@ some special license agreement.<br>
   <li>Saturation properties for region 3 are currently implemented used
 the rho_sat(T) correlations from the IAPWS <a
  href="http://www.iapws.org/relguide/supsat.pdf">supsat</a> release.
-Need to change this to use the Region 3 <span
- style="font-weight: bold;">Maxwell phase equilibrium condition</span>
-from the IF97 release, or some other better approach, since the current
+Need to change this to use an iterative solver based on the region 3
+correlations, since the current
 equations give slight inconsistencies with pure IAPWS data for
 pressures above about 16 MPa.<br>
   </li>
-  <li>A <span style="font-weight: bold;">spreadsheet add-in</span>
-version, hopefully for both Excel and OpenOffice.</li>
   <li><span style="font-weight: bold;">Backwards correlations</span>
 will massively reduce the amount of two-way iteration required when
 finding the state for unsual combinations of variables.</li>
@@ -322,7 +332,8 @@ used from within <a style="font-weight: bold;"
 possibly using <a href="http://www.swig.org/">SWIG</a>. Ditto.<br>
   </li>
   <li>An <span style="font-weight: bold;">interactive </span>command-line
-steam tables program for easy demonstration/interactive testing.<br>
+steam tables program for easy demonstration/interactive testing.</li>
+  <li>An add-in version for OpenOffice would be good.<br>
   </li>
   <li>There have been contributions for the <span
  style="font-weight: bold;">reverse equations in Region 2</span> - I
@@ -462,7 +473,11 @@ document.write('<a href="mailto:'+e+m+a+i+l+'">'+e+m+a+i+l+'</a>');
 </p>
 <p>You can also take a look at my homepage about the <a
  href="http://pye.dyndns.org/">CLFR</a> if you want...</p>
-<address>Saturday, 12 March 2005<br>
-</address>
+
+</td></tr></table>
+<hr>
+<address>
+John Pye<br/>
+Last modified: 22 March 2005</address>
 </body>
 </html>

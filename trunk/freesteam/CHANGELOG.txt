@@ -1,5 +1,13 @@
 CHANGELOG
 
+0.5.3
+Tuesday, 22 March 2005
+----------------------
+Added command line arguments to diagram.cli.cpp.
+EMSO hook library can now report available methods if invalid method attemped.
+EMSO test models: added pump curve, rankine cycle.
+
+
 0.5.2
 Saturday, 12 March 2005
 -----------------------
