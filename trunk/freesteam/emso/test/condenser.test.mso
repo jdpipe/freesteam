@@ -11,7 +11,7 @@
 *#
 
 using "streams";
-using "turbine";
+using "condenser";
 
 FlowSheet TestCondenser
 	
@@ -19,7 +19,7 @@ FlowSheet TestCondenser
 	freesteam as CalcObject(File="emsofreesteam");
 	
 	DEVICES
-	S as Stream_ps;
+	S as Stream_pT;
 	CO as Condenser;
 	
 	CONNECTIONS
@@ -30,7 +30,7 @@ FlowSheet TestCondenser
 	S.T = 400 * "K";
 	S.p = 2 * "atm";
 	
-	#cond.q = 45 * "GJ/h";
+	CO.q = 45 * "GJ/h";
 	CO.DT = 10 * "K";
 	
 	GUESS 

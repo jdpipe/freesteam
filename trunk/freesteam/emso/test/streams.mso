@@ -69,3 +69,10 @@ Model Stream_Ts as Steam_Ts # DF = 1 + 1 = 2
     mdot as MassFlowRate;
     
 end
+
+Model Stream_Th as Steam_Th # DF = 1 + 1 = 2
+    
+    VARIABLES
+    mdot as MassFlowRate;
+    
+end

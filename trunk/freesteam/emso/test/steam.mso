@@ -110,3 +110,14 @@ Model Steam_Ts as Steam
 	[p, h] = freesteam.ph_Ts(T,s);
 
 end
+
+Model Steam_Th as Steam
+
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam", Brief="Freesteam IAPWS calculator");
+	
+	EQUATIONS
+	"Steam properties"
+	[p, s] = freesteam.ps_Th(T,h);
+
+end

@@ -10,7 +10,7 @@
     included in any modification or adaptation of this Model.
 *#
 
-using "steamequipment"
+using "steamequipment";
 
 #*  Steam Condenser.
 
@@ -21,7 +21,7 @@ using "steamequipment"
     should be prefered, once a bad specificafion of dt can lead singular
     systems (infinite solutions if the Out stream became saturated).
 *#
-Model Condenser as SteamEquipment
+Model Condenser as SteamEquipment_Th
     
     VARIABLES
     q   as HeatRate(Brief="Heat removed from the stream");
@@ -33,9 +33,6 @@ Model Condenser as SteamEquipment
     
     "Energy balance"
     q = (In.h - Out.h) * In.mdot;
-    
-    "Pressure"
-    Out.p = In.p;
     
     "Temperature difference"
     DT = In.T - Out.T;

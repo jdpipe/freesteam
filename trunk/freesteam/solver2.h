@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define SOLVER2_H
 
 #define SOLVER2_DEBUG
+#define SOLVER2BASE_DEBUG Solver2Base<FirstProp,SecondProp,FirstPropAlt,SecondPropAlt>::debug
 
 #include "steamproperty.h"
 #include "units.h"
@@ -46,7 +47,13 @@ class Solver2Base{
 
 	protected:
 
-		Solver2Base(){}
+		#ifdef SOLVER2_DEBUG
+			Solver2Base(const bool debug=false){
+				this->debug=debug;
+			}
+		#else
+			Solver2Base(){}
+		#endif
 
 		virtual ~Solver2Base(){}
 
@@ -61,6 +68,10 @@ class Solver2Base{
 		SecondProp getSecondProp(SteamCalculator &S){
 			return SteamProperty<SecondProp,SecondPropAlt>::get(S);
 		}
+
+		#ifdef SOLVER2_DEBUG
+			bool debug;
+		#endif
 
 };
 
@@ -148,7 +159,13 @@ class Solver2
 
 	public:
 
-		Solver2() : Solver2Base<FirstProp,SecondProp,FirstPropAlt,SecondPropAlt>(){
+		#ifdef SOLVER2_DEBUG
+			Solver2(const bool debug=false)
+				: Solver2Base<FirstProp,SecondProp,FirstPropAlt,SecondPropAlt>(debug){
+		#else
+			Solver2()
+				: Solver2Base<FirstProp,SecondProp,FirstPropAlt,SecondPropAlt>(){
+		#endif
 			//cerr << endl <<"Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::Solver2()";
 		}
 
@@ -256,7 +273,13 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 				ss <<  "; found region="<< region;
 
-				ss << "; given first guess with " << SteamProperty<FirstProp,FirstPropAlt>::name() << "=" << SteamProperty<FirstProp,FirstPropAlt>::get(firstguess) << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << "=" << SteamProperty<SecondProp,SecondPropAlt>::get(firstguess) << "): " << E->what();
+				if(firstguess.isSet()){
+					ss << "; given first guess with " << SteamProperty<FirstProp,FirstPropAlt>::name() << "=" << SteamProperty<FirstProp,FirstPropAlt>::get(firstguess) << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << "=" << SteamProperty<SecondProp,SecondPropAlt>::get(firstguess);
+				}else{
+					ss << "; given uninitialised first guess";
+				}
+
+				ss << "): " << E->what();
 
 				delete E;
 				throw new Exception(ss.str());
@@ -741,7 +764,9 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 			// Most of this is the same as for solveRegion1:
 
 			#ifdef SOLVER2_DEBUG
-				cerr << endl << "---------------------------------" << endl << "SOLVE REGION 2";
+				if(SOLVER2BASE_DEBUG){
+					cerr << endl << "---------------------------------" << endl << "SOLVE REGION 2";
+				}
 			#endif
 
 			SteamCalculator guess = firstguess;
@@ -765,15 +790,19 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				p = guess.pres();
 
 				#ifdef SOLVER2_DEBUG
-					cerr << endl << "Iter " << niter << ": p = " << p / MPa << " MPa, T = " << T << " (" << tocelsius(T) << "°C)";
+					if(SOLVER2BASE_DEBUG){
+						cerr << endl << "Iter " << niter << ": p = " << p / MPa << " MPa, T = " << T << " (" << tocelsius(T) << "°C)";
+					}
 				#endif
 
 				f = SteamProperty<FirstProp,FirstPropAlt>::get(guess);
 				s = SteamProperty<SecondProp,SecondPropAlt>::get(guess);
 
 				#ifdef SOLVER2_DEBUG
-					cerr << ": " << SteamProperty<FirstProp,FirstPropAlt>::name() << " = " << f;
-					cerr << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << " = " << s;
+					if(SOLVER2BASE_DEBUG){
+						cerr << ": " << SteamProperty<FirstProp,FirstPropAlt>::name() << " = " << f;
+						cerr << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << " = " << s;
+					}
 				#endif
 
 				Df = f1 - f;

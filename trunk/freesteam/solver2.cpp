@@ -28,8 +28,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // Which region?
 
-// whichRegion given p, T
-
+/**
+	whichRegion given p, T
+*/
 int
 Solver2<Pressure,Temperature,0,0>::whichRegion(const Pressure &p, const Temperature &T){
 	SteamCalculator S;
@@ -44,6 +45,10 @@ Solver2<Pressure,Temperature,0,0>::whichRegion(const Pressure &p, const Temperat
 
 }
 
+// Solve Region3 for pressure, temperature.
+/**
+	 That's easy - just use the correlation directly.
+*/
 SteamCalculator
 Solver2<Pressure,Temperature,0,0>::solveRegion3(const Pressure &p, const Temperature &T, const SteamCalculator &firstguess){
 	SteamCalculator S;
@@ -57,6 +62,56 @@ Solver2<Pressure,Temperature,0,0>::solveRegion3(const Pressure &p, const Tempera
 		throw new Exception(s.str());
 	}
 }
+
+/**
+	whichRegion given T, h
+*/
+int Solver2<Temperature, SpecificEnergy, 0, SOLVE_ENTHALPY>::whichRegion(const Temperature &T, const SpecificEnergy &h){
+
+	SteamCalculator S;
+	try{
+
+		if(T < T_CRIT){
+			SatCurve<SpecificEnergy,Temperature,SOLVE_ENTHALPY> SC;
+			SpecificEnergy h_f = SC.solve(T,SAT_WATER);
+			SpecificEnergy h_g = SC.solve(T,SAT_STEAM);
+
+			if(T < T_REG1_REG3){
+				if(h <= h_f){
+					return 1;
+				}
+
+				if(h >= h_g){
+					return 2;
+				}
+			}
+
+			if(h >= h_f && h <=h_g){
+				return 4;
+			}
+		}
+
+		if(T > TB_HIGH){
+			return 2;
+		}
+
+		B23Curve<SpecificEnergy,Temperature,SOLVE_ENTHALPY> B23;
+		SpecificEnergy h_b23 = B23.solve(T);
+
+		if(h < h_b23){
+			return 3;
+		}
+
+		return 2;
+
+	}catch(Exception *E){
+		stringstream ss;
+		ss << "Solver2<p,u>::whichRegion(T = " << T << ", h = " << h/kJ_kg << " kJ/kgK): " << E->what();
+		delete E;
+		throw new Exception(ss.str());
+	}
+}
+
 
 /**
 	which region given T,s

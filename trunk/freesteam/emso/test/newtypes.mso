@@ -47,8 +47,8 @@ Current as Real(Brief = "Current", Unit = "A");
 Pressure as Real (Brief = "Pressure", Default=5, Lower=1e-30, Upper=1000, Unit = "bar");
 PressureDifference as Pressure (Brief = "Pressure Difference", Lower=-1000, Default=0.1);
 
-Energy as Real(Brief = "Energy", Default = 1,Lower=-1e8, Upper=1e8, Unit = "W");
-Power as Real(Brief = "Potency", Default = 10, Lower=0, Upper=1e3, Unit = "W");
+Energy as Real(Brief = "Energy", Default = 1,Lower=-1e8, Upper=1e8, Unit = "J");
+Power as Real(Brief = "Potency", Default = 10, Lower=0, Upper=2e9, Unit = "W");
 
 Velocity as Real(Brief = "Velocity", Default=1, Unit = "m/s");
 Speed as Velocity(Brief = "Speed", Lower = 0);
