@@ -71,15 +71,14 @@ void Region3::set_pT(SteamCalculator * c, Pressure p, Temperature T,
 	c->reg3_target_pressure = p;
 
 	Pressure pb = Boundaries::getpbound_T(T);
-	c2 = new SteamCalculator();
-	c2->set_pT(pb, T);
-	Density rhomin = c2->dens();
-	//fprintf(stderr,"set_pT rhomin %.5f\n",rhomin);
+
+	SteamCalculator S2;
+	S2.set_pT(pb, T);
 
 	ZeroIn < SteamCalculator, Pressure, Density > *z =
 	    new ZeroIn < SteamCalculator, Pressure, Density > ();
 
-	z->setLowerBound(c2->dens());
+	z->setLowerBound(S2.dens());
 	z->setUpperBound(REG3_ZEROIN_DENS_MAX);
 	z->setTolerance(REG3_ZEROIN_TOL);
 	z->setMethod(&SteamCalculator::getRegion3PressureError);
@@ -89,14 +88,12 @@ void Region3::set_pT(SteamCalculator * c, Pressure p, Temperature T,
 	if (!z->isSolved(0.00001 * MPa)) {
 		throw new Exception("Couldn't solve set_pT in reg3");
 	}
-	//my_zeroin(c,c2->dens(),REG3_ZEROIN_DENS_MAX,reg3_pres_err,REG3_ZEROIN_TOL);
 
-	delete c2;
-
+	/**
+		@todo: remove redundent 'x' from Region3::set_pT function?
+	*/
 	c->x = x;
 	c->isset = true;
-
-	//cerr << "Region3::set_pT(p=" << p << ",T=" << T << ")"<< endl;
 
 	ENSURE(c->whichRegion() == 3);
 
@@ -134,17 +131,18 @@ Region3::specentropy(SteamCalculator *c){
 
 SpecificEnergy
 Region3::specenthalpy(SteamCalculator *c){
-	R * c->T * (c->tau * phitau(c) + c->del * phidel(c));
+	return R * c->T * (c->tau * phitau(c) + c->del * phidel(c));
 }
 
 SpecHeatCap
-Region3::speccp(SteamCalculator *c){
-	return R * (-sq(c->tau) * phitautau(c) +
-                      (pow
-                       (c->del * phidel(c) -
-                        c->del * c->tau * phideltau(c),
-                        2) / (2 * c->del * phidel(c) +
-                              sq(c->del) * phideldel(c))));
+Region3::speccp(SteamCalculator *c){ 
+	return R * (
+		-sq(c->tau) * phitautau(c) 
+		+ (
+			pow (c->del * phidel(c) - c->del * c->tau * phideltau(c), 2) 
+			/ (2 * c->del * phidel(c) + sq(c->del) * phideldel(c))
+		)
+	);
 }
 
 SpecHeatCap
@@ -153,44 +151,34 @@ Region3::speccv(SteamCalculator *c){
 }
 
 
-LOOP_EVAL_REG3(phi,
-               REGION3_N[0] * log(c->del), +REGION3_N[i] * pow(c->del,
-                       REGION3_I
-                       [i]) *
-               pow(c->tau, REGION3_J[i]));
+LOOP_EVAL_REG3(phi
+	, REGION3_N[0] * log(c->del)
+	, +REGION3_N[i] * pow(c->del, REGION3_I [i]) * pow(c->tau, REGION3_J[i]));
 
-LOOP_EVAL_REG3(phidel,
-               REGION3_N[0] / c->del,
-               +REGION3_N[i] * REGION3_I[i] * pow(c->del,
-                                                  REGION3_I[i] -
-                                                  1) * pow(c->tau,
-                                                           REGION3_J[i]));
+LOOP_EVAL_REG3(phidel
+	, REGION3_N[0] / c->del
+	, +REGION3_N[i] * REGION3_I[i] * pow(c->del, REGION3_I[i] - 1) * pow(c->tau, REGION3_J[i]));
 
-LOOP_EVAL_REG3(phideldel,
-               -REGION3_N[0] / sq(c->del),
-               +REGION3_N[i] * REGION3_I[i] * (REGION3_I[i] -
-                                               1) * pow(c->del,
-                                                        REGION3_I[i] -
-                                                        2) * pow(c->tau,
-                                                                 REGION3_J
-                                                                 [i]));
+LOOP_EVAL_REG3(phideldel
+	, -REGION3_N[0] / sq(c->del)
+	, +REGION3_N[i] * REGION3_I[i] * (REGION3_I[i] - 1) * pow(c->del, REGION3_I[i] - 2) * pow(c->tau, REGION3_J [i])
+);
 
 
-LOOP_EVAL_REG3(phitau,
-               0, +REGION3_N[i] * pow(c->del,
-                                      REGION3_I[i]) * REGION3_J[i] *
-               pow(c->tau, REGION3_J[i] - 1));
+LOOP_EVAL_REG3(phitau
+	, 0
+	, +REGION3_N[i] * pow(c->del, REGION3_I[i]) * REGION3_J[i] * pow(c->tau, REGION3_J[i] - 1)
+);
 
-LOOP_EVAL_REG3(phitautau,
-               0, +REGION3_N[i] * pow(c->del,
-                                      REGION3_I[i]) * REGION3_J[i] *
-               (REGION3_J[i] - 1) * pow(c->tau, REGION3_J[i] - 2));
+LOOP_EVAL_REG3(phitautau
+	, 0
+	, +REGION3_N[i] * pow(c->del, REGION3_I[i]) * REGION3_J[i] * (REGION3_J[i] - 1) * pow(c->tau, REGION3_J[i] - 2)
+);
 
-LOOP_EVAL_REG3(phideltau,
-               0, +REGION3_N[i] * REGION3_I[i] * pow(c->del,
-                                                     REGION3_I[i] -
-                                                     1) * REGION3_J[i] *
-               pow(c->tau, REGION3_J[i] - 1));
+LOOP_EVAL_REG3(phideltau
+	, 0
+	, +REGION3_N[i] * REGION3_I[i] * pow(c->del, REGION3_I[i] - 1) * REGION3_J[i] * pow(c->tau, REGION3_J[i] - 1)
+);
 
 
 // NOTE: factor of 1e6 removed.

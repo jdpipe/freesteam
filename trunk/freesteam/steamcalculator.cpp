@@ -157,7 +157,7 @@ void SteamCalculator::set_pT(Pressure p, Temperature T, Num x) {
 		x = 1;
 		changeState(Region2::Instance());
 	} else if (Boundaries::isRegion3_pT(p, T)) {
-		cerr << p << " " << T;
+		//cerr << p << " " << T;
 		//MESSAGE("NOT SATURATED, IT'S IN REGION 3");
 		x = -1;
 		changeState(Region3::Instance());
@@ -402,7 +402,7 @@ SteamCalculator::specvol(void) {
 SpecificEnergy
 SteamCalculator::specienergy(void) {
 	REQUIRE(isset);
-	cerr << "About to calculate specienergy at p = " << pres() / bar << " bar, T = " << tocelsius(temp()) << "°C" << endl;
+	//cerr << "About to calculate specienergy at p = " << pres() / bar << " bar, T = " << tocelsius(temp()) << "°C" << endl;
 	SpecificEnergy u = this->_state->specienergy(this);
 	ENSURE(u > 0.0 * kJ_kg);
 	return u;
@@ -769,9 +769,9 @@ SteamCalculator::pitau_iaps85(void) {
 	REQUIRE(isset);
 	REQUIRE(this->_state!=NULL);
 	
-	cerr << "Which state? " << whichState() << endl;
-	cerr << "Pressure:    " << this->pres() << endl;
-	cerr << "Temp:        " << this->temp() << endl;
+	//cerr << "Which state? " << whichState() << endl;
+	//cerr << "Pressure:    " << this->pres() << endl;
+	//cerr << "Temp:        " << this->temp() << endl;
 	
 	double pitau = this->_state->pitau_iaps85(this);
 
@@ -805,20 +805,18 @@ Pressure
 SteamCalculator::getRegion3PressureError(Density test_rho) {
 
 	ASSERT(whichRegion() == 3);
-
+	
 	rho = test_rho;
 	del = rho / REG3_DENS_REF;
 
 	Pressure p = _state->pres(this);
-
+	
 	if(p > P_MAX){
 		p = P_MAX + (0.01 * MPa);	// keep pressure *almost* sensible.
 	}
 	
 	ENSURE(p >= 0.0 * Pascal);
 	ENSURE(p <= P_MAX + 0.01 * MPa);
-
-	//fprintf(stderr," pres = %.5f\n",p);
 
 	return (p - reg3_target_pressure);
 }

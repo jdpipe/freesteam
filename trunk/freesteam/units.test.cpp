@@ -11,6 +11,7 @@ class UnitsTest : public CppUnit::TestFixture {
 	protected:
 
 		void testUnits();
+		void testSubtraction();
 
 	public:
 		void setUp(){}
@@ -23,6 +24,7 @@ class UnitsTest : public CppUnit::TestFixture {
 
 		CPPUNIT_TEST_SUITE(UnitsTest);
 		CPPUNIT_TEST(testUnits);
+		CPPUNIT_TEST(testSubtraction);
 		CPPUNIT_TEST_SUITE_END();
 	
 };
@@ -64,3 +66,16 @@ UnitsTest::testUnits(){
 		//Time t3 = v * v;
 
 }
+
+void 
+UnitsTest::testSubtraction(){
+	
+	cerr.flags(ios_base::showbase);
+	Energy e1 = 80.0 * kJ;
+	Energy e2 = 20.0 * kJ;
+	Energy e3 = e1 - e2;
+	if(e3 != 60.0 * kJ){
+		CPPUNIT_FAIL("Subtraction test failed");
+	}
+}
+	

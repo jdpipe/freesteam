@@ -232,12 +232,16 @@ std::ostream & operator <<(std::ostream & os, const Units < 0,
 			return os; \
 		}
 
-DEFINE_OUTPUT_METHOD(0, 1, 0, 0, 0, "m");
-DEFINE_OUTPUT_METHOD(0, 0, 1, 0, 0, "s");
-DEFINE_OUTPUT_METHOD(0, 1, -1, 0, 0, "m/s");
-DEFINE_OUTPUT_METHOD(1, 0, 0, 0, 0, "kg");
-DEFINE_OUTPUT_METHOD(0, 0, 0, 1, 0, "K");
-DEFINE_OUTPUT_METHOD(1,-1,-2, 0, 0, "Pa");
+DEFINE_OUTPUT_METHOD( 0,  1,  0,  0,  0, "m");
+DEFINE_OUTPUT_METHOD( 0,  0,  1,  0,  0, "s");
+DEFINE_OUTPUT_METHOD( 0,  1, -1,  0,  0, "m/s");
+DEFINE_OUTPUT_METHOD( 1,  0,  0,  0,  0, "kg");
+DEFINE_OUTPUT_METHOD( 0,  0,  0,  1,  0, "K");
+DEFINE_OUTPUT_METHOD( 1, -1, -2,  0,  0, "Pa");
+DEFINE_OUTPUT_METHOD(-1,  3,  0,  0,  0, "m³/kg");
+DEFINE_OUTPUT_METHOD( 0,  2, -2, -1,  0, "J/kgK");
+DEFINE_OUTPUT_METHOD( 0,  2, -2,  0,  0, "J/kg");
+DEFINE_OUTPUT_METHOD( 1, -3,  0,  0,  0, "kg/m³");
 
 //--------------------------------
 // BASE MEASURES
@@ -386,6 +390,7 @@ const Pressure Pascal = Newton / (metre * metre);
 const Pressure bar = 100.0 * kilo * Pascal;
 const Pressure MPa = Mega * Pascal;
 const Energy Joule = Newton * metre;
+const Energy kJ = kilo * Joule;
 
 const Power Watt = Joule / second;
 

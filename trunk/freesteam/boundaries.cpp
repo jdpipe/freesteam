@@ -228,7 +228,7 @@ Boundaries::isRegion2_pT(Pressure p, Temperature T,
 	// check region 2 under region 1/4
 	if (T <= T_REG1_REG3) {
 		if (p > getSatPres_T(T)/* T < getSatTemp_p(p) - STM_SATURATION_TOL * T*/) {
-			MESSAGE("  p > PSAT");
+			//MESSAGE("  p > PSAT");
 			if (throw_me)
 				throw new SteamCalculatorException(p,T,REG2_RANGE_T_LOW_TS);
 			return false;
@@ -236,7 +236,7 @@ Boundaries::isRegion2_pT(Pressure p, Temperature T,
 		// check region 2 under region 3
 	} else if (T <= TB_HIGH) {
 		if (p > getpbound_T(T)) {
-			MESSAGE("  p > PBOUND");
+			//MESSAGE("  NOT REG 2: p > PBOUND");
 			if (throw_me)
 				throw new SteamCalculatorException(p,T,REG2_RANGE_P_HIGH_PB);
 			return false;

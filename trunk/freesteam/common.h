@@ -9,7 +9,7 @@
 // define a method (for use in header files)
 #define METHOD_H_OBJ(funcname) Num funcname(SteamCalculator *c)
 
-const SpecificGasConstant R=0.461526E-3 * kJ_kgK; // Specific gas constant for water from IF97
+const SpecificGasConstant R=0.461526 * kJ_kgK; // Specific gas constant for water from IF97
 
 #define REG4_TOL 0.001		// relative err on pressures considerd to be equal to psat.
 
@@ -54,7 +54,7 @@ const Temperature IAPS85_TEMP_REF = 647.226 * Kelvin;
 const Pressure IAPS85_PRES_REF = 22.115 * MPa;	// MPa (THIS IS *NOT* EQUAL TO P_CRIT!)
 
 /// @see http://www.iapws.org/relguide/visc.pdf#page=7 
-const Conductivity IAPS85_THCOND_REF = 0.49450e3 * mW_mK;
+const Conductivity IAPS85_THCOND_REF = 0.49450 * Watt / metre / Kelvin;
 
 const Temperature IAPS85_TEMP_REG2_REF = 540.0 * Kelvin;
 

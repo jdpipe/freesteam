@@ -35,8 +35,8 @@ OBJS = steamcalculator.o state.o region1.o region2.o region3.o region4.o boundar
 
 # Or, define the tests in the order you want:
 TESTS = cppunit.test.o empty.test.o units.test.o batchtest.test.o \
-	region4.test.o b23.test.o boundaries.test.o 
-#region1.test.o region2.test.o region3.test.o
+	region4.test.o b23.test.o boundaries.test.o region1.test.o \
+	region2.test.o region3.test.o
 
 CPASS = $(wildcard *.cpass.cpp)
 CFAIL = $(wildcard *.cfail.cpp)

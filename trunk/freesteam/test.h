@@ -11,8 +11,9 @@ using namespace std;
 
 #include "units.h"
 
-#define CHECK_RESULT(method,val) if(!eq(S->method(),val,tol)){\
+#define CHECK_RESULT(method,val) if(!eq(S.method(),val,val * tol)){\
 	stringstream s; \
-	s<< #method << ": expected " << val << ", got " << S->method() << "."; \
+	s.flags(ios_base::showbase); \
+	s<< #method << ": expected " << val << ", got " << S.method() << "."; \
 	CPPUNIT_FAIL(s.str()); \
 	}
