@@ -24,8 +24,8 @@ Model Steam # 4 DF
 
 	T as AbsoluteTemperature(    Lower=273.15, Upper=1073.15,Default = 600,  Unit = "K");
 	p as Pressure(               Lower=0,      Upper=100,    Default = 10,   Unit = "MPa");
-	h as SpecificEnthalpy(       Lower=0,      Upper=4300,    Default=1500,  Unit = "kJ/kg");
-	s as SpecificEntropy(        Lower=0,      Upper=10,     Default=7,      Unit = "kJ/kg/K");
+	h as SpecificEnthalpy(       Lower=0,      Upper=4300,   Default=1500,   Unit = "kJ/kg");
+	s as SpecificEntropy(        Lower=0,      Upper=12,     Default=9.1,    Unit = "kJ/kg/K");
 
 end
 

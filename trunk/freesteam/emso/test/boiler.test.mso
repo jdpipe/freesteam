@@ -19,7 +19,7 @@ FlowSheet BoilerTest # 0
 	freesteam as CalcObject(File="emsofreesteam");
 	
 	DEVICES
-	s as Stream_ps; # 3
+	s as Stream_pT; # 3
 	BO as Boiler; # 7
 	
 	CONNECTIONS # -5
@@ -31,7 +31,7 @@ FlowSheet BoilerTest # 0
 	s.p = 10 * "bar";
 	
 	BO.Dp = -2 * "bar";
-	BO.q = 3000 * "kJ/s";
+	BO.q = 3 * "kJ/s";
 	
 	OPTIONS
 	mode = "steady";

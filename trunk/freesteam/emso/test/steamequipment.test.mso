@@ -4,26 +4,10 @@
 	Really just tests how the SteamEquipment can be connected together with other streams
 *#
 
+using "steamequipment";
 using "newtypes";
 using "streams";
 
-Model SteamEquipment_Trivial # 5
-	
-	PARAMETERS
-	freesteam as CalcObject(File = "emsofreesteam");
-	
-	VARIABLES
-	In as Stream; # 5
-	Out as Stream; # 5
-		
-	EQUATIONS # -5
-	Out.p = In.p - 3 * "bar";
-	Out.h = In.h + 100 * "kJ/kg";
-	Out.mdot = In.mdot;
-	[Out.T, Out.s] = freesteam.Ts_ph(Out.p,Out.h);
-
-end
-	
 FlowSheet SteamEquipment_Test # 0
 
 	PARAMETERS
@@ -32,7 +16,7 @@ FlowSheet SteamEquipment_Test # 0
 	DEVICES 
 	S1 as Stream_pT; # 5
 	S2 as Stream; # 5
-	EQ as SteamEquipment_Trivial; # 5
+	EQ as SteamEquipment; # 5
 	
 	CONNECTIONS # -10
 	S1 to EQ.In;
