@@ -45,7 +45,7 @@ string SteamCalculatorException::what(void) {
 	}
 
 	stringstream s;
-	s << explanation << ", p=" << this->p << " MPa, T=" << this->T;
+	s << explanation << ", p=" << (this->p / MPa)<< " MPa, T=" << this->T;
 
 	this->message = s.str();
 
@@ -72,7 +72,7 @@ SteamAlmostSaturatedException::SteamAlmostSaturatedException(Pressure p,
 
 string SteamAlmostSaturatedException::what() {
 	stringstream s;
-	s << "Steam almost saturated: p = " << this->p << "MPa, T = " << this->
-	T << "K";
+	s << "Steam almost saturated: p = " << this->p / MPa << "MPa, T = " << this->
+	T / Kelvin<< "K";
 	return s.str();
 }

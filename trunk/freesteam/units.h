@@ -40,347 +40,135 @@
 		. Win2k -- gcc version 3.2.3 (mingw special 20030504-1)
 		. Linux -- gcc version 3.2.2 20030222 (Red Hat Linux 3.2.2-5)
 */
-template < int M, int L = 0, int T = 0, int K = 0, int I = 0 > class Units {
+
+
+template< int M ,int L=0 ,int T=0 ,int K=0 ,int I=0 >
+class Units {
 		
 	public:
 
-		Units() : val(1.0){
-			cerr << endl << "new U->";
-		}
-		
-		/// Copy constructor
-		Units(const Units & u):val(*reinterpret_cast<const double*>(&u)) {}
+		Units():d_val(1.0){}	// only used to consturct base units
+		Units( const Units& u ):d_val( u.d_val ){}
+		const Units& operator=( const Units& u ){	d_val=u.d_val; return *this; }
 
-		///     Assignment operator
-		const Units & operator=(const Units & u) {
-			val = *reinterpret_cast<const double*>(&u);
-			return *this;
-		}
+		// scalar mulitplication & division
+		Units operator*( double d ) const { Units u; u.d_val=d_val*d; return u; }
+		Units operator/( double d ) const { Units u; u.d_val=d_val/d; return u; }
+		const Units& operator*=( double d ) { d_val*=d; return *this; }
+		const Units& operator/=( double d ) { d_val/=d; return *this; }
 
-		// MULTIPLICATION AND DIVISION BY SCALARS
+		// unit additions & subtraction
+		Units operator+( const Units& u ) const { Units v; v.d_val=d_val+u.d_val; return v; }
+		Units operator-( const Units& u ) const { Units v; v.d_val=d_val-u.d_val; return v; }
+		Units& operator+=( const Units& u ) { d_val+=u.d_val; return *this; }
+		Units& operator-=( const Units& u ) { d_val-=u.d_val; return *this; }
+		Units operator-() const { Units u; u.d_val=-d_val; return u; }
 
-		const Units & operator*=(double d) {
-			cerr << "U*=d->";		
-			val *= d;
-			return *this;
-		}
-		const Units & operator/=(double d) {
-			cerr << "U/=d->";		
-			val /= d;
-			return *this;
-		}
+		// comparison
+		bool operator==( const Units& u ) const { return d_val==u.d_val; }
+		bool operator!=( const Units& u ) const { return d_val!=u.d_val; }
+		bool operator< ( const Units& u ) const { return d_val< u.d_val; }
+		bool operator<=( const Units& u ) const { return d_val<=u.d_val; }
+		bool operator> ( const Units& u ) const { return d_val> u.d_val; }
+		bool operator>=( const Units& u ) const { return d_val>=u.d_val; }
 
-		// ACCUMULATION AND DIMINUTION
+		// scalar typecast
+		operator double() const;// not defined here because only unitless can cast to double
 
-		Units & operator+=(const Units & u) {
-			cerr << "U+=U->";
-			val += *reinterpret_cast<const double*>(&u);
-			return *this;
-		}
-		Units & operator-=(const Units & u) {
-			cerr << "U-=U->";
-			val -= *reinterpret_cast<const double*>(&u);
-			return *this;
+		// Unit Division
+		template< int m, int l, int t, int k, int i >
+		Units<M-m,L-l,T-t,K-k,I-i>
+		operator/( const Units<m,l,t,k,i>& u2 ) const {
+			Units<M-m,L-l,T-t,K-k,I-i> r;
+			*reinterpret_cast<double*>(&r) = d_val/ *reinterpret_cast<const double*>(&u2);
+			return r;
 		}
 
-		/// Cast to scalar
-		/**
-			Not defined here because only Units<0,0,0,0,0> can cast to double
-		*/
-		operator double () const;
-
-		// Value checking
-		bool isValid() {
-			return !isnan(val) && !isinf(val);
-		}
-
-		bool isnan() {
-			return isnan(val);
-		}
-
-		bool isinf() {
-			return isinf(val);
-		}
-		
-		operator bool(){
-			return (bool)val;
-		}
-	
-/*	protected:
-	
-		double getValue() const {
-			cerr << "getVal->";
-			return val;
-		}
-	*/
 	private:
 
-		double val;
-
+		//bool hello;
+		double d_val;
+		
 		// used by */+- to make returning values easy
-		void setValue(double v) {
-			val = v;
-		}
+		//Units( double val ):d_val(val){}
 
 };
 
 
-/// Casting to double
-/**
-	Allow casting to double during debug builds (throw a runtime error) unless compile-time testing
+// only defined for unitless types
+inline Units<0,0,0,0,0>::operator double() const {
+	return d_val;
+}
+
+
+// Scalar Multiplication & Division
+template< int m, int l, int t, int k, int i >
+inline
+Units<m,l,t,k,i> 
+operator*( double d, const Units<m,l,t,k,i> &u) {
+	return u*d;
+}
+
+
+/*
+// Scalar Multiplication & Division
+template< int m, int l, int t, int k, int i >
+inline
+Units<m,l,t,k,i> 
+operator*(const Units<m,l,t,k,i> &u,  double d) {
+	return u*d;
+}
 */
-/*template < int m, int l, int t, int k, int i >
-inline Units<m,l,t,k,i>::operator double() const{
-	std::stringstream s;
-	s << "Illegal cast to Units<" << m << l << t << k << i << ">";
-	throw new Exception(s.str());
-}
-*/
 
-/// Casting to double
-/**
-	Only defined for unitless types
-*/
-inline Units < 0, 0, 0, 0, 0 >::operator double ()const {
-	cerr << "double(U)->";
-	return val;
-}
-
-// MULTIPLICATION
-
-/**
-	Dimensionful multiplication U * U
-*/
-template < int M, int L, int T, int K, int I, int m, int l, int t, int k, int i > 
-inline Units < M + m, L + l, T + t, K + k, I + i > 
-operator*(const Units < M, L, T, K, I > u,  const Units < m, l, t, k, i > v){
-
-	cerr << "U*U->";		
-	Units <M + m, L + l, T + t, K + k,I + i > r;
-	*reinterpret_cast<double*>(&r) = *reinterpret_cast<const double*>(&u) * *reinterpret_cast<const double*>(&v);
-	return r;
-}
-
-/**
-	Scalar multiplication d * U
-*/
-template < int m, int l, int t, int k, int i >
+template< int m, int l, int t, int k,int i >
 inline
-Units < m, l, t, k, i >
-operator*(double u, const Units < m, l, t, k, i > v) {
-	cerr << "d*U->";		
-	Units < m, l, t, k, i > r;
-	double d = *reinterpret_cast<const double*>(&v);
-	*reinterpret_cast<double*>(&r) = u * d;
-	return r;
-}
-
-/** 
-	Scalar multipliaction U * d
-*/
-template < int M, int L, int T, int K, int I >
-inline
-Units < M, L, T, K, I >
-operator*(const Units < M, L, T, K, I > u, double v) {
-	cerr << "U*d->";		
-	Units < M, L, T, K, I > r;
-	*reinterpret_cast<double*>(&r) = *reinterpret_cast<const double*>(&u) / v;
-	return r ;
-}
-
-template < int m, int l, int t, int k, int i >
-inline
-Units < m, l, t, k, i >
-operator*(int u, const Units < m, l, t, k, i > v) {
-	cerr << "i*U->";		
-	Units < m, l, t, k, i > r;
-	*reinterpret_cast<double*>(&r) = u * *reinterpret_cast<const double*>(&u);
-	return r;
-}
-
-template < int M, int L, int T, int K, int I >
-inline
-Units < M, L, T, K, I >
-operator*(const Units < M, L, T, K, I > u, int v) {
-	cerr << "U*i->";		
-	Units < M, L, T, K, I > r;
-	*reinterpret_cast<double*>(&r) = *reinterpret_cast<const double*>(&u) * v;
-	return r;
-}
-
-// DIVISION
-
-/**
-	Dimensionful division
-*/
-template < int M, int L, int T, int K, int I, int m, int l,int t, int k, int i >
-inline 
-Units < M - m, L - l, T - t,K - k, I - i >
-operator/(const Units < M, L, T, K, I > u, const Units < m, l, t, k, i > v) {
-
-	cerr << "U/U->";		
-	
-	if(*reinterpret_cast<const double*>(&v)==0){
-		stringstream s;
-	
-		s << endl << __FILE__ << ":" << __LINE__ << ": Invalid division by zero-value having Units<" << m << "," << l << "," << t << "," << k << "," << i <<">!";
-		
-		throw new Exception(s.str());
-	}
-	Units < M - m, L - l, T - t, K - k, I - i > r;
-	*reinterpret_cast<double*>(&r) = *reinterpret_cast<const double*>(&u) / *reinterpret_cast<const double*>(&v);
-	return r;
-}
-
-// Scalar division U / d
-
-template < int M, int L, int T, int K, int I >
-inline
-Units < M, L, T, K, I >
-operator/(const Units < M, L, T, K, I > u, double v) {
-	cerr << "U/d->";		
-	Units < M, L, T, K, I > r;
-	*reinterpret_cast<double*>(&r) = *reinterpret_cast<const double*>(&u) / v;
-	return r;
-}
-
-// Scalar multiplication of reciprocal d / U
-
-template < int m, int l, int t, int k, int i >
-inline
-Units < -m, -l, -t, -k, -i >
-operator/(double u, const Units < m, l, t, k, i > v) {
-	cerr << "d/U->";		
-	Units < -m, -l, -t, -k, -i > r;
-	*reinterpret_cast<double*>(&r) = u / *reinterpret_cast<const double*>(&v);
-	return r;
-}
-
-// The following two operators (integer division) shouldn't really be necessary but without them G++ gets confused and tries to cast to double, and somehow succeeds?!?!?!?
-
-template < int m, int l, int t, int k, int i >
-inline
-Units < -m, -l, -t, -k, -i >
-operator/(int u, const Units < m, l, t, k, i > v) {
-	cerr << "i/U->";
-	 Units < -m, -l, -t, -k, -i > r;
-	 *reinterpret_cast<double*>(&r) = u / *reinterpret_cast<const double*>(&v);
-	 return r;
-}
-
-template < int M, int L, int T, int K, int I >
-inline
-Units < M, L, T, K, I >
-operator/(const Units < M, L, T, K, I > u, int v) {
-	cerr << "U/i->";
-	Units < M, L, T, K, I > r;
-	*reinterpret_cast<double*>(&r) = *reinterpret_cast<const double*>(&u) / v;
+Units<-m,-l,-t,-k,-i> 
+operator/( double d, const Units<m,l,t,k,i>& u) {
+	Units< -m, -l, -t, -k, -i > r;
+	*reinterpret_cast<double*>(&r) = d / *reinterpret_cast<const double*>(&u);
 	return r;
 }
 
 
-// COMPARISON
+// Unit Multiplication
 
+template<int M, int L, int T, int K, int I,  int m, int l, int t, int k, int i >
+Units<M+m,L+l,T+t,K+k,I+i >
+operator*(const Units<M,L,T,K,I>& u1, const Units<m,l,t,k,i>& u2 ){
+	Units<M+m,L+l,T+t,K+k,I+i> r;
+	*reinterpret_cast<double*>(&r) = *reinterpret_cast<const double*>(&u1) * *reinterpret_cast<const double*>(&u2);
+	return r;
+}
+
+/*
+/// Equality with some tolerance
 template < int M, int L, int T, int K, int I >
 inline
 bool
-operator==(const Units < M, L, T, K, I > u, const Units < M, L,
-           T, K, I > v) {
-	return *reinterpret_cast<const double*>(&u) == *reinterpret_cast<const double*>(&v);
+eq(const Units<M,L,T,K,I> u, const Units<M,L,T,K,I> v, double tol = UNITS_DEFAULT_TOL) {
+	double d = fabs(*reinterpret_cast<const double*>(&u) - *reinterpret_cast<const double*>(&v));
+	if (d > tol) return false;
+	return true;
 }
-
-template < int M, int L, int T, int K, int I >
-inline
-bool
-operator!=(const Units < M, L, T, K, I > u, const Units < M, L,
-           T, K, I > v) {
-	return *reinterpret_cast<const double*>(&u) != *reinterpret_cast<const double*>(&v);
-}
-
-template < int M, int L, int T, int K, int I >
-inline
-bool
-operator<(const Units < M, L, T, K, I > u, const Units < M, L,
-          T, K, I > v) {
-	return *reinterpret_cast<const double*>(&u) < *reinterpret_cast<const double*>(&v);
-}
-
-template < int M, int L, int T, int K, int I >
-inline
-bool
-operator<=(const Units < M, L, T, K, I > u, const Units < M, L,
-           T, K, I > v) {
-	return *reinterpret_cast<const double*>(&u) <= *reinterpret_cast<const double*>(&v);
-}
-
-template < int M, int L, int T, int K, int I >
-inline
-bool
-operator>(const Units < M, L, T, K, I > u, const Units < M, L,
-           T, K, I > v) {
-	return *reinterpret_cast<const double*>(&u) > *reinterpret_cast<const double*>(&v);
-}
-
-
-template < int M, int L, int T, int K, int I >
-inline
-bool
-operator>=(const Units < M, L, T, K, I > u, const Units < M, L,
-           T, K, I > v) {
-	return *reinterpret_cast<const double*>(&u) >= *reinterpret_cast<const double*>(&v);
-}
+*/
 
 /// Equality with some tolerance
 template < int M, int L, int T, int K, int I >
 inline
 bool
-eq(const Units < M, L, T, K, I > u, const Units < M, L, T, K,
-   I > v, double tol = UNITS_DEFAULT_TOL) {
-	double d = fabs(*reinterpret_cast<const double*>(&u) - *reinterpret_cast<const double*>(&v));
-	if (d > tol) return false; return true;
-}
-
-
-// ADDITION AND SUBTRACTION
-
-template < int M, int L, int T, int K, int I >
-inline
-Units < M, L, T, K, I >
-operator+(const Units < M, L, T, K, I > u, const Units < M, L,
-          T, K, I > v) {
-	cerr << "U+U->";
-	Units < M, L, T, K, I > r;
-	*reinterpret_cast<double*>(&r) = *reinterpret_cast<const double*>(&u) + *reinterpret_cast<const double*>(&v);
-	return r;
-}
-
-template < int M, int L, int T, int K, int I >
-inline 
-Units < M, L, T, K, I >
-operator-(const Units < M, L, T, K, I > u, const Units < M, L,
-          T, K, I > v) {
-	cerr << "U-U->";
-	Units < M, L, T, K, I > r;
-	*reinterpret_cast<double*>(&r) = *reinterpret_cast<const double*>(&u) - *reinterpret_cast<const double*>(&v);
-	return r;
-}
-
-template < int M, int L, int T, int K, int I >
-inline
-Units < M, L, T, K, I >
-operator-(const Units < M, L, T, K, I > u) {
-	Units < M, L, T, K, I > r;
-	cerr << "neg(U)->";
-	*reinterpret_cast<double*>(&r) = - *reinterpret_cast<const double*>(&u);
-	return r;
+eq(const Units<M,L,T,K,I> u, const Units<M,L,T,K,I> v, const Units<M,L,T,K,I> tol) {
+	if(fabs(u-v) < tol){
+		return true;
+	}
+	return false;
 }
 
 // Absolute Values
 
 template < int M, int L, int T, int K, int I >
 inline
-Units < M, L, T, K, I >
-fabs(const Units < M, L, T, K, I > u) {
+Units<M,L,T,K,I>
+fabs(const Units<M,L,T,K,I> u) {
 	if (*reinterpret_cast<const double*>(&u) < 0) {
 		Units < M, L, T, K, I > r;
 		*reinterpret_cast<double*>(&r) = - *reinterpret_cast<const double*>(&u);
@@ -401,6 +189,20 @@ sq(const Units < M, L, T, K, I > u) {
 	return r;
 }
 	
+// Not-a-Number test
+
+template < int M, int L, int T, int K, int I >
+inline bool isnan(const Units<M,L,T,K,I>& u){
+	return isnan(*reinterpret_cast<const double*>(&u));
+}
+
+// Infinity test
+
+template < int M, int L, int T, int K, int I >
+inline bool isinf(const Units<M,L,T,K,I>& u){
+	return isinf(*reinterpret_cast<const double*>(&u));
+}
+
 // OUTPUT
 
 template < int m, int l, int t, int k, int i >
@@ -439,7 +241,7 @@ DEFINE_OUTPUT_METHOD(1,-1,-2, 0, 0, "Pa");
 
 //--------------------------------
 // BASE MEASURES
-typedef Units < 1 > Mass;
+typedef Units < 1,0,0,0,0 > Mass;
 typedef Units < 0, 1 > Length;
 typedef Units < 0, 0, 1 > Time;
 typedef Units < 0, 0, 0, 1 > Temperature;
@@ -524,11 +326,11 @@ typedef Units Conductance;
 //----------------------------------------------
 // BASE UNITS FOR BASE MEASURES
 
-const Mass kilogram = Mass();
-const Length metre = Length();
-const Time second = Time();
-const Temperature Kelvin = Temperature();
-const Current ampere = Current();
+const Mass kilogram;
+const Length metre;
+const Time second;
+const Temperature Kelvin;
+const Current ampere;
 
 //------------------------------------
 // SOME ALTERNATIVE NAMES
@@ -621,7 +423,7 @@ tocelsius(const Temperature& T){
 
 inline Temperature
 fromcelsius(double T_C){
-	return Kelvin * (T_C + 273.15);
+	return (T_C + 273.15) * Kelvin;
 }
 
 

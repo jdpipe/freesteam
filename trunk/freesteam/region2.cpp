@@ -20,7 +20,7 @@ int Region2::getRegion() {
 void Region2::set_pT(SteamCalculator * c, Pressure p, Temperature T,
                           Num x) {
 	c->p = p;
-	c->pi = p;			// p / 1 MPa
+	c->pi = p / (1.0 * MPa);			// p / 1 MPa
 	c->T = T;
 	c->tau = REG2_TEMP_REF / T;
 	c->x = x;
@@ -152,25 +152,23 @@ LOOP_REG2R(gampitaur,
 
 // for thermal conductivity...
 
-/*EVAL_REG2(pitau_iaps85, \
-        IAPS85_TEMP_REF / IAPS85_PRES_REF * (gampitau() * REG2_TEMP_REF - gampi() * T) / ( sq(T) * gampipi()) \
-)
+/**
+	@see http://www.cheresources.com/iapwsif972.pdf#page=5 at 'Region 2':
 */
-
 Num Region2::pitau_iaps85(SteamCalculator * c) {
 	Num pitau_iaps85 = 0;
 	IS_VALID(c);
-	REQUIRE(c->T != 0);
+	REQUIRE(c->T > 0.0*Kelvin);
 	REQUIRE(gampipi(c) != 0);
 	REQUIRE(!isinf(gampitau(c)));
 	REQUIRE(!isinf(gampi(c)));
 	REQUIRE(!isinf(c->T));
 	
-	pitau_iaps85 =
-	    647.226 / 22.115 * (gampitau(c) * 540 -
-	                        gampi(c) * c->T) / (sq(c->T) * gampipi(c));
+	pitau_iaps85 = IAPS85_TEMP_REF / IAPS85_PRES_REF \
+		* REG1_PRES_REF * (gampitau(c) * IAPS85_TEMP_REG2_REF - gampi(c) * c->T) \
+		/ (sq(c->T) * gampipi(c));
 	                        
-	cerr << "pitau_iaps85 evaluation... value = " << pitau_iaps85 << endl;
+	//cerr << "pitau_iaps85 evaluation... value = " << pitau_iaps85 << endl;
 	
 	ENSURE(!isinf(pitau_iaps85));
 	ENSURE(!isnan(pitau_iaps85));
@@ -178,16 +176,13 @@ Num Region2::pitau_iaps85(SteamCalculator * c) {
 }
 
 
-/*
-EVAL_REG2(delpi_iaps85, \
-        - IAPS85_PRES_REF/IAPS85_DENS_REF / R / T * gampipi() / sq(gampi()) \
-)
+/**
+	@see http://www.cheresources.com/iapwsif972.pdf#page=5 at 'Region 2':
 */
-
 Num Region2::delpi_iaps85(SteamCalculator * c) {
 	Num delpi_iaps85 = 0;
-	Num gp = gampi(c);
-	delpi_iaps85 = -22.115 / 317.763 / 0.461526E-3 / c->T * gampipi(c) / (gp * gp);
+	//Num gp = gampi(c);
+	delpi_iaps85 = -IAPS85_PRES_REF / IAPS85_DENS_REF / R / c->T * gampipi(c) / sq(gampi(c));
 	ENSURE(!isnan(delpi_iaps85));
 	return delpi_iaps85;
 }

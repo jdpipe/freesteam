@@ -20,7 +20,7 @@ class ConductivityTest : public GridTest<Pressure,Temperature,Conductivity>{
 			
 			cerr.flags(ios_base::showbase);
 			cerr << "Calculating conductivity at p = " << p << ", T = " << T << endl;
-			if(!eq(S->conductivity(),k,tol)){
+			if(!eq(S->conductivity(),k,tol * W_mK)){
 			
 				stringstream s; 
 				s<< "Conductivity with p = " << p << ", T = " << T << ": expected " << k << ", got " << S->conductivity() << ".";

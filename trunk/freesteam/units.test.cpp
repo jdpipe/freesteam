@@ -34,15 +34,15 @@ UnitsTest::testUnits(){
 
 		cerr.flags(ios_base::showbase);
 	
-		Velocity v = 60 * kilometre / hour;
+		Velocity v = 60.0 * kilometre / hour;
 		
-		Length x = 250 * kilometre;
+		Length x = 250.0 * kilometre;
 		
 		Time t = x / v;
 		
 		//cerr << "The time taken to travel " << x << " at speed " << v << " is " << t << endl;
 		
-		Velocity vv = 10 * kilometre / hour;
+		Velocity vv = 10.0 * kilometre / hour;
 		
 		//cerr << "What about if the speed is " << vv << " faster?" << endl;
 		

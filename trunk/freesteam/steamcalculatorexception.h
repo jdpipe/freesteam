@@ -34,8 +34,8 @@ class SteamCalculatorException:public Exception {
 		friend class Boundaries;
 		friend class SteamState;
 
-		SteamCalculatorException(Pressure p = -1 * Pressure(), Temperature T =
-		                             -1 * Temperature(), SteamErrorCode c = STM_UNKNOWN_ERROR);
+		SteamCalculatorException(Pressure p = -1.0 * MPa, Temperature T =
+		                             -1.0 * Kelvin, SteamErrorCode c = STM_UNKNOWN_ERROR);
 
 	private:
 
@@ -52,10 +52,10 @@ class SteamAlmostSaturatedException:public Exception {
 
 	protected:
 		friend class Boundaries;
-		SteamAlmostSaturatedException(Pressure p = -1*Pressure(), Temperature T = -1*Temperature());
+		SteamAlmostSaturatedException(Pressure p = -1.0 * MPa, Temperature T = -1.0 *Kelvin);
 
 	private:
-		Num p;
-		Num T;
+		Pressure p;
+		Temperature T;
 };
 #endif

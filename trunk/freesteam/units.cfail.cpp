@@ -5,7 +5,7 @@ using namespace std;
 
 int main(void){
 
-	Pressure p = 1 * bar;
+	Pressure p = 1.0 * bar;
 	double d = 3;
 	
 	Pressure p2 = p + d;

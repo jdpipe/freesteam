@@ -19,8 +19,8 @@ const Temperature T_MIN = T_0DEGC;
 const Temperature T_MAX = 1073.15 * Kelvin;
 const Temperature T_CRIT = 647.096 * Kelvin;	// critical-point temperature
 const Temperature T_TRIPLE = 273.16 * Kelvin;	// triple-point temperature
-const Temperature REG2_TEMP_REF = 540 * Kelvin;
-const Temperature REG1_TEMP_REF = 1386 * Kelvin;
+const Temperature REG2_TEMP_REF = 540.0 * Kelvin;
+const Temperature REG1_TEMP_REF = 1386.0 * Kelvin;
 const Temperature REG1_T_LOW = T_0DEGC;
 const Temperature REG2_T_LOW = T_0DEGC;
 const Temperature REG2_T_HIGH = T_MAX;
@@ -28,18 +28,18 @@ const Temperature REG2_T_HIGH = T_MAX;
 const Temperature T_REG1_REG3 = 623.15 * Kelvin;
 
 
-const Pressure P_MAX = 100 * MPa;
+const Pressure P_MAX = 100.0 * MPa;
 const Pressure PB_LOW = 16.5292 * MPa;
-const Pressure P_MIN = 0 * Pascal;
+const Pressure P_MIN = 0.0 * Pascal;
 const Pressure P_CRIT = 22.064 * MPa;	// critical-point pressure
 const Pressure P_TRIPLE = 611.657 * Pascal;	// triple-point pressure
 const Pressure REG4_P_MIN = 611.213 * Pascal;	// minimum pressure for region 4 (IF-97 eq 31 & p 35) / [MPa]
 const Pressure REG2_P_HIGH = P_MAX;
 const Pressure REG1_P_HIGH = P_MAX;
 const Pressure REG1_PRES_REF = 16.53 * MPa;
-const Pressure REG2_PRES_REF = 1 * MPa;
+const Pressure REG2_PRES_REF = 1.0 * MPa;
 
-const Density RHO_CRIT = 322 * kg / metre3;	// critical-point density / [kg/m³]
+const Density RHO_CRIT = 322.0 * kg / metre3;	// critical-point density / [kg/m³]
 
 /// @see http://www.iapws.org/relguide/visc.pdf#page=7 Eq (4)
 const DynamicViscosity IAPS85_VISC_REF = 55.071 * micro * Pascal * second;
@@ -56,26 +56,28 @@ const Pressure IAPS85_PRES_REF = 22.115 * MPa;	// MPa (THIS IS *NOT* EQUAL TO P_
 /// @see http://www.iapws.org/relguide/visc.pdf#page=7 
 const Conductivity IAPS85_THCOND_REF = 0.49450e3 * mW_mK;
 
-const Pressure STEAM_P_EPS = 1e-5 * MPa;
+const Temperature IAPS85_TEMP_REG2_REF = 540.0 * Kelvin;
+
+const Pressure STEAM_P_EPS = 1.0e-5 * MPa;
 const Temperature STEAM_T_EPS = 5.0e-4 * Kelvin;
 
 const Temperature EPS_T_CRIT=0.00007 * Kelvin;
 
 const Temperature T_CRIT_PLUS=(T_CRIT + STEAM_T_EPS);
 
-const Density REG3_ZEROIN_DENS_MAX = 765 * kg_m3;
+const Density REG3_ZEROIN_DENS_MAX = 765.0 * kg_m3;
 
 const Density REG3_ZEROIN_TOL= 0.00005 * kg_m3;
 
 //#define K_TO_C(TEMP) (((Num)(TEMP))-T_0DEGC)
 //#define C_TO_K(TEMP) (((Num)(TEMP))+T_0DEGC)
 
-#define MPA_TO_BAR(PRES) (((Num)(PRES)) * 10        )
+#define MPA_TO_BAR(PRES) (((Num)(PRES)) * 10.0      )
 #define BAR_TO_MPA(PRES) (((Num)(PRES)) * 0.1       )
 #define PA_TO_MPA(PRES)  (((Num)(PRES)) * 0.000001  )
-#define MPA_TO_PA(PRES)  (((Num)(PRES)) * 1E6       )
-#define KJKG_TO_JKG(JKG) (((Num)(KJKG)) * 1000      )
-#define BAR_TO_PA(PRES)  (((Num)(PRES)) * 100E3     )
+#define MPA_TO_PA(PRES)  (((Num)(PRES)) * 1.0E6     )
+#define KJKG_TO_JKG(JKG) (((Num)(KJKG)) * 1000.0    )
+#define BAR_TO_PA(PRES)  (((Num)(PRES)) * 100.0E3   )
 #define KPA_TO_MPA(PRES) (((Num)(PRES)) * 0.001     )
 
 #define W_TO_KW(W) (((Num)(W))*0.001)

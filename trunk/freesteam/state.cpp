@@ -27,7 +27,7 @@ void SteamState::set_pT(SteamCalculator * c, Pressure p, Temperature T,
 */
 inline Temperature
 SteamState::temp(SteamCalculator *c){
-	REQUIRE(c->T);
+	REQUIRE(c->T > 0.0 * Kelvin);
 	return c->T;
 }
 
@@ -36,7 +36,7 @@ SteamState::temp(SteamCalculator *c){
 */
 inline Pressure
 SteamState::pres(SteamCalculator *c){
-	REQUIRE(c->p);
+	REQUIRE(c->p >= 0.0 * MPa);
 	return c->p;
 }
 

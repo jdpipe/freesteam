@@ -26,9 +26,9 @@ SteamCalculator::SteamCalculator() {
 	isset = false;
 	gas = NULL;
 	liq = NULL;
-	p = -1 * MPa;
-	T = -1 * Kelvin;
-	x = -1;
+	p = -1.0 * MPa;
+	T = -1.0 * Kelvin;
+	x = -1.0;
 }
 
 /// Copy constructor
@@ -72,8 +72,8 @@ SteamCalculator::copy(const SteamCalculator & original) {
 		}
 
 	} else {
-		p = -1 * Pressure();
-		T = -1 * Temperature();
+		p = -1.0 * Pressure();
+		T = -1.0 * Temperature();
 		isset = false;
 	}
 }
@@ -162,6 +162,7 @@ void SteamCalculator::set_pT(Pressure p, Temperature T, Num x) {
 		x = -1;
 		changeState(Region3::Instance());
 	} else {
+		MESSAGE("UNABLE TO DETERMINE REGION OF STEAM");
 		throw new SteamCalculatorException(p, T, STM_UNABLE_DET_REGION);
 	}
 
@@ -401,10 +402,9 @@ SteamCalculator::specvol(void) {
 SpecificEnergy
 SteamCalculator::specienergy(void) {
 	REQUIRE(isset);
-	cerr << "About to calculate specienergy at p = " << MPA_TO_BAR(pres())
-	<< "bar, T = " << temp() << endl;
+	cerr << "About to calculate specienergy at p = " << pres() / bar << " bar, T = " << tocelsius(temp()) << "°C" << endl;
 	SpecificEnergy u = this->_state->specienergy(this);
-	ENSURE(u > 0 * kJ_kg);
+	ENSURE(u > 0.0 * kJ_kg);
 	return u;
 }
 
@@ -485,9 +485,9 @@ const Num THCON_N[THCON_I_COUNT][THCON_J_COUNT]
 
 /// Reduced temperature for IAPWS conductivity calculation
 /**
-* Reference: IAPWS Revised Release on the IAPS Formulation 1985 for the Thermal
-* Conductivity of Ordinary Water Substance, 1998, IAPWS.
-* @see http://www.iapws.org/relguide/IF97.pdf
+	Reference: IAPWS Revised Release on the IAPS Formulation 1985 for the Thermal Conductivity of Ordinary Water Substance, 1998, IAPWS.
+
+	@see http://www.iapws.org/relguide/thcond.pdf#page=8, Eq. 4
 */
 Num
 SteamCalculator::tau_iaps85(){
@@ -496,9 +496,11 @@ SteamCalculator::tau_iaps85(){
 
 /// Reduced density for IAPWS conductivity calculation
 /**
-* Reference: IAPWS Revised Release on the IAPS Formulation 1985 for the Thermal
-* Conductivity of Ordinary Water Substance, 1998, IAPWS.
-* @see http://www.iapws.org/relguide/IF97.pdf
+	Reference: IAPWS Revised Release on the IAPS Formulation 1985 for the Thermal Conductivity of Ordinary Water Substance, 1998, IAPWS.
+
+	@see http://www.iapws.org/relguide/thcond.pdf#page=8, Eq. 5
+	
+	Density calculated with IAPWS SF95 is expected, in order to meet the reference values given
 */
 Num
 SteamCalculator::del_iaps85(){
@@ -507,9 +509,9 @@ SteamCalculator::del_iaps85(){
 
 /// Reduced pressure for IAPWS conductivity calculation
 /**
-* Reference: IAPWS Revised Release on the IAPS Formulation 1985 for the Thermal
-* Conductivity of Ordinary Water Substance, 1998, IAPWS.
-* @see http://www.iapws.org/relguide/IF97.pdf
+	Reference: IAPWS Revised Release on the IAPS Formulation 1985 for the Viscosity of Ordinary Water Substance, 2003, IAPWS.
+	
+	@see http://www.iapws.org/relguide/visc.pdf#page=7, Eq. 7
 */
 Num
 SteamCalculator::pi_iaps85(){
@@ -813,7 +815,7 @@ SteamCalculator::getRegion3PressureError(Density test_rho) {
 		p = P_MAX + (0.01 * MPa);	// keep pressure *almost* sensible.
 	}
 	
-	ENSURE(p >= 0 * Pascal);
+	ENSURE(p >= 0.0 * Pascal);
 	ENSURE(p <= P_MAX + 0.01 * MPa);
 
 	//fprintf(stderr," pres = %.5f\n",p);

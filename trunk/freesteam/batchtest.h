@@ -1,5 +1,12 @@
 #include "test.h"
 
+#include <cppunit/extensions/TestFactoryRegistry.h>
+#include <cppunit/ui/text/TestRunner.h>
+#include <cppunit/TestFixture.h>
+#include <cppunit/CompilerOutputter.h>
+#include <cppunit/TestCase.h>
+#include <cppunit/extensions/HelperMacros.h>
+
 template<class TestPoint> 
 class BatchTest : public CppUnit::TestFixture {
 
@@ -12,8 +19,8 @@ class BatchTest : public CppUnit::TestFixture {
 
 		void testAllPoints(){	
 			
-			cerr << endl;
-			cerr << " Testing " << data.size() << " points." << endl;
+			//cerr << endl;
+			//cerr << " Testing " << data.size() << " points." << endl;
 
 			for (TestPointIterator i = data.begin(); i < data.end(); ++i) {
 				this->testOnePoint(*i);
