@@ -181,6 +181,14 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 				region = whichRegion(fp,sp);
 
+			}catch(Exception *E){
+				stringstream ss;
+				ss << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::solve (no first guess): " << E->what();
+				delete E;
+				throw new Exception(ss.str());
+			}
+
+			try{
 				//cerr << endl << "Solver2: solving in region " << region;
 				switch(region){
 					case 1:
@@ -195,6 +203,10 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 					case 4:
 						S2 = solveRegion4(fp,sp,makeRegion4Guess(fp,sp));
 						break;
+					default:
+						stringstream ss;
+						ss << "Invalid return from whichRegion(" << fp << "," << sp << "): region = " << region;
+						throw new Exception(ss.str());
 				}
 			}catch(Exception *E){
 				stringstream s;
