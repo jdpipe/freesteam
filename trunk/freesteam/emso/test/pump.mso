@@ -30,6 +30,7 @@ Model Pump as SteamEquipment_ph # 8 + 3 - 4 = 7
     eta as Efficiency(Brief="Pump efficiency");
     v   as SpecificVolume(Brief="Inlet specific volume", Default=0.001);
 	h_es as SpecificEnthalpy(Brief = "Isentropic output enthalpy");
+	Dp as PressureDifference;
     
     EQUATIONS
     "Mass balance"
@@ -47,5 +48,7 @@ Model Pump as SteamEquipment_ph # 8 + 3 - 4 = 7
     
     "Efficiency"
     (Out.h - In.h) = eta * (h_es - In.h);
-        
+	
+    "Pressure difference"
+    Dp = Out.p - In.p;        
 end
