@@ -9,7 +9,7 @@
 # PROJECT
 
 NAME = freesteam
-VERSION = 0.3
+VERSION = 0.3.1
 
 #---------------------------
 # CONFIGURATION
@@ -17,8 +17,8 @@ VERSION = 0.3
 #CXX = /usr/local/bin/gfilt
 CXX = g++
 
-CPPFLAGS = -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -W
-CXXFLAGS = -fmessage-length=0 -O3 -ggdb
+CPPFLAGS = -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -W -DNDEBUG
+CXXFLAGS = -fmessage-length=0 -O3
 LDFLAGS = -lncurses -lc -lm -L/lib/ -L/usr/local/lib/ -O3
 
 CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
