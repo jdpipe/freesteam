@@ -45,6 +45,18 @@ typedef enum { STEAM_TEMPERATURE =
 
 	Freesteam implements the international-standard steam tables from the International Association for the Properties of Water and Steam, IAPWS. The correlations for both IAPWS-IF97 and IAPWS-95 are provided, although the emphasis is on the use of the IAPWS-IF97 correlation.
 
+	To get to the meaty bits, see the SteamCalculator, Solver2 and Solver classes, and after that have a look at SatCurve, B23Curve, B13Curve and Boundaries.
+
+	@section sourcecode Source Code Layout
+
+	Here are a few conventions used in the source code
+		- CppUnit test cases are always given filenames ending in .test.cpp
+		- Compile time testing cases are given filenames ending in .cpass.cpp and .cfail.cpp (depending on whether they are or are not supposed to compile successfully)
+		- Command line utilities are given filenames ending in .cli.cpp
+		- Certain other targets exist in the Makefile, such as diagram.m, etc: these are usually greated as the output from the corresponding .cli.exe program.
+
+	Where possible, C++ references have been used, and methods have been suitably 'constified', but there may still be gaps in that.
+
 	@section license License
 
 	freesteam - IAPWS-IF97 steam tables library \n
@@ -88,9 +100,6 @@ class SteamCalculator:public DesignByContract {
 		/// Copy constructor
 		SteamCalculator(const SteamCalculator & original);
 
-		/// Copy operation, virtual
-		virtual void copy(const SteamCalculator & original);
-
 		/// Assignment operator (assigns a copy)
 		SteamCalculator const &operator=(SteamCalculator const &original);
 
@@ -98,10 +107,8 @@ class SteamCalculator:public DesignByContract {
 		virtual ~SteamCalculator();
 
 		// Defining state, simple methods
-		void set_pT(const Pressure &p, const Temperature &T, double x = 1.0);	// pressure [MPa]
-		void setRegion3_rhoT(const Density &rho, const Temperature &T);	// will throw an error if not valid point in region 3
 
-		void changeState(SteamState * state);
+		void set_pT(const Pressure &p, const Temperature &T, double x = 1.0);	// pressure [MPa]
 
 		void setSatSteam_p(const Pressure &p);	// p Pressure [MPa]
 		void setSatWater_p(const Pressure &p);	// p Pressure [MPa]
@@ -114,11 +121,9 @@ class SteamCalculator:public DesignByContract {
 		void setRegion1_pT(const Pressure &p, const Temperature &T);
 		void setRegion2_pT(const Pressure &p, const Temperature &T);
 		void setRegion4_Tx(const Temperature &T, const Num &x);
+		void setRegion3_rhoT(const Density &rho, const Temperature &T);
 
 		bool isSet(void) const;
-
-		// Design by contract stuff...
-		virtual bool isValid(void) const;
 
 		// Methods to return properties and state
 
@@ -141,41 +146,9 @@ class SteamCalculator:public DesignByContract {
 		DynamicViscosity dynvisc() const;       // Dynamic viscosity, mu            [Pa.s]
 		Conductivity conductivity() const;      // Conductivity
 
-		//void setTarget(SteamPropertyCode p, Num value);
-
-		/*
-		HOW TO IMPLEMENT THE SOLVER WITH THESE STRONGLY TYPED THINGOS?
-
-		template<SteamPropertyCode prop>
-		Temperature
-		solveTemperature(){
-
-			ZeroIn<SteamCalculator,prop,
-		*/
-
-		//Temperature solveTemperature();
-
-		//Pressure solvePressure();
-		//Num solveQuality();
-
-		//Num my_zeroin(Num ax, Num bx, double (*f) (double x), double tol);
-
-		//Num getPropertyValue_p(Num p);
-		//Num getPropertyValue_T(Num T);
-		//Num getPropertyValue();
-
-		//static double wrap_getPropertyValue_p(double);
-		//static double wrap_getPropertyValue_T(double);
-
 	protected:
-		friend class SteamState;
-		friend class Region1;
-		friend class Region2;
-		friend class Region3;
-		friend class Region4;
-		friend class ZeroIn < SteamCalculator, Density, Temperature >;
-		friend class ZeroIn < SteamCalculator, SpecificEnergy, Pressure >;
-		friend class ZeroIn < SteamCalculator, Pressure, Density >;
+		/// Copy operation, virtual
+		virtual void copy(const SteamCalculator & original);
 
 		Num tau_iaps85() const;
 		Num del_iaps85() const;
@@ -208,31 +181,26 @@ class SteamCalculator:public DesignByContract {
 		Pressure reg3_target_pressure;      ///< Internal variable used in root-finding in region 3
 
 	private:
+		friend class SteamState;
+		friend class Region1;
+		friend class Region2;
+		friend class Region3;
+		friend class Region4;
+		friend class ZeroIn<SteamCalculator, Pressure, Density>;
 
 		bool isset;		///< boolean flag @see isSet()
 
+		void changeState(SteamState * state);
+
 		void destroy();
 
-		template <class Abscissa,class Ordinate>
-		void accept(ZeroIn<SteamCalculator, Abscissa, Ordinate> *z){
-			z->visit(this);
-		}
+		// Design by contract stuff...
+		virtual bool isValid(void) const;
 
 		SteamState *_state;
 
 		SteamCalculator *gas;	// for use in two-phase calcs
 		SteamCalculator *liq;	// for use in two-phase calcs
-
-		//SteamPropertyCode zeroin_property;
-		//Num zeroin_target_value;
-		//SteamStateCode zeroin_asserted_state;
-
-		// for set_rhou:
-		Density rho_target;
-		SpecificEnergy u_target;
-		Temperature T_guess;
-		bool rhou_region_1;
-
 
 };
 

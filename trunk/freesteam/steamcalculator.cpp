@@ -478,14 +478,20 @@ const char *SteamCalculator::whichStateStr(void){
 //-----------------------------------------------------------------------
 // GETTERS for steam properties
 
-/// Temperature [K]
+/// Temperature
+/**
+	Returns the absolute temperature at the state set.
+*/
 Temperature
 SteamCalculator::temp(void) const{
 	REQUIRE(isset);
 	return _state->temp(*this);
 }
 
-/// Pressure [MPa]
+/// Pressure
+/**
+	Returns the pressure at the state set.
+*/
 Pressure
 SteamCalculator::pres(void) const{
 	REQUIRE(isset);
@@ -493,7 +499,7 @@ SteamCalculator::pres(void) const{
 	return _state->pres(*this);
 }
 
-/// Density [kg/m³]
+/// Density, eg kg/m³
 Density
 SteamCalculator::dens(void) const{
 	REQUIRE(isset);
@@ -502,14 +508,14 @@ SteamCalculator::dens(void) const{
 	return rho;
 }
 
-/// Specific volume [m³/kg]
+/// Specific volume, eg m³/kg
 SpecificVolume
 SteamCalculator::specvol(void) const{
 	REQUIRE(isset);
 	return _state->specvol(*this);
 }
 
-/// Specific internal energy [kJ/kg]
+/// Specific internal energy, eg kJ/kg
 SpecificEnergy
 SteamCalculator::specienergy(void) const{
 	REQUIRE(isset);
@@ -519,28 +525,28 @@ SteamCalculator::specienergy(void) const{
 	return u;
 }
 
-/// Specific entropy [kJ/kg]
+/// Specific entropy, eg kJ/kg
 SpecificEntropy
 SteamCalculator::specentropy(void) const{
 	REQUIRE(isset);
 	return _state->specentropy(*this);
 }
 
-/// Specific enthalpy [kJ/kg]
+/// Specific enthalpy, eg kJ/kg
 SpecificEnergy
 SteamCalculator::specenthalpy(void) const{
 	REQUIRE(isset);
 	return _state->specenthalpy(*this);
 }
 
-/// Specific isobaric hear capacity [kJ/kgK]
+/// Specific isobaric hear capacity, eg kJ/kgK
 SpecHeatCap
 SteamCalculator::speccp(void) const{
 	REQUIRE(isset);
 	return _state->speccp(*this);
 }
 
-/// Specific isochoric heat capacity [kJ/kgK]
+/// Specific isochoric heat capacity, eg kJ/kgK
 SpecHeatCap
 SteamCalculator::speccv(void) const{
 	REQUIRE(isset);
@@ -548,6 +554,13 @@ SteamCalculator::speccv(void) const{
 }
 
 /// Steam quality (if saturated)
+/**
+	If saturated, returns the steam quality. If not saturated, returns 0.0 for region 1, 1.0 for region2, and
+	for region 3, indeterminate, could be anything.
+
+	@todo
+		Check this, make sure only legal values are possible in region 3. There is a bit of confusion in the code about 'region 4 inside region 3'.
+*/
 Num
 SteamCalculator::quality(void) const{
 	REQUIRE(isset);

@@ -51,9 +51,6 @@ class B13CurveBase{
 template<class Ordinate,class Abscissa,int OrdinateAlt=0, int AbscissaAlt=0>
 class B13Curve : public B13CurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 
-	// ZeroIn will be finding the TEMPERATURE at which B13Curve's ABSCISSA has the desired value:
-	friend class ZeroIn<SteamCalculator,Temperature,Abscissa>;
-
 	public:
 
 		Ordinate solve(const Abscissa &target){

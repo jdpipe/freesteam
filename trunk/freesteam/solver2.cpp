@@ -1,5 +1,5 @@
-#include "steamproperty.h"
 #include "solver2.h"
+#include "steamproperty.h"
 #include "units.h"
 #include "steamcalculator.h"
 #include "b23curve.h"
@@ -13,8 +13,27 @@ int
 Solver2<Pressure,Temperature,0,0>::whichRegion(const Pressure &p, const Temperature &T){
 	SteamCalculator S;
 	S.set_pT(p,T);
-	cerr << endl << "Solver2: whichRegion(p,T) = " << S.whichRegion();
+	//cerr << endl << "Solver2: whichRegion(p,T) = " << S.whichRegion();
+	int region = S.whichRegion();
+
+	if(region==4){
+		throw new Exception("Solver2<p,T>::whichRegion: invalid region for this solver.");
+	}
 	return S.whichRegion();
+
+}
+
+SteamCalculator
+Solver2<Pressure,Temperature,0,0>::solveRegion3(const Pressure &p, const Temperature &T, const SteamCalculator &firstguess){
+	SteamCalculator S;
+	try{
+		S.set_pT(p,T);
+		return S;
+	}catch(Exception *E){
+		stringstream s;
+		s << "Solver2<p,T>::solverRegion3: " << E->what();
+		throw new Exception(s.str());
+	}
 }
 
 /**
@@ -117,18 +136,27 @@ Solver2<Pressure, SpecificEnergy, 0, SOLVE_ENTHALPY>::whichRegion(const Pressure
 
 	// region 3 or region 4...
 
-	SatCurve<SpecificEnergy,Pressure,SOLVE_ENTHALPY> SC3;
-
-	SpecificEnergy h_f3 = SC3.solve(p,SAT_WATER);
-
-	if(h <= h_f3){
+	if(p > P_CRIT){
 		return 3;
 	}
 
-	SpecificEnergy h_g3 = SC3.solve(p,SAT_STEAM);
-	if(h >= h_g3){
-		return 3;
+	S.setRegion3_rhoT(RHO_CRIT,T_CRIT);
+	SpecificEnergy h_crit = S.specenthalpy();
+
+	SatCurve<Pressure,SpecificEnergy,0,SOLVE_ENTHALPY> SC3;
+
+	if(h < h_crit){
+		Pressure p_f3 = SC3.solve(h,SAT_WATER);
+		if(p > p_f3){
+			return 3;
+		}
+	}else{
+		Pressure p_g3 = SC3.solve(h,SAT_STEAM);
+		if(p > p_g3){
+			return 3;
+		}
 	}
+
 	return 4;
 
 }
@@ -296,29 +324,11 @@ Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const Specif
 	}
 }
 
-//----------------------------------------
-// Solve to find point
-
 /*
-
-/// solve for p,T
-SteamCalculator
-Solver2<Pressure,Temperature,0,0>::solve(Pressure p,Temperature T){
-	SteamCalculator S;
-	S.set_pT(p,T);
-	return S;
-}
-
-*/
-/// Generic two-point solver
-
-/**
 	@todo
-		Case where one variable is pressure or temperature, for each region
-*/
+		Make sure that one-way solvers are used wherever possible!
 
-// All the stuff in 'if statements' should be templateable or implemented with a stategy pattern, or something, eg
-/*
+@code
 		Solver2::solve(xxx,yyy){
 			try{
 				switch(whichRegion(xxx,yyy)){
@@ -365,9 +375,5 @@ Solver2<Pressure,Temperature,0,0>::solve(Pressure p,Temperature T){
 			Rho in certain range
 			T in certain range
 			Maybe check validity after increments added
-
-
-		if(whi
-		Region4<SpecificEnergy,SpecificVolume>::solve
-	}
+@endcode
 */

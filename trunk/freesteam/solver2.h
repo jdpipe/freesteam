@@ -40,7 +40,7 @@ class Solver2Base{
 
 };
 
-///	Solver class for the steam tables
+///	Two-way solver class for the steam tables
 /**
 	This is intended to be a general purpose way of defining steam state in terms of any combination of properties, eg to find the pressure at which rho = 1.1 kg/m3 and u = 2500 kJ/kg, use:
 
@@ -75,13 +75,60 @@ class Solver2
 	private:
 		static const int maxiter=30;
 
+		/// Return a Solver2 first guess in Region 1
+		/**
+			Override this method if you have a better way of getting estimates in region 1 for this particular combination of FirstProp, SecondProp. For example, if you have a region 1 backwards correlation for <p,h> you would use that correlation to obtain your first guess. Hopefully then Solver2 would not have to do any further iterations.
+		*/
+		SteamCalculator makeRegion1Guess(const FirstProp& f, const SecondProp &s){
+			SteamCalculator S;
+			S.set_pT(10.0 * bar, fromcelsius(100));
+			return S;
+		}
+
+
+		/// Return a Solver2 first guess in Region 2
+		/**
+			Override this method if you have a better way of getting estimates in region 2 for this particular combination of FirstProp, SecondProp.
+
+			@see makeRegion1Guess
+		*/
+		SteamCalculator makeRegion2Guess(const FirstProp& f, const SecondProp &s){
+			SteamCalculator S;
+			S.set_pT(6.0 * MPa, fromcelsius(400));
+			return S;
+		}
+
+		/// Return a Solver2 first guess in Region 3
+		/**
+			Override this method if you have a better way of getting estimates in region 3 for this particular combination of FirstProp, SecondProp.
+
+			@see makeRegion1Guess
+		*/
+		SteamCalculator makeRegion3Guess(const FirstProp& f, const SecondProp &s){
+			SteamCalculator S;
+			S.setRegion3_rhoT(1 / 0.00317 * kg_m3, fromcelsius(400));
+			return S;
+		}
+
+		/// Return a Solver2 first guess in Region 4
+		/**
+			Override this method if you have a better way of getting estimates in region 4 for this particular combination of FirstProp, SecondProp.
+
+			@see makeRegion1Guess
+		*/
+		SteamCalculator makeRegion4Guess(const FirstProp& f, const SecondProp &s){
+			SteamCalculator S;
+			S.setRegion4_Tx(fromcelsius(263.9),0.5);
+			return S;
+		}
+
 	public:
 
 		Solver2() : Solver2Base<FirstProp,SecondProp,FirstPropAlt,SecondPropAlt>(){
 			//cerr << endl <<"Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::Solver2()";
 		}
 
-		/// Give the IAPWS-IF97 region number given (any combination of) property values
+		/// Calculator the IAPWS-IF97 region number given (any combination of) property values
 		/**
 			Used in the same way as Solver2::solve but the solution is not done, only the region is found.
 
@@ -99,6 +146,8 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 		/// Solve with no first guess provided
 		/**
+			This will called the appropriate 'make guess' method, based on the results of the whichRegion call, and then perform iteration in that region (using the appropriate 'solve region x' method) to home in on the solution using a two-way solver method.
+
 			@param fp Value of FirstProp property
 			@param sp Value of SecondProp property
 		*/
@@ -114,20 +163,16 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				//cerr << endl << "Solver2: solving in region " << region;
 				switch(region){
 					case 1:
-						S.set_pT(10.0 * bar, fromcelsius(100));
-						S2 = solveRegion1(fp,sp,S);
+						S2 = solveRegion1(fp,sp,makeRegion1Guess(fp,sp));
 						break;
 					case 2:
-						S.set_pT(6.0 * MPa, fromcelsius(400));
-						S2 = solveRegion2(fp,sp,S);
+						S2 = solveRegion2(fp,sp,makeRegion2Guess(fp,sp));
 						break;
 					case 3:
-						S.setRegion3_rhoT(1 / 0.00317 * kg_m3, fromcelsius(400));
-						S2 = solveRegion3(fp,sp,S);
+						S2 = solveRegion3(fp,sp,makeRegion3Guess(fp,sp));
 						break;
 					case 4:
-						S.setRegion4_Tx(fromcelsius(263.9),0.5);
-						S2 = solveRegion4(fp,sp,S);
+						S2 = solveRegion4(fp,sp,makeRegion4Guess(fp,sp));
 						break;
 				}
 			}catch(Exception *E){
@@ -141,6 +186,8 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 		/// Solve with a first guess provided
 		/**
+			If you already have steam properties very close to your expected point, you can use this method. Note that it will not use the 'make guess' (eg Solver2::makeRegion1Guess etc) methods, so if you have faster methods like that, it may be better not to provide a first guess for Solver2 iterations.
+
 			@param fp Value of FirstProp property
 			@param sp Value of SecondProp property
 			@param firstguess SteamCalculator initialised with state to be used for first guess
@@ -168,6 +215,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 	private:
 
+		/// Perform 2-way solver iterations in region 3 to find state having specified property values
 		SteamCalculator solveRegion3(const FirstProp &f1, const SecondProp &s1,const SteamCalculator &firstguess){
 			try{
 				// Iterate on rho, T
@@ -319,20 +367,20 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 					int pmaxiter = 0;
 					if(S.pres() > P_MAX){
 						do{
-							cerr << endl << "    ... found p = " << S.pres() / MPa << " MPa";
+							//cerr << endl << "    ... found p = " << S.pres() / MPa << " MPa";
 
 							drho *= 0.5001;
 							//dT *= 0.5001;
 							rho -= drho;
 							//T -= dT;
 							S.setRegion3_rhoT(rho,T);
-							cerr << endl << "     ... Applying P_MAX limit at T = " << T << ": rho = " << rho;
+							//cerr << endl << "     ... Applying P_MAX limit at T = " << T << ": rho = " << rho;
 							if(++pmaxiter > 20){
 								throw new Exception("Solver2::solveRegion3: Failed to find rho of P_MAX");
 							}
 
 						}while(S.pres() > P_MAX);
-						cerr << endl << "     ... pressure capped to " << S.pres();
+						//cerr << endl << "     ... pressure capped to " << S.pres();
 					}
 
 					guess.setRegion3_rhoT(rho,T);
@@ -351,6 +399,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 			}
 		}
 
+		/// Perform 2-way solver iterations in region 4 to find state having specified property values
 		SteamCalculator solveRegion4(const FirstProp &f1, const SecondProp &s1,const SteamCalculator &firstguess){
 
 			try{
@@ -504,6 +553,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 			}
 		}
 
+		/// Perform 2-way solver iterations in region 1 to find state having specified property values
 		SteamCalculator solveRegion1(const FirstProp &f1, const SecondProp &s1,const SteamCalculator &firstguess){
 
 			SteamCalculator guess = firstguess;
@@ -633,6 +683,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 			}
 		}
 
+		/// Perform 2-way solver iterations in region 2 to find state having specified property values
 		SteamCalculator solveRegion2(const FirstProp &f1, const SecondProp &s1,const SteamCalculator &firstguess){
 
 			// Most of this is the same as for solveRegion1:
@@ -767,6 +818,11 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 		}
 };
+
+SteamCalculator
+Solver2<Pressure,Temperature,0,0>::solveRegion3(
+	const Pressure &p, const Temperature &T, const SteamCalculator &firstguess
+);
 
 
 #endif

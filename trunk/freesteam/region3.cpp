@@ -63,6 +63,7 @@ const Num REGION3_N[REG3_COUNT] = {
 /**
 	I think this is how this is (vertical lines only approximately vertical)
 
+@code
 	^
 	|
   p	|s~5.1                   |T~T13
@@ -77,6 +78,7 @@ const Num REGION3_N[REG3_COUNT] = {
 	|/                      \|
 	+=================================>
 	                             rho
+@endcode
 */
 void Region3::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x) {
 

@@ -22,7 +22,7 @@ void Region2::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T
 	c.pi = p / (1.0 * MPa);			// p / 1 MPa
 	c.T = T;
 	c.tau = REG2_TEMP_REF / T;
-	c.x = x;
+	c.x = 1.0;
 	c.isset = true;
 	ENSURE(c.whichRegion() == 2);
 }

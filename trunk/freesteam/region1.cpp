@@ -23,7 +23,7 @@ void Region1::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T
 	c.pi = p / REG1_PRES_REF;
 	c.T = T;
 	c.tau = REG1_TEMP_REF / T;
-	c.x = x;
+	c.x = 0.0;
 	c.isset = true;
 	//cerr << "Region1::set_pT(p=" << c->p << ",T=" << c->T << ")"<< endl;
 	ENSURE(c.whichRegion() == 1);

@@ -6,51 +6,47 @@
 #include <string>
 using namespace std;
 
-
-class Solver2Test : public CppUnit::TestFixture{
-
-	public:
-
-		void setUp(){}
-		void tearDown(){}
+template <class FirstProp, class SecondProp, int FirstPropAlt=0, int SecondPropAlt=0>
+class Solver2Test : public CppUnit::TestFixture
+{
 
 	protected:
 
 		SteamCalculator S;
 
-		void testUV(const SteamCalculator &S,int asserted_region, bool verbose=false){
-			try{
-				Pressure p = S.pres();
-				Temperature T = S.temp();
-				Density rho = S.dens();
+		void testWith(const SteamCalculator &S,int asserted_region, bool verbose=false){
+			Pressure p = S.pres();
+			Temperature T = S.temp();
+			Density rho = S.dens();
 
-				SpecificEnergy u = S.specienergy();
-				SpecificVolume v = S.specvol();
+			try{
+
+				FirstProp f = SteamProperty<FirstProp,FirstPropAlt>::get(S);
+				SecondProp s = SteamProperty<SecondProp,SecondPropAlt>::get(S);
 
 				if(verbose){
-					cerr << endl << endl << "Solver2Test:TestUV: Testing with p = " << p << ", T = " << T;
-					cerr << endl << "Solver2Test:TestUV: Expecting u = " << u << ", v = " << v;
+					cerr << endl << endl << "Solver2Test<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">:testWith: Testing with p = " << p << ", T = " << T << ", expecting " << SteamProperty<FirstProp,FirstPropAlt>::name() << " = " << SteamProperty<FirstProp,FirstPropAlt>::get(S) << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << " = " << SteamProperty<SecondProp,SecondPropAlt>::get(S);
 				}
 
-				Solver2<SpecificEnergy,SpecificVolume> SS;
+				Solver2<FirstProp,SecondProp,FirstPropAlt,SecondPropAlt> SS;
 
-				int region = SS.whichRegion(u,v);
+				int region = SS.whichRegion(f,s);
 				if(region != asserted_region){
-					stringstream s;
-					s << "testUV: expected region was " << asserted_region << " but whichRegion(u = " << u << ", v = " << v << ") gives " << region;
-					CPPUNIT_FAIL(s.str());
+					stringstream ss;
+					ss << "Expected region was " << asserted_region << " but whichRegion(" << f << ", " << s << ") gave " << region;
+					throw new Exception(ss.str());
 				}
 
-				SteamCalculator S2 = SS.solve( u, v);
+				SteamCalculator S2 = SS.solve(f, s);
 
 				SteamPropertyTest<Pressure>::test( S2, p, 0.01 * bar);
 				SteamPropertyTest<Temperature>::test( S2, T, 0.01 * Kelvin);
 				SteamPropertyTest<Density>::test( S2, rho, rho * 0.001 * Percent);
 
 			}catch(Exception *E){
-				stringstream s;
-				s << "Solver2Test::testUV: " << E->what();
-				CPPUNIT_FAIL(s.str());
+				stringstream ss;
+				ss << "Solver2Test<" <<  SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">:testWith(p = " << p << ", T = " << T << ", rho = " << rho << "): " << E->what();
+				CPPUNIT_FAIL(ss.str());
 			}
 		}
 
@@ -66,7 +62,7 @@ class Solver2Test : public CppUnit::TestFixture{
 				for(Pressure p = pmin + pstep * 0.5 ; p <= pmax; p +=pstep){
 					SteamCalculator S;
 					S.setRegion1_pT(p,T);
-					testUV(S,1);
+					testWith(S,1);
 				}
 			}
 		}
@@ -108,7 +104,7 @@ class Solver2Test : public CppUnit::TestFixture{
 					//cerr << endl << "Solver2Test::testRegion2: p = " << p;
 					SteamCalculator S;
 					S.setRegion2_pT(p,T);
-					testUV(S,2);
+					testWith(S,2);
 				}
 
 				i++;
@@ -134,7 +130,7 @@ class Solver2Test : public CppUnit::TestFixture{
 				for(Num x = xmin + xstep * 0.5; x <= xmax - xstep * 0.5; x +=xstep){
 					SteamCalculator S;
 					S.setRegion4_Tx(T,x);
-					testUV(S,4);
+					testWith(S,4);
 				}
 
 				i++;
@@ -191,7 +187,7 @@ class Solver2Test : public CppUnit::TestFixture{
 						S.setRegion3_rhoT(rho,T);
 						//cerr << endl << "Solver2Test::testRegion3: rho = " << rho << ", T = " << T << " (" << tocelsius(T) << ";°C)";
 
-						testUV(S,3);
+						testWith(S,3);
 					}
 				}
 			}catch(Exception *E){
@@ -202,9 +198,7 @@ class Solver2Test : public CppUnit::TestFixture{
 		}
 
 
-		public:
-
-		// Invoke CPPUNIT macros to add tests to a suite:
+	public:
 
 		CPPUNIT_TEST_SUITE(Solver2Test);
 		CPPUNIT_TEST(testRegion4);
@@ -216,5 +210,58 @@ class Solver2Test : public CppUnit::TestFixture{
 
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION(Solver2Test);
+class Solver2Test_UV : public Solver2Test<SpecificEnergy,SpecificVolume>
+{
+	public:
 
+		CPPUNIT_TEST_SUITE(Solver2Test_UV);
+		CPPUNIT_TEST(testRegion4);
+		CPPUNIT_TEST(testRegion1);
+		CPPUNIT_TEST(testRegion2);
+		CPPUNIT_TEST(testRegion3);
+
+		CPPUNIT_TEST_SUITE_END();
+};
+CPPUNIT_TEST_SUITE_REGISTRATION(Solver2Test_UV);
+
+class Solver2Test_PH: public Solver2Test<Pressure,SpecificEnergy,0,SOLVE_ENTHALPY>
+{
+	public:
+
+		CPPUNIT_TEST_SUITE(Solver2Test_PH);
+		CPPUNIT_TEST(testRegion4);
+		CPPUNIT_TEST(testRegion1);
+		CPPUNIT_TEST(testRegion2);
+		CPPUNIT_TEST(testRegion3);
+
+		CPPUNIT_TEST_SUITE_END();
+};
+CPPUNIT_TEST_SUITE_REGISTRATION(Solver2Test_PH);
+
+class Solver2Test_PT: public Solver2Test<Pressure,Temperature>
+{
+	public:
+
+		CPPUNIT_TEST_SUITE(Solver2Test_PT);
+		// CPPUNIT_TEST(testRegion4); // invalid, underspecified!
+		CPPUNIT_TEST(testRegion1);
+		CPPUNIT_TEST(testRegion2);
+		CPPUNIT_TEST(testRegion3); // this should be OK but it's getting stuck on the saturation line
+
+		CPPUNIT_TEST_SUITE_END();
+};
+CPPUNIT_TEST_SUITE_REGISTRATION(Solver2Test_PT);
+
+class Solver2Test_PU: public Solver2Test<Pressure,SpecificEnergy,0,SOLVE_IENERGY>
+{
+	public:
+
+		CPPUNIT_TEST_SUITE(Solver2Test_PU);
+		CPPUNIT_TEST(testRegion4);
+		CPPUNIT_TEST(testRegion1);
+		CPPUNIT_TEST(testRegion2);
+		CPPUNIT_TEST(testRegion3);
+
+		CPPUNIT_TEST_SUITE_END();
+};
+CPPUNIT_TEST_SUITE_REGISTRATION(Solver2Test_PU);

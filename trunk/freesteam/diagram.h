@@ -30,10 +30,10 @@ class Diagram{
 		/**
 			Some combinations of variables need to be placed on log-log plots, etc.
 			Use this method to specify the types of axes to be used by Matlab.
-
-			@todo: fix this, it doesn't seem to be working...
 		*/
-		static const std::string getMatlabPlotType();
+		static const std::string getMatlabPlotType(){
+			return "plot";
+		}
 
 		/// Generate the M-file text and return it as a string
 		/**
@@ -62,7 +62,7 @@ class Diagram{
 			s << std::endl << getMatlabPlotType() << "(TMIN(:,1),TMIN(:,2),'w:');";
 			s << std::endl << getMatlabPlotType() << "(TMAX(:,1),TMAX(:,2),'w-.');";
 
-			s << std::endl << "legend('Sat Water','Sat Steam','B23','B13','Pmin','Pmax','Tmin','Tmax');";
+			s << std::endl << "legend('Sat Water','Sat Steam','B23','B13','Ptriple','Pmax','Ttriple','Tmax');";
 
 			s << std::endl << "xlabel('" << SteamProperty<Abscissa,AbsAlt>::name() << "')";
 			s << std::endl << "ylabel('" << SteamProperty<Ordinate,OrdAlt>::name() << "')";
@@ -139,7 +139,7 @@ class Diagram{
 			std::stringstream s;
 			s << std::endl << "TMIN = [";
 
-			const Temperature &Tref = T_MIN;
+			const Temperature &Tref = T_TRIPLE;
 
 			const Pressure &pmin = P_MIN;
 			const Pressure &pmax = P_MAX;
@@ -175,7 +175,7 @@ class Diagram{
 			std::stringstream s;
 			s << std::endl << "PMIN = [";
 
-			const Pressure &pref = P_MIN;
+			const Pressure &pref = P_TRIPLE;
 
 			const Temperature &Tmin = T_MIN;
 			const Temperature &Tmax = T_MAX;
@@ -207,5 +207,8 @@ class Diagram{
 			return s.str();
 		}
 };
+
+const std::string Diagram<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::getMatlabPlotType();
+const std::string Diagram<SpecificEnergy,Pressure,SOLVE_ENTHALPY,0>::getMatlabPlotType();
 
 #endif

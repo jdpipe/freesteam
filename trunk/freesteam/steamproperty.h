@@ -5,7 +5,7 @@
 
 /// Return a particular property of steam in the given state
 /**
-	Allow evaluation of a desired steam property using template parameters.
+	Allow evaluation of a desired steam property using template parameters. This is basicaly for internal use, but you may find it useful in your own code, perhaps.
 
 	@see SatCurve, B23Curve, B13Curve, Solver, Solver2
 */

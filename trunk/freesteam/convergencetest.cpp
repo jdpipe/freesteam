@@ -4,7 +4,7 @@
 // 'test(X,p,T)' hooks
 
 bool
-ConvergenceTest<SpecificEnergy,SOLVE_IENERGY>::test(const SpecificEnergy &error, const Pressure& p, const Temperature &T){	
+ConvergenceTest<SpecificEnergy,SOLVE_IENERGY>::test(const SpecificEnergy &error, const Pressure& p, const Temperature &T){
 	//cerr << endl << "         ... u error required < " << errorU * R * T;
 	return ( fabs(error) < errorU * R * T);
 }
@@ -28,6 +28,11 @@ ConvergenceTest<SpecificVolume,0>::test(const SpecificVolume &error, const Press
 bool
 ConvergenceTest<Pressure,0>::test(const Pressure &error, const Pressure& p, const Temperature &T){
 	return ( fabs(error) < errorP * p);
+}
+
+bool
+ConvergenceTest<Temperature,0>::test(const Temperature &error, const Pressure& p, const Temperature &T){
+	return ( fabs(error) < errorT * T);
 }
 
 bool

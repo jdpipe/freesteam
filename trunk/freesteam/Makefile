@@ -21,7 +21,7 @@ CPPFLAGS = -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -W -DNDEBUG
 CXXFLAGS = -fmessage-length=170 -O3 -Wall
 LDFLAGS = -lncurses -lc -lm -O3
 
-CPPUNIT_CONFIG = cppunit-config
+CPPUNIT_CONFIG = /usr/local/bin/cppunit-config
 
 CXXFLAGS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --cflags)
 LIBS_CPPUNIT = $(shell $(CPPUNIT_CONFIG) --libs)
@@ -113,9 +113,9 @@ cleanctests:
 
 %.d: %.cpp
 	@set -e; rm -f $@; \
-	$(CXX) $(MAKEDEPFLAG) $(CPPFLAGS) $< > $@.$$$$; \
+	$(CXX) $(MAKEDEPFLAG) $(CPPFLAGS) $(@:.d=.cpp) > $@.$$$$; \
 	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
-	rm -f $@.$$$$
+	rm -f $@.$$$$;
 
 #--------------------------
 # DISTRIBUTION
@@ -207,6 +207,9 @@ test: ctest testheading test.exe $(TESTS)
 	./$@
 
 test.exe: test.o $(TESTS) $(TESTOBJS) $(LIB)
+	@echo
+	@echo "CppUnit libs flag: " $(LIBS_CPPUNIT)
+	@echo
 	$(CXX) $^ -o $@ $(LDFLAGS) $(LIBS_CPPUNIT)
 
 testheading:

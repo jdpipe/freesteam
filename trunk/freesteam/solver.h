@@ -127,11 +127,11 @@ class SolverBase : public DesignByContract
 	@example
 		To find p such that (T=600K, u=1500 kJ/kg):
 
-		@code
-			Solver<Temperature,SpecificEnergy,Pressure> PS1(600 * Kelvin,1500 * kJ_kg);
-			SteamCalculator S = PS1.solve(0.00001 * kJ_kg, 0.1 * Pascal);
-			cout << S.pres() << end;
-		@endcode
+@code
+	Solver<Temperature,SpecificEnergy,Pressure> PS1(600 * Kelvin,1500 * kJ_kg);
+	SteamCalculator S = PS1.solve(0.00001 * kJ_kg, 0.1 * Pascal);
+	cout << S.pres() << end;
+@endcode
 
 	@param MainProp is the one of the correlation properties. In other words it can be fed directly into the known correlation equations.
 
@@ -192,25 +192,13 @@ class Solver<Temperature,SpecificVolume,Pressure,0,0,0>
 
 /// Temperature solver
 /**
-	This solver solves for XXX = xxx1 by varying pressure, with a prescribed fixed value of temperature
+	This solver solves for a given value of the OtherProp property (template parameter) by varying pressure, with a prescribed fixed value of temperature
 
-	Problem: what is the pressure of water if the specific volume is 0.00102 m3/kg, and the temperature is 623.15 K (350°C)?
+	@example
+		Example: what is the pressure of water if the specific volume is 0.00102 m3/kg, and the temperature is 623.15 K (350°C)?
 
-	at 100MPa, v = 0.00131 m3/kg (compressed liquid)
-	at 600 Pa, v = 470.3 m3/kg (superheated vapour)
-	at 100 Pa  v = 1490.3 m3/kg (superheated vapour, even less dense)
-	at 10 kPa, v = 14
-	at 100 kPa v = 0.00102 m3/kg (phase change has occurred)
-
-	volume |*
-	       |   *      phase
-	       |      *.   |change      LIQUID GETS LESS
-	       |         * v           DENSE AT HIGHER *
-	       |GAS - high *        PRESSURE!  *
-	       |    volume |         *    *
-	       |           *    *     LIQUID - small vol
-	       +---------------------------------------
-	                                          pressure
+	@todo
+		Give complete example
 
 */
 template<class OtherProp, int OtherPropAlt>
@@ -234,7 +222,7 @@ class Solver<Temperature,OtherProp,Pressure,0,OtherPropAlt,0>
 
 /// Pressure solver
 /**
-	This solver solves for XXX = xxx1 by varying temperature, with a prescribed fixed value of pressure
+	This solver solves for a given value of the OtherProp property (template parameter) by varying temperature, with a prescribed fixed value of pressure
 */
 template<class OtherProp, int OtherPropAlt>
 class Solver<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>
