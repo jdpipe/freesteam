@@ -44,8 +44,8 @@ Current as Real(Brief = "Current", Unit = "A");
 
 # ENERGY, STATICS AND DYNAMICS (M,L,T)
 
-Pressure as Real (Brief = "Pressure", Default=1, Lower=1e-30, Upper=5e7, Unit = "atm");
-PressureDifference as Pressure (Brief = "Pressure Difference", Default=0.01, Lower=-5e6);
+Pressure as Real (Brief = "Pressure", Default=5, Lower=1e-30, Upper=1000, Unit = "bar");
+PressureDifference as Pressure (Brief = "Pressure Difference", Lower=-1000, Default=0.1);
 
 Energy as Real(Brief = "Energy", Default = 1,Lower=-1e8, Upper=1e8, Unit = "W");
 Power as Real(Brief = "Potency", Default = 10, Lower=0, Upper=1e3, Unit = "W");
@@ -69,7 +69,6 @@ HeatRate as Power (Brief = "Heat Rate");
 Conductivity as Real (Brief = "Thermal Conductivity", Default=1.0, Lower=0.001, Upper=500, Unit = "W/m/K");
 
 DynamicViscosity as Positive(Brief = "Viscosity", Default=1, Lower=1e-30, Upper=1e5, Unit = "Pa * s");
-
 
 SpecHeatCap as Real (Brief = "Specific Heat Capacity", Default=1.0, Lower=0.1, Upper=10.0, Unit = "kJ/kg/K");  
 SpecificEntropy as SpecHeatCap (Brief = "Specific entropy");

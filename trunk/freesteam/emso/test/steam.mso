@@ -22,10 +22,10 @@ Model Steam # 4 DF
 	
 	VARIABLES
 
-	T as AbsoluteTemperature(    Lower=273.15, Upper=1073.15,Default = 600);
+	T as AbsoluteTemperature(    Lower=273.15, Upper=1073.15,Default = 600,  Unit = "K");
 	p as Pressure(               Lower=0,      Upper=100,    Default = 10,   Unit = "MPa");
-	h as SpecificEnthalpy(       Lower=0,      Upper=1e4,    Default=4000 );
-	s as SpecificEntropy(        Lower=0,      Upper=10,     Default=7 );
+	h as SpecificEnthalpy(       Lower=0,      Upper=4300,    Default=1500,  Unit = "kJ/kg");
+	s as SpecificEntropy(        Lower=0,      Upper=10,     Default=7,      Unit = "kJ/kg/K");
 
 end
 
@@ -56,10 +56,14 @@ Model Steam_pu as Steam # 6 - 4 = 2 DF
 
 	PARAMETERS
 	ext freesteam as CalcObject(Brief="Freesteam IAPWS calculator");
-		
+	
+	VARIABLES
+	u as SpecificInternalEnergy;
+	
 	EQUATIONS
 	"Steam properties"
 	[T, s] = freesteam.Ts_pu(p,u);
+	h = freesteam.h_pu(p,u);
 	
 end
 
@@ -83,4 +87,26 @@ Model Steam_steamT as Steam # 6 - 5 = 1 DF
 	"Steam properties"
 	[p, s, h] = freesteam.psvhx_steamT(T);
 	
+end
+
+Model Steam_pT as Steam
+
+	PARAMETERS
+	ext freesteam as CalcObject(Brief="Freesteam IAPWS calculator");
+		
+	EQUATIONS
+	"Steam properties"
+	[h, s] = freesteam.hs_pT(p,T);
+
+end
+
+Model Steam_Ts as Steam
+
+	PARAMETERS
+	ext freesteam as CalcObject(Brief="Freesteam IAPWS calculator");
+	
+	EQUATIONS
+	"Steam properties"
+	[p, h] = freesteam.ph_Ts(T,s);
+
 end

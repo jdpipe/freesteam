@@ -20,8 +20,8 @@ FlowSheet TurbineTest_Ideal # DF = 0 ?
 	freesteam as CalcObject(File="emsofreesteam");
 	
 	DEVICES # DF = 11
-	S1 as Stream_ph;      # DF = 3
-	S2 as Stream_ps;
+	S1 as Stream_ps;      # DF = 3
+	S2 as Stream;
 	TU as Turbine_Ideal;  # DF = 8
 	
 	CONNECTIONS # DF = -7
@@ -31,19 +31,22 @@ FlowSheet TurbineTest_Ideal # DF = 0 ?
 	SPECIFY # DF = -4
 	"Inlet flowrate"
 	S1.mdot = 20000 * "kg/h";
-	
+	 
 	"Inlet pressure"
 	S1.p = 4.32 * "MPa";
 	
 	"Inlet temperature"
 	S1.T = 670.65 * "K";
 		
-	"Outlet pressure"
+	#"Outlet pressure"
+	#TU.Out.p = 1.569 * "MPa";
+	
+	#TU.P = 500 * "W";
 	TU.Out.p = 1.569 * "MPa";
 	
 	OPTIONS
-	mode = "steady";
 	outputLevel = "all";
+	mode="steady";
 end
 
 FlowSheet TurbineTest 
@@ -52,11 +55,13 @@ FlowSheet TurbineTest
 	freesteam as CalcObject(File="emsofreesteam");
 	
 		DEVICES
-	S1 as Stream_ps;
+	S1 as Stream_ph;
+	S2 as Stream;
 	TU as Turbine;
 	
 	CONNECTIONS
 	S1 to TU.In;
+	TU.Out to S2;
 	
 	SPECIFY
 	"Inlet flowrate"

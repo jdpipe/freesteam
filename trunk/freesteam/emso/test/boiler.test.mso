@@ -11,29 +11,27 @@
 *#
 
 using "streams";
-using "turbine";
+using "boiler";
 
-FlowSheet BoilerTest
+FlowSheet BoilerTest # 0
 	
 	PARAMETERS
 	freesteam as CalcObject(File="emsofreesteam");
 	
 	DEVICES
-	s as Stream_ps;
-	BO as Boiler;
+	s as Stream_ps; # 3
+	BO as Boiler; # 7
 	
-	CONNECTIONS
-	s to BO.In;
+	CONNECTIONS # -5
+	s to BO.In; 
 	
-	SPECIFY
-	s.mdot = 20000 * "kg/h";
+	SPECIFY # -5
+	s.mdot = 1 * "kg/s";
 	s.T = 300 * "K";
-	s.p = 2 * "atm";
+	s.p = 10 * "bar";
 	
-	BO.Out.p = 2 * "atm";
-	BO.Out.T = 400 * "K";
-	
-	# BO.q = 50 * "GJ/h";
+	BO.Dp = -2 * "bar";
+	BO.q = 3000 * "kJ/s";
 	
 	OPTIONS
 	mode = "steady";

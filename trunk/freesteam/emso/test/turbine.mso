@@ -15,11 +15,11 @@ using "steamequipment";
 #* 
     Ideal (isentropic) turbine
 *#
-Model Turbine_Ideal as SteamEquipment # DF = 10 -5 +1 -3 = 3 
+Model Turbine_Ideal as SteamEquipment_ps # DF = 10 -5 +1 -3 = 3 
 
     VARIABLES
     P  as Power(Brief="Turbine Power");
-
+	
     EQUATIONS # DF = -3
     "Mass Balance"
     In.mdot = Out.mdot;
@@ -35,21 +35,24 @@ end
 #* 
     Turbine (non-isentropic, with efficiency specified)
 *#
-Model Turbine as SteamEquipment # DF = 10 - 6 = 4
+Model Turbine as SteamEquipment_ph # DF = 8 + 2 - 3 = 7; need to specific input (3) plus eta,  plus 
 
     VARIABLES
     eta as Efficiency(Brief="Tubine efficiency"); # DF = 1
-    out Out as Stream_ph; # DF = -5
     P as Power; # DF = 1
+	h_es as SpecificEnthalpy;
     
-    EQUATIONS
+    EQUATIONS #DF = -3
     "Mass Balance"
     In.mdot = Out.mdot;
     
-    "Potency"
+    "Power"
     P = In.mdot * (In.h - Out.h);
     
+    "Isentropic output enthalpy"
+    h_es = freesteam.h_ps(Out.p, In.s);
+    
     "Efficiency"
-    (Out.h - In.h) = eta * (freesteam.h_ps(Out.p, In.s) - In.h);
+    (Out.h - In.h) = eta * (h_es - In.h);
 
 end

@@ -10,18 +10,19 @@
     included in any modification or adaptation of this Model.
 *#
 
-using "steamequipment"
+using "steamequipment";
 
 #*
     Boiler
 
     Specify outlet pressure plus q or outlet temperature
 *#
-Model Boiler as SteamEquipment
+Model Boiler as SteamEquipment_Ts # 7
     
     VARIABLES
     q   as HeatRate;
-
+	Dp  as PressureDifference;
+	
     EQUATIONS
     "Mass balance"
     Out.mdot = In.mdot;
@@ -29,5 +30,7 @@ Model Boiler as SteamEquipment
     "Energy balance"
     q = Out.mdot * Out.h - In.mdot * In.h;
     
-    [Out.T, Out.s, Out.v, Out.x] = freesteam.Tsvx_ph(Out.p, Out.h);
+    "Pressure difference"
+    Dp = Out.p - In.p;
+    
 end

@@ -24,5 +24,27 @@ Model SteamEquipment # DF = 10
     VARIABLES
 	in  In  as Stream;
 	out Out as Stream;   
+	
+end
+
+Model SteamEquipment_ph # DF = 8
+
+    PARAMETERS
+    ext freesteam as CalcObject(Brief="Steam Physical Properties");
+
+    VARIABLES
+	in  In  as Stream;
+	out Out as Stream_ph;   
+
+end
+
+Model SteamEquipment_ps # DF = 8
+
+    PARAMETERS
+    ext freesteam as CalcObject(Brief="Steam Physical Properties");
+
+    VARIABLES
+	in  In  as Stream;
+	out Out as Stream_ps;   
 
 end
