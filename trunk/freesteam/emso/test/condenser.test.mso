@@ -11,9 +11,9 @@ using "streams";
 using "condenser";
 
 #*
-	Simple condenser test: specify inlet andoutlet conditions
+	Test condenser with specified inlet and outlet conditions.
 
-	DOESN'T WORK
+	THIS FLOWSHEET WORKS
 *#
 FlowSheet CondenserTest
 	
@@ -22,7 +22,7 @@ FlowSheet CondenserTest
 	
 	DEVICES
 	S as Stream_pT;
-	CO as Condenser_pT;
+	CO as Condenser;
 	#CO as Condenser;
 	
 	CONNECTIONS
@@ -42,7 +42,9 @@ FlowSheet CondenserTest
 end
 
 #*
-	DOESN'T WORK
+	Test condenser with specified heat removal and pressure drop
+
+	THIS FLOWSHEET WORKS
 *#
 FlowSheet CondenserTest1
 	
@@ -52,7 +54,6 @@ FlowSheet CondenserTest1
 	DEVICES
 	S as Stream_pT;
 	CO as Condenser;
-	#CO as Condenser;
 	
 	CONNECTIONS
 	S to CO.In; # (-5) - 0        = -5 DF
@@ -62,10 +63,9 @@ FlowSheet CondenserTest1
 	S.p = 60.0 * "bar";
 	S.T = (300 + 273.15) * "K";
 	
-	CO.Qdot = 0 * "W";
-	CO.Dp = 0 * "bar";
+	CO.Qdot = -1000 * "kW";
+	CO.Dp = -10 * "bar";
 		
-
 	# FIXME: [rafael] this is required when DT is specified instead of q:
 	# CO.Out.h = 300 * "kJ/kg";
 	
@@ -75,32 +75,31 @@ FlowSheet CondenserTest1
 end
 
 #*
-	Condenser specified in terms of UA and outlet pressure
+	Test condenser with specified heat removal and minor loss factor
 
-	DOESN'T WORK
+	THIS FLOWSHEET WORKS
 *#
 FlowSheet CondenserTest2
 	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
 	DEVICES
-	S as Stream_pT; # 5 - 2       = 3
-	CO as Condenser; # 14 - 5 - 2 = 7
-	#CO as Condenser;
+	S as Stream_pT;
+	CO as CondenserWithLoss;
 	
 	CONNECTIONS
 	S to CO.In; # (-5) - 0        = -5 DF
 	
 	SPECIFY
 	S.mdot = 1 * "kg/s";
-	S.p = 2.0 * "bar";
+	S.p = 1 * "bar";
 	S.T = (150 + 273.15) * "K";
 	
-	CO.UA = 3090 * "kW/K";
-	CO.Out.p = 1 * "bar";
-	
-	GUESS 
-	CO.Out.h = 500 * "kJ/kg";
-	CO.Out.T = (50 + 273.15) * "K";
-	
+	CO.Qdot = -2700 * "kW";
+	CO.K = 3;
+	CO.A_1 = 3.1415926 / 4 * (0.1 *"m")^2;
+		
 	# FIXME: [rafael] this is required when DT is specified instead of q:
 	# CO.Out.h = 300 * "kJ/kg";
 	
@@ -110,62 +109,5 @@ FlowSheet CondenserTest2
 end
 
 #*
-	Similar to TestCondenser2 but different operation conditions
-	
-	THIS FLOWSHEET WORKS
+	TODO: condenser with specified outlet steam quality... looks like it could possibly be problematic...
 *#
-FlowSheet CondenserTest3
-	
-	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam");
-	
-	DEVICES
-	S as Stream_ph; # 5 - 2       = 3
-	CO as Condenser; # 14 - 5 - 2 = 7
-	
-	CONNECTIONS
-	S to CO.In; # (-5) - 0        = -5 DF
-	
-	SPECIFY
-	S.mdot = 30 * "kg/s";
-	S.h = 2000 * "kJ/kg";
-	S.T = (300 + 273.15) * "K";
-	
-	#CO.UA = 140 * "kW/K";
-	CO.Out.h = 700 * "kJ/kg";
-	CO.Out.p = 0.05 * "bar";
-	
-	OPTIONS
-	mode = "steady";
-	outputLevel = "all";
-end
-
-#*
-	Test condenser with pressure loss
-
-	THIS FLOWSHEET WORKS
-*#
-FlowSheet CondensertWithLossTest
-	
-	DEVICES
-	S as Stream_ph;
-	CO as CondenserWithLoss;
-	
-	CONNECTIONS
-		S to CO.In;
-	
-	SPECIFY
-	S.mdot=30 * "kg/s";
-	S.h = 2000 * "kJ/kg";
-	S.p = 60 * "bar";
-		
-	CO.K = 0.5;
-	CO.A_1 = 3.1415926 * (0.2 * "m")^2 / 4;
-	
-	CO.UA = 140 *  "kW/K";
-	
-	OPTIONS
-	mode="steady";
-	outputLevel="all";
-
-end

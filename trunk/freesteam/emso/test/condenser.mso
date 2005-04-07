@@ -9,22 +9,17 @@
 
 using "steamequipment";
 
-#*  Steam Condenser.
+#*  
+	Simple condenser / heat exchanger model.
 
-    This model receives one In strem from which a quantity of heat q
-    is removed.
-
-    Specification for this model can be q or dt. The specification of q
-    should be prefered, once a bad specificafion of dt can lead singular
-    systems (infinite solutions if the Out stream became saturated).
+	Specify Qdot or DT. This model doesn't include 'cold-side' modelling.
 *#
 Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
     
-    VARIABLES
-    UA  as HeatRatePerTemperature(Brief="Condenser UA value");
-	x   as Quality;
-
-	EQUATIONS
+	VARIABLES
+	#x as Quality;
+	
+    EQUATIONS
 	# Zero volume
 	m = 0 * "kg";
 	H = 0 * "J";
@@ -32,36 +27,8 @@ Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
 	# No work
 	Wdot = 0 * "W";
 	
-	"Heat transfer coefficient"
-    Qdot = UA * DT;
-    	
-	"Outlet quality"
-	x = Out.freesteam.x_ph(Out.p, Out.h);
-	
-#   GUESS # FIXME: implement GUESS on models!!
-#   Out.h = 300 * "kJ/kg";
+	#x = Out.freesteam.x_ph(Out.p, Out.h);
 
-end
-
-Model Condenser_pT as SteamEquipment_pT # 8 + 4 - 5 = 7
-    
-    VARIABLES
-    UA  as HeatRatePerTemperature(Brief="Condenser UA value");
-	
-	EQUATIONS
-	# Zero volume
-	m = 0 * "kg";
-	H = 0 * "J";
-	
-	# No work
-	Wdot = 0 * "W";
-	
-	"Heat transfer coefficient"
-    Qdot = UA * DT;
-	
-	# Can't evaluate x at outlet in this case, since steam state
-	# specified i.t.o. (p,T)
-    
 end
 
 Model CondenserWithLoss as Condenser
