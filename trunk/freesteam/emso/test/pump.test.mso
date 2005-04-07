@@ -22,7 +22,7 @@ FlowSheet PumpTest1
 	
 	DEVICES
 	S1 as Stream_pT;
-	PU as Pump;
+	PU as PumpSimple;
 	
 	CONNECTIONS
 	S1 to PU.In;
@@ -59,7 +59,7 @@ FlowSheet PumpTest2
 	
 	DEVICES
 	S1 as Stream_pT;
-	PU as Pump;
+	PU as PumpSimple;
 	
 	CONNECTIONS
 	S1 to PU.In;
@@ -89,7 +89,7 @@ FlowSheet PumpTest3
 	
 	DEVICES
 	S1 as Stream_pT;
-	PU as Pump;
+	PU as PumpSimple;
 	
 	CONNECTIONS
 	S1 to PU.In;

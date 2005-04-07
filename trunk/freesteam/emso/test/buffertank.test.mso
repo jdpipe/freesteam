@@ -6,7 +6,9 @@ using "buffertank";
 using "exitloss";
 
 #*
-	Simulation of buffer take with fixed outlet flow rate = inlet flowrate.
+	Simulation of buffer take with fixed 
+	outlet flow rate = inlet flowrate.
+	
 	Volume of tank is varying.
 	
 	THIS FLOWSHEET WORKS
