@@ -35,7 +35,10 @@ Model SteamEquipment as SteamEquipmentBase
 	out Out as Stream;
 	
 	SPECIFY
+	# Conservation of energy
 	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
+	
+	# Conservation of mass
 	diff(m) = In.mdot - Out.mdot;
 
     "Temperature difference"
