@@ -17,10 +17,6 @@ using "steamequipment";
 *#
 Model Throttle as SteamEquipment_ph # 8 - 2 = 6
 	
-	CONNECTIONS
-	#In.h to Out.h;
-	#In.mdot to Out.mdot;
-
 	EQUATIONS
 	
 	"Zero volume"
