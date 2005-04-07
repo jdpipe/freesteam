@@ -8,12 +8,42 @@
 *#
 using "steamequipment";
 
+Model HeatExchangerBase
+	
+	VARIABLES
+	UA as HeatTransferCoefficient;
+	LMTD as TemperatureDifference;
+	DTCS as TemperatureDifference;
+end
+
+Model HeatExchangerBase_ph as HeatExchangerBase
+	
+	VARIABLES
+	in CSIn as Stream;
+	out CSOut as Stream_ph;
+	
+	EQUATIONS
+	DTCS = CSOut.T - CSIn.T;
+
+end
+
+Model CounterFlowHeatExchanger_ph_ph as HeatExchanger_ph, SteamEquipment_ph
+	
+	EQUATIONS
+	LMTD = ....
+	
+end
+
+
 #*
 	Just rubbish for now...
 *#
 Model HeatExchanger
 	
 	DEVICES
+	in CSIn as Stream;
+	out CSOut as Stream;
+	
 	S as Stream_pT; # 5 - 2       = 3
 	CO as Condenser_ph; # 14 - 5 - 2 = 7
 	#CO as Condenser;
