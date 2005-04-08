@@ -21,6 +21,9 @@ Model PumpBase as SteamEquipment_ph
     v   as SpecificVolume(Brief="Inlet specific volume", Default=0.001);
 	
 	EQUATIONS
+	# No heat
+    Qdot = 0  * "W";
+	
 	# Zero volume
 	H = 0 * "J";
 	m = 0 * "kg"; 
@@ -47,8 +50,6 @@ Model PumpSimple as PumpBase
 	h_es as SpecificEnthalpy(Brief = "Isentropic output enthalpy");
 	
 	EQUATIONS
-	# "Energy balance"
-    Qdot = 0  * "W";
 	
     "Isentropic output"
 	h_es = freesteam_es.h_ps(Out.p, In.s);
@@ -90,6 +91,9 @@ Model PumpWithSimilarity as PumpBase
 
 	# Convert head to pressure drop
 	Dp = 9.81 * "N/kg" * z / v;
+	
+	# Efficiency
+	eta = Vdot * Dp / Wdot;
 end
 
 #*
@@ -97,7 +101,7 @@ end
 *#
 Model PumpWithParabolicCurve as PumpWithSimilarity
 	
-	PARAMETERS
+	VARIABLES
 	# Power curve (linear)
 	a_wdot as Real(Unit="W/(m^3/s)");
 	b_wdot as Real(Unit="W");
@@ -132,5 +136,4 @@ Model PumpParabolicSimple as PumpWithParabolicCurve
 	z_max = c_z;
 	b_z = 0 * "m/(m^3/s)";
 	Vdot_max^2 = -c_z/a_z;
-	
 end
