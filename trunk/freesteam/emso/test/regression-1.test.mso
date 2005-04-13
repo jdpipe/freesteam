@@ -1,46 +1,22 @@
-#*
-	This file causes a crash with EMSO 0.9.34
+#* 
+This model causes a crash in EMSO because of the 'VARIABLES' declaration in the FlowSheet
 
-	Load the file, then check consistencyh of New Pump Test	
-	and the program will crash.
+To prevent the crash, the VARIABLES statement mus tbe switched to DEVICES
 *#
 
-Temperature as Real(Brief = "Temperature", Default=290, Lower=-1000, Upper=1000, Unit = "K");
-
-Pressure as Real (Brief = "Pressure", Default=5, Lower=1e-30, Upper=1000, Unit = "bar");
-
-MassFlowRate as Real (Brief = "Mass Flow Rate", Lower=0, Default=1000, Upper=1e10, Unit = "kg/s");
-
-SpecHeatCap as Real (Brief = "Specific Heat Capacity", Default=1.0, Lower=0.1, Upper=10.0, Unit = "kJ/kg/K");  
-SpecificEntropy as SpecHeatCap (Brief = "Specific entropy", Lower=0, Upper=10, Unit="kJ/kg/K", Default=5);
-
-SpecificEnergy as Real(Brief = "SpecificEnergy", Unit = "kJ/kg");
-SpecificEnthalpy as SpecificEnergy(Brief = "Mass Enthalpy", Default=500, Lower=-10000, Upper=10000, Unit = "kJ/kg");
-
-Model Stream # 4 DF
-
-	PARAMETERS
-	freesteam as CalcObject(File="emsofreesteam");
-
+Model AAA
+	
 	VARIABLES
-	mdot as MassFlowRate;
-	T as Temperature(    Lower=273.15,     Upper=1073.15,Default = 600,  Unit = "K");
-	p as Pressure(               Lower=611.657e-5, Upper=1000,    Default = 100,   Unit = "bar");
-	h as SpecificEnthalpy(       Lower=0,          Upper=4300,   Default=1500,   Unit = "kJ/kg");
-	s as SpecificEntropy(        Lower=0,          Upper=12,     Default=6,      Unit = "kJ/kg/K");
-
-	EQUATIONS
-	"Steam properties"
-	[T,s] = freesteam.Ts_ph(p, h);	
+	T as Real;
 	
 end
 
-FlowSheet NewPumpTest
+FlowSheet BBB
 
 	VARIABLES
-	in In as Stream;
+	in In as AAA;
 	
-	EQUATIONS
-	In.mdot=1  *"kg/s";
+	SPECIFY
+	In.T=(20 + 273.15);
 
 end
