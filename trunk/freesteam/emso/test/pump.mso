@@ -8,29 +8,80 @@
 using "steamequipment";
 
 #*
+	Simplest model of a pump: no inheritance from SteamEquipment class
+
+	THIS WORKS
+*#
+Model PumpSimpleSelfContained
+	
+	PARAMETERS
+	freesteam_es as CalcObject(File="emsofreesteam");
+	
+	VARIABLES
+	in In as Stream;
+	out Out as Stream_ph;
+	
+	eta as Efficiency;
+	h_es as SpecificEnthalpy;
+	
+	EQUATIONS
+	eta * (In.h - Out.h) = (In.h - h_es);
+	h_es = freesteam_es.h_ps(Out.p, In.s);
+	In.mdot = Out.mdot;
+end
+
+
+#*
+	Improved model of a pump: inherit from SteamEquipment class
+
+	DOESN'T WORK...
+*#
+Model PumpSimpleAsSteamEquipment as SteamEquipment_ph
+	
+	PARAMETERS
+	freesteam_es as CalcObject(File="emsofreesteam");
+	
+	VARIABLES
+	eta as Efficiency;
+	h_es as SpecificEnthalpy(       Lower=0,          Upper=4300,   Default=1500,   Unit = "kJ/kg");
+	
+	EQUATIONS
+	# Mass conservation	
+	In.mdot = Out.mdot;
+	m = 0 * "kg";
+	
+	# Energy conservation
+	Qdot - Wdot = In.h * In.mdot - Out.h - Out.mdot;
+	H = 0 * "J";
+	Qdot = 0 * "W";
+		
+	# Isentropic efficiency
+	eta * (In.h - Out.h) = (In.h - h_es);
+	h_es = freesteam_es.h_ps(Out.p, In.s);
+	
+end
+
+#*
     Base for all water/steam pump models.
 
 	Includes pump efficiency
 	and inlet specific volume
 	as well as all the parameters of normal steam equipment
 *#
-Model PumpBase as SteamEquipment_ph
+Model PumpBase as SteamEquipment_ps
 	
     VARIABLES
     eta as Efficiency(Brief="Pump efficiency");
-    v   as SpecificVolume(Brief="Inlet specific volume", Default=0.001);
 	
 	EQUATIONS
-	# No heat
-    Qdot = 0  * "W";
+	# Mass conservation	
+	In.mdot = Out.mdot;
+	m = 0 * "kg";
 	
-	# Zero volume
+	# Energy conservation
+	Qdot - Wdot = In.h * In.mdot - Out.h - Out.mdot;
 	H = 0 * "J";
-	m = 0 * "kg"; 
-	
-	# Inlet specific volume
-	v = In.freesteam.v_ph(In.p, In.h);
-    
+	Qdot = 0 * "W";
 end
 
 #*
@@ -50,12 +101,9 @@ Model PumpSimple as PumpBase
 	h_es as SpecificEnthalpy(Brief = "Isentropic output enthalpy");
 	
 	EQUATIONS
-	
-    "Isentropic output"
+	# Isentropic efficiency
+	eta * (In.h - Out.h) = (In.h - h_es);
 	h_es = freesteam_es.h_ps(Out.p, In.s);
-    
-    "Efficiency"
-    (Out.h - In.h) = eta * (h_es - In.h);
 end
 
 #*
@@ -78,8 +126,13 @@ Model PumpWithSimilarity as PumpBase
 	Vdot as VolumeFlowRate(Brief="Pump flow rate (vol)");
 	
 	Wdot_1 as Power;
-	
+
+    v as SpecificVolume(Brief="Inlet specific volume", Default=0.001);
+
 	EQUATIONS
+	# Inlet specific volume
+	v = In.freesteam.v_ph(In.p, In.h);
+	
 	# Flowrate similarity
 	Vdot = Vdot_1 * N / N_1;
 	
@@ -136,4 +189,82 @@ Model PumpParabolicSimple as PumpWithParabolicCurve
 	z_max = c_z;
 	b_z = 0 * "m/(m^3/s)";
 	Vdot_max^2 = -c_z/a_z;
+end
+
+
+#*
+	Model with parabolic curve, all self-contained, with m and H diffs removed
+*#
+Model PumpParabolicSimpleSelfContained
+	
+	VARIABLES
+	in In as Stream;
+	out Out as Stream_ph;
+	
+	N_1 as Frequency(Brief="Reference pump speed (RPM)", Unit="1/min", Default=100);
+	N as Frequency(Brief="Pump speed (RPM)", Unit="1/min", Default=100);
+	
+	z_1 as Length(Brief="Refernce pump head");
+	z as Length(Brief="Pump head");
+	
+	Vdot_1 as VolumeFlowRate(Brief="Reference flow rate (vol)");
+	Vdot as VolumeFlowRate(Brief="Pump flow rate (vol)");
+	
+	Wdot as Power(Brief = "Work done by fluid on environment", Unit="W", Lower=-2e9, Upper=2e9);
+	Wdot_1 as Power(Brief = "Work done by fluid on environment", Unit="W", Lower=-2e9, Upper=2e9);
+
+    v as SpecificVolume(Brief="Inlet specific volume", Default=0.001);
+
+	# Power curve (linear)
+	a_wdot as Real(Unit="W/(m^3/s)");
+	b_wdot as Real(Unit="W");
+	
+	# Head curve (parabolic)
+	a_z as Real(Unit="m/(m^3/s)^2");
+	b_z as Real(Unit="m/(m^3/s)");
+	c_z as Real(Unit="m");
+
+	# constants that define the pump curve:
+	z_max as Length(Brief="Zero-Flow Head");
+	Vdot_max as VolumeFlowRate(Brief="Zero-Head Flow Rate (vol)");
+
+	EQUATIONS
+
+	# Conservation laws
+	
+	"Conservation of energy"
+	- Wdot = Out.mdot * Out.h - In.mdot * In.h;
+	
+	"Conservation of mass"
+	In.mdot = Out.mdot;
+	
+	# Inlet specific volume
+	v = In.freesteam.v_ph(In.p, In.h);
+	
+	# Similarity Relations
+	
+	"Flowrate similarity"
+	Vdot = Vdot_1 * N / N_1;
+	
+	"Head similarity"
+	z = z_1 * (N / N_1)^2;
+	
+	"Power similarity"
+	Wdot = Wdot_1 * (N / N_1)^3;
+	
+	# Performance Curves at Reference Conditions
+	
+	"Power curve"
+	Wdot_1 = a_wdot * Vdot_1 + b_wdot;
+	
+	"Head curve"
+	z_1 = a_z * Vdot_1^2 + b_z * Vdot_1 + c_z;
+
+	# Parameters to define the head curve
+	z_max = c_z;
+	b_z = 0 * "m/(m^3/s)";
+	Vdot_max^2 = -c_z/a_z;
+
+	# Convert head to pressure drop
+	Out.p - In.p = 9.81 * "N/kg" * z / v;
 end
