@@ -26,7 +26,7 @@ Model SteamEquipmentBase
 end
 	
 #*
-    Generic steam equipment item. Includes mass conservation and energy conservation laws.
+    Generic steam equipment item.
 *#
 Model SteamEquipment as SteamEquipmentBase
 
@@ -35,11 +35,6 @@ Model SteamEquipment as SteamEquipmentBase
 	out Out as Stream;
 	
 	SPECIFY
-	# Conservation of energy
-	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
-	
-	# Conservation of mass
-	diff(m) = In.mdot - Out.mdot;
 
     "Temperature difference"
     DT = Out.T - In.T;
@@ -60,8 +55,7 @@ Model SteamEquipment_ph as SteamEquipmentBase
 	out Out as Stream_ph;   
 	
 	SPECIFY
-	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
-	diff(m) = In.mdot - Out.mdot;
+
 	
     "Temperature difference"
     DT = Out.T - In.T;
@@ -83,8 +77,6 @@ Model SteamEquipment_ps as SteamEquipmentBase# DF = 8
 	out Out as Stream_ps;   
 
 	SPECIFY
-	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
-	diff(m) = In.mdot - Out.mdot;
 	
     "Temperature difference"
     DT = Out.T - In.T;
@@ -105,8 +97,6 @@ Model SteamEquipment_Ts as SteamEquipmentBase # DF = 8
 	out Out as Stream_Ts;   
 	
 	SPECIFY
-	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
-	diff(m) = In.mdot - Out.mdot;
 	
     "Temperature difference"
     DT = Out.T - In.T;
@@ -127,8 +117,6 @@ Model SteamEquipment_Th as SteamEquipmentBase
 	out Out as Stream_Th;   
 	
 	SPECIFY
-	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
-	diff(m) = In.mdot - Out.mdot;
 	
     "Temperature difference"
     DT = Out.T - In.T;
@@ -149,8 +137,6 @@ Model SteamEquipment_pT as SteamEquipmentBase
 	out Out as Stream_pT;   
 	
 	SPECIFY
-	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
-	diff(m) = In.mdot - Out.mdot;
 	
 	"Temperature difference"
     DT = Out.T - In.T;
@@ -171,8 +157,6 @@ Model SteamEquipment_uv as SteamEquipmentBase
 	out Out as Stream_uv;   
 	
 	SPECIFY
-	Qdot - Wdot = Out.mdot * Out.h - In.mdot * In.h + diff(H);
-	diff(m) = In.mdot - Out.mdot;
     
 	"Temperature difference"
     DT = Out.T - In.T;
