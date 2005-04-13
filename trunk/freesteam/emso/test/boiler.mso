@@ -17,11 +17,13 @@ using "steamequipment";
 Model Boiler as SteamEquipment_ph # 7
     
     EQUATIONS   
-	# Zero contained volume
+	# Mass conservation	
+	In.mdot = Out.mdot;
 	m = 0 * "kg";
-	H = 0 * "J";
 	
-	# No work
+	# Energy conservation, no work, no volume
+	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot;
+	H = 0 * "J";
 	Wdot = 0 * "W";
 end
 
@@ -33,10 +35,13 @@ end
 Model Boiler_pT as SteamEquipment_pT # 7
     
 	EQUATIONS
+	# Mass conservation	
+	In.mdot = Out.mdot;
 	m = 0 * "kg";
-	H = 0 * "J";
 	
-	# No work
+	# Energy conservation, no work, no volume
+	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot;
+	H = 0 * "J";
 	Wdot = 0 * "W";
 end
 

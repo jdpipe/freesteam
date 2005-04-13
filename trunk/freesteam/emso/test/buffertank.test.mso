@@ -39,12 +39,15 @@ FlowSheet BufferTankTest1
 	OPTIONS
 	# mode="steady";
 	differentiation="numeric";
+	
 	# outputLevel="all";
 	time = [0 : 0.1 : 480] * "s";
 end
 
 #*
-	Test of three cascaded tanks
+	Test of 8 cascaded tanks
+
+	THIS FLOWSHEET WORKS
 *#
 FlowSheet BufferTankTest2
 	
@@ -109,6 +112,86 @@ FlowSheet BufferTankTest2
 	TA7.V = 1 * "m^3";
 
 	TA8.T = (273.15 + 4) * "K";
+	TA8.V = 1 * "m^3";
+
+	OPTIONS
+	# mode="steady";
+	differentiation="numeric";
+	# outputLevel="all";
+	time = [0 : 10: 480] * "s";
+end
+
+
+#*
+	Test of 8 cascaded tanks in a loop, half with water
+	and half with steam
+
+	Mass flow rate fixed throughout
+
+	DOESN'T WORK
+*#
+FlowSheet BufferTankLoopTest
+	
+	DEVICES
+	TA1 as BufferTank;
+	TA2 as BufferTank;
+	TA3 as BufferTank;
+	TA4 as BufferTank;
+	TA5 as BufferTank;
+	TA6 as BufferTank;
+	TA7 as BufferTank;
+	TA8 as BufferTank;
+		
+	CONNECTIONS
+	TA1.Out to TA2.In;
+	TA2.Out to TA3.In;
+	TA3.Out to TA4.In;
+	TA4.Out to TA5.In;
+	TA5.Out to TA6.In;
+	TA6.Out to TA7.In;
+	TA7.Out to TA8.In;
+	
+	SPECIFY	
+	TA1.In.mdot = 1 * "kg/s";
+	TA1.In.p = TA8.Out.p;
+	TA1.In.h = TA8.Out.h;
+	TA8.Out.mdot = 1 * "kg/s";
+	
+	# Inlet flow rate = outlet flow rate (volume is not constant)
+	TA1.In.mdot = TA1.Out.mdot;
+	TA2.In.mdot = TA2.Out.mdot;
+	TA3.In.mdot = TA3.Out.mdot;
+	TA4.In.mdot = TA4.Out.mdot;
+	TA5.In.mdot = TA5.Out.mdot;
+	TA6.In.mdot = TA6.Out.mdot;
+	TA7.In.mdot = TA7.Out.mdot;
+	TA8.In.mdot = TA8.Out.mdot;
+	
+	INITIAL
+	# Inlet state and flow rate
+	
+	TA1.T = (273.15 + 4) * "K";
+	TA1.V = 1 * "m^3";
+
+	TA2.T = (273.15 + 4) * "K";
+	TA2.V = 1 * "m^3";
+
+	TA3.T = (273.15 + 4) * "K";
+	TA3.V = 1 * "m^3";
+
+	TA4.T = (273.15 + 4) * "K";
+	TA4.V = 1 * "m^3";
+
+	TA5.T = (273.15 + 200) * "K";
+	TA5.V = 1 * "m^3";
+
+	TA6.T = (273.15 + 200) * "K";
+	TA6.V = 1 * "m^3";
+
+	TA7.T = (273.15 + 200) * "K";
+	TA7.V = 1 * "m^3";
+
+	TA8.T = (273.15 + 200) * "K";
 	TA8.V = 1 * "m^3";
 
 	OPTIONS

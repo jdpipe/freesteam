@@ -21,24 +21,22 @@ Model BufferTank as SteamEquipment_ph
 	T as Temperature(Brief="Temperature of water in tank", Lower=273.15);
 	
 	EQUATIONS
-	# no pressure drop in the tank
-	In.p = Out.p;
-	
-	# mass is density by volume
+	# Mass conservation	
+	In.mdot - Out.mdot = diff(m);
 	m = rho * V;
 	
-	# total enthalpy
+	# Energy conservation, no work, no volume
+	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot + diff(H);
 	H = m * h;
+	Qdot = 0 * "W";
+	Wdot =  0 * "W";	
+	
+	# no pressure drop in the tank
+	In.p = Out.p;
 		
 	# Perfect mixing: what comes out is the average enthalpy and temperature
 	Out.h = h;
 	Out.T = T;
-		
-	# No heating
-	Qdot = 0 * "W";
-	
-	# No work
-	Wdot =  0 * "W";
 	
 	# density can be calculated using the outlet state, because of the mixing
 	# (assume that variation with pressure is negl)

@@ -18,14 +18,14 @@ using "steamequipment";
 Model Throttle as SteamEquipment_ph # 8 - 2 = 6
 	
 	EQUATIONS
-	
-	"Zero volume"
-	H = 0  *"J";
+	# Mass conservation	
+	In.mdot = Out.mdot;
 	m = 0 * "kg";
 	
-	"Zero work"
+	# Energy conservation, no work, no volume
+	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot;
+	H = 0 * "J";
 	Wdot = 0 * "W";
-	# Qdot = 0 * "W";
 	
 	# Isenthalpic
 	In.h = Out.h;

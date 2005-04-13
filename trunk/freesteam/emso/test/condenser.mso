@@ -20,14 +20,14 @@ Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
 	#x as Quality;
 	
     EQUATIONS
-	# Zero volume
+	# Mass conservation	
+	In.mdot = Out.mdot;
 	m = 0 * "kg";
+	
+	# Energy conservation, no work, no volume
+	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot;
 	H = 0 * "J";
-	
-	# No work
-	Wdot = 0 * "W";
-	
-	#x = Out.freesteam.x_ph(Out.p, Out.h);
+	Wdot =  0 * "W";	
 
 end
 

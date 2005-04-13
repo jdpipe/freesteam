@@ -21,11 +21,15 @@ Model HotWaterTank as SteamEquipment_uv
 	T as Temperature(Brief="Temperature of water in tank", Lower=273.15);
 	
 	EQUATIONS
-	# mass is density by volume
+	# Mass conservation	
+	In.mdot - Out.mdot = diff(m);
 	m = rho * A * y;
 	
-	# total enthalpy
+	# Energy conservation, no work, no volume
+	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot + diff(H); 
 	H = m * h;
+	Qdot = 0 * "W";
+	Wdot = 0 * "W";
 	
 	# Even mixing: what comes out is the average enthalpy and temperature
 	Out.h = h;
@@ -33,12 +37,6 @@ Model HotWaterTank as SteamEquipment_uv
 	
 	# Pressure at base is ambient plus static head
 	Out.p = p_amb + rho * 9.8 * "N/kg" * y;
-	
-	# No heating
-	Qdot = 0 * "W";
-	
-	# Trivial work: forcing water up against atmospheric pressure as control volume changes size
-	Wdot =  0 * "W"; # p_amb * diff(m) / rho;
 	
 	# density can be calculated using the outlet state, because of the mixing
 	# (assume that variation with pressure is negl)

@@ -12,6 +12,7 @@ using "steamequipment";
 
 	THIS WORKS
 *#
+#*
 Model PumpSimpleSelfContained
 	
 	PARAMETERS
@@ -29,37 +30,7 @@ Model PumpSimpleSelfContained
 	h_es = freesteam_es.h_ps(Out.p, In.s);
 	In.mdot = Out.mdot;
 end
-
-
-#*
-	Improved model of a pump: inherit from SteamEquipment class
-
-	DOESN'T WORK...
 *#
-Model PumpSimpleAsSteamEquipment as SteamEquipment_ph
-	
-	PARAMETERS
-	freesteam_es as CalcObject(File="emsofreesteam");
-	
-	VARIABLES
-	eta as Efficiency;
-	h_es as SpecificEnthalpy(       Lower=0,          Upper=4300,   Default=1500,   Unit = "kJ/kg");
-	
-	EQUATIONS
-	# Mass conservation	
-	In.mdot = Out.mdot;
-	m = 0 * "kg";
-	
-	# Energy conservation
-	Qdot - Wdot = In.h * In.mdot - Out.h - Out.mdot;
-	H = 0 * "J";
-	Qdot = 0 * "W";
-		
-	# Isentropic efficiency
-	eta * (In.h - Out.h) = (In.h - h_es);
-	h_es = freesteam_es.h_ps(Out.p, In.s);
-	
-end
 
 #*
     Base for all water/steam pump models.
@@ -79,7 +50,7 @@ Model PumpBase as SteamEquipment_ps
 	m = 0 * "kg";
 	
 	# Energy conservation
-	Qdot - Wdot = In.h * In.mdot - Out.h - Out.mdot;
+	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot;
 	H = 0 * "J";
 	Qdot = 0 * "W";
 end
@@ -233,7 +204,7 @@ Model PumpParabolicSimpleSelfContained
 	# Conservation laws
 	
 	"Conservation of energy"
-	- Wdot = Out.mdot * Out.h - In.mdot * In.h;
+	Wdot = -(Out.mdot * Out.h - In.mdot * In.h);
 	
 	"Conservation of mass"
 	In.mdot = Out.mdot;

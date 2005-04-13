@@ -9,6 +9,9 @@ using "hotwatertank";
 	Water is flowing in at atm pressure and 80*C. After 10s	
 	the TA outlet is opened and flow fo 10 kg/s starts to exit
 	the tank.
+
+
+	DOESN'T WORK
 *#
 FlowSheet HotWaterTankTest
 	
