@@ -1,22 +1,27 @@
 
 using "steamequipment";
 
-Model PipeBase as SteamEquipment_ph
+Model PipeCommonVariables as SteamEquipment_ph
 
 	VARIABLES
 	L as Length(Lower = 0, Upper= 1000, Default=10, Unit="m");
 	D as Length(Lower = 0, Upper= 1, Default=0.1, Unit="m");
-
-	h as SpecificEnthalpy(       Lower=0,          Upper=4300,   Default=1500,   Unit = "kJ/kg");
-	rho as Density(Lower=0.001, Upper= 1000, Default= 500, Unit = "kg/m^3");
+	eps as Length(Lower = 0, Upper= 0.01, Default=0.0001, Unit="m");
+end
 	
+Model PipeBase as PipeCommonVariables
+
+	VARIABLES
+	rho as Density(Lower=0.001, Upper= 1000, Default= 500, Unit = "kg/m^3");	
 	vel as Velocity(Lower = 0, Upper= 300, Default=1, Unit="m/s");
+	h as SpecificEnthalpy(       Lower=0,          Upper=4300,   Default=1500,   Unit = "kJ/kg");
 	A as Area(Lower = 0, Upper = 0.7854, Default = 7.8e-5, Unit="m^2");
 	
 	EQUATIONS
 	# Energy balance
 	Qdot - Wdot = In.h * In.mdot - Out.h * Out.mdot + diff(H);
 	H = h * m;
+	Wdot = 0 * "W";
 
 	# Mass balance
 	In.mdot - Out.mdot = diff(m);
@@ -37,7 +42,6 @@ Model PipeColebrook as PipeBase
 	VARIABLES
 	Re as Real(Lower=0, Upper=1e8, Default=2e4);
 	f as Real(Lower = 0.008, Upper=0.1, Default=0.05);
-	eps as Length(Lower = 0, Upper= 0.01, Default=0.0001, Unit="m");
 	mu as DynamicViscosity;	
 	
 	EQUATIONS
@@ -50,6 +54,7 @@ Model PipeColebrook as PipeBase
 	mu = 2e-5 * "Pa*s";
 end
 
+#*
 Model PipeColebrookConvecting as PipeColeBrook
 	
 	VARIABLES
@@ -60,8 +65,12 @@ Model PipeColebrookConvecting as PipeColeBrook
 	T_amb as Temperature;
 	Nu_D as Real;
 	Pr as Real;
+	cp as SpecHeatCap;
 	
 	EQUATIONS
+	cp = 11111;
+	k = 111111;
+	
 	# Dittus Boelter correlation
 	Nu_D = 0.023 * Re^0.8 * Pr^n_DitBoel;
 	if(T_amb > In.T)
@@ -69,10 +78,43 @@ Model PipeColebrookConvecting as PipeColeBrook
 	else
 		n_DitBoel = 0.3;
 	end
-	Pr = mu/rho/alpha;	
-	
-	Qdot = (Nu_D * k / D) * (3.14159265358 * D * L) * (
-	Qdot = ...
+	Pr = mu * cp / k	
+
+	Qdot = (Nu_D * k / D) * (3.14159265358 * D * L) * (T_1 - In.T);
+	Qdot = 111111;
 end
+*#
 
+Model PipeColbrookChainUniformHeat as PipeCommonVariables
+	
+	PARAMETERS
+	n as Integer(Lower=3);
+	
+	VARIABLES
+	in In as Stream;
+	out Out as Stream;
+	segments(n) as PipeColebrook;
 
+	EQUATIONS
+	In.mdot = segments(1).In.mdot;
+	In.p = segments(1).In.p;
+	In.h = segments(1).In.h;
+	
+	for i in [1 : n-1]
+		segments(i).Out.p = segments(i+1).In.p;
+		segments(i).Out.h = segments(i+1).In.h;
+		segments(i).Out.mdot = segments(i+1).In.mdot;
+	end
+
+	segments(n).Out.mdot = Out.mdot;
+	segments(n).Out.p = Out.p;
+	segments(n).Out.h = Out.h;	
+	
+	for i in [1 : n]
+		segments(i).L=L / n;
+		segments(i).D=D;
+		segments(i).Qdot = Qdot / n;
+		segments(i).eps = eps;
+	end
+
+end

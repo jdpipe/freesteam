@@ -27,6 +27,7 @@ FlowSheet PipeColebrookTest
 	PI.D = 0.025 * "m";
 	PI.L = 15 * "m";
 	PI.eps = 46e-6 * "m";
+	PI.Qdot = 0;
 	
 	OPTIONS
 	mode="steady";
@@ -38,7 +39,7 @@ end
 
 	THIS FLOWSHEET WORKS :-)
 *#
-FlowSheet PipeColebrookTest
+FlowSheet PipeColebrookTest2
 
 	DEVICES
 	S1 as Stream_pT;
@@ -59,14 +60,43 @@ FlowSheet PipeColebrookTest
 	PI1.D = 0.025 * "m";
 	PI1.L = 15 * "m";
 	PI1.eps = 46e-6 * "m";
+	PI1.Qdot = 0 * "W";
 	PI2.D = 0.025 * "m";
 	PI2.L = 15 * "m";
+	PI2.Qdot = 0 * "W";
 	PI2.eps = 46e-6 * "m";
 	PI3.D = 0.025 * "m";
 	PI3.L = 15 * "m";
 	PI3.eps = 46e-6 * "m";
+	PI3.Qdot = 0 * "W";
 	
 	OPTIONS
 	mode="steady";
 	outputLevel="all";
 end
+
+#*
+	Chained pipe using EMSO array feature
+*#
+FlowSheet PipeChainTest1
+	
+	DEVICES
+	S1 as Stream_pT;
+	PI as PipeColbrookChainUniformHeat;
+	
+	CONNECTIONS
+	S1 to PI.In;
+
+	SPECIFY
+	S1.p = 1.5 * "bar";
+	S1.T = (25 + 273.15) * "K";
+	S1.mdot = 1 * "kg/s";
+	
+	PI.D = 0.025 * "m";
+	PI.L = 15 * "m";
+	PI.eps = 46e-6 * "m";
+	PI.Qdot = 0 * "W";
+	
+	SET
+	PI.n = 5;
+end;
