@@ -14,7 +14,7 @@ end
 FlowSheet BBB
 
 	VARIABLES
-	in In as AAA;
+	In as AAA;
 	
 	SPECIFY
 	In.T=(20 + 273.15);
