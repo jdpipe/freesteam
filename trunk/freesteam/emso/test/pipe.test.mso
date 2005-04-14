@@ -1,0 +1,72 @@
+
+using "pipe";
+using "streams";
+
+#*
+	Test a simple pipe segment
+	Fully specify inlet state
+	and pipe details
+	Then see what comes out
+	
+	THIS FLOWSHEET WORKS :-)
+*#
+FlowSheet PipeColebrookTest
+
+	DEVICES
+	PI as PipeColebrook;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to PI.In;
+	
+	SPECIFY
+	S1.p = 1.5 * "bar";
+	S1.T = (25 + 273.15) * "K";
+	S1.mdot = 1 * "kg/s";
+	
+	PI.D = 0.025 * "m";
+	PI.L = 15 * "m";
+	PI.eps = 46e-6 * "m";
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="all";
+end
+
+#*
+	Three pipes in a row
+
+	THIS FLOWSHEET WORKS :-)
+*#
+FlowSheet PipeColebrookTest
+
+	DEVICES
+	S1 as Stream_pT;
+	PI1 as PipeColebrook;
+	PI2 as PipeColebrook;
+	PI3 as PipeColebrook;
+	
+	CONNECTIONS
+	S1 to PI1.In;
+	PI1.Out to PI2.In;
+	PI2.Out to PI3.In;
+	
+	SPECIFY
+	S1.p = 1.5 * "bar";
+	S1.T = (25 + 273.15) * "K";
+	S1.mdot = 1 * "kg/s";
+	
+	PI1.D = 0.025 * "m";
+	PI1.L = 15 * "m";
+	PI1.eps = 46e-6 * "m";
+	PI2.D = 0.025 * "m";
+	PI2.L = 15 * "m";
+	PI2.eps = 46e-6 * "m";
+	PI3.D = 0.025 * "m";
+	PI3.L = 15 * "m";
+	PI3.eps = 46e-6 * "m";
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="all";
+end
