@@ -1,0 +1,31 @@
+
+using "pipe";
+using "pump";
+
+
+FlowSheet LoopSimple
+
+	DEVICES
+	PI as PipeFixedF;
+	PU as PumpSimple;
+	
+	CONNECTIONS
+	PU.Out to PI.In;
+	PI.Out to PU.In;
+	
+	INITIAL
+	PI.h = 500 * "kJ/kg";
+	
+	SPECIFY
+	PI.Dp = 10 * "kPa";
+	PU.eta = 0.99;
+	
+	PI.D = 0.025 * "m";
+	PI.L = 100 * "m";
+	PI.eps = 46e-6 * "m";
+	
+	PI.f = 0.02;
+	
+	OPTIONS
+	differentiation="numeric";
+end

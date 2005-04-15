@@ -12,10 +12,69 @@ end
 Model PipeBase as PipeCommonVariables
 
 	VARIABLES
+	v as SpecificVolume;	
+	vel as Velocity(Lower = 0, Upper= 300, Default=1, Unit="m/s");
+	h as SpecificEnthalpy(Lower=0, Upper=4300,   Default=1500,   Unit = "kJ/kg");
+	A as Area(Lower = 0, Upper = 0.7854, Default = 7.8e-5, Unit="m^2");
+	
+	EQUATIONS
+	# Energy balance
+	Qdot - Wdot = In.h * In.mdot - Out.h * Out.mdot + diff(H);
+	H = h * m;
+	Wdot = 0 * "W";
+
+	# Mass balance
+	In.mdot - Out.mdot = diff(m);
+	A = (3.14159265358 * D^2 / 4);
+	m * v = L * A;
+
+	# It's like a turbulent tank: out flow is at the average enthalpy
+	Out.h = h;
+	
+	# Pipe flow velocity
+	vel = In.mdot * v / A;
+	
+	# Inlet density
+	v = In.freesteam.v_ph(In.p, In.h);	
+end
+
+Model PipeFixedF as PipeBase
+	PARAMETERS
+	f as Real(Lower = 0.008, Upper=0.1, Default=0.05);
+	
+	EQUATIONS
+	Dp = -f *L / D / v * vel^2 / 2;
+end
+
+Model PipeColebrook as PipeBase
+	VARIABLES
+	Re as Real(Lower=0, Upper=1e8, Default=2e4);
+	mu as DynamicViscosity;	
+	f as Real(Lower = 0.008, Upper=0.1, Default=0.05);
+	
+	EQUATIONS
+	# Pressure drop my Colebrook formula, fixed viscosity
+	1/sqrt(f) = -0.86 * ln(eps/D/3.7 + 2.51/Re/sqrt(f));
+	
+	# Reynold's number
+	Re = vel * D / mu / v;	
+	mu = 2e-5 * "Pa*s";
+	 Dp * v= - f * L/D * vel^2 / 2;
+
+end
+
+Model PipeColebrookSelfContained as SteamEquipment_ph
+	VARIABLES
+	L as Length(Lower = 0, Upper= 1000, Default=10, Unit="m");
+	D as Length(Lower = 0, Upper= 1, Default=0.1, Unit="m");
+	eps as Length(Lower = 0, Upper= 0.01, Default=0.0001, Unit="m");	
 	rho as Density(Lower=0.001, Upper= 1000, Default= 500, Unit = "kg/m^3");	
 	vel as Velocity(Lower = 0, Upper= 300, Default=1, Unit="m/s");
-	h as SpecificEnthalpy(       Lower=0,          Upper=4300,   Default=1500,   Unit = "kJ/kg");
+	h as SpecificEnthalpy(Lower=0, Upper=4300,   Default=1500,   Unit = "kJ/kg");
 	A as Area(Lower = 0, Upper = 0.7854, Default = 7.8e-5, Unit="m^2");
+	Re as Real(Lower=0, Upper=1e8, Default=2e4);
+	f as Real(Lower = 0.008, Upper=0.1, Default=0.05);
+	mu as DynamicViscosity;
 	
 	EQUATIONS
 	# Energy balance
@@ -36,23 +95,16 @@ Model PipeBase as PipeCommonVariables
 	
 	# Inlet density
 	rho = In.freesteam.rho_ph(In.p, In.h);
-end
-
-Model PipeColebrook as PipeBase
-	VARIABLES
-	Re as Real(Lower=0, Upper=1e8, Default=2e4);
-	f as Real(Lower = 0.008, Upper=0.1, Default=0.05);
-	mu as DynamicViscosity;	
 	
-	EQUATIONS
 	# Pressure drop my Colebrook formula, fixed viscosity
 	Dp = -rho * f * L/D * vel^2 / 2;
 	1/sqrt(f) = -0.86 * ln(eps/D/3.7 + 2.51/Re/sqrt(f));
 	
 	# Reynold's number
 	Re = rho * vel * D / mu;	
-	mu = 2e-5 * "Pa*s";
+	mu = 2e-5 * "Pa*s";	
 end
+
 
 #*
 Model PipeColebrookConvecting as PipeColeBrook
@@ -118,3 +170,5 @@ Model PipeColbrookChainUniformHeat as PipeCommonVariables
 	end
 
 end
+
+

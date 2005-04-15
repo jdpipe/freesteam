@@ -17,7 +17,7 @@ using "steamequipment";
 Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
     
 	VARIABLES
-	#x as Quality;
+	x as Quality;
 	
     EQUATIONS
 	# Mass conservation	
@@ -27,8 +27,10 @@ Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
 	# Energy conservation, no work, no volume
 	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot;
 	H = 0 * "J";
-	Wdot =  0 * "W";	
-
+	Wdot =  0 * "W";
+	
+	# Outlet quality
+	x = Out.freesteam.x_ph(Out.p,Out.h);
 end
 
 Model CondenserWithLoss as Condenser

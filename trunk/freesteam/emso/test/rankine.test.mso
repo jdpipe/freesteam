@@ -29,7 +29,7 @@ FlowSheet Rankine0Test
 	BO	as Boiler_pT;     # 7
 	TU	as Turbine_ideal;    # 7
 	CO	as Condenser;  # 7
-	PU 	as Pump;       # 7
+	PU 	as PumpSimple;       # 7
 	
 	CONNECTIONS # BO -> TU -> CO -> TH -> BO  ... -25 DF
 	S1      to  BO.In; # -5
@@ -78,7 +78,7 @@ FlowSheet Rankine0BTest
 	BO	as Boiler_pT;     # 7
 	TU	as Turbine;    # 7
 	CO	as Condenser;  # 7
-	PU 	as Pump;       # 7
+	PU 	as PumpSimple;       # 7
 	
 	CONNECTIONS # BO -> TU -> CO -> TH -> BO  ... -25 DF
 	S1      to  BO.In; # -5
@@ -211,7 +211,7 @@ FlowSheet Rankine2Test2
 	cyc.S1.T = (121 + 273.15) * "K";
 	
 	#Boiler
-	cyc.BO.q = 90 * "MW";
+	cyc.BO.Qdot = 90 * "MW";
 	cyc.BO.Out.p = 58 * "bar";
 	
 	#Turbine
@@ -248,7 +248,7 @@ FlowSheet Rankine3Test
 	
 	cyc.BO.A_1 = 3.1415926 * (0.2 * "m")^2 / 4;
 	cyc.BO.K = 20;	
-	cyc.BO.q = 100 * "MW";
+	cyc.BO.Qdot = 100 * "MW";
 		
 	cyc.TU.eta = 0.95;
 	cyc.TU.Out.p = 0.06 * "bar";
@@ -284,7 +284,7 @@ FlowSheet Rankine4Test
 	
 	cyc.BO.A_1 = 3.1415926 * (0.2 * "m")^2 / 4;
 	cyc.BO.K = 20;
-	cyc.BO.q = 100 * "MW";
+	cyc.BO.Qdot = 100 * "MW";
 		
 	cyc.TU.eta = 0.95;
 	cyc.TU.Out.p = 2 * "bar";

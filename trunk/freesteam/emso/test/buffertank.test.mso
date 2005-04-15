@@ -41,7 +41,7 @@ FlowSheet BufferTankTest1
 	differentiation="numeric";
 	
 	# outputLevel="all";
-	time = [0 : 0.1 : 480] * "s";
+	time = [0 : 1 : 480] * "s";
 end
 
 #*
