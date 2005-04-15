@@ -24,48 +24,11 @@ FlowSheet PipeBaseTest
 	S1.mdot = 1 * "kg/s";
 
 	PI.Qdot = 0 *"W"; 
-	PI.Dp = -0.1 * "bar";
+	PI.Dp = - 0.1 * "bar";
 	
 	PI.D = 0.025 * "m";
 	PI.L = 15 * "m";
 	PI.eps = 46e-6 * "m";
-	
-	OPTIONS
-	mode="steady";
-	outputLevel="all";
-end
-
-#*
-	PipeBase with 'f' specified here in the flowsheet
-
-	THIS WORKS
-*#
-FlowSheet PipeBaseTest2
-	
-	PARAMETERS
-	f as Real;
-	
-	DEVICES
-	PI as PipeBase;
-	S1 as Stream_pT;
-	
-	CONNECTIONS
-	S1 to PI.In;
-	
-	SPECIFY
-	S1.p = 1.5 * "bar";
-	S1.T = (25 + 273.15 ) * "K";
-	S1.mdot = 1 * "kg/s";
-	
-	PI.D = 0.025 * "m";
-	PI.L = 15 * "m";
-	PI.eps = 46e-6 * "m";
-	PI.Qdot = 0 *"W"; 
-	
-	PI.Dp = -f *PI.L / PI.D / PI.v * PI.vel^2 / 2;
-	
-	SET
-	f = 0.02;
 	
 	OPTIONS
 	mode="steady";
@@ -113,7 +76,7 @@ end
 	and pipe details
 	Then see what comes out
 	
-	???
+	DOESN'T WORK
 *#
 FlowSheet PipeColebrookTest
 
@@ -139,7 +102,7 @@ FlowSheet PipeColebrookTest
 	outputLevel="all";
 end
 
-
+#*
 FlowSheet PipeColebrookTest2
 
 	DEVICES
@@ -166,14 +129,14 @@ FlowSheet PipeColebrookTest2
 	mode="steady";
 	outputLevel="all";
 end
-
+*#
 
 
 
 #*
 	Three pipes in a row
 
-	THIS FLOWSHEET WORKS :-)
+	DOESN'T WORK
 *#
 FlowSheet PipeColebrookChainTest1
 
@@ -215,7 +178,7 @@ end
 #*
 	10 pipes in a row
 
-	THIS FLOWSHEET WORKS :-)
+	DOESN'T WORK
 *#
 FlowSheet PipeColebrookChainTest2
 
@@ -309,33 +272,22 @@ FlowSheet PipeColebrookArrayTest1
 	
 	DEVICES
 	S1 as Stream_pT;
-	PI(n) as PipeColebrook;
+	segments(n) as PipeColebrook;
 	
-	EQUATIONS
-	for i in [1:n-1]
-		PI(i).Out.mdot = PI(i+1).In.mdot;
-		PI(i).Out.h = PI(i+1).In.h;
-		PI(i).Out.p = PI(i+1).In.p;
-		PI(i).Out.T = PI(i+1).In.T;
-		PI(i).Out.s = PI(i+1).In.s;
-	end
-
-	PI(1).Out.mdot = S1.mdot;
-	PI(1).Out.h = S1.h;
-	PI(1).Out.p = S1.p;
-	PI(1).Out.T = S1.T;
-	PI(1).Out.s = S1.s;
+	CONNECTIONS
+	S1 to segments(1).In;
+	segments(1:n-1).Out to segments(2:n).In;
+	
+	SPECIFY
+	segments([1:n]).D = 0.025 * "m";
+	segments([1:n]).L = 15 * "m";
+	segments([1:n]).eps = 46e-6 * "m";
+	segments([1:n]).Qdot = 0 * "W";
 
 	S1.p = 1.5 * "bar";
 	S1.T = (25 + 273.15) * "K";
 	S1.mdot = 1 * "kg/s";
 	
-	for i in [1:n]
-		PI(i).D = 0.025 * "m";
-		PI(i).L = 15 * "m";
-		PI(i).eps = 46e-6 * "m";
-		PI(i).Qdot = 0 * "W";
-	end
 
 	SET n=3;
 end
