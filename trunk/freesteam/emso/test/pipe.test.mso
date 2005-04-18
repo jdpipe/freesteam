@@ -38,7 +38,7 @@ end
 #*
 	PipeFixedF model has 'f' as a PARAMETER of the model
 	
-	THIS WORKs
+	THIS WORKS
 
 	but isn't much use since 'f' needs to be a VARIABLE
 *#
@@ -69,6 +69,81 @@ FlowSheet PipeFixedFTest
 	mode="steady";
 	outputLevel="all";
 end
+
+
+FlowSheet PipeFixedFTestTransient
+		
+	DEVICES
+	PI as PipeFixedF;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to PI.In;
+	
+	SPECIFY
+	S1.p = 10 * "bar";
+	S1.T = (25 + 273.15 ) * "K";
+	S1.mdot = 1 * "kg/s";
+	
+	PI.Qdot = 0 *"W"; 
+	
+	PI.D = 0.025 * "m";
+	PI.L = 15 * "m";
+	PI.eps = 46e-6 * "m";
+	
+	SET
+	PI.f = 0.02;
+	
+	INITIAL
+	PI.Out.p = 1 * "bar";
+	PI.H = 500 * "kJ";
+	
+	OPTIONS
+	time = [0 : 0.3 :20];
+	outputLevel="all";
+	differentiation="numeric";
+end
+
+#*
+	Chain of fixed-f pipes
+*#
+FlowSheet PipeFixedFChainTest
+		
+	DEVICES
+	S1 as Stream_pT;
+	PI1 as PipeFixedF;
+	PI2 as PipeFixedF;
+	
+	CONNECTIONS
+	S1 to PI1.In;
+	PI1.Out to PI2.In;
+	
+	SPECIFY
+	S1.p = 1.5 * "bar";
+	S1.T = (25 + 273.15 ) * "K";
+	S1.mdot = 1 * "kg/s";
+	
+	PI1.Qdot = 0 *"W"; 
+	PI1.D = 0.025 * "m";
+	PI1.L = 15 * "m";
+	PI1.eps = 46e-6 * "m";
+	
+	PI2.Qdot = 0 *"W"; 
+	PI2.D = 0.025 * "m";
+	PI2.L = 15 * "m";
+	PI2.eps = 46e-6 * "m";
+	
+	SET
+	PI1.f = 0.02;
+	PI2.f = 0.02;
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="all";
+end
+
+
+
 	
 #*
 	Test a simple pipe segment
