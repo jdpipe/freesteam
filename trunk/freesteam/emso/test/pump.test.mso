@@ -27,6 +27,9 @@ FlowSheet PumpSimpleTest1
 	CONNECTIONS
 	S1 to PU.In;
 	
+	SET
+	PU.eta = 0.9;
+	
 	SPECIFY
 	
 	"Flow rate"
@@ -37,9 +40,6 @@ FlowSheet PumpSimpleTest1
 	
 	"Inlet temperature"
 	S1.T = (25 + 273.15) * "K";
-	
-	"Efficiency"
-	PU.eta = 0.9;
 	
 	"Output pressure"
 	PU.Out.p = 1.3 * "bar";
@@ -66,14 +66,16 @@ FlowSheet PumpSimpleTest2
 	CONNECTIONS
 	S1 to PU.In;
 	
+	SET
+	PU.eta = 1;
+
 	SPECIFY
 	S1.mdot = 30 * "kg/s";
 	
 	S1.p = 1.5 * "bar";
 	S1.T = 380 * "K";
 	
-	PU.eta = 1;
-
+	
 	PU.Out.p = 60 * "bar";
 	
 	OPTIONS
@@ -96,14 +98,15 @@ FlowSheet PumpSimpleTest3
 	CONNECTIONS
 	S1 to PU.In;
 	
+	SET
+	PU.eta = 0.65;
+	
 	SPECIFY
 	S1.mdot = 30 * "kg/s";
 	
 	S1.p = 1.5 * "bar";
 	S1.T = 380 * "K";
 	
-	PU.eta = 0.65;
-
 	PU.Dp = 58.5 * "bar";
 	
 	OPTIONS
@@ -115,6 +118,8 @@ end
 	Pump with performance curves. The inlet state, parabolic H-Q curve and linear P-Q curve
 	are specified, then the operating point is determined by specifying the pump speed
 	and head
+
+	DOESN'T WORK
 *#
 FlowSheet PumpParabolicSimpleTest1
 
@@ -156,6 +161,8 @@ end
 
 #*
 	As above but use a completely self-contained pump-with-curve model
+
+	DOESN'T SOLVE (initially singular)
 *#
 FlowSheet PumpParabolicSimpleSelfContained1
 
