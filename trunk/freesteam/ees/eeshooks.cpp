@@ -101,14 +101,14 @@ iapws_pT_uv(
 		if (NInputs!=2) {
 			stringstream ss;
 			ss << "Expected 2 inputs, received " << NInputs;
-			throw new Exception(ss.str());
+			throw Exception(ss.str());
 		}
 
 		// Check the number of outputs
 		if (NOutputs!=2) {
 			stringstream ss;
 			ss << "Expected 2 outputs, received " << NOutputs;
-			throw new Exception(ss.str());
+			throw Exception(ss.str());
 			return;
 		}
 
