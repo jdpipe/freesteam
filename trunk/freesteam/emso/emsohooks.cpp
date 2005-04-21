@@ -27,8 +27,69 @@
 #include <map>
 using namespace std;
 
-#define EF_ASSIGN(out,in) ( methodNames[#out "_" #in]=out ## _ ## in )
-#define EF_DECLARE(out,in) out ## _ ## in = out | given_ ## in
+/*
+	Using the method from the 'stat' program in Oreilly C++ Programming, ch 27
+	(see downloadable examples from Oreilly.com)
+*/
+#define METHOD_LIST \
+	M(p,waterT) X M(x,waterT) X M(v,waterT) X M(u,waterT) X M(s,waterT) X M(h,waterT) \
+	X M(cp,waterT) X M(cv,waterT) X M(k,waterT) X M(mu,waterT) \
+	X M(rho,waterT) \
+	X M(region,waterT) \
+	X M(psvhx,waterT) \
+	X M(psh,waterT) \
+	X M(ps,waterT) \
+	X M(p,steamT) X M(x,steamT) X M(v,steamT) X M(u,steamT) X M(s,steamT) X M(h,steamT) \
+	X M(cp,steamT) \
+	X M(cv,steamT) \
+	X M(k,steamT) \
+	X M(mu,steamT) \
+	X M(rho,steamT) X M(region,steamT) \
+	X M(psvhx,steamT) \
+	X M(psh,steamT) \
+	X M(ps,steamT) \
+	X M(x,pT) X M(v,pT) X M(u,pT) X M(s,pT) X M(h,pT) \
+	X M(cp,pT) X M(cv,pT) X M(k,pT) X M(mu,pT) \
+	X M(rho,pT) \
+	X M(region,pT) \
+	X M(hs,pT) \
+	X M(T,ph) X M(x,ph) X M(v,ph) X M(u,ph) X M(s,ph) \
+	X M(cp,ph) X M(cv,ph) X M(k,ph) X M(mu,ph) \
+	X M(rho,ph) X M(region,ph) \
+	X M(Ts,ph) \
+	X M(T,ps) X M(x,ps) X M(v,ps) X M(u,ps) X M(h,ps) \
+	X M(cp,ps) X M(cv,ps) X M(k,ps) \
+	X M(mu,ps) \
+	X M(rho,ps) X M(region,ps) \
+	X M(Th,ps) \
+	X M(T,pu) X M(x,pu) X M(v,pu) X M(s,pu) X M(h,pu) \
+	X M(cp,pu) X M(cv,pu) X M(k,pu) X M(mu,pu) \
+	X M(rho,pu) X M(region,pu) \
+	X M(Th,pu) \
+	X M(Ts,pu) \
+	X M(hs,pu) \
+	X M(T,uv) X M(p,uv) X M(x,uv) X M(s,uv) X M(h,uv) \
+	X M(cp,uv) X M(cv,uv) X M(k,uv) X M(mu,uv) \
+	X M(rho,uv) X M(region,uv) \
+	X M(Th,uv) \
+	X M(Ts,uv) \
+	X M(hs,uv) \
+	X M(psh,uv) \
+	X M(ps,uv) \
+	X M(pshT,uv) \
+	X M(p,Ts) X M(x,Ts) X M(v,Ts) X M(u,Ts) X M(h,Ts) \
+	X M(cp,Ts) X M(cv,Ts) X M(k,Ts) X M(mu,Ts) \
+	X M(rho,Ts) X M(region,Ts) \
+	X M(ph,Ts) \
+	X M(p,Th) X M(x,Th) X M(v,Th) X M(u,Th) X M(s,Th) \
+	X M(cp,Th) X M(cv,Th) X M(k,Th) X M(mu,Th) \
+	X M(rho,Th) X M(region,Th) \
+	X M(ps,Th) \
+	X M(Tsvx,ph) \
+	X M(Tsvx,pu) \
+	X M(Tuvx,ps) \
+	X M(Thvx,ps) \
+	X M(Tuvx,ph)
 
 /** Data structure for an EMSO 'WaterSteam' package instance.
 * This object contains instance-specific data.
@@ -820,278 +881,34 @@ class EMSOfreesteam : public ExternalObjectBase {
 			,OutputMask = 0xffff0000
 		};
 
-		/// The methods
+/*
+	See the comment at the top of the file for an explanation of this crazy stuff here
+*/
+#define M(OUT,IN) OUT ## _ ## IN = OUT | given_ ## IN
+#define X ,
+/// The methods
 		typedef enum {
-
-			EF_DECLARE(p,waterT)
-			, EF_DECLARE(x,waterT)
-			, EF_DECLARE(v,waterT)
-			, EF_DECLARE(u,waterT)
-			, EF_DECLARE(s,waterT)
-			, EF_DECLARE(h,waterT)
-			, EF_DECLARE(cp,waterT)
-			, EF_DECLARE(cv,waterT)
-			, EF_DECLARE(k,waterT)
-			, EF_DECLARE(mu,waterT)
-			, EF_DECLARE(rho,waterT)
-			, EF_DECLARE(region,waterT)
-			, EF_DECLARE(psvhx,waterT)
-			, EF_DECLARE(psh,waterT)
-			, EF_DECLARE(ps,waterT)
-			, EF_DECLARE(p,steamT)
-			, EF_DECLARE(x,steamT)
-			, EF_DECLARE(v,steamT)
-			, EF_DECLARE(u,steamT)
-			, EF_DECLARE(s,steamT)
-			, EF_DECLARE(h,steamT)
-			, EF_DECLARE(cp,steamT)
-			, EF_DECLARE(cv,steamT)
-			, EF_DECLARE(k,steamT)
-			, EF_DECLARE(mu,steamT)
-			, EF_DECLARE(rho,steamT)
-			, EF_DECLARE(region,steamT)
-			, EF_DECLARE(psvhx,steamT)
-			, EF_DECLARE(psh,steamT)
-			, EF_DECLARE(ps,steamT)
-			, EF_DECLARE(x,pT)
-			, EF_DECLARE(v,pT)
-			, EF_DECLARE(u,pT)
-			, EF_DECLARE(s,pT)
-			, EF_DECLARE(h,pT)
-			, EF_DECLARE(cp,pT)
-			, EF_DECLARE(cv,pT)
-			, EF_DECLARE(k,pT)
-			, EF_DECLARE(mu,pT)
-			, EF_DECLARE(rho,pT)
-			, EF_DECLARE(region,pT)
-			, EF_DECLARE(hs,pT)
-			, EF_DECLARE(T,ph)
-			, EF_DECLARE(x,ph)
-			, EF_DECLARE(v,ph)
-			, EF_DECLARE(u,ph)
-			, EF_DECLARE(s,ph)
-			, EF_DECLARE(cp,ph)
-			, EF_DECLARE(cv,ph)
-			, EF_DECLARE(k,ph)
-			, EF_DECLARE(mu,ph)
-			, EF_DECLARE(rho,ph)
-			, EF_DECLARE(region,ph)
-			, EF_DECLARE(Ts,ph)
-			, EF_DECLARE(T,ps)
-			, EF_DECLARE(x,ps)
-			, EF_DECLARE(v,ps)
-			, EF_DECLARE(u,ps)
-			, EF_DECLARE(h,ps)
-			, EF_DECLARE(cp,ps)
-			, EF_DECLARE(cv,ps)
-			, EF_DECLARE(k,ps)
-			, EF_DECLARE(mu,ps)
-			, EF_DECLARE(rho,ps)
-			, EF_DECLARE(region,ps)
-			, EF_DECLARE(Th,ps)
-			, EF_DECLARE(T,pu)
-			, EF_DECLARE(x,pu)
-			, EF_DECLARE(v,pu)
-			, EF_DECLARE(s,pu)
-			, EF_DECLARE(h,pu)
-			, EF_DECLARE(cp,pu)
-			, EF_DECLARE(cv,pu)
-			, EF_DECLARE(k,pu)
-			, EF_DECLARE(mu,pu)
-			, EF_DECLARE(rho,pu)
-			, EF_DECLARE(region,pu)
-			, EF_DECLARE(Th,pu)
-			, EF_DECLARE(Ts,pu)
-			, EF_DECLARE(hs,pu)
-			, EF_DECLARE(T,uv)
-			, EF_DECLARE(p,uv)
-			, EF_DECLARE(x,uv)
-			, EF_DECLARE(s,uv)
-			, EF_DECLARE(h,uv)
-			, EF_DECLARE(cp,uv)
-			, EF_DECLARE(cv,uv)
-			, EF_DECLARE(k,uv)
-			, EF_DECLARE(mu,uv)
-			, EF_DECLARE(rho,uv)
-			, EF_DECLARE(region,uv)
-			, EF_DECLARE(Th,uv)
-			, EF_DECLARE(Ts,uv)
-			, EF_DECLARE(hs,uv)
-			, EF_DECLARE(psh,uv)
-			, EF_DECLARE(ps,uv)
-			, EF_DECLARE(pshT,uv)
-			, EF_DECLARE(p,Ts)
-			, EF_DECLARE(x,Ts)
-			, EF_DECLARE(v,Ts)
-			, EF_DECLARE(u,Ts)
-			, EF_DECLARE(h,Ts)
-			, EF_DECLARE(cp,Ts)
-			, EF_DECLARE(cv,Ts)
-			, EF_DECLARE(k,Ts)
-			, EF_DECLARE(mu,Ts)
-			, EF_DECLARE(rho,Ts)
-			, EF_DECLARE(region,Ts)
-			, EF_DECLARE(ph,Ts)
-			, EF_DECLARE(p,Th)
-			, EF_DECLARE(x,Th)
-			, EF_DECLARE(v,Th)
-			, EF_DECLARE(u,Th)
-			, EF_DECLARE(s,Th)
-			, EF_DECLARE(cp,Th)
-			, EF_DECLARE(cv,Th)
-			, EF_DECLARE(k,Th)
-			, EF_DECLARE(mu,Th)
-			, EF_DECLARE(rho,Th)
-			, EF_DECLARE(region,Th)
-			, EF_DECLARE(ps,Th)
-			, EF_DECLARE(Tsvx,ph)
-			, EF_DECLARE(Tsvx,pu)
-			, EF_DECLARE(Tuvx,ps)
-			, EF_DECLARE(Thvx,ps)
-			, EF_DECLARE(Tuvx,ph)
+			METHOD_LIST
 		} Method;
-
+#undef M
+#undef X
 		typedef map<const string, Method> MethodMap;
 
 		static MethodMap methodNames;
 
+// Assign each method to the map:
+#define M(OUT,IN) methodNames[#OUT "_" #IN] = OUT ## _ ## IN
+#define X ;
 		void initialiseMethodNames(){
 			if(!methodNames.size()){
-
-				// DON'T EDIT THESE, EDIT method_name AND CREATE THESE USING SOME FIND/REPLACE:
-				// Find: \t\t\t,? ?EF_DECLARE(\([^)]+\))
-				// Replace: \t\t\tEF_ASSIGN(\1);
-
-				EF_ASSIGN(p,waterT);
-				EF_ASSIGN(x,waterT);
-				EF_ASSIGN(v,waterT);
-				EF_ASSIGN(u,waterT);
-				EF_ASSIGN(s,waterT);
-				EF_ASSIGN(h,waterT);
-				EF_ASSIGN(cp,waterT);
-				EF_ASSIGN(cv,waterT);
-				EF_ASSIGN(k,waterT);
-				EF_ASSIGN(mu,waterT);
-				EF_ASSIGN(rho,waterT);
-				EF_ASSIGN(region,waterT);
-				EF_ASSIGN(psvhx,waterT);
-				EF_ASSIGN(psh,waterT);
-				EF_ASSIGN(ps,waterT);
-				EF_ASSIGN(p,steamT);
-				EF_ASSIGN(x,steamT);
-				EF_ASSIGN(v,steamT);
-				EF_ASSIGN(u,steamT);
-				EF_ASSIGN(s,steamT);
-				EF_ASSIGN(h,steamT);
-				EF_ASSIGN(cp,steamT);
-				EF_ASSIGN(cv,steamT);
-				EF_ASSIGN(k,steamT);
-				EF_ASSIGN(mu,steamT);
-				EF_ASSIGN(rho,steamT);
-				EF_ASSIGN(region,steamT);
-				EF_ASSIGN(psvhx,steamT);
-				EF_ASSIGN(psh,steamT);
-				EF_ASSIGN(ps,steamT);
-				EF_ASSIGN(x,pT);
-				EF_ASSIGN(v,pT);
-				EF_ASSIGN(u,pT);
-				EF_ASSIGN(s,pT);
-				EF_ASSIGN(h,pT);
-				EF_ASSIGN(cp,pT);
-				EF_ASSIGN(cv,pT);
-				EF_ASSIGN(k,pT);
-				EF_ASSIGN(mu,pT);
-				EF_ASSIGN(rho,pT);
-				EF_ASSIGN(region,pT);
-				EF_ASSIGN(hs,pT);
-				EF_ASSIGN(T,ph);
-				EF_ASSIGN(x,ph);
-				EF_ASSIGN(v,ph);
-				EF_ASSIGN(u,ph);
-				EF_ASSIGN(s,ph);
-				EF_ASSIGN(cp,ph);
-				EF_ASSIGN(cv,ph);
-				EF_ASSIGN(k,ph);
-				EF_ASSIGN(mu,ph);
-				EF_ASSIGN(rho,ph);
-				EF_ASSIGN(region,ph);
-				EF_ASSIGN(Ts,ph);
-				EF_ASSIGN(T,ps);
-				EF_ASSIGN(x,ps);
-				EF_ASSIGN(v,ps);
-				EF_ASSIGN(u,ps);
-				EF_ASSIGN(h,ps);
-				EF_ASSIGN(cp,ps);
-				EF_ASSIGN(cv,ps);
-				EF_ASSIGN(k,ps);
-				EF_ASSIGN(mu,ps);
-				EF_ASSIGN(rho,ps);
-				EF_ASSIGN(region,ps);
-				EF_ASSIGN(Th,ps);
-				EF_ASSIGN(T,pu);
-				EF_ASSIGN(x,pu);
-				EF_ASSIGN(v,pu);
-				EF_ASSIGN(s,pu);
-				EF_ASSIGN(h,pu);
-				EF_ASSIGN(cp,pu);
-				EF_ASSIGN(cv,pu);
-				EF_ASSIGN(k,pu);
-				EF_ASSIGN(mu,pu);
-				EF_ASSIGN(rho,pu);
-				EF_ASSIGN(region,pu);
-				EF_ASSIGN(Th,pu);
-				EF_ASSIGN(Ts,pu);
-				EF_ASSIGN(hs,pu);
-				EF_ASSIGN(T,uv);
-				EF_ASSIGN(p,uv);
-				EF_ASSIGN(x,uv);
-				EF_ASSIGN(s,uv);
-				EF_ASSIGN(h,uv);
-				EF_ASSIGN(cp,uv);
-				EF_ASSIGN(cv,uv);
-				EF_ASSIGN(k,uv);
-				EF_ASSIGN(mu,uv);
-				EF_ASSIGN(rho,uv);
-				EF_ASSIGN(region,uv);
-				EF_ASSIGN(Th,uv);
-				EF_ASSIGN(Ts,uv);
-				EF_ASSIGN(hs,uv);
-				EF_ASSIGN(psh,uv);
-				EF_ASSIGN(ps,uv);
-				EF_ASSIGN(pshT,uv);
-				EF_ASSIGN(p,Ts);
-				EF_ASSIGN(x,Ts);
-				EF_ASSIGN(v,Ts);
-				EF_ASSIGN(u,Ts);
-				EF_ASSIGN(h,Ts);
-				EF_ASSIGN(cp,Ts);
-				EF_ASSIGN(cv,Ts);
-				EF_ASSIGN(k,Ts);
-				EF_ASSIGN(mu,Ts);
-				EF_ASSIGN(rho,Ts);
-				EF_ASSIGN(region,Ts);
-				EF_ASSIGN(ph,Ts);
-				EF_ASSIGN(p,Th);
-				EF_ASSIGN(x,Th);
-				EF_ASSIGN(v,Th);
-				EF_ASSIGN(u,Th);
-				EF_ASSIGN(s,Th);
-				EF_ASSIGN(cp,Th);
-				EF_ASSIGN(cv,Th);
-				EF_ASSIGN(k,Th);
-				EF_ASSIGN(mu,Th);
-				EF_ASSIGN(rho,Th);
-				EF_ASSIGN(region,Th);
-				EF_ASSIGN(ps,Th);
-				EF_ASSIGN(Tsvx,ph);
-				EF_ASSIGN(Tsvx,pu);
-				EF_ASSIGN(Tuvx,ps);
-				EF_ASSIGN(Thvx,ps);
-				EF_ASSIGN(Tuvx,ph);
-				// DON'T EDIT THOSE, EDIT method_name AND CREATE THESE USING SOME FIND/REPLACE:
-
+				METHOD_LIST;
 			}
 		}
+#undef M
+#undef X
+/*
+	End of crazy stuff
+*/
 
 		string getValidMethodNames(){
 
