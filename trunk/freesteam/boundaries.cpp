@@ -339,7 +339,7 @@ Boundaries::isSat_pT(Pressure p, Temperature T,
 
 	if (T > T_CRIT) {
 		if (throw_me) {
-			throw new SteamCalculatorException(p, T, STM_BEYOND_SAT_CURVE);
+			throw SteamCalculatorException(p, T, STM_BEYOND_SAT_CURVE);
 		}
 		return false;
 	}
@@ -372,7 +372,7 @@ Boundaries::isSat_pT(Pressure p, Temperature T,
 	\*
 	if( fabs(T-Tsat)/Tsat < STM_SATURATION_TOL) {
 		if (throw_me)
-			throw new SteamAlmostSaturatedException(p, T);
+			throw SteamAlmostSaturatedException(p, T);
 
 		// MESSAGE("APPROXIMATELY SATURATED");
 
@@ -383,7 +383,7 @@ Boundaries::isSat_pT(Pressure p, Temperature T,
 	if (throw_me) {
 		stringstream s;
 		s << "Steam not saturated @ T = " << T << ": p=" << p/bar<< "bar != psat=" << psat/bar<< "bar (rel err " << ((psat-p) / psat) << ")";
-		throw new Exception(s.str());
+		throw Exception(s.str());
 	}
 
 	//cerr << "Point is not saturated" << endl;

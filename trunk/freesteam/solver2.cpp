@@ -559,7 +559,7 @@ Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const Specif
 			}catch(Exception &E){
 				stringstream s;
 				s << "Solver2::solve: " << E.what();
-				throw new Exception(s.str());
+				throw Exception(s.str());
 			}
 		}
 
