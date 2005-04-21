@@ -1,3 +1,24 @@
+/*
+
+freesteam - IAPWS-IF97 steam tables library
+Copyright (C) 2004-2005  John Pye
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+*/
+
 #include "../steamcalculator.h"
 #include "../solver2.h"
 #include "../units.h"
@@ -91,13 +112,18 @@ using namespace std;
 	X M(Thvx,ps) \
 	X M(Tuvx,ph)
 
-/** Data structure for an EMSO 'WaterSteam' package instance.
-* This object contains instance-specific data.
+/**
+	EMSO freesteam integration
+
+	This class allows IAPWS-IF97 steam properties to be calculated from EMSO :-D
 */
 class EMSOfreesteam : public ExternalObjectBase {
 
 	public:
 
+		/**
+			Constructor
+		*/
 		EMSOfreesteam(){
 			#ifdef EMSO_DEBUG
 				debug=false;
@@ -114,6 +140,9 @@ class EMSOfreesteam : public ExternalObjectBase {
 			cerr.flags(ios_base::showbase);
 		};
 
+		/**
+			Destructor
+		*/
 		virtual ~EMSOfreesteam(){
 			#ifdef EMSO_DEBUG
 				numOfInstances--;
@@ -123,7 +152,8 @@ class EMSOfreesteam : public ExternalObjectBase {
 		};
 
 		/**
-			Create object. Anything risking should go here and throw an exception if necessary
+			Create object.
+			Anything risking should go here and throw an exception if necessary
 		*/
 		virtual void create(int_t *retval, char *msg){
 			try{
@@ -162,7 +192,9 @@ class EMSOfreesteam : public ExternalObjectBase {
 			}
 		}
 
-		/// Set a parameter for the instance.
+		/**
+			Set a parameter on the CalcObject
+		*/
 		virtual void setParameter(
 				const char *parameterName
 				,const int_t *valueType
@@ -181,6 +213,9 @@ class EMSOfreesteam : public ExternalObjectBase {
 		}
 
 		/// Check method.
+		/**	Given a method name, get an ID number for the method
+			plus the numbers of input and output variables.
+		*/
 		virtual void checkMethod(
 				const char *methodName
 				,int_t *methodID
@@ -289,7 +324,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			}
 		}
 
-		/// Method details
+		/// Query method details
 		/**
 			Relate information about the available methods in this component back to EMSO
 		*/
@@ -402,7 +437,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 						strcpy(outputUnits[0], "W/(m*K)");
 						break;
 					case mu:
-						strcpy(outputUnits[0], "Pa*sec");
+						strcpy(outputUnits[0], "Pa*s");
 						break;
 					case v:
 						strcpy(outputUnits[0], "m^3/kg");
@@ -503,9 +538,8 @@ class EMSOfreesteam : public ExternalObjectBase {
 			}
 		}
 
+		/// Perform a calculation
 		/**
-			Calculation
-
 			@param methodID ID of method being called (@see checkMethod)
 			@param numOfInputs Not used here
 			@param totalInputLength Not used here
@@ -662,6 +696,9 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 					case rho:
 						outputValues[0] = S.dens() / kg_m3;
+						#ifdef EMSO_DEBUG
+							cerr << " => rho=" << S.dens() << endl;
+						#endif
 						break;
 					case u:
 						outputValues[0] = S.specienergy()/kJ_kg;
@@ -683,6 +720,9 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 					case mu:
 						outputValues[0] = S.dynvisc() / Pascal / second;
+						#ifdef EMSO_DEBUG
+							cerr << " => mu=" << S.dynvisc() << endl;
+						#endif
 						break;
 					case x:
 						outputValues[0] = S.quality();
@@ -800,24 +840,31 @@ class EMSOfreesteam : public ExternalObjectBase {
 
 				#ifdef EMSO_DEBUG
 					}catch(Exception &E){
-						cerr << ": error while getting property values: " << E.what() << endl;
-						throw;
+						stringstream ss;
+						ss << "Error while getting property values: " << E.what();
+						throw Exception(ss.str());
 					}
 				#endif
 				*retval = emso_ok;
 				lastState = S;
 
 			}catch(Exception &E){
-				stringstream s;
-				s << "EMSOfreesteam::calc: " << E.what();
+				stringstream ss;
+				ss << "EMSOfreesteam::calc: " << E.what();
 
-				report_error(msg, s.str());
+				report_error(msg, ss.str());
+				*retval = emso_error;
+			}catch(...){
+				stringstream ss;
+				ss << "EMSOfreesteam::calc: unrecognised exception!";
+				report_error(msg, ss.str());
 				*retval = emso_error;
 			}
 		}
 
 	private:
 
+		/// A memory of the last-calculated steam properties, helps with initial guesses.
 		SteamCalculator lastState;
 
 		/// The current number of created EMSOfreesteam objects.
@@ -884,34 +931,42 @@ class EMSOfreesteam : public ExternalObjectBase {
 			,OutputMask = 0xffff0000
 		};
 
-/*
-	See the comment at the top of the file for an explanation of this crazy stuff here
-*/
+		/*
+			--------------------------
+			See the comment at the top of the file
+			for an explanation of this crazy stuff here
+		*/
+
 #define M(OUT,IN) OUT ## _ ## IN = OUT | given_ ## IN
 #define X ,
-/// The methods
+
+		/// The methods
 		typedef enum {
 			METHOD_LIST
 		} Method;
+
 #undef M
 #undef X
-		typedef map<const string, Method> MethodMap;
 
+		typedef map<const string, Method> MethodMap;
 		static MethodMap methodNames;
 
 // Assign each method to the map:
 #define M(OUT,IN) methodNames[#OUT "_" #IN] = OUT ## _ ## IN
 #define X ;
+
 		void initialiseMethodNames(){
 			if(!methodNames.size()){
 				METHOD_LIST;
 			}
 		}
+
 #undef M
 #undef X
-/*
-	End of crazy stuff
-*/
+		/*
+			End of crazy stuff
+			----------------------------
+		*/
 
 		string getValidMethodNames(){
 

@@ -1,3 +1,24 @@
+/*
+
+freesteam - IAPWS-IF97 steam tables library
+Copyright (C) 2004-2005  John Pye
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+*/
+
 #include "../exception.h"
 #include "../common.h"
 
@@ -28,8 +49,10 @@ using namespace std;
 #define PARAM_LIST \
 	P(Ed)
 
-/** Data structure for an EMSO 'WaterSteam' package instance.
-* This object contains instance-specific data.
+/**
+	EMSO pipe pressure drop model
+
+	TODO: integrate the 'params' and 'methods' stuff into a smarter parent class
 */
 class EMSOpipe : public ExternalObjectBase {
 
@@ -272,6 +295,7 @@ class EMSOpipe : public ExternalObjectBase {
 			try{
 
 				#ifdef EMSO_DEBUG
+					//cerr << "starting emsopipe::calc call" << endl;
 					++numOfCalcCalls;
 				#endif
 
@@ -281,9 +305,9 @@ class EMSOpipe : public ExternalObjectBase {
 					method = convertMethod(string(methodName));
 
 				if(method == 0){
-					stringstream s;
-					s << "Method '" << methodName << " not found";
-					throw Exception(s.str());
+					stringstream ss;
+					ss << "Method '" << methodName << " not found";
+					throw Exception(ss.str());
 				}
 
 				#ifdef EMSO_DEBUG
@@ -292,9 +316,13 @@ class EMSOpipe : public ExternalObjectBase {
 				#endif
 						switch(method){
 							case f | given_ReEd:
-								cerr << "Re = " << inputValues[0] << "," << "eps/D = " << inputValues[1] << ")";
+								#ifdef EMSO_DEBUG
+									cerr << "Re = " << inputValues[0] << "," << "eps/D = " << inputValues[1] << ")";
+								#endif
 								outputValues[0] = getFrictionFactor(inputValues[0],inputValues[1]);
-								cerr << " = " << outputValues[0] << endl;
+								#ifdef EMSO_DEBUG
+									cerr << " = " << outputValues[0] << endl;
+								#endif
 								break;
 
 							default:
@@ -303,18 +331,21 @@ class EMSOpipe : public ExternalObjectBase {
 
 				#ifdef EMSO_DEBUG
 					}catch(Exception &E){
-						cerr << methodName << ": error during evaluation: " << E.what() << endl;
-						throw;
+						stringstream ss;
+						ss << methodName << ": error during evaluation: " << E.what() << endl;
+						throw Exception(ss.str());
 					}
+
+					//cerr << "end emsopipe::calc call" << endl;
 				#endif
 
 				*retval = emso_ok;
 
 			}catch(Exception &E){
-				stringstream s;
-				s << "EMSOpipe::calc: " << E.what();
+				stringstream ss;
+				ss << "EMSOpipe::calc: " << E.what();
 
-				report_error(msg, s.str());
+				report_error(msg, ss.str());
 				*retval = emso_error;
 			}
 		}
