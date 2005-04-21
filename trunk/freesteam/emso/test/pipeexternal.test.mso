@@ -4,7 +4,7 @@ using "pipeexternal";
 	Test the CalcObject version of the pipe pressure
 	drop calculator.
 	
-	DOESN'T WORK - DIVERGENT
+	IT WORKS!
 *#
 FlowSheet PipeExternalTest
 	
@@ -32,11 +32,184 @@ FlowSheet PipeExternalTest
 	PI.Out.h = 99.6 * "kJ/kg";
 
 	PI.rho = 1000 * "kg/m^3";
+	# PI.v = 0.001 * "kg/m^3";
 	PI.vel = 2 * "m/s";
 	PI.A = 7.8e-5 * "m^2";	
 	PI.Re = 20000;
 	PI.f = 0.02;
 	PI.mu = 1e-3 * "Pa*s";	
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="all";
+end
+
+#*
+	Pipe test with specified pressure drop
+	
+	IT WORKS :D
+*#
+FlowSheet PipeExternalTest2
+	
+	DEVICES
+	PI as PipeExternal;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to PI.In;
+
+	SPECIFY
+	PI.Qdot = 0 * "W";
+	
+	S1.p = 6 * "bar";
+	S1.T = (25 + 273.15) * "K";
+	
+	PI.Out.p = 3 * "bar";
+
+	SET
+	PI.D = 0.025 * "m";
+	PI.L = 80 * "m";
+	PI.eps = 46e-6 * "m";
+	
+	GUESS
+	PI.mu = 0.00088 * "Pa*s";	
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="high";
+end
+
+
+#*
+	Pipe test with specified pressure drop
+	and heating
+*#
+FlowSheet PipeExternalTest3
+	
+	DEVICES
+	PI as PipeExternal;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to PI.In;
+
+	SPECIFY
+	# 20 suns along the length of the outside of the pipe
+	# will heat up the water quite a bit
+	PI.Qdot = 20000 * "W/m^2" * 80 * "m" * 0.03 * "m";
+	
+	S1.p = 6 * "bar";
+	S1.T = (25 + 273.15) * "K";
+	
+	PI.Out.p = 3 * "bar";
+
+	SET
+	PI.D = 0.025 * "m";
+	PI.L = 80 * "m";
+	PI.eps = 46e-6 * "m";
+	
+	GUESS
+	PI.mu = 0.00088 * "Pa*s";	
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="high";
+end
+
+
+#*
+	Two pipes
+
+	THIS WORKS
+	but can't make it converge with more than 2 segments
+*#
+FlowSheet PipeExternalTest4
+	
+	PARAMETERS
+	n as Real;
+	G as HeatFlux;
+	L as Length;
+	D_o as Length(Brief="Outside Diameter");
+	D_i as Length(Brief="Inside Diameter");
+	
+	DEVICES
+	PI1 as PipeExternal;
+	PI2 as PipeExternal;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to PI1.In;
+	PI1.Out to PI2.In;
+
+	SPECIFY
+	PI1.Qdot = G * L / n * D_o;
+	PI2.Qdot = G * L / n * D_o;
+	
+	S1.p = 6 * "bar";
+	S1.T = (25 + 273.15) * "K";
+	
+	PI2.Out.p = 3 * "bar";
+
+	SET
+	n = 3;
+	L = 80 * "m";
+	G = 1000 * "W/m^2";
+	D_o = 0.03 * "m";
+	D_i = 0.025 * "m";
+	
+	PI1.D = D_i;
+	PI1.L = L / n;
+	PI1.eps = 46e-6 * "m";
+	PI2.D = D_i;
+	PI2.L = L / n;
+	PI2.eps = 46e-6 * "m";
+
+	GUESS
+	PI1.mu = 0.00088 * "Pa*s";	
+	PI2.mu = 0.00088 * "Pa*s";	
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="high";
+end
+
+
+#*
+	Chain of pipes
+	
+	SYNTAX ERRORS
+	perhaps the index format is not supported in guesses?
+*#
+FlowSheet PipeExternalChainTest
+	
+	PARAMETERS
+	n as Real;
+	
+	DEVICES
+	PI(n) as PipeExternal;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to PI.In;
+	PI([1:n-1]).Out to PI([2:n]).In;
+	
+	SPECIFY
+	PI.Qdot = 20000 * "W/m^2" * 80 * "m" * 0.025 * "m";
+	
+	S1.p = 6 * "bar";
+	S1.T = (25 + 273.15) * "K";
+	
+	PI(n).Out.p = 3 * "bar";
+
+	SET
+	n=2;
+
+	PI.D = 0.025 * "m";
+	PI.L = 80 * "m";
+	PI.eps = 46e-6 * "m";
+
+	GUESS
+	PI.mu = 0.00088 * "Pa*s";	
 	
 	OPTIONS
 	mode="steady";

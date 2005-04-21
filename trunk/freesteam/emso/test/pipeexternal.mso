@@ -17,33 +17,32 @@ Model PipeExternal as SteamEquipment_ph
 	
 	VARIABLES
 	rho as Density;
+	# v as SpecificVolume(Lower = 0.0009, Upper=1e5, Default=0.001, Unit="m^3/kg");
 	vel as Velocity(Lower = 0, Upper= 300, Default=1, Unit="m/s");
 	A as Area(Lower = 0, Upper = 0.7854, Default = 7.8e-5, Unit="m^2");	
 	Re as Real(Lower=0, Upper=1e8, Default=2e4);
 	f as Real(Lower = 0.008, Upper=0.1, Default=0.05);
 	mu as DynamicViscosity;	
-	
-	SPECIFY
-	mu = 1e-3 * "Pa*s";
-	
+		
 	EQUATIONS
 	# Energy balance
-	Qdot - Wdot = In.h * In.mdot - Out.h * Out.mdot + diff(H);
-	H = Out.h * m;
+	Qdot - Wdot = In.h * In.mdot - Out.h * Out.mdot + diff(Out.h * rho) * A * L;
+	H = Out.h * rho * A * L;
 	Wdot = 0 * "W";
 
 	# Mass balance
-	In.mdot - Out.mdot = diff(m);
+	In.mdot - Out.mdot = A * L * diff(rho);
 	A = (3.14159265358 * D^2 / 4);
 	m = rho * A * L;
 	
-	# Pipe flow velocity
-	Out.mdot = rho * A * vel;
+	# Pipe inlet flow velocity
+	In.mdot = rho * A * vel;
 	
-	# Outlet density
-	rho = Out.freesteam.rho_ph(Out.p, Out.h);
-
-	# Reynold's number
+	# Inlet density and viscosity
+	rho = In.freesteam.rho_ph(In.p, In.h);
+	mu = In.freesteam.mu_ph(In.p, In.h);
+	
+	# Inlet Reynolds number
 	Re = rho * vel * D  / mu;	
 
 	# Friction factor calculated in external CalcObject

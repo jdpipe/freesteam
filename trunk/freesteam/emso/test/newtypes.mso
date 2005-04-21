@@ -50,7 +50,7 @@ PressureDifference as Pressure (Brief = "Pressure Difference", Lower=-1000, Defa
 Force as Real(Brief="Force", Default=1, Lower=-1e8, Upper=1e8, Unit="N");
 
 Energy as Real(Brief = "Energy", Default = 1,Lower=-1e8, Upper=1e8, Unit = "J");
-Power as Real(Brief = "Potency", Default = 10, Lower=0, Upper=2e9, Unit = "W");
+Power as Real(Brief = "Power", Default = 10, Lower=0, Upper=2e9, Unit = "W");
 
 Enthalpy as Energy(Brief = "Enthalpy", Lower=-1e12, Upper=1e12, Unit="J");
 InternalEnergy as Energy(Brief = "Internal Energy");
@@ -71,6 +71,8 @@ VolumeFlowRate as Positive(Brief = "Volumetric Flow Rate", Default=0.2, Lower=0,
 Heat as Energy (Brief = "Heat");
 HeatRate as Power (Brief = "Heat Rate"); # NB, >= 0!
 HeatRatePerTemperature as Real(Brief = "Heat per Temperature", Lower = 0, Upper = 1e6, Default = 1000, Unit="kW/K");
+
+HeatFlux as Real(Brief = "Heat Flux", Default = 1000, Lower=0, Upper=2e9, Unit = "W/m^2");
 
 # THERMAL PROPERTIES (M,L,T,K)
 
