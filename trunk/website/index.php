@@ -13,9 +13,9 @@ header("Last-Modified: " . gmdate("D, d M Y H:i:s",$t) . " GMT");
   <link rel="stylesheet" media="screen" href="freesteam.css"
  type="text/css">
   <meta name="KEYWORDS"
- content="steam tables, IAPWS, steam properties, density, water, steam, IF97, saturated, superheated, subcooled, properties, enthalpy, entropy, specific heat, thermodynamics, thermo-fluids, IAPWS-95">
+ content="steam tables, IAPWS, steam properties, steam calculator, density, water, steam, IF97, saturated, superheated, subcooled, properties, enthalpy, entropy, specific heat, thermodynamics, thermo-fluids, IAPWS-95">
   <meta name="DESCRIPTION"
- content="Open source implementation of IAPWS-IF97 industry-standard steam tables in C++. IAPWS-95 (scientific use) correlations also included.">
+ content="Open source implementation of IAPWS-IF97 industry-standard steam tables in C++. Steam properties can also be calculated using included IAPWS-95 correlations.">
 </head>
 <body>
 <h1>freesteam<br></h1>
@@ -65,7 +65,7 @@ Contents
 international-standard steam
 tables from the <a href="http://www.iapws.org">International Association for the Properties of Water
 and
-Steam</a> (IAPWS):</p>
+Steam</a> (IAPWS). <b>freesteam</b> lets you compute water and steam properties for a wide range of pressures and temperatures: you can specify the state of the steam in terms of a variety of combinations of 'known' properties, then freesteam will solve and allow you to query to find the values of the 'unknown' properties.</p>
 <ul>
   <li>IAPWS-IF97 Industrial formulation (high speed, but complex code) </li>
   <li>IAPWS-95 Scientific formulation (low speed, but simple code)</li>
@@ -313,9 +313,9 @@ wrapper classes.<br>
   </li>
   <li>Preliminary work on another <span style="font-weight: bold;">hook
 library</span> to integrate freesteam with the <a
- href="http://www.fchart.com/ees/ees.shtml">EES</a>
-equation solver has also been performed; this will likewise require
-some special license agreement.<br>
+ href="http://www.fchart.com/ees/ees.shtml">EES</a> equation solver 
+(<a href="ees.pdf#page=211">manual</a> here)has also been performed; this will likewise require
+some special license agreement. At present, EES provides only the IAPWS-95 'scientific and general use' correlation.<br>
   </li>
   <li>Saturation properties for region 3 are currently implemented used
 the rho_sat(T) correlations from the IAPWS <a
