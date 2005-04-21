@@ -25,6 +25,7 @@ NAME = freesteam
 VERSION = 0.5.3
 
 EMSO_NAME = emsofreesteam
+EMSOPIPE_NAME = emsopipe
 EES_NAME = eesfreesteam-$(VERSION)
 
 vpath ctest ctest/
