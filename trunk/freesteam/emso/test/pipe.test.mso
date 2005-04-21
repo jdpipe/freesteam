@@ -142,9 +142,6 @@ FlowSheet PipeFixedFChainTest
 	outputLevel="all";
 end
 
-
-
-	
 #*
 	Test a simple pipe segment
 	Fully specify inlet state

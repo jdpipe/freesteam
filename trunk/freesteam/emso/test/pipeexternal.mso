@@ -1,0 +1,54 @@
+using "steamequipment";
+
+#*
+	This model of a pipe uses an external CalcObject to work
+	out the friction factor. You must install the emsopipe.dll 
+	or libemsopipe.so file (same process as for installing 
+	emsofreesteam)
+*#
+Model PipeExternal as SteamEquipment_ph
+
+	PARAMETERS
+	L as Length(Lower = 0, Upper= 1000, Default=10, Unit="m");
+	D as Length(Lower = 0, Upper= 1, Default=0.1, Unit="m");
+	eps as Length(Lower = 0, Upper= 0.01, Default=0.0001, Unit="m");
+	
+	pipe as CalcObject(File="emsopipe");
+	
+	VARIABLES
+	rho as Density;
+	vel as Velocity(Lower = 0, Upper= 300, Default=1, Unit="m/s");
+	A as Area(Lower = 0, Upper = 0.7854, Default = 7.8e-5, Unit="m^2");	
+	Re as Real(Lower=0, Upper=1e8, Default=2e4);
+	f as Real(Lower = 0.008, Upper=0.1, Default=0.05);
+	mu as DynamicViscosity;	
+	
+	SPECIFY
+	mu = 1e-3 * "Pa*s";
+	
+	EQUATIONS
+	# Energy balance
+	Qdot - Wdot = In.h * In.mdot - Out.h * Out.mdot + diff(H);
+	H = Out.h * m;
+	Wdot = 0 * "W";
+
+	# Mass balance
+	In.mdot - Out.mdot = diff(m);
+	A = (3.14159265358 * D^2 / 4);
+	m = rho * A * L;
+	
+	# Pipe flow velocity
+	Out.mdot = rho * A * vel;
+	
+	# Outlet density
+	rho = Out.freesteam.rho_ph(Out.p, Out.h);
+
+	# Reynold's number
+	Re = rho * vel * D  / mu;	
+
+	# Friction factor calculated in external CalcObject
+	f = pipe.f_ReEd(Re,eps/D);
+
+	# Pressure drop
+	Dp = - f * L/D * rho * vel^2 / 2;	
+end
