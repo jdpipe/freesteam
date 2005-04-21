@@ -20,9 +20,10 @@
 
 EMSO_DEBUG =
 
-OBJS = emsohooks.o
+OBJS = emsohooks.o emsopipe.o
 
 EMSO = $(SO_PREFIX)$(EMSO_NAME)$(SO_SUFFIX)
+EMSOPIPE = $(SO_PREFIX)$(EMSOPIPE_NAME)$(SO_SUFFIX)
 
 emsohooks.o: emsohooks.cpp
 ifeq ($(EMSO_DEBUG),1)
@@ -30,11 +31,21 @@ ifeq ($(EMSO_DEBUG),1)
 else
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 endif
+
+emsopipe.o: emsopipe.cpp
+ifeq ($(EMSO_DEBUG),1)
+	$(CXX) $(CPPFLAGS) -DEMSO_DEBUG $(CXXFLAGS) -c -o $@ $<
+else
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
+endif
 	
-emso: $(LIB) $(OBJS) $(EMSO)
+emso: $(LIB) $(OBJS) $(EMSO) $(EMSOPIPE)
 
 $(EMSO): $(LIB) emsohooks.o
 	$(CXX) -shared -o $@ emsohooks.o $(LIB) $(LDFLAGS)
+
+$(EMSOPIPE): $(LIB) emsopipe.o
+	$(CXX) -shared -o $@ emsopipe.o $(LIB) $(LDFLAGS)
 
 #--------------------------
 # MAKEDEPEND
@@ -64,9 +75,10 @@ distclean: clean
 #-----------------------------------------------------------
 # INSTALL
 
-install: emso	
+install: emso
 ifdef EMSO_INTERFACE_DIR
 	cp $(EMSO) $(EMSO_INTERFACE_DIR)/$(EMSO);
+	cp $(EMSOPIPE) $(EMSO_INTERFACE_DIR)/$(EMSOPIPE);
 else
 	@echo "Can't install, you need to specify EMSO_INTERFACE_DIR"
 	exit 1;
