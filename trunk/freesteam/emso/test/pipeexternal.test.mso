@@ -151,7 +151,7 @@ FlowSheet PipeExternalTest4
 	PI2.Out.p = 3 * "bar";
 
 	SET
-	n = 3;
+	n = 2;
 	L = 80 * "m";
 	G = 1000 * "W/m^2";
 	D_o = 0.03 * "m";
@@ -172,6 +172,74 @@ FlowSheet PipeExternalTest4
 	mode="steady";
 	outputLevel="high";
 end
+
+#*
+	Three pipes
+*#
+FlowSheet PipeExternalTest7
+	
+	PARAMETERS
+	n as Real;
+	G as HeatFlux;
+	L as Length;
+	D_o as Length(Brief="Outside Diameter");
+	D_i as Length(Brief="Inside Diameter");
+	
+	DEVICES
+	PI1 as PipeExternal;
+	PI2 as PipeExternal;
+	PI3 as PipeExternal;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to PI1.In;
+	PI1.Out to PI2.In;
+	PI2.Out to PI3.In;
+
+	SPECIFY
+	PI1.Qdot = G * L / n * D_o;
+	PI2.Qdot = G * L / n * D_o;
+	PI3.Qdot = G * L / n * D_o;
+	
+	S1.p = 6 * "bar";
+	S1.T = (25 + 273.15) * "K";
+	
+	PI2.Out.p = 3 * "bar";
+	
+	#*
+	INITIAL
+	PI1.Out.p = 1 * "bar";
+	PI2.Out.p = 1 * "bar";
+	*#
+	
+	SET
+	n = 3;
+	L = 80 * "m";
+	G = 1000 * "W/m^2";
+	D_o = 0.03 * "m";
+	D_i = 0.025 * "m";
+	
+	PI1.D = D_i;
+	PI1.L = L / n;
+	PI1.eps = 46e-6 * "m";
+	PI2.D = D_i;
+	PI2.L = L / n;
+	PI2.eps = 46e-6 * "m";
+	PI3.D = D_i;
+	PI3.L = L / n;
+	PI3.eps = 46e-6 * "m";
+
+	GUESS
+	PI1.mu = 0.00088 * "Pa*s";	
+	PI2.mu = 0.00088 * "Pa*s";	
+	PI3.mu = 0.00088 * "Pa*s";		
+	
+	OPTIONS
+	# differentiation="numeric";
+	mode="steady";
+	outputLevel="high";
+end
+
 
 
 #*

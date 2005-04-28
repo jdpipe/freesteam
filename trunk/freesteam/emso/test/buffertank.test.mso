@@ -296,3 +296,34 @@ FlowSheet BufferTankTest4
 	time = [0 : 0.05 : 2] * "s";
 
 end
+
+
+FlowSheet BufferTank2Test1
+	
+	DEVICES
+	TA as BufferTank2;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to TA.In;
+	
+	SET
+	TA.V = 1 * "m^3";
+	
+	SPECIFY
+	S1.p = 1 * "bar";
+	S1.T = (50 + 273.15) * "K";
+	S1.mdot = 1 * "kg/s";
+
+	INITIAL
+	TA.T = (20 + 273.15) * "K";
+	
+	OPTIONS
+	# mode="steady";
+	differentiation="numeric";
+	time = [0 : 10 : 1000];
+	
+end
+
+
+

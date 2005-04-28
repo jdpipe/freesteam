@@ -1,0 +1,44 @@
+using "pipeexternal";
+using "pump";
+
+#*
+	One pipe plus a pump, attempt to get floating pressure effect
+*#
+FlowSheet PipeExternalTest5
+	
+	DEVICES
+	PI as PipeExternal;
+	PU as PumpSimple;
+	
+	CONNECTIONS
+	PI.Out to PU.In;
+	PU.Out to PI.In;
+	
+	SPECIFY 
+	PU.Dp = 30 * "kPa";
+	
+	EQUATIONS
+	if time > 5 * "s" then
+		PU.Out.mdot = 1 * "kg/s";
+	else
+		PI.Out.mdot = 0 * "kg/s";
+	end
+	
+	INITIAL
+	PI.Out.p = 1 * "bar";
+	# PU.Out.T = (20 + 273.15) * "K";
+	
+	SET
+	PU.eta = 0.65;
+	PI.D = 0.04 * "m";
+	PI.L = 100 * "m";
+	PI.eps = 2e-5 * "m";
+	
+	GUESS
+	PU.In.p = 1 * "bar";
+	PI.Out.p = 1.5 * "bar";
+	
+	OPTIONS
+	differentiation="numeric";
+	outputLevel="all";
+end
