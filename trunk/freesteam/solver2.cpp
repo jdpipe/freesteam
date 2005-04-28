@@ -45,6 +45,26 @@ Solver2<Pressure,Temperature,0,0>::whichRegion(const Pressure &p, const Temperat
 
 }
 
+/**
+	Use the straight-up region 1 correlation if attempting to use Solver2<p,T> for region 1
+*/
+SteamCalculator
+Solver2<Pressure,Temperature,0,0>::makeRegion1Guess(const Pressure& p, const Temperature &T){
+	SteamCalculator S;
+	S.setRegion1_pT(p,T);
+	return S;
+}
+
+/**
+	Use the straight-up region 2 correlation if attempting to use Solver2<p,T> for region 2
+*/
+SteamCalculator
+Solver2<Pressure,Temperature,0,0>::makeRegion2Guess(const Pressure& p, const Temperature &T){
+	SteamCalculator S;
+	S.setRegion2_pT(p,T);
+	return S;
+}
+
 // Solve Region3 for pressure, temperature.
 /**
 	 That's easy - just use the correlation directly.
