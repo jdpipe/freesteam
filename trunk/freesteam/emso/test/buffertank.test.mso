@@ -326,4 +326,39 @@ FlowSheet BufferTank2Test1
 end
 
 
+FlowSheet ComeOnJustWorkYouBastard
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	h1 as SpecificEnthalpy;
+	mdot1 as MassFlowRate;
+	V as Volume;
+	p as Pressure;
+	
+	VARIABLES
+	h2 as SpecificEnthalpy;
+	rho as Density;
+	mdot2 as MassFlowRate;
+	rhodot as Real(Unit="kg/m^3/s");
+	h2dot as Real(Unit="kJ/kg/s");
+	
+	EQUATIONS
+	h1 * mdot1 - h2 * mdot2 = V * rho * h2dot + V * rhodot * h2;
+	mdot1 - mdot2 = V * rhodot;
+	rho = freesteam.rho_ph(p, h2);
+	rhodot = diff(rho);
+	h2dot = diff(h2);
+	
+	SET
+	p = 1 * "bar";
+	h1 = 1000 * "kJ/kg";
+	mdot1 = 1 * "kg/s";
+	V = 1 * "m^3";
+	
+	INITIAL
+	h2 = 500 * "kJ/kg";
+	
+	OPTIONS
+	differentiation="numeric";
+	
+end
 
