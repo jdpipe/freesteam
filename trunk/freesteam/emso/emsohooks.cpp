@@ -98,6 +98,7 @@ using namespace std;
 	X M(psh,uv) \
 	X M(ps,uv) \
 	X M(pshT,uv) \
+	X M(psT,uv) \
 	X M(p,Ts) X M(x,Ts) X M(v,Ts) X M(u,Ts) X M(h,Ts) \
 	X M(cp,Ts) X M(cv,Ts) X M(k,Ts) X M(mu,Ts) \
 	X M(rho,Ts) X M(region,Ts) \
@@ -294,6 +295,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 
 					case psh:
+					case psT:
 						*numOfOutputs = 3;
 						break;
 
@@ -478,6 +480,12 @@ class EMSOfreesteam : public ExternalObjectBase {
 						strcpy(outputUnits[0], "MPa");
 						strcpy(outputUnits[1], "kJ/kg/K");
 						strcpy(outputUnits[2], "kJ/kg");
+						break;
+
+					case psT:
+						strcpy(outputUnits[0], "MPa");
+						strcpy(outputUnits[1], "kJ/kg/K");
+						strcpy(outputUnits[2], "K");
 						break;
 
 					// Four outputs
@@ -779,6 +787,17 @@ class EMSOfreesteam : public ExternalObjectBase {
 						#endif
 						break;
 
+					case psT:
+						outputValues[0] = S.pres() / MPa;
+						outputValues[1] = S.specentropy() / kJ_kgK;
+						outputValues[2] = S.temp() / Kelvin;
+
+						#ifdef EMSO_DEBUG
+							cerr << " => p=" << S.pres() << ", s=" << S.specentropy() << ", h=" << S.specenthalpy() << ", T=" << S.temp() << endl;
+						#endif
+						break;
+
+
 					// Four outputs
 					case Tsvx:
 						outputValues[0] = S.temp() / Kelvin;
@@ -926,6 +945,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 			,ph     = 0x0A000000
 			,ps     = 0x0B000000
 			,pshT   = 0x0C000000
+			,psT    = 0x0D000000
 			,region = 0x10000000
 
 			,OutputMask = 0xffff0000
