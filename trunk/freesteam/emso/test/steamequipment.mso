@@ -19,7 +19,7 @@ Model SteamEquipmentBase
 	VARIABLES
 	Qdot as HeatRate(Brief = "Heat supplied to component from environment", Unit="W", Lower=-2e9, Upper=2e9);
 	Wdot as Power(Brief = "Work done by fluid on environment", Unit="W", Lower=-2e9, Upper=2e9);
-	H as Enthalpy(Brief = "Enthalpy of fluid in the control volume");
+	U as Energy(Brief = "Total internal energy of fluid in the control volume");
 	m as Mass(Brief = "Mass of fluid in the control volume");
     DT  as Temperature(Brief="Temperature difference");
     Dp  as PressureDifference(Brief="Pressure difference");	
