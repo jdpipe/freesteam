@@ -108,6 +108,7 @@ Model Steam_uv as Steam
 	
 	EQUATIONS
 	"Steam properties"
-	[p, s, h, T] = freesteam.pshT_uv(u,v);
+	[p, s, T] = freesteam.psT_uv(u,v);
+	h = u + p * v;
 
 end
