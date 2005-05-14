@@ -17,7 +17,7 @@ Model BufferTank as SteamEquipment_ph
 	VARIABLES
 	rho as Density(Brief="Density of water in tank", Lower=600, Upper=1300, Unit="kg/m^3");
 	V as Volume(Brief="Volume of buffer tank (set it to a constant)");
-	h as SpecificEnthalpy(Brief="Average specific enthalpy in tank");
+	u as SpecificEnthalpy(Brief="Average specific enthalpy in tank");
 	T as Temperature(Brief="Temperature of water in tank", Lower=273.15);
 	
 	EQUATIONS
@@ -26,8 +26,8 @@ Model BufferTank as SteamEquipment_ph
 	m = rho * V;
 	
 	# Energy conservation, no work, no volume
-	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot + diff(H);
-	H = m * h;
+	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot + diff(U);
+	U = m * u;
 	Qdot = 0 * "W";
 	Wdot =  0 * "W";	
 	
@@ -35,7 +35,7 @@ Model BufferTank as SteamEquipment_ph
 	In.p = Out.p;
 		
 	# Perfect mixing: what comes out is the average enthalpy and temperature
-	Out.h = h;
+	Out.h = u + Out.p / rho;
 	Out.T = T;
 	
 	# density can be calculated using the outlet state, because of the mixing
@@ -44,6 +44,7 @@ Model BufferTank as SteamEquipment_ph
 	
 end
 
+#*
 Model BufferTank2 as SteamEquipment_ph
 	
 	PARAMETERS
@@ -62,7 +63,7 @@ Model BufferTank2 as SteamEquipment_ph
 	
 	# Energy conservation, no work, no volume
 	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot + diff(Out.h * rho) * V;
-	H = rho * V * Out.h;
+	U = rho * V * Out.h;
 	Qdot = 0 * "W";
 	Wdot =  0 * "W";	
 	
@@ -77,4 +78,80 @@ Model BufferTank2 as SteamEquipment_ph
 	# (assume that variation with pressure is negl)
 	rho = Out.freesteam.rho_ph(Out.p,Out.h);
 	
+end
+*#
+
+Model BufferTank3
+	
+	PARAMETERS
+	V as Volume(Brief="Volume of buffer tank (set it to a constant)");
+	
+	VARIABLES
+	in In  as Stream;
+	out Out as Stream_uv;
+	U as Energy;
+	m as Mass;
+	Qdot as Power;
+	Wdot as Power;
+	
+	EQUATIONS
+	# Mass conservation	
+	In.mdot - Out.mdot = diff(m);
+	Out.v = V / m;
+	
+	# Energy conservation, no work, no volume
+	In.h * In.mdot - Out.h * Out.mdot = diff(U);
+	Out.u = U / m;
+	
+	Qdot = 0 * "W";
+	Wdot =  0 * "W";
+	
+	# no pressure drop in the tank
+	In.p = Out.p;
+
+end
+
+Model BufferTank4
+	
+	PARAMETERS
+	V as Volume(Brief="Volume of buffer tank (set it to a constant)");
+	
+	VARIABLES
+	in In  as Stream;
+	out Out as Stream;
+	U as Energy;
+	m as Mass;
+	Qdot as Power;
+	Wdot as Power;
+	u as SpecificInternalEnergy;
+	v as SpecificVolume;
+	vin as SpecificVolume;
+	
+	EQUATIONS
+	# Mass conservation	
+	In.mdot - Out.mdot = diff(m);
+	v = V / m;
+	
+	# Energy conservation, no work, no volume
+	In.h * In.mdot - Out.h * Out.mdot = diff(U);
+	u = U / m;
+	
+	Qdot = 0 * "W";
+	Wdot =  0 * "W";
+	
+	# no pressure drop in the tank
+	Out.p = In.p;
+	
+	# Enthalpy by its definition
+	Out.h = u + Out.p * v;
+	
+	# Volume conservation
+	Out.mdot * v = In.mdot * vin;
+
+	vin = In.freesteam.v_ph(In.p,In.h);	
+	
+	Out.s = Out.freesteam.s_ph(Out.p,Out.h);
+	Out.T = Out.freesteam.T_ph(Out.p,Out.h);
+	
+
 end
