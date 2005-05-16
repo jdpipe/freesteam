@@ -485,7 +485,50 @@ FlowSheet BufferTank4Test
 	
 	OPTIONS
 	differentiation="numeric";
-	outputLevel="all";
-	time = [0 : 1 : 1000 ] * "s";
+	outputLevel="high";
+	time = [0 : 2 : 500 ] * "s";
+	
+end
+
+FlowSheet BufferTank4Test2
+	
+	DEVICES
+	TA1 as BufferTank4;
+	TA2 as BufferTank4;
+	TA3 as BufferTank4;
+	TA4 as BufferTank4;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to TA1.In;
+	TA1.Out to TA2.In;
+	TA2.Out to TA3.In;
+	TA3.Out to TA4.In;
+	
+	SET
+	TA1.V = 1 * "m^3";
+	TA2.V = 1 * "m^3";
+	TA3.V = 1 * "m^3";
+	TA4.V = 1 * "m^3";
+	
+	SPECIFY
+	S1.p = 1 * "bar";
+	S1.T = (25+273.15) * "K";
+	S1.mdot = 10 * "kg/s";
+	
+	INITIAL
+	TA1.v = 1/997 * "m^3/kg";
+	TA1.u = 600 * "kJ/kg";
+	TA2.v = 1/997 * "m^3/kg";
+	TA2.u = 600 * "kJ/kg";
+	TA3.v = 1/997 * "m^3/kg";
+	TA3.u = 600 * "kJ/kg";
+	TA4.v = 1/997 * "m^3/kg";
+	TA4.u = 600 * "kJ/kg";
+	
+	OPTIONS
+	differentiation="numeric";
+	outputLevel="low";
+	time = [0 : 0.2 : 500 ] * "s";
 	
 end

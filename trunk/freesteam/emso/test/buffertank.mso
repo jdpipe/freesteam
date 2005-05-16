@@ -119,7 +119,7 @@ Model BufferTank4
 	VARIABLES
 	in In  as Stream;
 	out Out as Stream;
-	U as Energy;
+	U as Energy(Upper=1e10);
 	m as Mass;
 	Qdot as Power;
 	Wdot as Power;
