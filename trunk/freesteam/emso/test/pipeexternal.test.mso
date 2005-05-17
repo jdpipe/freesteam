@@ -258,7 +258,7 @@ FlowSheet PipeExternalChainTest
 	S1 as Stream_pT;
 	
 	CONNECTIONS
-	S1 to PI.In;
+	S1 to PI(1).In;
 	PI([1:n-1]).Out to PI([2:n]).In;
 	
 	SPECIFY
@@ -270,7 +270,7 @@ FlowSheet PipeExternalChainTest
 	PI(n).Out.p = 3 * "bar";
 
 	SET
-	n=2;
+	n=10;
 
 	PI.D = 0.025 * "m";
 	PI.L = 80 * "m";
