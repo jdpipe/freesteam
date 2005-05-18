@@ -1,0 +1,71 @@
+using "newtypes";
+using "streams";
+
+Model PipeNode
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	A as Area;
+	
+	VARIABLES
+	mdot as MassFlowRate;
+	p as Pressure;
+	u as SpecificInternalEnergy;
+	rho as Density;
+	mdoth as Real(Unit="kW");
+	vel as Velocity;
+	Qdotdash as Real(Unit="kW/m");
+	tau as Stress;
+		
+	EQUATIONS
+	mdoth = mdot * (u + p / rho);
+	p = freesteam.p_uv(u,1/rho);
+	vel = mdot / rho / A;
+
+	Qdotdash = 0 * "kW/m";
+	tau = 0 * "Pa";
+end
+
+
+Model Pipe2
+	PARAMETERS
+	n as Integer(Lower=3);
+	L as Length;
+	D as Length;
+	eps as Length;
+	dz as Length;
+	A as Area;
+	
+	VARIABLES
+	in In as Stream;
+	out Out as Stream_ph;
+	X(n) as PipeNode;
+	
+	EQUATIONS
+	
+	# Use Saad's equations but in central difference form
+	# TODO: how to manage boundary nodes???
+		
+	diff(X([2:n-1]).rho) = - 1 / A * ( 0.5 * (X([3:n]).mdot - X([1:n-2]).mdot) / dz );
+
+	diff(X([2:n-1]).rho * X([2:n-1]).u)
+		= 1/A * ( X([2:n-1]).Qdotdash - 0.5 * (X([3:n]).mdoth - X([1:n-2]).mdoth) / dz );
+	
+	1/A * diff(X([2:n-1]).mdot) 
+	    = 0.5 * (X([3:n]).p - X([1:n-2]).p)/dz
+			- 4 * X([2:n-1]).p / D 
+			- 0.5 * (X([3:n]).rho * X([3:n]).vel^2 - X([1:n-2]).rho * X([1:n-2]).vel^2) / dz;
+	
+	X(1).p = In.p;
+	X(1).rho = In.freesteam.rho_ph(In.p, In.h);
+	X(1).u = In.freesteam.u_ph(In.p, In.h);
+	
+	X(n).p = Out.p;
+	X(n).rho = Out.freesteam.rho_ph(Out.p, Out.h);
+	X(n).u = Out.freesteam.u_ph(Out.p, Out.h);
+	
+	SET
+	dz = L/n;
+	A = 3.14159265358 * D^2 / 4;
+	X.A([1:n]) = A;
+
+end

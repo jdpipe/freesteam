@@ -1,0 +1,24 @@
+using "pipe2";
+	
+	FlowSheet Pipe2Test
+
+	DEVICES
+	P as Pipe2;
+	S1 as Stream_pT;
+
+	CONNECTIONS
+	S1 to P.In;
+
+	SET
+	P.n = 3;
+	P.D = 0.05 * "m";
+	P.L = 20 * "m";
+	P.eps = 1e-5 * "m";
+	
+	SPECIFY
+	S1.p = 2 * "bar";
+	S1.T = (273.15 + 25) * "K";
+	
+	P.Out.p = 1 * "bar";
+	
+end

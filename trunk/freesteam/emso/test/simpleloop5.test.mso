@@ -75,7 +75,7 @@ FlowSheet SimpleLoop5Test
 
 	# Tanks
 	A = 1 * "m^2";
-	k = 1 * "bar" / (0.1 * "m") * (1 * "m^2");
+	k = 1 * "bar" / (0.01 * "m") * (1 * "m^2");
 	y_0 = 0.8 * "m";
 	
 	# Throttle
@@ -92,5 +92,5 @@ FlowSheet SimpleLoop5Test
 	differentiation="numeric";
 	# mode="steady";
 	outputLevel="high";
-	time = [0 : 0.1 : 20] * "s";
+	time = [0 : 0.05 : 20] * "s";
 end

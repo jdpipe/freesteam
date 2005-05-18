@@ -283,3 +283,50 @@ FlowSheet PipeExternalChainTest
 	mode="steady";
 	outputLevel="high";
 end
+
+
+
+
+#*
+	Test the CalcObject version of the pipe pressure
+	drop calculator.
+	
+	IT WORKS!
+*#
+FlowSheet PipeExternal2Test
+	
+	DEVICES
+	PI as PipeExternal2;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to PI.In;
+
+	SPECIFY
+	PI.Qdot = 0 * "W";
+	
+	S1.p = 4 * "bar";
+	S1.T = (25 + 273.15) * "K";
+	S1.mdot = 1 * "kg/s";
+
+	SET
+	PI.D = 0.025 * "m";
+	PI.L = 15 * "m";
+	PI.eps = 46e-6 * "m";
+	
+	GUESS
+	PI.Out.p = 4.1  * "bar";
+	PI.Out.h = 99.6 * "kJ/kg";
+
+	PI.v = 1/997 * "m^3/kg";
+	PI.vel_in = 2 * "m/s";
+	PI.A = 7.8e-5 * "m^2";	
+	PI.Re = 20000;
+	PI.f = 0.02;
+	PI.mu = 1e-3 * "Pa*s";	
+	
+	OPTIONS
+	differentiation="numeric";
+	outputLevel="all";
+end
+
