@@ -2,6 +2,7 @@ using "newtypes";
 using "streams";
 
 Model PipeNode
+	
 	PARAMETERS
 	freesteam as CalcObject(File="emsofreesteam");
 	A as Area;
@@ -27,6 +28,7 @@ end
 
 
 Model Pipe2
+	
 	PARAMETERS
 	n as Integer(Lower=3);
 	L as Length;
@@ -42,18 +44,36 @@ Model Pipe2
 	
 	EQUATIONS
 	
-	# Use Saad's equations but in central difference form
-	# TODO: how to manage boundary nodes???
+	# Use central difference form for the interior nodes
 		
-	diff(X([2:n-1]).rho) = - 1 / A * ( 0.5 * (X([3:n]).mdot - X([1:n-2]).mdot) / dz );
+	for i in [2:n-2]
+		
+		diff(X(i).rho) = - 1 / A * ( 0.5 * (X(i+1).mdot - X(i-1).mdot) / dz );
 
-	diff(X([2:n-1]).rho * X([2:n-1]).u)
-		= 1/A * ( X([2:n-1]).Qdotdash - 0.5 * (X([3:n]).mdoth - X([1:n-2]).mdoth) / dz );
+		diff(X(i).rho * X(i).u)
+			= 1/A * ( X(i).Qdotdash - 0.5 * (X(i+1).mdoth - X(i-1).mdoth) / dz );
 	
-	1/A * diff(X([2:n-1]).mdot) 
-	    = 0.5 * (X([3:n]).p - X([1:n-2]).p)/dz
-			- 4 * X([2:n-1]).p / D 
-			- 0.5 * (X([3:n]).rho * X([3:n]).vel^2 - X([1:n-2]).rho * X([1:n-2]).vel^2) / dz;
+		1/A * diff(X(i).mdot) 
+			= 0.5 * (X(i+1).p - X(i-1).p)/dz
+				- 4 * X(i).p / D 
+				- 0.5 * (X(i+1).rho * X(i+1).vel^2 - X(i-1).rho * X(i-1).vel^2) / dz;
+
+	end
+
+	# Use backwards difference equation for the last node
+	
+	diff(X(n).rho) = - 1 / A * ( (X(n).mdot - X(n-1).mdot) / dz );
+
+	diff(X(n).rho * X(n).u)
+		= 1/A * ( X(n).Qdotdash - (X(n).mdoth - X(n-1).mdoth) / dz );
+	
+	1/A * diff(X(n).mdot) 
+		= (X(n).p - X(n-1).p)/dz
+			- 4 * X(n).p / D 
+			- (X(n).rho * X(n).vel^2 - X(n-1).rho * X(n-1).vel^2) / dz;
+	
+	
+	# TODO: does this formulation work correctly with reverse flow??
 	
 	X(1).p = In.p;
 	X(1).rho = In.freesteam.rho_ph(In.p, In.h);

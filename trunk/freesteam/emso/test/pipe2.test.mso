@@ -1,10 +1,10 @@
 using "pipe2";
 	
-	FlowSheet Pipe2Test
+FlowSheet Pipe2Test
 
 	DEVICES
-	P as Pipe2;
 	S1 as Stream_pT;
+	P as Pipe2;
 
 	CONNECTIONS
 	S1 to P.In;
@@ -20,5 +20,9 @@ using "pipe2";
 	S1.T = (273.15 + 25) * "K";
 	
 	P.Out.p = 1 * "bar";
+	
+	OPTIONS
+	differentiation="numeric";
+	outputLevel="all";
 	
 end
