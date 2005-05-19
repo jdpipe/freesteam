@@ -10,7 +10,7 @@ FlowSheet Pipe2Test
 	S1 to P.In;
 
 	SET
-	P.n = 3;
+	P.n = 11;
 	P.D = 0.05 * "m";
 	P.L = 20 * "m";
 	P.eps = 1e-5 * "m";
@@ -18,16 +18,26 @@ FlowSheet Pipe2Test
 	SPECIFY
 	S1.p = 2 * "bar";
 	S1.T = (273.15 + 25) * "K";
+	S1.mdot = 1 * "kg/s";
+	# P.Out.p = 1 * "bar";
 	
-	P.Out.p = 1 * "bar";
+	GUESS
+	P.X([1:P.n]).rho = 997 *"kg/m^3";
+	P.X([1:P.n]).mdot = 1 * "kg/s";
+	P.X([1:P.n]).u = 150 *"kJ/kg";
 	
 	INITIAL
-	P.X([2:P.n-1]).p = 1 * "bar";
-	P.X([2:P.n-1]).u = 500 * "kJ/kg";
-	P.X([2:P.n-1]).mdot = 0 * "kg/s";
-	P.Out.mdot = 0 * "kg/s";
 	
+	# Set the internal state along internal nodes of the pipe
+	P.X([2:P.n]).p = 1 * "bar";
+	P.X([2:P.n]).u = 150 * "kJ/kg";
+	P.X([2:P.n]).mdot = 0 * "kg/s";
+	
+	# Set the initial outlet flowrate
+	# P.Out.u = 500 * "kJ/kg";
+		
 	OPTIONS
-	outputLevel="all";
+	outputLevel="high";
+	time=[0:0.001:0.01] * "s";
 	
 end

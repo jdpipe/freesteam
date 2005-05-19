@@ -9,21 +9,21 @@ Model PipeNode
 	
 	VARIABLES
 	mdot as MassFlowRate;
-	p as Pressure;
-	u as SpecificInternalEnergy;
-	rho as Density;
-	mdoth as Real(Unit="kW");
+	p as Pressure(Lower=0, Upper=1000, Unit="bar");
+	u as SpecificInternalEnergy(Lower=0, Upper=3663, Unit="kJ/kg");
+	rho as Density(Lower=0.0202, Upper=1046, Unit="kg/m^3");
+	h as SpecificEnthalpy(Lower=0, Upper=4159, Unit="kJ/kg");
 	vel as Velocity;
 	Qdotdash as Real(Unit="kW/m");
 	tau as Stress;
 		
 	EQUATIONS
-	mdoth = mdot * (u + p / rho);
-	p = freesteam.p_uv(u,1/rho);
+	h = u + p / rho;
+	rho = freesteam.rho_pu(p,u);
 	vel = mdot / rho / A;
 
 	Qdotdash = 0 * "kW/m";
-	tau = 0 * "Pa";
+	tau = 0.5 * L/D0 * "Pa";
 end
 
 
@@ -39,25 +39,25 @@ Model Pipe2
 	
 	VARIABLES
 	in In as Stream;
-	out Out as Stream_ph;
+	# out Out as Stream_uv;
 	X(n) as PipeNode;
 	
 	EQUATIONS
 	
 	# Use central difference form for the interior nodes
 		
-	for i in [2:n-2]
+	for i in [2:n-1]
 		
 		diff(X(i).rho) = - 1 / A * ( 0.5 * (X(i+1).mdot - X(i-1).mdot) / dz );
 
 		diff(X(i).rho * X(i).u)
-			= 1/A * ( X(i).Qdotdash - 0.5 * (X(i+1).mdoth - X(i-1).mdoth) / dz );
+			= 1/A * ( X(i).Qdotdash  - 0.5 * (X(i+1).mdot*X(i+1).h - X(i-1).mdot*X(i-1).h) / dz );
 	
 		1/A * diff(X(i).mdot) 
 			= 0.5 * (X(i+1).p - X(i-1).p)/dz
-				- 4 * X(i).p / D 
+				- 4 * X(i).tau / D  
 				- 0.5 * (X(i+1).rho * X(i+1).vel^2 - X(i-1).rho * X(i-1).vel^2) / dz;
-
+		
 	end
 
 	# Use backwards difference equation for the last node
@@ -65,13 +65,13 @@ Model Pipe2
 	diff(X(n).rho) = - 1 / A * ( (X(n).mdot - X(n-1).mdot) / dz );
 
 	diff(X(n).rho * X(n).u)
-		= 1/A * ( X(n).Qdotdash - (X(n).mdoth - X(n-1).mdoth) / dz );
+		= 1/A * ( X(n).Qdotdash - (X(n).mdot*X(n).h - X(n-1).mdot*X(n-1).h) / dz );
 	
 	1/A * diff(X(n).mdot) 
 		= (X(n).p - X(n-1).p)/dz
-			- 4 * X(n).p / D 
+			- 4 * X(n).tau / D
 			- (X(n).rho * X(n).vel^2 - X(n-1).rho * X(n-1).vel^2) / dz;
-	
+		
 	# There are no equations for the first node; these are provided by the upstream equipment item
 	# Note that central difference can be optimised to use a staggered grid, not done here.
 	
@@ -81,9 +81,9 @@ Model Pipe2
 	X(1).u = In.freesteam.u_ph(In.p, In.h);
 	X(1).mdot = In.mdot;
 	
-	Out.p = X(n).p;
-	Out.h = X(n).u + X(n).p / X(n).rho;
-	X(n).mdot = Out.mdot;
+	# Out.u = X(n).u;
+	# Out.v = 1/X(n).rho;
+	# Out.mdot = X(n).mdot;
 	
 	SET
 	dz = L/n;
