@@ -21,8 +21,13 @@ FlowSheet Pipe2Test
 	
 	P.Out.p = 1 * "bar";
 	
+	INITIAL
+	P.X([2:P.n-1]).p = 1 * "bar";
+	P.X([2:P.n-1]).u = 500 * "kJ/kg";
+	P.X([2:P.n-1]).mdot = 0 * "kg/s";
+	P.Out.mdot = 0 * "kg/s";
+	
 	OPTIONS
-	differentiation="numeric";
 	outputLevel="all";
 	
 end
