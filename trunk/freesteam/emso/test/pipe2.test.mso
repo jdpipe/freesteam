@@ -10,15 +10,15 @@ FlowSheet Pipe2Test
 	S1 to P.In;
 
 	SET
-	P.n = 11;
+	P.n = 50;
 	P.D = 0.05 * "m";
 	P.L = 20 * "m";
 	P.eps = 1e-5 * "m";
 	
 	SPECIFY
-	S1.p = 2 * "bar";
+	S1.p = 1 * "bar";
 	S1.T = (273.15 + 25) * "K";
-	S1.mdot = 1 * "kg/s";
+	S1.mdot = 0 * "kg/s";
 	# P.Out.p = 1 * "bar";
 	
 	GUESS
@@ -38,6 +38,6 @@ FlowSheet Pipe2Test
 		
 	OPTIONS
 	outputLevel="high";
-	time=[0:0.001:0.01] * "s";
+	time=[0:0.01:1] * "s";
 	
 end

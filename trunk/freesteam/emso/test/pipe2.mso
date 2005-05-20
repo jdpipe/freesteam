@@ -4,8 +4,13 @@ using "streams";
 Model PipeNode
 	
 	PARAMETERS
+	# pipe as CalcObject(File="emsopipe");
 	freesteam as CalcObject(File="emsofreesteam");
+
 	A as Area;
+	D as Length;
+	dz as Length;
+	eps_D as Real(Brief="Relative roughness");
 	
 	VARIABLES
 	mdot as MassFlowRate;
@@ -16,14 +21,24 @@ Model PipeNode
 	vel as Velocity;
 	Qdotdash as Real(Unit="kW/m");
 	tau as Stress;
-		
+	f as Real;
+	# Re as Real;
+	# mu as DynamicViscosity;
+	
 	EQUATIONS
 	h = u + p / rho;
 	rho = freesteam.rho_pu(p,u);
+	# mu = freesteam.mu_pu(p,u);	
 	vel = mdot / rho / A;
 
 	Qdotdash = 0 * "kW/m";
-	tau = 0.5 * L/D0 * "Pa";
+	f * 0.5 * rho * vel^2 = 4 * tau;
+	
+	# Friction factor calculated in external CalcObject
+	# f = pipe.f_ReEd(Re,eps_D);
+	f = 0.02;
+	# Re = rho * vel * D / mu;
+
 end
 
 
@@ -48,13 +63,16 @@ Model Pipe2
 		
 	for i in [2:n-1]
 		
+		# MASS CONSERVATION
 		diff(X(i).rho) = - 1 / A * ( 0.5 * (X(i+1).mdot - X(i-1).mdot) / dz );
-
+		
+		# ENERGY CONSERVATION
 		diff(X(i).rho * X(i).u)
 			= 1/A * ( X(i).Qdotdash  - 0.5 * (X(i+1).mdot*X(i+1).h - X(i-1).mdot*X(i-1).h) / dz );
 	
+		# MOMENTUM CONSERVATION
 		1/A * diff(X(i).mdot) 
-			= 0.5 * (X(i+1).p - X(i-1).p)/dz
+			= - 0.5 * (X(i+1).p - X(i-1).p)/dz
 				- 4 * X(i).tau / D  
 				- 0.5 * (X(i+1).rho * X(i+1).vel^2 - X(i-1).rho * X(i-1).vel^2) / dz;
 		
@@ -68,7 +86,7 @@ Model Pipe2
 		= 1/A * ( X(n).Qdotdash - (X(n).mdot*X(n).h - X(n-1).mdot*X(n-1).h) / dz );
 	
 	1/A * diff(X(n).mdot) 
-		= (X(n).p - X(n-1).p)/dz
+		= - (X(n).p - X(n-1).p)/dz
 			- 4 * X(n).tau / D
 			- (X(n).rho * X(n).vel^2 - X(n-1).rho * X(n-1).vel^2) / dz;
 		
@@ -88,6 +106,9 @@ Model Pipe2
 	SET
 	dz = L/n;
 	A = 3.14159265358 * D^2 / 4;
-	X.A([1:n]) = A;
+	X([1:n]).A = A;
+	X([1:n]).D = D;
+	X([1:n]).dz = dz;
+	X([1:n]).eps_D = eps/D;
 
 end
