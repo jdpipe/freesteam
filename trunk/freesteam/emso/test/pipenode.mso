@@ -1,0 +1,43 @@
+using "newtypes";
+	
+Model PipeNode
+	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
+	A as Area;
+	D as Length;
+	dz as Length;
+	eps_D as Real(Brief="Relative roughness");
+
+	VARIABLES
+	
+	# Note, massflowrate limits are important here!
+	mdot as MassFlowRate(Lower=-40, Upper=40, Unit="kg/s");
+
+	p as Pressure(Lower=0, Upper=1000, Unit="bar");
+	u as SpecificInternalEnergy(Lower=0, Upper=3663, Unit="kJ/kg");
+	rho as Density(Lower=0.0202, Upper=1046, Unit="kg/m^3");
+	h as SpecificEnthalpy(Lower=0, Upper=4159, Unit="kJ/kg");
+	vel as Velocity;
+	Qdotdash as Real(Unit="kW/m");
+	tau as Stress;
+	f as Real;
+	# Re as Real;
+	# mu as DynamicViscosity;
+	
+	EQUATIONS
+	h = u + p / rho;
+	rho = freesteam.rho_pu(p,u);
+	# mu = freesteam.mu_pu(p,u);	
+	vel = mdot / rho / A;
+
+	Qdotdash = 0 * "kW/m";
+	f * 0.5 * rho * vel^2 = 4 * tau;
+	
+	# Friction factor calculated in external CalcObject
+	# f = pipe.f_ReEd(Re,eps_D);
+	f = 0.02;
+	#Re = rho * vel * D / mu;
+
+end
