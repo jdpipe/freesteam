@@ -2,6 +2,11 @@ using "newtypes";
 using "streams";
 using "pipenode";
 
+#*
+	Pipe flow model
+
+	Central difference equations
+*#
 Model Pipe2
 	
 	PARAMETERS

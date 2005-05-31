@@ -2,6 +2,11 @@ using "newtypes";
 using "streams";
 using "pipenode";
 
+#*
+	Pipe flow model
+
+	Backwards difference equations
+*#
 Model Pipe3
 	
 	PARAMETERS

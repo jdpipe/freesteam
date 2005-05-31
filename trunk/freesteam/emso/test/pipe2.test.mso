@@ -19,17 +19,17 @@ FlowSheet Pipe2Test
 	P.eps = 1e-5 * "m";
 	
 	p_in = 2 * "bar";
-	p_out = 1 * "bar";
+	p_out = 2 * "bar";
 	
 	SPECIFY
 	S1.p = p_in;
 	S1.T = (273.15 + 25) * "K";
-	S1.mdot = 1 * "kg/s";
-	# P.Out.p = 1 * "bar";
+	S1.mdot = 0 * "kg/s";
+	# P.X(P.n).p = p_out;
 	
 	GUESS
 	P.X([1:P.n]).rho = 997 *"kg/m^3";
-	P.X([1:P.n]).mdot = 1 * "kg/s";
+	P.X([1:P.n]).mdot = 0 * "kg/s";
 	P.X([1:P.n]).u = 150 *"kJ/kg";
 	
 	INITIAL
@@ -45,6 +45,6 @@ FlowSheet Pipe2Test
 	OPTIONS
 	outputLevel="high";
 	time=[0:0.01:1] * "s";
-	mode="steady";
+	# mode="steady";
 	
 end
