@@ -3,6 +3,7 @@ using "newtypes";
 Model PipeNode
 	
 	PARAMETERS
+	ext pipe as CalcObject(Brief="pipe friction calculator");
 	freesteam as CalcObject(File="emsofreesteam");
 	
 	A as Area;
@@ -23,21 +24,21 @@ Model PipeNode
 	Qdotdash as Real(Unit="kW/m");
 	tau as Stress;
 	f as Real;
-	# Re as Real;
-	# mu as DynamicViscosity;
+	Re as Real;
+	mu as DynamicViscosity;
 	
 	EQUATIONS
 	h = u + p / rho;
 	rho = freesteam.rho_pu(p,u);
-	# mu = freesteam.mu_pu(p,u);	
+	mu = freesteam.mu_pu(p,u);	
 	vel = mdot / rho / A;
 
 	Qdotdash = 0 * "kW/m";
 	f * 0.5 * rho * vel^2 = 4 * tau;
 	
 	# Friction factor calculated in external CalcObject
-	# f = pipe.f_ReEd(Re,eps_D);
-	f = 0.02;
-	#Re = rho * vel * D / mu;
+	f = pipe.f_ReEd(Re,eps_D);
+	# f = 0.02;
+	Re = rho * vel * D / mu;
 
 end
