@@ -67,6 +67,7 @@ $plots=array(
 	,"T-v"=>"Temperature versus specific volume"
 	,"T-p"=>"Temperature versus pressure"
 	,"p-h"=>"Pressure versus specific enthalpy"
+	,"p-u"=>"Pressure versus specific internal energy"
 	,"p-s"=>"Temperature versus specific entropy"
 	,"v-u"=>"Specific volume version specific internal energy"
 );
