@@ -1,0 +1,82 @@
+using "newtypes";
+using "streams";
+using "pipenode";
+
+#*
+	Pipe flow model
+
+	Central difference equations
+*#
+Model Pipe2
+	
+	PARAMETERS
+	n as Integer(Lower=3);
+	L as Length;
+	D as Length;
+	eps as Length;
+	dz as Length;
+	A as Area;
+	pi as Real;	
+	
+	VARIABLES
+	in In as Stream;
+	# out Out as Stream_uv;
+	X(n) as PipeNode;
+	
+	EQUATIONS
+	
+	# Use central difference form for the interior nodes
+		
+	for i in [2:n-1]
+		
+		# MASS CONSERVATION
+		diff(X(i).rho) = - 1 / A * ( 0.5 * (X(i+1).mdot - X(i-1).mdot) / dz );
+		
+		# ENERGY CONSERVATION
+		diff(X(i).rho * X(i).u)
+			= 1/A * ( X(i).Qdotdash  - 0.5 * (X(i+1).mdot*X(i+1).h - X(i-1).mdot*X(i-1).h) / dz );
+	
+		# MOMENTUM CONSERVATION
+		1 / A * diff(X(i).mdot) = 
+			- 0.5 * (X(i+1).p - X(i-1).p)/dz
+			- 4 * X(i).tau / D
+			- 0.5 * (X(i+1).rho * X(i+1).vel^2 - X(i-1).rho * X(i-1).vel^2) / dz
+		;
+		
+	end
+
+	# Use backwards difference equation for the last node
+	
+	diff(X(n).rho) = - 1 / A * ( (X(n).mdot - X(n-1).mdot) / dz );
+
+	diff(X(n).rho * X(n).u)
+		= 1/A * ( X(n).Qdotdash - (X(n).mdot*X(n).h - X(n-1).mdot*X(n-1).h) / dz );
+	
+	1/A * diff(X(n).mdot) 
+		= - (X(n).p - X(n-1).p)/dz
+			- 4 * X(n).tau / D
+			- (X(n).rho * X(n).vel^2 - X(n-1).rho * X(n-1).vel^2) / dz;
+		
+	# There are no equations for the first node; these are provided by the upstream equipment item
+	# Note that central difference can be optimised to use a staggered grid, not done here.
+	
+	# TODO: does this formulation work correctly with reverse flow??
+	
+	X(1).p = In.p;
+	X(1).u = In.freesteam.u_ph(In.p, In.h);
+	X(1).mdot = In.mdot;
+	
+	# Out.u = X(n).u;
+	# Out.v = 1/X(n).rho;
+	# Out.mdot = X(n).mdot;
+	
+	SET
+	pi = 3.14159265358;
+	dz = L/n;
+	A = pi * D^2 / 4;
+	X([1:n]).A = A;
+	X([1:n]).D = D;
+	X([1:n]).dz = dz;
+	X([1:n]).eps_D = eps/D;
+
+end

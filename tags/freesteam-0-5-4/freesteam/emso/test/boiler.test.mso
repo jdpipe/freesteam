@@ -1,0 +1,100 @@
+#* 
+	freesteam stream integration for use in steam system calculations
+	
+	Originally based on code by Rafael de Pelegrini Soares.
+	Modified by John Pye 2005 http://freesteam.sf.net
+*#
+
+using "streams";
+using "boiler";
+
+#*
+	Boiler inlet outlet states are given then
+	heat supplied is determined from that.
+
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet BoilerTest # 0
+		
+	DEVICES
+	S1 as Stream_pT; # 3
+	BO as Boiler_pT; # 7
+	
+	CONNECTIONS # -5
+	S1 to BO.In; 
+	
+	SPECIFY # -5
+	S1.mdot = 38 * "kg/s";
+	S1.p = 60 * "bar";
+	S1.T = (121 + 273.15) * "K";	
+
+	BO.Out.p = 60 * "bar";
+	BO.Out.T = (500 + 273.15) * "K";
+	
+	OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+	
+end
+
+#*
+	Boiler inlet state and supplier heat / pressure drop
+	are specified. Then outlet state is calculated.
+
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet BoilerTest2 # 0
+		
+	DEVICES
+	S1 as Stream_pT; # 3
+	BO as Boiler; # 7
+	
+	CONNECTIONS # -5
+	S1 to BO.In; 
+	
+	SPECIFY # -5
+	S1.mdot = 38 * "kg/s";
+	S1.p = 60 * "bar";
+	S1.T = (121 + 273.15) * "K";	
+
+	BO.Dp = -2 * "bar";
+	BO.Qdot = 120 * "MW";
+	
+	OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+	
+end
+
+#*
+	Boiler with minor loss coefficient is tested. Inlet
+	state plus boiler minor loss coefficient and area
+	are specified, as well as heat supplied. Outlet state
+	is then calculated.
+	
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet BoilerWithLossTest
+	
+	DEVICES
+	S1 as Stream_pT;
+	BO as BoilerWithLoss;
+	
+	CONNECTIONS
+	S1 to BO.In;
+
+	SPECIFY
+	S1.mdot = 38 * "kg/s";
+	S1.p = 60 * "bar";
+	S1.T = (121 + 273.15) * "K";
+	
+	BO.A_1 = 3.1415926 * (0.2 * "m")^2 / 4;
+	BO.K = 20;
+	
+	BO.Qdot = 120 * "MW";
+	
+	OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+	
+end

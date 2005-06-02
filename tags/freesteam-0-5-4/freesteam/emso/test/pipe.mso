@@ -1,0 +1,119 @@
+
+using "steamequipment";
+
+Model PipeCommonVariables as SteamEquipment_ph
+
+	VARIABLES
+	L as Length(Lower = 0, Upper= 1000, Default=10, Unit="m");
+	D as Length(Lower = 0, Upper= 1, Default=0.1, Unit="m");
+	eps as Length(Lower = 0, Upper= 0.01, Default=0.0001, Unit="m");
+end
+	
+Model PipeBase as PipeCommonVariables
+
+	VARIABLES
+	v as SpecificVolume;
+	vel as Velocity(Lower = 0, Upper= 300, Default=1, Unit="m/s");
+	h as SpecificEnthalpy(       Lower=0,          Upper=4300,   Default=1500,   Unit = "kJ/kg");
+	A as Area(Lower = 0, Upper = 0.7854, Default = 7.8e-5, Unit="m^2");
+	
+	EQUATIONS
+	# Energy balance
+	Qdot - Wdot = In.h * In.mdot - Out.h * Out.mdot + diff(H);
+	H = h * m;
+	Wdot = 0 * "W";
+
+	# Mass balance
+	In.mdot - Out.mdot = diff(m);
+	A = (3.14159265358 * D^2 / 4);
+	m * v = L * A;
+
+	# It's like a turbulent tank: out flow is at the average enthalpy
+	Out.h = h;
+	
+	# Pipe flow velocity
+	vel = Out.mdot * v / A;
+	
+	# Outlet density
+	v = Out.freesteam.v_ph(Out.p, Out.h);
+end
+
+Model PipeFixedF as PipeBase
+
+	PARAMETERS
+	f as Real(Lower = 0.008, Upper=0.1, Default=0.05);
+	
+	EQUATIONS
+	Dp = -f *L / D / v * vel^2 / 2;
+end
+
+
+Model PipeColebrook as PipeBase
+	VARIABLES
+	Re as Real(Lower=0, Upper=1e8, Default=2e4);
+	f as Real(Lower = 0.008, Upper=0.1, Default=0.05);
+	mu as DynamicViscosity;	
+	
+	EQUATIONS
+	# Pressure drop my Colebrook formula, fixed viscosity
+	Dp * v = - f * L/D * vel^2 / 2;
+		
+	1/sqrt(f) = -0.86 * ln(eps/D/3.7 + 2.51/Re/sqrt(f));
+	
+	# Reynold's number
+	Re = vel * D / v / mu;	
+	mu = 1e-3 * "Pa*s";
+end
+
+#*
+Model PipeColebrookConvecting as PipeColeBrook
+	
+	VARIABLES
+	D_2 as Length(Lower=0, Upper=1, Unit="m");
+	k as Conductivity(Default=40, Unit="W/m/K");
+	T_1 as Temperature;
+	T_2 as Temperature;
+	T_amb as Temperature;
+	Nu_D as Real;
+	Pr as Real;
+	cp as SpecHeatCap;
+	
+	EQUATIONS
+	cp = 11111;
+	k = 111111;
+	
+	# Dittus Boelter correlation
+	Nu_D = 0.023 * Re^0.8 * Pr^n_DitBoel;
+	if(T_amb > In.T)
+		n_DitBoel = 0.4;
+	else
+		n_DitBoel = 0.3;
+	end
+	Pr = mu * cp / k	
+
+	Qdot = (Nu_D * k / D) * (3.14159265358 * D * L) * (T_1 - In.T);
+	Qdot = 111111;
+end
+*#
+
+Model PipeColbrookChainUniformHeat as PipeCommonVariables
+	
+	PARAMETERS
+	n as Integer(Lower=3);
+	
+	VARIABLES
+	segments( n) as PipeColebrook;
+	
+	CONNECTIONS
+	In to segments(1).In;
+	segments(1:n-1).Out to segments(2:n).In;
+	segments( n).Out to Out;
+	
+	EQUATIONS
+	for i in [1 : n]
+		segments( i).L=L / n;
+		segments( i).D=D;
+		segments( i).Qdot = Qdot / n;
+		segments( i).eps = eps;
+	end	
+end
