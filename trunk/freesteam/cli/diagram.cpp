@@ -40,6 +40,9 @@ DiagramBase::newDiagram(const std::string &type){
 	}else if(type=="ph"){
 		return new Diagram<SpecificEnergy, Pressure, SOLVE_ENTHALPY, 0>;
 
+	}else if(type=="pu"){
+		return new Diagram<SpecificEnergy, Pressure, SOLVE_IENERGY, 0>;
+
 	}else if(type=="vu" || type=="uv"){
 		return new Diagram<SpecificEnergy,SpecificVolume, SOLVE_IENERGY,0>;
 
