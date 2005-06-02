@@ -37,10 +37,12 @@ Model Pipe2
 			= 1/A * ( X(i).Qdotdash  - 0.5 * (X(i+1).mdot*X(i+1).h - X(i-1).mdot*X(i-1).h) / dz );
 	
 		# MOMENTUM CONSERVATION
-		1/A * diff(X(i).mdot) 
-			= - 0.5 * (X(i+1).p - X(i-1).p)/dz
-				- 4 * X(i).tau / D  
-				- 0.5 * (X(i+1).rho * X(i+1).vel^2 - X(i-1).rho * X(i-1).vel^2) / dz;
+		1 / A * diff(X(i).mdot) = 
+			- 0.5 * (X(i+1).p - X(i-1).p)/dz
+			- 4 * X(i).tau / D
+			- 0.5 * (X(i+1).rho * X(i+1).vel^2 - X(i-1).rho * X(i-1).vel^2) / dz
+		;
+		
 	end
 
 	# Use backwards difference equation for the last node
