@@ -1,31 +1,47 @@
 
-using "pipe";
+using "pipe2";
 using "pump";
 
 
 FlowSheet LoopSimple
 
+	PARAMETERS
+	pipe as CalcObject(File="emsopipe");
+	freesteam as CalcObject(File="emsofreesteam");
+	
 	DEVICES
-	PI as PipeFixedF;
+	S1 as Stream_pT;
+	PI as Pipe2;
 	PU as PumpSimple;
 	
 	CONNECTIONS
+	S1 to PU.In;
 	PU.Out to PI.In;
-	PI.Out to PU.In;
-	
-	INITIAL
-	PI.h = 500 * "kJ/kg";
-	
+	# PI.Out to PU.In;
+		
 	SPECIFY
-	PI.Dp = 10 * "kPa";
-	PU.eta = 0.99;
 	
+	S1.p = 1 * "bar";
+	S1.T = (25 + 273.15) * "K";
+	S1.mdot = 1 * "kg/s";
+	
+		
+	SET
+	PU.eta = 0.99;
+	PI.n = 10;
 	PI.D = 0.025 * "m";
 	PI.L = 100 * "m";
 	PI.eps = 46e-6 * "m";
-	
-	PI.f = 0.02;
+	# PI.Qdot = 0 * "W";
+
+	INITIAL
+	# PI.h = 500 * "kJ/kg";
+	PI.X([1:PI.n]).p = S1.p;
+	PI.X([1:PI.n]).u = freesteam.u_pT(S1.p,S1.T);
+	PI.X([1:PI.n]).mdot = 0 * "kg/s";
 	
 	OPTIONS
-	differentiation="numeric";
+	time = [0:0.1:30] * "s";
+	
+	# outputLevel="all";
 end
