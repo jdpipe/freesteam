@@ -266,6 +266,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 			}catch(Exception &E){
 				stringstream ss;
+				ss.flags(ios_base::showbase);
 
 				ss << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::solve (" << SteamProperty<FirstProp,FirstPropAlt>::name() << "=" << fp << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << "=" << sp;
 
