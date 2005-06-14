@@ -1,4 +1,47 @@
 using "pipe2";
+
+FlowSheet Pipe2SteadyTest
+	PARAMETERS
+	pipe as CalcObject(File="emsopipe");
+	freesteam as CalcObject(File="emsofreesteam");
+	
+	mdot_initial as MassFlowRate;
+	T_initial as Temperature;
+	
+	DEVICES
+	S1 as Stream_pT;
+	P as Pipe2;
+
+	CONNECTIONS
+	S1 to P.In;
+
+	SET
+	P.n = 5;
+	P.D = 0.05 * "m";
+	P.L = 10 * "m";
+	P.eps = 1e-5 * "m";
+	
+	
+	mdot_initial = 0.1 * "kg/s";
+	T_initial = (273.15 + 20) * "K";
+	
+	SPECIFY
+	S1.p = 1 * "bar";
+	S1.T = T_initial;
+	S1.mdot = mdot_initial;
+	# P.X(P.n).p = p_out;
+	
+	GUESS
+	P.X([1:P.n]).rho = 1 *"kg/m^3";
+	P.X([1:P.n]).mdot = 0.1 * "kg/s";
+	P.X([1:P.n]).u = 1000 * "kJ/kg";
+	
+	OPTIONS
+	outputLevel="high";
+	mode="steady";
+	NLASolver="nlasolver";
+end
+
 	
 FlowSheet Pipe2PressureRamp
 	PARAMETERS
@@ -154,6 +197,88 @@ FlowSheet Pipe2TemperatureRamp
 	outputLevel="high";
 	time=[0:0.4062992923482437:3600] * "s";
 	# DAEsolver="dassl";
+	# mode="steady";
+	
+end
+
+
+
+FlowSheet Pipe2TempRampExtSolver
+	PARAMETERS
+	pipe as CalcObject(File="emsopipe");
+	freesteam as CalcObject(File="emsofreesteam");
+	
+	p_in as Pressure;
+	p_out as Pressure;
+	mdot_initial as MassFlowRate;
+	
+	T_initial as Temperature;	
+	t_rampstart as Time;
+	t_rampend as Time;
+	T_final as Temperature;
+	
+	DEVICES
+	S1 as Stream_pT;
+	P as Pipe2;
+
+	CONNECTIONS
+	S1 to P.In;
+
+	SET
+	P.n = 10;
+	P.D = 0.05 * "m";
+	P.L = 10 * "m";
+	P.eps = 1e-5 * "m";
+	
+	p_in = 1.6 * "bar";
+	p_out = 1.6 * "bar";
+	
+	T_initial = (273.15 + 20) * "K";
+	T_final= (273.15 + 25) * "K";
+	t_rampstart = 5 * "s";
+	t_rampend = 20  * "s";
+	
+	mdot_initial = 0.1 * "kg/s";
+	
+	EQUATIONS
+	if time <= t_rampstart then
+		S1.T = T_initial;
+	else if time > t_rampstart and time <= t_rampend then
+		S1.T = T_initial + (T_final - T_initial) * (time - t_rampstart) / (t_rampend - t_rampstart);
+	else
+		S1.T = T_final;
+	end
+	
+	SPECIFY
+	S1.p = p_in;
+	S1.mdot = mdot_initial;
+	# P.X(P.n).p = p_out;
+	
+	GUESS
+	P.X([1:P.n]).rho = 1 *"kg/m^3";
+	P.X([1:P.n]).mdot = 0.1 * "kg/s";
+	P.X([1:P.n]).u = 2000 * "kJ/kg";
+	
+	INITIAL
+	
+	# Set the internal state along internal nodes of the pipe
+	# Set the internal state along internal nodes of the pipe
+	P.X([2:P.n]).p = p_in + (p_out - p_in)/(P.n - 1)*([2:P.n] - 1);
+	
+	for i in [2:P.n]
+		P.X(i).u = freesteam.u_pT(P.X(i).p,T_initial);
+	end
+	
+	P.X([2:P.n]).mdot = mdot_initial;
+	
+	# Set the initial outlet flowrate
+	# P.Out.u = 500 * "kJ/kg";
+	
+	OPTIONS
+	# NLASolver="nlasolver";
+	outputLevel="all";
+	time=[0:0.2:100] * "s";
+	DAESolver="sundials";
 	# mode="steady";
 	
 end
