@@ -19,7 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-#include "../exception.h"
+#include "emsoextobj.h"
+#include <exception>
+#include <stdexcept>
 #include "../common.h"
 
 const int MAX_COLEBROOK_ITER=20;
@@ -54,7 +56,7 @@ using namespace std;
 
 	TODO: integrate the 'params' and 'methods' stuff into a smarter parent class
 */
-class EMSOpipe : public ExternalObjectBase {
+class EMSOpipe : public ExternalObjectStrategy {
 
 	public:
 
@@ -116,16 +118,16 @@ class EMSOpipe : public ExternalObjectBase {
 		){
 			try{
 
-				int param = convertParam(string(parameterName));
+				int param = convertParam(std::string(parameterName));
 				if(param==0){
 					stringstream s;
 					s << "Parameter '" << parameterName << "' not found. Valid params are: " << getValidParamNames();
-					throw Exception(s.str());
+					throw std::runtime_error(s.str());
 				}
 
-				throw Exception("Setting of parameter not implemented yet.");
+				throw std::runtime_error("Setting of parameter not implemented yet.");
 
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream s;
 				s << "EMSOpipe::setParameter: " << E.what();
 				report_error(msg, s.str());
@@ -151,7 +153,7 @@ class EMSOpipe : public ExternalObjectBase {
 				if(method == 0){
 					stringstream s;
 					s << "Method '" << methodName << "' not found. Valid methods are: " << getValidMethodNames();
-					throw Exception(s.str());
+					throw std::runtime_error(s.str());
 				}
 
 				// Set number of input and output variables
@@ -162,7 +164,7 @@ class EMSOpipe : public ExternalObjectBase {
 						break;
 
 					default:
-						throw Exception("Invalid input parameter combo");
+						throw std::runtime_error("Invalid input parameter combo");
 				}
 				switch(method & OutputMask){
 					case f:
@@ -170,12 +172,12 @@ class EMSOpipe : public ExternalObjectBase {
 						break;
 
 					default:
-						throw Exception("Invalid output parameter combo");
+						throw std::runtime_error("Invalid output parameter combo");
 				}
 
 				*retval = emso_ok;
 
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream s;
 				s << "EMSOpipe::checkMethod: " << E.what();
 				report_error(msg, s.str());
@@ -218,7 +220,7 @@ class EMSOpipe : public ExternalObjectBase {
 				if(method == 0){
 					stringstream s;
 					s << "Method '" << methodName << "' not found.";
-					throw Exception(s.str());
+					throw std::runtime_error(s.str());
 				}
 
 				// All of our inputs and outputs are of length 1, hence we do not
@@ -235,7 +237,7 @@ class EMSOpipe : public ExternalObjectBase {
 						break;
 
 					default:
-						throw Exception("Invalid input param combination (when giving EMSO units for method inputs)");
+						throw std::runtime_error("Invalid input param combination (when giving EMSO units for method inputs)");
 				};
 
 				// Units for the outputs
@@ -246,12 +248,12 @@ class EMSOpipe : public ExternalObjectBase {
 						break;
 
 					default:
-						throw Exception("Invalid output param combination (when giving EMSO units for method outputs)");
+						throw std::runtime_error("Invalid output param combination (when giving EMSO units for method outputs)");
 				}
 
 				*retval = emso_ok;
 
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream s;
 				s << "EMSOpipe::calc: " << E.what();
 				report_error(msg, s.str());
@@ -307,7 +309,7 @@ class EMSOpipe : public ExternalObjectBase {
 				if(method == 0){
 					stringstream ss;
 					ss << "Method '" << methodName << " not found";
-					throw Exception(ss.str());
+					throw std::runtime_error(ss.str());
 				}
 
 				#ifdef EMSO_DEBUG
@@ -326,14 +328,14 @@ class EMSOpipe : public ExternalObjectBase {
 								break;
 
 							default:
-								throw Exception("EMSOpipe::calc: Method not implemented.");
+								throw std::runtime_error("EMSOpipe::calc: Method not implemented.");
 						}
 
 				#ifdef EMSO_DEBUG
-					}catch(Exception &E){
+					}catch(std::exception &E){
 						stringstream ss;
 						ss << methodName << ": error during evaluation: " << E.what() << endl;
-						throw Exception(ss.str());
+						throw std::runtime_error(ss.str());
 					}
 
 					//cerr << "end emsopipe::calc call" << endl;
@@ -341,7 +343,7 @@ class EMSOpipe : public ExternalObjectBase {
 
 				*retval = emso_ok;
 
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream ss;
 				ss << "EMSOpipe::calc: " << E.what();
 
@@ -365,7 +367,7 @@ class EMSOpipe : public ExternalObjectBase {
 				// Smooth pipe with Re > 3000, use Petukov
 
 				if(Re > 5E6){
-					throw Exception("EMSOpipe::frictionFactor: Reynolds number out of range");
+					throw std::runtime_error("EMSOpipe::frictionFactor: Reynolds number out of range");
 				}
 
 				return pow(0.790 * log(Re) - 1.64,-2.0);
@@ -393,7 +395,7 @@ class EMSOpipe : public ExternalObjectBase {
 						stringstream s;
 						s << "EMSOpipe::frictionFactor: Unable to converge Colebrook equation for pipe roughness with " << MAX_COLEBROOK_ITER << " iterations: ";
 						s << " error now = " << fabs(oneOnRootFnew-oneOnRootFold) << " >  required " << tol;
-						throw Exception(s.str());
+						throw std::runtime_error(s.str());
 					}
 				}
 

@@ -1,5 +1,5 @@
 #include "../steamcalculator.h"
-#include "../exception.h"
+#include <stdexcept>
 #include "batchtest.h"
 #include "../solver.h"
 #include "../iapws95.h"
@@ -75,7 +75,7 @@ class TemperatureSolverTest2Point{
 				S = VS.solve(0.00001 * metre3 / kilogram, 1e-8 * Kelvin);
 				TSOLVE2_COMPARE(v);
 
-			}catch(Exception &e){
+			}catch(std::exception &e){
 				stringstream s;
 				s.flags(ios_base::showbase);
 				s << "TemperatureSolverTest2Point::test: " << e.what();

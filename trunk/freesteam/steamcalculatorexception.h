@@ -30,7 +30,7 @@ class Boundaries;
 class SteamState;
 #endif
 
-#include "exception.h"
+#include <stdexcept>
 
 typedef enum {
     STM_UNKNOWN_ERROR =
@@ -43,11 +43,11 @@ typedef enum {
     STM_PRESSURE_LOW, STM_TEMPERATURE_HIGH, STM_TEMPERATURE_LOW
 } SteamErrorCode;
 
-class SteamCalculatorException:public Exception {
+class SteamCalculatorException : public std::runtime_error {
 
 	public:
 
-		string what();
+		std::string what();
 		SteamErrorCode getType();
 
 	protected:
@@ -58,18 +58,20 @@ class SteamCalculatorException:public Exception {
 		SteamCalculatorException(Pressure p = -1.0 * MPa, Temperature T =
 		                             -1.0 * Kelvin, SteamErrorCode c = STM_UNKNOWN_ERROR);
 
+		~SteamCalculatorException() throw(){}
+
 	private:
 
 		SteamErrorCode type;
 		Pressure p;
 		Temperature T;
-		string message;
+		std::string message;
 };
 
-class SteamAlmostSaturatedException:public Exception {
+class SteamAlmostSaturatedException : public std::runtime_error {
 
 	public:
-		string what();
+		std::string what();
 
 	protected:
 		friend class Boundaries;
@@ -80,8 +82,8 @@ class SteamAlmostSaturatedException:public Exception {
 		Temperature T;
 };
 
-class OverPressureException : public Exception {
-	OverPressureException(string message);
+class OverPressureException : public std::runtime_error {
+	OverPressureException(std::string message);
 };
 
 #endif

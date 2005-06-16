@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifndef NDEBUG
 
-#include "exception.h"
+#include <stdexcept>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -54,7 +54,7 @@ void DesignByContract::__throw_error_(const char *file, const int line,
 	//std::cerr << "Line:      " << line << std::endl;
 	// std::abort();
 
-	throw Exception(s.str());
+	throw std::runtime_error(s.str());
 }
 
 void DesignByContract::__report_Message_(const char *file, const int line, const char *msg){

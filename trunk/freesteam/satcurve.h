@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "steamcalculator.h"
 #include "common.h"
 #include "zeroin.h"
-#include "exception.h"
+#include <stdexcept>
 
 const int SAT_WATER=0;
 const int SAT_STEAM=1;
@@ -142,7 +142,7 @@ class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 					stringstream s;
 					s.flags(ios_base::showbase);
 					s << "Unable to solve for target " << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << target << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
-					throw Exception(s.str());
+					throw std::runtime_error(s.str());
 				}
 
 				//cerr << endl << "SatCurve<" << SteamProperty<Ordinate,OrdinateAlt>::name() << "," << SteamProperty<Abscissa,AbscissaAlt>::name() << ">::solve: found solution at T = " << z.getSolution();
@@ -155,10 +155,10 @@ class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 
 				return SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>::getOrdinate(S);
 
-			}catch(Exception &e){
+			}catch(std::exception &e){
 				stringstream s;
 				s << "SatCurve<" << SteamProperty<Ordinate,OrdinateAlt>::name() << "," << SteamProperty<Abscissa,AbscissaAlt>::name() << ">::solve(" << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << target << "," << (flags & SAT_STEAM ? "SAT_STEAM" : "SAT_WATER") << "): " << e.what();
-				throw Exception(s.str());
+				throw std::runtime_error(s.str());
 			}
 		}
 

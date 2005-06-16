@@ -118,7 +118,7 @@ using namespace std;
 
 	This class allows IAPWS-IF97 steam properties to be calculated from EMSO :-D
 */
-class EMSOfreesteam : public ExternalObjectBase {
+class EMSOfreesteam{
 
 	public:
 
@@ -165,7 +165,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 
 				*retval = emso_ok;
 
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream ss;
 				ss << "EMSOfreesteam::create: " << E.what();
 				report_error(msg, ss.str());
@@ -185,7 +185,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 
 				*retval = emso_ok;
 
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream ss;
 				ss << "EMSOfreesteam::destroy: " << E.what();
 				report_error(msg, ss.str());
@@ -237,7 +237,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 				if(method == 0){
 					stringstream s;
 					s << "Method '" << methodName << "' not found. Valid methods are: " << getValidMethodNames();
-					throw Exception(s.str());
+					throw std::runtime_error(s.str());
 				}
 
 				input = method & InputMask;
@@ -265,7 +265,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 
 					default:
-						throw Exception("Invalid input parameter combo");
+						throw std::runtime_error("Invalid input parameter combo");
 				}
 
 				// Number of output parameters:
@@ -313,12 +313,12 @@ class EMSOfreesteam : public ExternalObjectBase {
 
 
 					default:
-						throw Exception("Invalid output parameter combo");
+						throw std::runtime_error("Invalid output parameter combo");
 				}
 
 				*retval = emso_ok;
 
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream s;
 				s << "EMSOfreesteam::checkMethod: " << E.what();
 				report_error(msg, s.str());
@@ -358,7 +358,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 				if(method == 0){
 					stringstream s;
 					s << "Method '" << methodName << "' not found.";
-					throw Exception(s.str());
+					throw std::runtime_error(s.str());
 				}
 
 				input = method & InputMask;
@@ -406,7 +406,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 
 					default:
-						throw Exception("Invalid input param combination (when giving EMSO units for method inputs)");
+						throw std::runtime_error("Invalid input param combination (when giving EMSO units for method inputs)");
 				};
 
 				// the outputs
@@ -533,12 +533,12 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 
 					default:
-						throw Exception("Invalid output param combination (when giving EMSO units for method outputs)");
+						throw std::runtime_error("Invalid output param combination (when giving EMSO units for method outputs)");
 				}
 
 				*retval = emso_ok;
 
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream s;
 				s << "EMSOfreesteam::calc: " << E.what();
 				report_error(msg, s.str());
@@ -600,7 +600,7 @@ class EMSOfreesteam : public ExternalObjectBase {
 				if(method == 0){
 					stringstream s;
 					s << "Method '" << methodName << " not found";
-					throw Exception(s.str());
+					throw std::runtime_error(s.str());
 				}
 				input = method & InputMask;
 				output = method & OutputMask;
@@ -675,11 +675,11 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 
 					default:
-						throw Exception("EMSOfreesteam::calc: Un-handled input option (may be not yet implemented)");
+						throw std::runtime_error("EMSOfreesteam::calc: Un-handled input option (may be not yet implemented)");
 				}
 
 				#ifdef EMSO_DEBUG
-					}catch(Exception &E){
+					}catch(std::exception &E){
 						cerr << "): error while setting state: " << E.what() << endl;
 						throw;
 					}
@@ -854,20 +854,20 @@ class EMSOfreesteam : public ExternalObjectBase {
 						break;
 
 					default:
-						throw Exception("Invalid output option (should never happen)");
+						throw std::runtime_error("Invalid output option (should never happen)");
 				}
 
 				#ifdef EMSO_DEBUG
-					}catch(Exception &E){
+					}catch(std::exception &E){
 						stringstream ss;
 						ss << "Error while getting property values: " << E.what();
-						throw Exception(ss.str());
+						throw std::runtime_error(ss.str());
 					}
 				#endif
 				*retval = emso_ok;
 				lastState = S;
 
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream ss;
 				ss << "EMSOfreesteam::calc: " << E.what();
 
@@ -1056,7 +1056,7 @@ EMSOfreesteam::MethodMap EMSOfreesteam::methodNames=EMSOfreesteam::MethodMap();
 
 
 //* The factory function
-ExternalObjectBase* ExternalObjectFactory(){
+EMSOfreesteam* ExternalObjectFactory(){
 	return new EMSOfreesteam();
 }
 
@@ -1071,7 +1071,7 @@ ExternalObjectBase* ExternalObjectFactory(){
 void eo_create_ (int_t *objectHandler,
 				 int_t *retval, char *msg){
 	// Create the objecty instance using the factory.
-	ExternalObjectBase *obj = ExternalObjectFactory();
+	EMSOfreesteam *obj = ExternalObjectFactory();
 
 	// Call the correspounding c++ function.
 	obj->create(retval, msg);
@@ -1086,7 +1086,7 @@ void eo_create_ (int_t *objectHandler,
 void eo_destroy_ (const int_t *objectHandler,
                   int_t *retval, char *msg){
 	// Cast back the object.
-	ExternalObjectBase *obj = (ExternalObjectBase*) *objectHandler;
+	EMSOfreesteam *obj = (EMSOfreesteam*) *objectHandler;
 
 	// Call the correspounding c++ function.
 	obj->destroy(retval, msg);
@@ -1103,7 +1103,7 @@ void eo_set_parameter_ (const int_t *objectHandler,
 						const char *valuesText[],
 						int_t *retval, char *msg){
 	// Cast back the object.
-	ExternalObjectBase *obj = (ExternalObjectBase*) *objectHandler;
+	EMSOfreesteam *obj = (EMSOfreesteam*) *objectHandler;
 
 	// Call the correspounding c++ function.
 	obj->setParameter(parameterName, valueType, valueLength,
@@ -1119,7 +1119,7 @@ void eo_check_method_(const int_t *objectHandler,
 					  int_t *retval, char *msg
 ){
 	// Cast back the object.
-	ExternalObjectBase *obj = (ExternalObjectBase *)*objectHandler;
+	EMSOfreesteam *obj = (EMSOfreesteam *)*objectHandler;
 
 	// Call the correspounding c++ function.
 	obj->checkMethod(methodName, methodID,
@@ -1146,7 +1146,7 @@ void eo_method_details_(const int_t *objectHandler,
 ){
 
 	// Cast back the object.
-	ExternalObjectBase *obj = (ExternalObjectBase *)*objectHandler;
+	EMSOfreesteam *obj = (EMSOfreesteam *)*objectHandler;
 
 	// Call the correspounding c++ function.
 	obj->methodDetails(methodName, methodID,
@@ -1176,7 +1176,7 @@ void eo_calc_(const int_t *objectHandler,
 			  int_t *retval, char *msg
 ){
     // Cast back the object.
-	ExternalObjectBase *obj = (ExternalObjectBase *)*objectHandler;
+	EMSOfreesteam *obj = (EMSOfreesteam *)*objectHandler;
 
 	// Call the correspounding c++ function.
 	obj->calc(methodName, methodID,

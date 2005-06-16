@@ -10,7 +10,7 @@
 
 #include "../steamcalculator.h"
 #include "../solver2.h"
-#include "../exception.h"
+#include <stdexcept>
 
 #include <windows.h>
 #include <sstream>
@@ -101,14 +101,14 @@ iapws_pT_uv(
 		if (NInputs!=2) {
 			stringstream ss;
 			ss << "Expected 2 inputs, received " << NInputs;
-			throw Exception(ss.str());
+			throw std::runtime_error(ss.str());
 		}
 
 		// Check the number of outputs
 		if (NOutputs!=2) {
 			stringstream ss;
 			ss << "Expected 2 outputs, received " << NOutputs;
-			throw Exception(ss.str());
+			throw std::runtime_error(ss.str());
 			return;
 		}
 
@@ -122,7 +122,7 @@ iapws_pT_uv(
 
 		return;
 
-	}catch(Exception &E){
+	}catch(std::exception &E){
 		std::stringstream ss;
 		ss << E.what();
 		std::strncpy(s,ss.str().c_str(),EES_MSG_LENGTH-1);

@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifndef NDEBUG
 #include <sstream>
-#include "exception.h"
+#include <stdexcept>
 #endif
 
 /// Return a particular property of steam in the given state
@@ -87,10 +87,10 @@ SteamProperty<SpecificEntropy,SOLVE_ENTROPY>::get(const SteamCalculator &S){
 	return S.specentropy();
 
 	#ifndef NDEBUG
-		}catch(Exception &E){
+		}catch(std::exception &E){
 			std::stringstream s;
 			s << "SteamProperty<s>::get: " << E.what();
-			throw Exception(s.str());
+			throw std::runtime_error(s.str());
 		}
 	#endif
 }

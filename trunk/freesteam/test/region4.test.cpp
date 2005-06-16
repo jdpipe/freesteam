@@ -49,7 +49,7 @@ class Region4TestPoint{
 				}
 				*/
 
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream s;
 				s << "Region4TestPoint::test: " << E.what();
 				CPPUNIT_FAIL(s.str());

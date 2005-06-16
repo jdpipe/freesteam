@@ -74,7 +74,7 @@ const Num REGION43_C[7]
 Temperature
 Boundaries::getSatTemp_p(Pressure p) {
 
-	throw Exception("Boundaries::getSatTemp_p: disabled due for numerical consistency on saturation line");
+	throw std::runtime_error("Boundaries::getSatTemp_p: disabled due for numerical consistency on saturation line");
 
 	Num b = beta(p);
 	Num d = D(E(b), F(b), G(b));
@@ -165,7 +165,7 @@ Boundaries::getSatDensSteam_T(const Temperature &T){
 	REQUIRE(T >= T_TRIPLE);
 	//REQUIRE(T > TB_LOW);
 	if(T > T_CRIT){
-		throw Exception("Boundaries::getSatDensSteam_T: T > T_CRIT, not allowed");
+		throw std::runtime_error("Boundaries::getSatDensSteam_T: T > T_CRIT, not allowed");
 	}
 
 	Num tau = 1 - T / T_CRIT;
@@ -278,14 +278,14 @@ Boundaries::isSat_Tx(const Temperature &T, const Num &x, const bool throw_me){
 	if(isnan(T)){
 		if(throw_me){
 			stringstream s;s << "Boundaries::isSat_Tx: T is not a number: T = " << T << ", x = " << x;
-			throw Exception(s.str());
+			throw std::runtime_error(s.str());
 		}
 		return false;
 	}
 	if(isnan(x)){
 		if(throw_me){
 			stringstream s;s << "Boundaries::isSat_Tx: x is not a number: T = " << T << ", x = " << x;
-			throw Exception(s.str());
+			throw std::runtime_error(s.str());
 		}
 		return false;
 	}
@@ -293,25 +293,25 @@ Boundaries::isSat_Tx(const Temperature &T, const Num &x, const bool throw_me){
 	if(T < T_TRIPLE){
 		if(throw_me){
 			stringstream s;s << "Boundaries::isSat_Tx: T < T_TRIPLE: T = " << T << ", x = " << x;
-			throw Exception(s.str());
+			throw std::runtime_error(s.str());
 		}
 		return false;
 	}else if(T > T_CRIT){
 		if(throw_me){
 			stringstream s;s << "Boundaries::isSat_Tx: T > T_CRIT: T = " << T << ", x = " << x;
-			throw Exception(s.str());
+			throw std::runtime_error(s.str());
 		}
 		return false;
 	}else if(x < 0.0){
 		if(throw_me){
 			stringstream s;s << "Boundaries::isSat_Tx: x < 0.0: T = " << T << ", x = " << x;
-			throw Exception(s.str());
+			throw std::runtime_error(s.str());
 		}
 		return false;
 	}else if(x > 1.0){
 		if(throw_me){
 			stringstream s;s << "Boundaries::isSat_Tx: x > 1.0: T = " << T << ", x = " << x;
-			throw Exception(s.str());
+			throw std::runtime_error(s.str());
 		}
 		return false;
 	}
@@ -383,7 +383,7 @@ Boundaries::isSat_pT(Pressure p, Temperature T,
 	if (throw_me) {
 		stringstream s;
 		s << "Steam not saturated @ T = " << T << ": p=" << p/bar<< "bar != psat=" << psat/bar<< "bar (rel err " << ((psat-p) / psat) << ")";
-		throw Exception(s.str());
+		throw std::runtime_error(s.str());
 	}
 
 	//cerr << "Point is not saturated" << endl;

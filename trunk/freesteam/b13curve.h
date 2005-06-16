@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define B13CURVE_H
 
 #include "common.h"
-#include "exception.h"
+#include <stdexcept>
 #include "units.h"
 #include "zeroin.h"
 #include "steamcalculator.h"
@@ -86,10 +86,10 @@ class B13Curve : public B13CurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 
 				return B13CurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>::getOrdinate(S);
 
-			}catch(Exception &e){
+			}catch(std::exception &e){
 				stringstream s;
 				s << "B13Curve<" << SteamProperty<Ordinate,OrdinateAlt>::name() << "," << SteamProperty<Abscissa,AbscissaAlt>::name() << ">::solve(" << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << target <<"): " << e.what();
-				throw Exception(s.str());
+				throw std::runtime_error(s.str());
 			}
 		}
 };

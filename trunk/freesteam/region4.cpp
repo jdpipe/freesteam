@@ -115,11 +115,11 @@ Region4::pres(const SteamCalculator &c) const{
 
 Num
 Region4::pitau_iaps85(const SteamCalculator &c) const{
-	throw Exception("Invalid call to Region4::pitau_iaps85: not implemented");
+	throw std::runtime_error("Invalid call to Region4::pitau_iaps85: not implemented");
 	return 0;
 }
 
 Num
 Region4::delpi_iaps85(const SteamCalculator &c) const{
-	throw Exception("Invalid call to Region4::delpi_iaps85: not implemented");
+	throw std::runtime_error("Invalid call to Region4::delpi_iaps85: not implemented");
 }

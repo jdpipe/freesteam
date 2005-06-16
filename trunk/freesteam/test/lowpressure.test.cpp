@@ -27,7 +27,7 @@ class LowPressureTest : public CppUnit::TestFixture{
 				SteamPropertyTest<SpecificVolume>::test( S, v, v * 0.01 * Percent);
 				SteamPropertyTest<SpecificEnergy,SOLVE_IENERGY>::test( S, u,  90.0 * J_kg);
 
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream ss;
 				ss << "IAPWS9795TestPoint::test: " << E.what();
 				CPPUNIT_FAIL(ss.str());

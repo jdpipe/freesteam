@@ -95,7 +95,7 @@ class B23CurveTest: public CppUnit::TestFixture{
 					points.push_back(p);
 				}
 
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream s;
 				s << "Initialisation error in setUp: " << E.what();
 				CPPUNIT_FAIL(s.str());
@@ -117,7 +117,7 @@ class B23CurveTest: public CppUnit::TestFixture{
 					B23Point &p = points.at(i);
 					p.testUV();
 				}
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream s;
 				s << "B23CurveTest::testUV: " << E.what();
 				CPPUNIT_FAIL(s.str());
@@ -130,7 +130,7 @@ class B23CurveTest: public CppUnit::TestFixture{
 					B23Point &p = points.at(i);
 					p.testHT();
 				}
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream s;
 				s << "B23CurveTest::testHT: " << E.what();
 				CPPUNIT_FAIL(s.str());

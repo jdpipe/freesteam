@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "../steamcalculator.h"
-#include "../exception.h"
+#include <stdexcept>
 #include "../units.h"
 
 #include <iostream>
@@ -56,7 +56,7 @@ int main(void){
 			Pressure p = Boundaries::getpbound_T(T);
 			cout << tab << p/MPa;
 
-		}catch(Exception &E){
+		}catch(std::exception &E){
 			cerr << "Exception: " << E.what() << endl;
 			cout << tab << "0";
 		}

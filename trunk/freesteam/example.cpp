@@ -78,7 +78,7 @@ int main(){
 
 		exit(0);
 
-	}catch(Exception &E){
+	}catch(std::exception &E){
 		cerr << "Error: " << E.what();
 		exit(1);
 	}

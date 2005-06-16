@@ -130,7 +130,7 @@ class GridTest : public CppUnit::TestFixture {
 					//cerr << ", now contains " << c->size() << endl;
 				}//ic= res.first;
 			} else {
-				throw Exception("Invalid X,Y,Z: this point already defined");
+				throw std::runtime_error("Invalid X,Y,Z: this point already defined");
 			}
 		}
 

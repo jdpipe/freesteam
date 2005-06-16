@@ -1,5 +1,5 @@
 #include "../boundaries.h"
-#include "../exception.h"
+#include <stdexcept>
 
 #include <sstream>
 
@@ -24,7 +24,7 @@ class RhoSatTest: public CppUnit::TestFixture{
 					s << " (error is " << fabs(rho_f_calc - rho_f)/rho_f / Percent << "%)";
 					CPPUNIT_FAIL(s.str());
 				}
-			}catch(Exception &e){
+			}catch(std::exception &e){
 				stringstream s;
 				s << "RhoSatTest::TestLiqPoint: " << e.what();
 				CPPUNIT_FAIL(s.str());
@@ -44,7 +44,7 @@ class RhoSatTest: public CppUnit::TestFixture{
 					CPPUNIT_FAIL(s.str());
 				}
 
-			}catch(Exception &e){
+			}catch(std::exception &e){
 				stringstream s;
 				s << "RhoSatTest::TestPoint: " << e.what();
 				CPPUNIT_FAIL(s.str());

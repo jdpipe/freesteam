@@ -1,6 +1,6 @@
 #include "../zeroin.h"
 #include "steamtestpoint.h"
-#include "../exception.h"
+#include <stdexcept>
 
 #include <sstream>
 
@@ -51,7 +51,7 @@ class ZeroInTest: public CppUnit::TestFixture{
 					CPPUNIT_FAIL(s.str());
 				}
 
-			}catch(Exception &e){
+			}catch(std::exception &e){
 				CPPUNIT_FAIL(e.what());
 			}
 		}

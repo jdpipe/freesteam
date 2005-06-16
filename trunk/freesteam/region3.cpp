@@ -159,7 +159,7 @@ void Region3::set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T
 		stringstream s;
 		s << "Region3::set_pT: Couldn't solve for p = " << p/MPa << "MPa, T = " << T;
 		s << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
-		throw Exception(s.str());
+		throw std::runtime_error(s.str());
 	}
 
 	/**

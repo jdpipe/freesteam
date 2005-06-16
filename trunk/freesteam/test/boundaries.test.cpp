@@ -1,5 +1,5 @@
 #include "../steamcalculator.h"
-#include "../exception.h"
+#include <stdexcept>
 #include "batchtest.h"
 #include "steamtestpoint.h"
 
@@ -28,7 +28,7 @@ class BoundariesTest : public CppUnit::TestFixture {
 				S.set_pT(3.0 * MPa,500.0 * Kelvin, 0.0);
 				CPPUNIT_ASSERT_EQUAL_MESSAGE("#3: region is incorrect",1,S.whichRegion());
 
-			}catch(Exception &e){
+			}catch(std::exception &e){
 				stringstream ss;
 				ss << "BoundariesTest::testRegion1: " << e.what();
 				CPPUNIT_FAIL(ss.str());
@@ -50,7 +50,7 @@ class BoundariesTest : public CppUnit::TestFixture {
 			S.set_pT(30.0 * MPa,700.0 * Kelvin, 1.0);
 			CPPUNIT_ASSERT_EQUAL(2,S.whichRegion());
 
-			}catch(Exception &e){
+			}catch(std::exception &e){
 				stringstream ss;
 				ss << "BoundariesTest::testRegion2: " << e.what();
 				CPPUNIT_FAIL(ss.str());

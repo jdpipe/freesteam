@@ -39,7 +39,7 @@ FlowSheet Pipe2SteadyTest
 	OPTIONS
 	outputLevel="high";
 	mode="steady";
-	NLASolver="nlasolver";
+	# NLASolver="nlasolver";
 end
 
 	

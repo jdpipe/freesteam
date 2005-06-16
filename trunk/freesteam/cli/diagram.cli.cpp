@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "diagram.h"
-#include "../exception.h"
+#include <stdexcept>
 #include <stdlib.h>
 
 #include <iostream>
@@ -47,7 +47,7 @@ int main(const int argc, char *argv[]){
 		std::cout << D->plot();
 
 		delete D;
-	}catch(Exception &E){
+	}catch(std::exception &E){
 		cerr << "main: " << E.what();
 		exit(1);
 	}

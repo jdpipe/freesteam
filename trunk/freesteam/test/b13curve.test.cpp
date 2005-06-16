@@ -82,7 +82,7 @@ class B13CurveTest: public CppUnit::TestFixture{
 					CPPUNIT_FAIL(s.str());
 				}
 				*/
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream s;
 				s << "B13CurveTest::testB13: " << E.what();
 				CPPUNIT_FAIL(s.str());

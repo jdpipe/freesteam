@@ -79,14 +79,14 @@ SteamErrorCode SteamCalculatorException::getType() {
 
 SteamCalculatorException::SteamCalculatorException(Pressure p,
         Temperature T,
-        SteamErrorCode c) {
+        SteamErrorCode c) : std::runtime_error("SteamCalculatorException") {
 	this->type = c;
 	this->p = p;
 	this->T = T;
 }
 
 SteamAlmostSaturatedException::SteamAlmostSaturatedException(Pressure p,
-        Temperature T) {
+        Temperature T) : std::runtime_error("SteamAlmostSaturatedException") {
 	this->p = p;
 	this->T = T;
 }
@@ -98,6 +98,6 @@ string SteamAlmostSaturatedException::what() {
 	return s.str();
 }
 
-OverPressureException::OverPressureException(string message) : Exception(message){
+OverPressureException::OverPressureException(string message) : std::runtime_error(message){
 	// Intentionally empty
 }

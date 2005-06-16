@@ -38,7 +38,7 @@ class SatCurveTest: public CppUnit::TestFixture{
 					CPPUNIT_FAIL(s.str());
 				}
 
-			}catch(Exception &e){
+			}catch(std::exception &e){
 				stringstream s;
 				s << "SatCurveTest::TestTU: " << e.what();
 				CPPUNIT_FAIL(s.str());
@@ -59,7 +59,7 @@ class SatCurveTest: public CppUnit::TestFixture{
 					CPPUNIT_FAIL(s.str());
 				}
 
-			}catch(Exception &e){
+			}catch(std::exception &e){
 				stringstream s;
 				s << "SatCurveTest::TestUT: " << e.what();
 				CPPUNIT_FAIL(s.str());
@@ -80,7 +80,7 @@ class SatCurveTest: public CppUnit::TestFixture{
 					CPPUNIT_FAIL(s.str());
 				}
 
-			}catch(Exception &e){
+			}catch(std::exception &e){
 				stringstream s;
 				s << "SatCurveTest::TestVU: " << e.what();
 				CPPUNIT_FAIL(s.str());
@@ -105,7 +105,7 @@ class SatCurveTest: public CppUnit::TestFixture{
 						TestVU(v,u,SAT_WATER);
 					}
 				}
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream s1;
 				s1 << "SatCurveTest::TestWater: " << E.what();
 				CPPUNIT_FAIL(s1.str());
@@ -126,7 +126,7 @@ class SatCurveTest: public CppUnit::TestFixture{
 
 					TestVU(v,u,SAT_STEAM);
 				}
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream s1;
 				s1 << "SatCurveTest::TestSteam: " << E.what();
 				CPPUNIT_FAIL(s1.str());

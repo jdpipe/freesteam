@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "steamcalculator.h"
 #include "steamproperty.h"
 #include "zeroin.h"
-#include "exception.h"
+#include <stdexcept>
 #include <string>
 using namespace std;
 
@@ -106,16 +106,16 @@ class SolverBase : public DesignByContract
 					s << "Failed solution: target "<< SteamProperty<OtherProp,OtherPropAlt>::name() << " = " << op << ", with " << SteamProperty<MainProp,MainPropAlt>::name() << " fixed at " << mp << endl;
 
 					s << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
-					throw Exception(s.str());
+					throw std::runtime_error(s.str());
 				}
 
 				setVaryProp(z.getSolution());
 
 				return S;
-			}catch(Exception &e){
+			}catch(std::exception &e){
 				stringstream s;
 				s << "Solver<" << SteamProperty<MainProp,MainPropAlt>::name() << "," << SteamProperty<OtherProp,OtherPropAlt>::name() << "," << SteamProperty<VaryProp,VaryPropAlt>::name() << ">::solve: " << e.what();
-				throw Exception(s.str());
+				throw std::runtime_error(s.str());
 			}
 		}
 	protected:
@@ -169,7 +169,7 @@ class Solver
 		Solver(const MainProp &mp,const OtherProp &op)
 			: SolverBase<MainProp,OtherProp,VaryProp,MainPropAlt,OtherPropAlt,VaryPropAlt>(mp,op){
 			// not implemented
-			throw Exception("Not implemented");
+			throw std::runtime_error("Not implemented");
 		}
 
 

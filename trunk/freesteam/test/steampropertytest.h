@@ -16,10 +16,10 @@ class SteamPropertyTest : public SteamProperty<Property,PropertyAlternative>{
 
 			try{
 				calculated_value = SteamProperty<Property,PropertyAlternative>::get(S);
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream s;
 				s << "SteamPropertyTest::test: " << E.what();
-				throw Exception(s.str());
+				throw std::runtime_error(s.str());
 			}
 
 			if(fabs(calculated_value - expected_value) > tol){
@@ -27,7 +27,7 @@ class SteamPropertyTest : public SteamProperty<Property,PropertyAlternative>{
 				s.flags(ios_base::showbase);
 				s << "Expected " << SteamProperty<Property,PropertyAlternative>::name() << " = " << expected_value;
 				s << ", got " << SteamProperty<Property,PropertyAlternative>::name() << " = " << calculated_value;
-				throw Exception(s.str());
+				throw std::runtime_error(s.str());
 			}
 		}
 };

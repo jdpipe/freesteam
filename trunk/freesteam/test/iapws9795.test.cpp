@@ -1,5 +1,5 @@
 #include "../steamcalculator.h"
-#include "../exception.h"
+#include <stdexcept>
 #include "batchtest.h"
 #include "steamtestpoint.h"
 #include "../iapws95.h"
@@ -96,7 +96,7 @@ class IAPWS9795TestPoint{
 				SpecHeatCap cv95 = S95.cv(T/Kelvin, rho/kg_m3) * kJ_kgK;
 				IAPWS9795_COMPARE(cv97,cv95, 0.45 * Percent);
 
-			}catch(Exception &e){
+			}catch(std::exception &e){
 				stringstream ss;
 				ss << "IAPWS9795TestPoint::test: " << e.what();
 				CPPUNIT_FAIL(ss.str());

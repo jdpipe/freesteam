@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define B23CURVE_H
 
 #include "common.h"
-#include "exception.h"
+#include <stdexcept>
 #include "units.h"
 #include "zeroin.h"
 #include "steamcalculator.h"
@@ -108,7 +108,7 @@ class B23Curve : public B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 					stringstream s;
 					s.flags(ios_base::showbase);
 					s << "Unable to solve for target " << target << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
-					throw Exception(s.str());
+					throw std::runtime_error(s.str());
 				}
 
 
@@ -120,10 +120,10 @@ class B23Curve : public B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 
 				return B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,AbscissaAlternative>::getOrdinate(S);
 
-			}catch(Exception &e){
+			}catch(std::exception &e){
 				stringstream s;
 				s << "B23Curve::solve: " << e.what();
-				throw Exception(s.str());
+				throw std::runtime_error(s.str());
 			}
 		}
 

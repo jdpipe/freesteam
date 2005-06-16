@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "steamproperty.h"
 #include "units.h"
 #include "satcurve.h"
-#include "exception.h"
+#include <stdexcept>
 #include "convergencetest.h"
 #include "b23curve.h"
 #include "boundaries.h"
@@ -201,10 +201,10 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 				region = whichRegion(fp,sp);
 
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream ss;
 				ss << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::solve (no first guess): " << E.what();
-				throw Exception(ss.str());
+				throw std::runtime_error(ss.str());
 			}
 
 			try{
@@ -225,12 +225,12 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 					default:
 						stringstream ss;
 						ss << "Invalid return from whichRegion(" << fp << "," << sp << "): region = " << region;
-						throw Exception(ss.str());
+						throw std::runtime_error(ss.str());
 				}
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream s;
 				s << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::solve (no first guess; found region=" << region << "): " << E.what();
-				throw Exception(s.str());
+				throw std::runtime_error(s.str());
 			}
 
 			return S2;
@@ -264,7 +264,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 						return solveRegion4(fp,sp,firstguess);
 				}
 
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream ss;
 				ss.flags(ios_base::showbase);
 
@@ -280,7 +280,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 				ss << "): " << E.what();
 
-				throw Exception(ss.str());
+				throw std::runtime_error(ss.str());
 			}
 		}
 
@@ -300,7 +300,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				//cerr << endl << "Solver2::solveRegion4: firstguess copied to guess OK";
 
 				if(firstguess.whichRegion()!=3){
-					throw Exception("Solver2::solveRegion3: First guess is not region3");
+					throw std::runtime_error("Solver2::solveRegion3: First guess is not region3");
 				}
 
 				SteamCalculator petT, petrho;
@@ -447,7 +447,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 							S.setRegion3_rhoT(rho,T);
 							//cerr << endl << "     ... Applying P_MAX limit at T = " << T << ": rho = " << rho;
 							if(++pmaxiter > 20){
-								throw Exception("Solver2::solveRegion3: Failed to find rho of P_MAX");
+								throw std::runtime_error("Solver2::solveRegion3: Failed to find rho of P_MAX");
 							}
 
 						}while(S.pres() > P_MAX);
@@ -459,14 +459,14 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 					niter++;
 
 					if(niter > maxiter){
-						throw Exception("Solver2::solveRegion3: Exceeded maximum iterations");
+						throw std::runtime_error("Solver2::solveRegion3: Exceeded maximum iterations");
 					}
 				}
 
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream s;
 				s << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">:solveRegion3: " << E.what();
-				throw Exception(s.str());
+				throw std::runtime_error(s.str());
 			}
 		}
 
@@ -483,7 +483,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				//cerr << endl << "Solver2::solveRegion4: firstguess copied to guess OK";
 
 				if(firstguess.whichRegion()!=4){
-					throw Exception("Solver2::solveRegion4: First guess is not region 4");
+					throw std::runtime_error("Solver2::solveRegion4: First guess is not region 4");
 				}
 
 				SteamCalculator petT, petx;
@@ -614,13 +614,13 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 					niter++;
 
 					if(niter > maxiter){
-						throw Exception("Solver2::solveRegion4: Exceeded maximum iterations");
+						throw std::runtime_error("Solver2::solveRegion4: Exceeded maximum iterations");
 					}
 				}
-			}catch(Exception &E){
+			}catch(std::exception &E){
 				stringstream s;
 				s<< "Solver2::solveRegion4: " << E.what();
-				throw Exception(s.str());
+				throw std::runtime_error(s.str());
 			}
 		}
 
@@ -630,7 +630,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 			SteamCalculator guess = firstguess;
 
 			if(firstguess.whichRegion()!=1){
-				throw Exception("Solver2::solveRegion1: First guess is not region 1");
+				throw std::runtime_error("Solver2::solveRegion1: First guess is not region 1");
 			}
 
 			SteamCalculator petT, petp;
@@ -749,7 +749,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				niter++;
 
 				if(niter > maxiter){
-					throw Exception("Solver2::solveRegion1: Exceeded maximum iterations");
+					throw std::runtime_error("Solver2::solveRegion1: Exceeded maximum iterations");
 				}
 			}
 		}
@@ -768,7 +768,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 			SteamCalculator guess = firstguess;
 
 			if(firstguess.whichRegion()!=2){
-				throw Exception("Solver2::solveRegion2: First guess is not region 2");
+				throw std::runtime_error("Solver2::solveRegion2: First guess is not region 2");
 			}
 
 			SteamCalculator petT, petp;
@@ -896,7 +896,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				niter++;
 
 				if(niter > maxiter){
-					throw Exception("Solver2::solveRegion2: Exceeded maximum iterations");
+					throw std::runtime_error("Solver2::solveRegion2: Exceeded maximum iterations");
 				}
 			}
 

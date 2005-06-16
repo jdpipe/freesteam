@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "diagram.h"
-#include "../exception.h"
+#include <stdexcept>
 
 #include <string>
 #include <sstream>
@@ -54,7 +54,7 @@ DiagramBase::newDiagram(const std::string &type){
 	}else{
 		std::stringstream ss;
 		ss << "Invalid diagram requested: " << type;
-		throw Exception(ss.str());
+		throw std::runtime_error(ss.str());
 	}
 
 }

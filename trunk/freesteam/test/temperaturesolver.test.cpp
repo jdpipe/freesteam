@@ -58,7 +58,7 @@ class TemperatureSolverTest: public CppUnit::TestFixture{
 				S = PS3.solve(0.00001 * metre3 / kilogram, 1e-7 * Kelvin);
 				TSOLVE_COMPARE(v);
 
-			}catch(Exception &e){
+			}catch(std::exception &e){
 				stringstream s;
 				s << "TemperatureSolverTest::Test: " << e.what();
 				CPPUNIT_FAIL(s.str());

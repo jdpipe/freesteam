@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../b23curve.h"
 #include "../steamcalculator.h"
-#include "../exception.h"
+#include <stdexcept>
 #include "../units.h"
 
 #include <iostream>
@@ -66,7 +66,7 @@ int main(void){
 			cout << tab << h            << tab << s           << tab << v ;
 			cout << tab << cp           << tab << cv          << endl;
 
-		}catch(Exception &E){
+		}catch(std::exception &E){
 			cerr << "Exception: " << E.what() << endl;
 		}
 	}
