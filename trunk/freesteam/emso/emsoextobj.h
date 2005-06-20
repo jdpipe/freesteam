@@ -37,6 +37,7 @@ public:
 
 	void create(int_t *retVal, char *msg){
 		try{
+			strategy.create();
 			strategy.initialiseMethodNames();
 			strategy.initialiseParamNames();
 
@@ -62,7 +63,7 @@ public:
 	/**
 		Set parameters (not used?)
 	*/
-	virtual void setParameter(
+	void setParameter(
 			const char *parameterName
 			,const int_t *valueType
 			,const int_t *valueLength
@@ -92,7 +93,7 @@ public:
 	/**
 		Look up the method ID and number of inputs/outputs given a method ID or method names
 	*/
-	virtual void checkMethod(
+	void checkMethod(
 			const char *methodName
 			,int_t *methodID
 			,int_t *numOfInputs
@@ -127,7 +128,7 @@ public:
 	/**
 		Relate information about the available methods in this component back to EMSO
 	*/
-	virtual void methodDetails(
+	void methodDetails(
 			const char *methodName
 			,const int_t *methodID
 
@@ -163,13 +164,8 @@ public:
 				throw std::runtime_error(s.str());
 			}
 
-			for(int i=0;i<*numOfInputs;i++){
-				inputUnits[i] = getInputUnits(method,i);
-			}
-
-			for(int i=0;i<*numOfOutputs;i++){
-				outputUnits[i] = getOutputUnits(method,i);
-			}
+			strategy.getInputUnits(method, inputUnits);
+			strategy.getOutputUnits(method, outputUnits);
 
 			*retval = emso_ok;
 
@@ -193,9 +189,9 @@ public:
 		@param totalOutputLength Not used here
 		@param outputDerivatives Not used... yet
 		@param msg A place to put an error message
-		@return EMSO status code (see emso_types.h)
+		@return EMSO status code (@see <emso/emso_types.h>)
 	*/
-	virtual void calc(
+	inline void calc(
 			const char *methodName
 			,const int_t *methodID
 
@@ -214,17 +210,29 @@ public:
 
 			,int_t *retVal, char *msg
 	){
-		strategy.msg = msg;
-
-		strategy.calc(methodID, inputValues, outputValues);
-
-		*retVal = emso_ok;
-	}catch(std::exception &e){
-		snprintf(msg,EMSO_MESSAGE_LENGTH,e.what());
-		*retVal = emso_error;
-	}catch(...){
-		snprintf(msg,EMSO_MESSAGE_LENGTH,"ExternalObjectContext::solve: Unknown exception");
-		*retVal = emso_error;
+		try{
+			strategy.msg = msg;
+			
+			if(methodID==NULL){
+				throw std::runtime_error("Method ID has not been looked up");
+			}
+	
+			if(*methodID == 0){
+				std::stringstream ss;
+				ss << "Method '" << methodName << " not found";
+				throw std::runtime_error(ss.str());
+			}
+	
+			strategy.calc(methodID, methodName, inputValues, outputValues);
+	
+			*retVal = emso_ok;
+		}catch(std::exception &e){
+			report_error(msg,e.what());
+			*retVal = emso_error;
+		}catch(...){
+			report_error(msg,"ExternalObjectContext::solve: Unknown exception");
+			*retVal = emso_error;
+		}
 	}
 
 private:
@@ -324,15 +332,15 @@ private:
 	}
 
 	inline int_t getNumOfOutputs(const int_t &method){
-		return strategy.getNumOfInputs(method);
+		return strategy.getNumOfOutputs(method);
 	}
 
-	inline const char *getInputUnits(const int_t &method, const int &index){
-		return strategy.getInputUnits(method,index);
+	inline void getInputUnits(const int_t &method, char *inputUnits[]){
+		strategy.getInputUnits(method, inputUnits);
 	}
 
-	inline const char *getOutputUnits(const int_t &method, const int &index){
-		return strategy.getOutputUnits(method,index);
+	inline void getOutputUnits(const int_t &method, char *outputUnits[]){
+		strategy.getOutputUnits(method, outputUnits);
 	}
 
 	/** check if we have an error and print it to the given msg
@@ -361,11 +369,18 @@ class ExternalObjectStrategy{
 public:
 
 	char *msg; // for possible use by destructor
-
+	ParamMap paramNames;
+	MethodMap methodNames;
+	
 public:
-	virtual void create(const real_t *y0) = 0;
 
-	virtual void calc(const int_t *methodID, const real_t *inputValues, real_t *outputValues) = 0;
+	virtual ~ExternalObjectStrategy(){
+		// assume nothing to do here
+	}
+
+	virtual void create(void) = 0;
+
+	virtual void calc(const int_t *methodID, const char *methodName, const real_t *inputValues, real_t *outputValues) = 0;
 
 	virtual void destroy() = 0;
 
@@ -375,8 +390,8 @@ public:
 	virtual int_t getNumOfInputs(const int_t &method) = 0;
 	virtual int_t getNumOfOutputs(const int_t &method) = 0;
 
-	virtual const char *getInputUnits(const int_t &method, const int &index) = 0;
-	virtual const char *getOutputUnits(const int_t &method, const int &index) = 0;
+	virtual void getInputUnits(const int_t &method, char *inputUnits[]) = 0;
+	virtual void getOutputUnits(const int_t &method, char *inputUnits[]) = 0;
 
 };
 

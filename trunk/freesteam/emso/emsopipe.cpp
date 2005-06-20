@@ -59,11 +59,13 @@ using namespace std;
 class EMSOpipe : public ExternalObjectStrategy {
 
 public:
-	virtual void create(const real_t *y0){
+	virtual void create(){
 		// nothing to do here
 	}
 
-	virtual void destroy() = 0;
+	virtual void destroy(){
+		// nothing here either
+	}
 
 	virtual int_t getNumOfInputs(const int_t &method){
 		return 2;
@@ -73,71 +75,48 @@ public:
 		return 1;
 	}
 
-	virtual const char *getInputUnits(const int_t &method, const int &index){
-		return NULL;
+	virtual void getInputUnits(const int_t &method, char *inputUnits[]){
+		// all dimensionless
+		return;
 	}
 
-	virtual const char *getOutputUnits(const int_t &method, const int &index){
-		return NULL;
+	virtual void getOutputUnits(const int_t &method, char *inputUnits[]){
+		// all dimensionless
+		return;
 	}
 
 	virtual void calc(const int_t *methodID, const char *methodName, const real_t *inputValues, real_t *outputValues){
+		#ifdef EMSO_DEBUG
+		cerr << "EMSOpipe: " << methodName << "(";
 		try{
+		#endif
 
-			#ifdef EMSO_DEBUG
-				//cerr << "starting emsopipe::calc call" << endl;
-				++numOfCalcCalls;
-			#endif
+			switch(*methodID){
+				case f | given_ReEd:
+					#ifdef EMSO_DEBUG
+					cerr << "Re = " << inputValues[0] << "," << "eps/D = " << inputValues[1] << ")";
+					#endif
 
-			int_t method;
-			method = *methodID;
-			if(!method)
-				method = convertMethod(string(methodName));
+					outputValues[0] = getFrictionFactor(inputValues[0],inputValues[1]);
 
-			if(method == 0){
-				stringstream ss;
-				ss << "Method '" << methodName << " not found";
-				throw std::runtime_error(ss.str());
+					#ifdef EMSO_DEBUG
+					cerr << " = " << outputValues[0] << endl;
+					#endif
+
+					break;
+
+				default:
+					throw std::runtime_error("EMSOpipe::calc: Method not implemented.");
 			}
 
-			#ifdef EMSO_DEBUG
-				cerr << "EMSOpipe[" << instanceNumber << "," << numOfCalcCalls << "]: " << methodName << "(";
-				try{
-			#endif
-					switch(method){
-						case f | given_ReEd:
-							#ifdef EMSO_DEBUG
-								cerr << "Re = " << inputValues[0] << "," << "eps/D = " << inputValues[1] << ")";
-							#endif
-							outputValues[0] = getFrictionFactor(inputValues[0],inputValues[1]);
-							#ifdef EMSO_DEBUG
-								cerr << " = " << outputValues[0] << endl;
-							#endif
-							break;
-
-						default:
-							throw std::runtime_error("EMSOpipe::calc: Method not implemented.");
-					}
-
-			#ifdef EMSO_DEBUG
-				}catch(std::exception &E){
-					stringstream ss;
-					ss << methodName << ": error during evaluation: " << E.what() << endl;
-					throw std::runtime_error(ss.str());
-				}
-
-				//cerr << "end emsopipe::calc call" << endl;
-			#endif
-
-			*retval = emso_ok;
-
+		#ifdef EMSO_DEBUG
 		}catch(std::exception &E){
 			stringstream ss;
-			ss << "EMSOpipe::calc: " << E.what();
-
-			report_error(msg, ss.str());
-			*retval = emso_error;
+			ss << methodName << ": error during evaluation: " << E.what() << endl;
+			throw std::runtime_error(ss.str());
 		}
+		//cerr << "end emsopipe::calc call" << endl;
+		#endif
 	}
 
 private:
@@ -216,6 +195,7 @@ private:
 		,OutputMask = 0xffff0000
 	};
 
+public:
 /*
 	See the comment at the top of the file for an explanation of this crazy stuff here
 */
@@ -227,7 +207,7 @@ private:
 	} Method;
 #undef M
 #undef X
-	typedef map<const string, Method> MethodMap;
+	typedef map<const std::string, int_t> MethodMap;
 
 	static MethodMap methodNames;
 
@@ -256,7 +236,7 @@ private:
 	} Param;
 #undef P
 #undef X
-	typedef map<const string, Param> ParamMap;
+	typedef map<const string, int_t> ParamMap;
 
 	static ParamMap paramNames;
 
