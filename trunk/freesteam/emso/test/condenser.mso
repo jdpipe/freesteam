@@ -26,7 +26,7 @@ Model Condenser as SteamEquipment_ph # 8 + 2 - 3 = 7
 	
 	# Energy conservation, no work, no volume
 	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot;
-	H = 0 * "J";
+	U = 0 * "J";
 	Wdot =  0 * "W";
 	
 	# Outlet quality
