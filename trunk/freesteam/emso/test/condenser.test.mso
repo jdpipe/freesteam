@@ -38,7 +38,8 @@ FlowSheet CondenserTest
 	
 	OPTIONS
 	mode = "steady";
-	outputLevel = "all";
+	NLASolver="linesearch";
+	outputLevel = "high";
 end
 
 #*
@@ -71,7 +72,8 @@ FlowSheet CondenserTest1
 	
 	OPTIONS
 	mode = "steady";
-	outputLevel = "all";
+	NLASolver="linesearch";
+	outputLevel = "high";
 end
 
 #*
@@ -105,6 +107,7 @@ FlowSheet CondenserTest2
 	
 	OPTIONS
 	mode = "steady";
+	NLASolver="linesearch";
 	outputLevel = "all";
 end
 
