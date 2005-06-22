@@ -16,7 +16,7 @@ Model PipeNode
 	# Note, massflowrate limits are important here!
 	mdot as MassFlowRate(Lower=-40, Upper=40, Unit="kg/s");
 
-	p as Pressure(Lower=0, Upper=1000, Unit="bar");
+	p as Pressure(Lower=.00612, Upper=1000, Unit="bar");
 	u as SpecificInternalEnergy(Lower=0, Upper=3663, Unit="kJ/kg");
 	rho as Density(Lower=0.0202, Upper=1046, Unit="kg/m^3");
 	h as SpecificEnthalpy(Lower=0, Upper=4159, Unit="kJ/kg");
