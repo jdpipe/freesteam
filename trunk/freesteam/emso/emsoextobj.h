@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <string>
 #include <map>
+#include <iostream>
 
 #include <emso/external_object.h>
 
@@ -43,7 +44,7 @@ public:
 
 			*retVal = emso_ok;
 		}catch(std::exception &e){
-			snprintf(msg,EMSO_MESSAGE_LENGTH,e.what());
+			report_error(msg, e.what());
 			*retVal = emso_error;
 		}
 	}
@@ -55,7 +56,7 @@ public:
 			strategy.destroy();
 			*retVal = emso_ok;
 		}catch(std::exception &e){
-			snprintf(msg,EMSO_MESSAGE_LENGTH,e.what());
+			report_error(msg, e.what());
 			*retVal = emso_error;
 		}
 	}
@@ -212,25 +213,26 @@ public:
 	){
 		try{
 			strategy.msg = msg;
-			
+
 			if(methodID==NULL){
 				throw std::runtime_error("Method ID has not been looked up");
 			}
-	
+
 			if(*methodID == 0){
 				std::stringstream ss;
 				ss << "Method '" << methodName << " not found";
 				throw std::runtime_error(ss.str());
 			}
-	
+
 			strategy.calc(methodID, methodName, inputValues, outputValues);
-	
+
 			*retVal = emso_ok;
 		}catch(std::exception &e){
+			// std::cerr << "ExternalObjectContext::calc: " << e.what() << std::endl;
 			report_error(msg,e.what());
 			*retVal = emso_error;
 		}catch(...){
-			report_error(msg,"ExternalObjectContext::solve: Unknown exception");
+			report_error(msg,"ExternalObjectContext::calc: Unknown exception");
 			*retVal = emso_error;
 		}
 	}
@@ -347,6 +349,8 @@ private:
 	*
 	*/
 	void report_error(char *msg, const std::string &error){
+		std::cerr << error << std::endl;
+
 		if(error.size() > EMSO_MESSAGE_LENGTH){
 			std::stringstream ss;
 			ss << error.substr(0,EMSO_MESSAGE_LENGTH-24) << "... (message cut short)";
@@ -371,7 +375,7 @@ public:
 	char *msg; // for possible use by destructor
 	ParamMap paramNames;
 	MethodMap methodNames;
-	
+
 public:
 
 	virtual ~ExternalObjectStrategy(){
