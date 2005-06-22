@@ -16,30 +16,30 @@ FlowSheet Pipe2SteadyTest
 	S1 to P.In;
 
 	SET
-	P.n = 5;
+	P.n = 20;
 	P.D = 0.05 * "m";
-	P.L = 10 * "m";
+	P.L = 100 * "m";
 	P.eps = 1e-5 * "m";
 	
 	
 	mdot_initial = 0.1 * "kg/s";
-	T_initial = (273.15 + 20) * "K";
+	T_initial = (273.15 + 180) * "K";
 	
 	SPECIFY
-	S1.p = 1 * "bar";
+	S1.p = 60 * "bar";
 	S1.T = T_initial;
 	S1.mdot = mdot_initial;
 	# P.X(P.n).p = p_out;
 	
 	GUESS
-	P.X([1:P.n]).rho = 1 *"kg/m^3";
+	P.X([1:P.n]).rho = 1000 *"kg/m^3";
 	P.X([1:P.n]).mdot = 0.1 * "kg/s";
 	P.X([1:P.n]).u = 1000 * "kJ/kg";
 	
 	OPTIONS
 	outputLevel="high";
 	mode="steady";
-	# NLASolver="linesearch";
+	NLASolver="linesearch";
 end
 
 	
@@ -117,6 +117,7 @@ FlowSheet Pipe2PressureRamp
 	outputLevel="high";
 	time=[0:0.15:30] * "s";
 	# mode="steady";
+	NLASolver = "linesearch";
 	
 end
 
