@@ -42,10 +42,10 @@ all:
 #CXX = /usr/local/bin/gfilt
 CXX = g++
 
-CXXFLAGS = -O3 -Wall $(PLATFORM_CXX_FLAGS)
+CXXFLAGS = -O3 $(PLATFORM_CXX_FLAGS)
 LDFLAGS = $(PLATFORM_LD_FLAGS) -lm -O3
 
-CPPFLAGS = $(PLATFORM_CPP_FLAGS) -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -W
+CPPFLAGS = $(PLATFORM_CPP_FLAGS) -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -Wall -Wno-unused-parameter 
 
 MAKEDEPFLAG = -MM
 
@@ -54,6 +54,8 @@ LIBNAME = steam
 LIB = $(PACKAGE_ROOT)/lib$(LIBNAME).a
 
 DOXYGEN = doxygen
+
+INSTALL_FLAGS = -p -m 755 $(PLATFORM_INSTALL_FLAGS)
 
 #-----------------------------
 # MAKE DEPEND

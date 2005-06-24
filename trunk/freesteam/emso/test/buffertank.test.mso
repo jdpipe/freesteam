@@ -31,7 +31,6 @@ FlowSheet BufferTankTest
 	TA.u = 600 * "kJ/kg";
 	
 	OPTIONS
-	differentiation="numeric";
 	outputLevel="high";
 	time = [0 : 2 : 500 ] * "s";
 	
@@ -85,7 +84,6 @@ FlowSheet BufferTankTest2
 	TA4.u = u_init;
 	
 	OPTIONS
-	differentiation="numeric";
 	outputLevel="low";
 	time = [0 : 0.1 : 500] * "s";
 	
@@ -135,7 +133,6 @@ FlowSheet BufferTankTest3
 	end
 	
 	OPTIONS
-	differentiation="numeric";
 	outputLevel="low";
 	time = [0 : 0.1 : 500] * "s";
 	

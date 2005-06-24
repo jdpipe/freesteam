@@ -262,6 +262,10 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 						return solveRegion3(fp,sp,firstguess);
 					case 4:
 						return solveRegion4(fp,sp,firstguess);
+					default:
+						std::stringstream s;
+						s << "Invalid region returned, '" << region << "'";
+						throw std::runtime_error(s.str());
 				}
 
 			}catch(std::exception &E){

@@ -23,7 +23,7 @@ Model Boiler as SteamEquipment_ph # 7
 	
 	# Energy conservation, no work, no volume
 	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot;
-	H = 0 * "J";
+	U = 0 * "J";
 	Wdot = 0 * "W";
 end
 
@@ -41,7 +41,7 @@ Model Boiler_pT as SteamEquipment_pT # 7
 	
 	# Energy conservation, no work, no volume
 	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot;
-	H = 0 * "J";
+	U = 0 * "J";
 	Wdot = 0 * "W";
 end
 

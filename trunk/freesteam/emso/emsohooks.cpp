@@ -489,9 +489,9 @@ public:
 				#ifdef EMSO_DEBUG
 					cerr << "p=" << inputValues[0] * MPa << ", u=" << inputValues[1] * kJ_kg;
 				#endif
-				cerr << "About to solve for p,u...";
+				///cerr << "About to solve for p,u...";
 				S = SS_PU.solve(inputValues[0] * MPa, inputValues[1] * kJ_kg, lastState);
-				cerr << "DONE" << endl;
+				///cerr << "DONE" << endl;
 				break;
 
 			case given_uv:
