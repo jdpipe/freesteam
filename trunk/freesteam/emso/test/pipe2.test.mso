@@ -21,7 +21,6 @@ FlowSheet Pipe2SteadyTest
 	P.L = 100 * "m";
 	P.eps = 1e-5 * "m";
 	
-	
 	mdot_initial = 0.1 * "kg/s";
 	T_initial = (273.15 + 180) * "K";
 	
