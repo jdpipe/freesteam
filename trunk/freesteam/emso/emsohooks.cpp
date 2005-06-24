@@ -129,11 +129,12 @@ public:
 		#ifdef EMSO_DEBUG
 			debug=false;
 
-			numOfCalcCalls = 0;
-			numOfInstances++;
-			instanceNumber = instanceSerialNumber++;
+			//numOfCalcCalls = 0;
+			//numOfInstances++;
+			//instanceNumber = instanceSerialNumber++;
 
-			cerr << "Created EMSOfreesteam object " << instanceNumber << " (now " << numOfInstances << " instances)..." << endl;
+			// cerr << "Created EMSOfreesteam object " << instanceNumber << " (now " << numOfInstances << " instances)..." << endl;
+			cerr << "Created EMSOfreesteam object..." << endl;
 		#endif
 	};
 
@@ -142,9 +143,10 @@ public:
 	*/
 	virtual ~EMSOfreesteam(){
 		#ifdef EMSO_DEBUG
-			numOfInstances--;
+			//numOfInstances--;
 
-			cerr << "Deleting EMSOfreesteam object " << instanceNumber << " (leaves " << numOfInstances << " instances)..." << endl;
+			//cerr << "Deleting EMSOfreesteam object " << instanceNumber << " (leaves " << numOfInstances << " instances)..." << endl;
+			cerr << "Deleting EMSOfreesteam object..." << endl;
 		#endif
 	};
 
@@ -442,7 +444,8 @@ public:
 		output = method & OutputMask;
 
 		#ifdef EMSO_DEBUG
-			cerr << "EMSOfreesteam[" << instanceNumber << "," << numOfCalcCalls << "]: " << methodName << "(";
+			//cerr << "EMSOfreesteam[" << instanceNumber << "," << numOfCalcCalls << "]: " << methodName << "(";
+			cerr << "EMSOfreesteam: " << methodName << "(";
 			try{
 		#endif
 
@@ -486,7 +489,9 @@ public:
 				#ifdef EMSO_DEBUG
 					cerr << "p=" << inputValues[0] * MPa << ", u=" << inputValues[1] * kJ_kg;
 				#endif
+				cerr << "About to solve for p,u...";
 				S = SS_PU.solve(inputValues[0] * MPa, inputValues[1] * kJ_kg, lastState);
+				cerr << "DONE" << endl;
 				break;
 
 			case given_uv:
@@ -692,6 +697,15 @@ public:
 			default:
 				throw std::runtime_error("Invalid output option (should never happen)");
 		}
+
+		#ifdef EMSO_DEBUG
+			}catch(std::exception &E){
+				cerr << "): error while setting evaluating properties: " << E.what() << endl;
+				throw;
+			}
+			cerr << " OK" << endl;
+
+		#endif
 	}
 
 private:
@@ -704,10 +718,10 @@ private:
 
 	#ifdef EMSO_DEBUG
 		bool debug;
-		int_t numOfCalcCalls;
-		int_t instanceNumber;
-		static int_t instanceSerialNumber;
-		static int_t numOfInstances;
+		//int_t numOfCalcCalls;
+		//int_t instanceNumber;
+		//static int_t instanceSerialNumber;
+		//static int_t numOfInstances;
 	#endif
 
 	/// Specific property options
@@ -865,11 +879,6 @@ public:
 	}
 
 };
-
-#ifdef EMSO_DEBUG
-	int_t EMSOfreesteam::numOfInstances = 0;
-	int_t EMSOfreesteam::instanceSerialNumber = 0;
-#endif
 
 EMSOfreesteam::MethodMap EMSOfreesteam::methodNames=EMSOfreesteam::MethodMap();
 

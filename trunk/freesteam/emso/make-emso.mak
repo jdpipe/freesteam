@@ -18,26 +18,28 @@
 #--------------------------
 # EMSO integration
 
-EMSO_DEBUG =
-
 OBJS = emsohooks.o emsopipe.o
 
 EMSO = $(SO_PREFIX)$(EMSO_NAME)$(SO_SUFFIX)
 EMSOPIPE = $(SO_PREFIX)$(EMSOPIPE_NAME)$(SO_SUFFIX)
 
-emsohooks.o: emsohooks.cpp
-ifeq ($(EMSO_DEBUG),1)
-	$(CXX) $(CPPFLAGS) -DEMSO_DEBUG $(CXXFLAGS) -c -o $@ $<
+# Debug flags for EMSO libraries
+
+ifdef EMSO_DEBUG
+	EMSO_DEBUG_FLAG = -DEMSO_DEBUG
 else
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
+	EMSO_DEBUG_FLAG = 
 endif
 
+CPPFLAGS_LOCAL = $(EMSO_DEBUG_FLAG)
+
+#--------------------------
+
+emsohooks.o: emsohooks.cpp
+	$(CXX) $(CPPFLAGS) $(CPPFLAGS_LOCAL) $(CXXFLAGS) -c -o $@ $<
+
 emsopipe.o: emsopipe.cpp
-ifeq ($(EMSO_DEBUG),1)
-	$(CXX) $(CPPFLAGS) -DEMSO_DEBUG $(CXXFLAGS) -c -o $@ $<
-else
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
-endif
+	$(CXX) $(CPPFLAGS) $(CPPFLAGS_LOCAL) $(CXXFLAGS) -c -o $@ $<
 	
 emso: $(LIB) $(OBJS) $(EMSO) $(EMSOPIPE)
 
@@ -70,7 +72,7 @@ clean:
 	@-rm *.o *.d.*
 	
 distclean: clean
-	@-rm *.dll *.d
+	@-rm $(SO_PREFIX)*$(SO_SUFFIX) *.d
 
 #-----------------------------------------------------------
 # INSTALL
