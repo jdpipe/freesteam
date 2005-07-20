@@ -38,7 +38,7 @@ FlowSheet Pipe2SteadyTest
 	OPTIONS
 	outputLevel="high";
 	mode="steady";
-	NLASolver="linesearch";
+	# NLASolver="linesearch";
 end
 
 	
@@ -118,7 +118,7 @@ FlowSheet Pipe2PressureRamp
 	outputLevel="high";
 	time=[0:0.15:30] * "s";
 	# mode="steady";
-	NLASolver = "linesearch";
+	# NLASolver = "linesearch";
 	
 end
 
