@@ -33,6 +33,7 @@ FlowSheet BoilerTest # 0
 	
 	OPTIONS
 	mode = "steady";
+	# NLASolver = "emsonnes";
 	outputLevel = "all";
 	
 end
@@ -58,7 +59,7 @@ FlowSheet BoilerTest2 # 0
 	S1.T = (121 + 273.15) * "K";	
 
 	BO.Dp = -2 * "bar";
-	BO.Qdot = 120 * "MW";
+	BO.Qdot = 120 * 1000 * "W";
 	
 	OPTIONS
 	mode = "steady";
@@ -91,7 +92,7 @@ FlowSheet BoilerWithLossTest
 	BO.A_1 = 3.1415926 * (0.2 * "m")^2 / 4;
 	BO.K = 20;
 	
-	BO.Qdot = 120 * "MW";
+	BO.Qdot = 120 * 1000 * "W";
 	
 	OPTIONS
 	mode = "steady";
