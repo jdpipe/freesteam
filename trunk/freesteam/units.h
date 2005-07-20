@@ -127,6 +127,13 @@ inline Units<0,0,0,0,0>::operator double() const {
 	return d_val;
 }
 
+#ifdef UNITS_CAST_THROW
+#include <stdexcept>
+template< int m, int l, int t, int k, int i >
+inline Units<m,l,t,k,i>::operator double() const {
+	throw new std::runtime_error("Invalid cast to double!");
+}
+#endif
 
 /// Scalar multiplication
 template< int m, int l, int t, int k, int i >
@@ -221,7 +228,7 @@ cube(const Units < M, L, T, K, I > u) {
 	return u * u * u;
 }
 
-// Square root (integer powers of units only)
+// Square root (even powers of units only)
 template < int M, int L, int T, int K, int I >
 inline Units<M, L, T, K, I>
 sqrt(const Units < 2*M, 2*L, 2*T, 2*K, 2*I > u) {
