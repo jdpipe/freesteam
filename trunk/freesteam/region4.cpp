@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "region4.h"
 #include "region1.h"
 #include "region2.h"
+#include "steamcalculator.h"
 #include "steamcalculator_macros.h"
 
 #include <stdio.h>

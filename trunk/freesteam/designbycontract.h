@@ -33,6 +33,8 @@ class DesignByContract {
 	public:
 
 #ifndef NDEBUG
+		virtual ~DesignByContract();
+
 		virtual bool isValid() const;
 
 		static void __throw_error_(const char *file, const int line,

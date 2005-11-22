@@ -123,6 +123,7 @@ class Units {
 /**
 	Only defined for dimensionless values!
 */
+template<>
 inline Units<0,0,0,0,0>::operator double() const {
 	return d_val;
 }
@@ -523,3 +524,4 @@ fromfahrenheit(const double &T_F){
 }
 
 #endif				// UNITS_H
+

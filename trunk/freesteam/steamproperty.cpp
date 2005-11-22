@@ -22,53 +22,64 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "steamcalculator.h"
 #include "steamproperty.h"
 
+
 // 'name' hooks
 
+template<>
 const char *
 SteamProperty<SpecificEnergy,SOLVE_IENERGY>::name(){
 	return "u";
 }
 
+template<>
 const char *
 SteamProperty<SpecificEnergy,SOLVE_ENTHALPY>::name(){
 	return "h";
 }
 
+template<>
 const char *
 SteamProperty<Density,0>::name(){
 	return "rho";
 }
 
+template<>
 const char *
 SteamProperty<SpecificVolume,0>::name(){
 	return "v";
 }
 
+template<>
 const char *
 SteamProperty<Temperature,0>::name(){
 	return "T";
 }
 
+template<>
 const char *
 SteamProperty<Pressure,0>::name(){
 	return "p";
 }
 
+template<>
 const char *
 SteamProperty<SpecificEntropy,SOLVE_ENTROPY>::name(){
 	return "s";
 }
 
+template<>
 const char *
 SteamProperty<SpecHeatCap,SOLVE_CP>::name(){
 	return "cp";
 }
 
+template<>
 const char *
 SteamProperty<SpecHeatCap,SOLVE_CV>::name(){
 	return "cv";
 }
 
+template<>
 const char *
 SteamProperty<Num,0>::name(){
 	return "x";

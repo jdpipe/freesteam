@@ -22,9 +22,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef STEAMSTATE_H
 #define STEAMSTATE_H
 
-#include "steamcalculator.h"
+//#include "steamcalculator.h"
+class SteamCalculator;
+#include "common.h"
+#include "units.h"
+#include "designbycontract.h"
 
-class SteamState:public DesignByContract {
+class SteamState : public DesignByContract {
 	public:
 
 		virtual int getRegion(void) const;

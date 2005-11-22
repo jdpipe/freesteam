@@ -28,6 +28,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sstream>
 #include <string>
 
+DesignByContract::~DesignByContract(){
+	// nothing here
+}
+
 /// Design-by-contract consistency checking
 /**
 	All classes inheriting from this class need to define a method IsValid. This method should perform a consistency check on the state of the object. Note that this method needs to be defined only when a debug build is made.

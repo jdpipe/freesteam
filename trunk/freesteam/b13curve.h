@@ -54,6 +54,7 @@ class B13CurveBase{
 	protected:
 
 		B13CurveBase(){}
+		virtual ~B13CurveBase(){}
 
 		Ordinate getOrdinate(SteamCalculator S){
 			return SteamProperty<Ordinate,OrdinateAlt>::get(S);
