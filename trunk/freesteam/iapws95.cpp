@@ -201,7 +201,7 @@ namespace IAPWS95
                     (-2*alpha[i]*pow(delta, d[i]) +
                     4*alpha[i]*alpha[i]*pow(delta, d[i])*d1*d1 -
                     4*d[i]*alpha[i]*pow(delta, (d[i]-1))*d1 +
-                    d[i]*(d[i]-1)*pow(delta, (d[i]-1)));
+                    d[i]*(d[i]-1)*pow(delta, (d[i]-2)));
         }
         for (int i= ePhir4; i < ePhir5; i++)
         {

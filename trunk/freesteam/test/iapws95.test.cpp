@@ -34,7 +34,7 @@ class IAPWS95Test : public CppUnit::TestFixture{
 		// Test that we match Table 6 values.  Note the phi0tautau
 		// expected value is negative, as it has to be, although the
 		// table gives it as positive.
-		Num eps = 0.0001;
+		Num eps = 5e-7;
 		Num T = 500;       // K
 		Num rho = 838.025; // kg/m^3
 		Water95 w;
@@ -49,7 +49,7 @@ class IAPWS95Test : public CppUnit::TestFixture{
 	void TestRealGasPart()
 	{
 		// Test that we match Table 6 values
-		Num eps = 0.0001;
+		Num eps = 5e-7;
 		Num T = 500;       // K
 		Num rho = 838.025; // kg/m^3
 		Water95 w;
