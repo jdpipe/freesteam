@@ -15,15 +15,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-EXE_SUFFIX = .exe
-SO_SUFFIX = .dll
-SO_PREFIX = 
-PLATFORM_LD_FLAGS = 
-PLATFORM_CPP_FLAGS = 
-EMSO_INTERFACE_DIR = 
-NSIS = start c:\Program Files\NSIS\makensis.exe"
-SUBDIRS = getopt
-VERSION = i686-pc-mingw32-0.5.5
+EXE_SUFFIX = @EXE_SUFFIX@
+SO_SUFFIX = @SO_SUFFIX@
+SO_PREFIX = @SO_PREFIX@
+PLATFORM_LD_FLAGS = @PLATFORM_LD_FLAGS@
+PLATFORM_CPP_FLAGS = @PLATFORM_CPP_FLAGS@
+EMSO_INTERFACE_DIR = @EMSO_INTERFACE_DIR@
+NSIS = @NSIS@
+SUBDIRS = @SUBDIRS@
+VERSION = @VERSION@
 
 NAME = freesteam
 
@@ -52,9 +52,9 @@ CPPFLAGS = $(PLATFORM_CPP_FLAGS) -DVERSION=\"$(BUILD_PLATFORM)-$(VERSION)\" -Wal
 
 MAKEDEPFLAG = -MM
 
-LIBNAME = steam
+LIBNAME = freesteam
 
-LIB = $(PACKAGE_ROOT)/lib$(LIBNAME).a
+LIB = $(PACKAGE_ROOT)/$(SO_SUFFIX)$(LIBNAME).a
 
 DOXYGEN = doxygen
 

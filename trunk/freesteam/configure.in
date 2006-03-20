@@ -1,0 +1,71 @@
+AC_INIT(region1.h)
+AC_CONFIG_AUX_DIR(config)
+AC_CANONICAL_HOST
+
+AC_PROG_CC(gcc)
+AC_PROG_CPP
+
+AC_HEADER_STDC
+AC_CHECK_FUNCS(strchr)
+
+AC_SEARCH_LIBS(initscr,[curses ncurses pdcurses],
+	AC_DEFINE(HAVE_CURSES,[],[CURSES library to link])
+,
+	AC_MSG_NOTICE([No installation of a CURSES library was found])
+)
+
+
+AC_CHECK_HEADERS([curses.h ncurses.h pdcurses.h])
+
+dnl AC_CHECK_HEADER(cppunit/TestCase.h)
+
+AM_PATH_CPPUNIT(1.10.2)
+
+AC_DEFINE(HAVE_EMSO,[],[Set true if EMSO is installed; will create plugins for EMSO])
+
+VERSION=$host-0.5.5
+
+EXE_SUFFIX=.exe
+SO_SUFFIX=.dll
+SO_PREFIX=""
+
+case $host in
+   *-linux*)
+	EXE_SUFFIX=
+	SO_SUFFIX=.so
+	SO_PREFIX=lib
+	
+	PLATFORM_LD_FLAGS=-lc 
+
+	EMSO_INTERFACE_DIR=/usr/local/emso/interface
+	;;
+   *-mingw*)
+	PLATFORM_CPPFLAGS="-W -Wunused -O3 -I/mingw/include"
+	PLATFORM_LDFLAGS="-L/mingw/lib -lpdcurses -lm"
+
+	LINKLIBS="libsteam.a getopt/getopt.a"
+	SUBDIRS=getopt
+	NSIS='start c:\Program Files\NSIS\makensis.exe"'
+	;;
+   *-cygwin*)
+	PLATFORM_LD_FLAGS=-L/usr/lib -lc
+	PLATFORM_CPP_FLAGS=-fmessage-length=170
+	;;
+esac
+
+AC_SUBST(EXE_SUFFIX)
+AC_SUBST(SO_SUFFIX)
+AC_SUBST(SO_PREFIX)
+AC_SUBST(PLATFORM_LD_FLAGS)
+AC_SUBST(PLATFORM_CPP_FLAGS)
+AC_SUBST(DEFS)
+AC_SUBST(EMSO_INTERFACE_DIR)
+AC_SUBST(NSIS)
+AC_SUBST(SUBDIRS)
+AC_SUBST(VERSION)
+
+AC_CONFIG_HEADERS(config.h)
+AC_OUTPUT(
+       make-common.mak:make-common.in
+       Makefile
+)
