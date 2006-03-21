@@ -1,5 +1,13 @@
 CHANGELOG
 
+0.5.5
+Tuesday, 13 December 2005
+-------------------------
+Fixed to compile under GCC 4.01
+Fixed a very minor error in the IAPWS-95 correlation
+Tightened tolerance on phir,phi0 (etc) test in IAPWS-95 correlation tests.
+
+
 0.5.4
 Thursday, 2 June 2005
 ---------------------

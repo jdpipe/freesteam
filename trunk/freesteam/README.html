@@ -95,21 +95,24 @@ the <span style="font-weight: bold;">state </span>of the steam, <br>
 using one of the following combinations of variables:<br>
       </p>
 
-      <p>(p,T) for subcooled/superheated steam.<br>
-(rho,T) for supercritical steam.<br>
-(T,x) for saturated steam<br>
-(p,T,x) anywhere<br>
-(p) plus one of (s,h,u,v,cp,cv,rho)<br>
-(T) plus one of (s,h,u,v,cp,cv,rho)</p>
+		<ul>
+		<li>(p,T) for subcooled/superheated steam.
+		<li>(rho,T) for supercritical steam.
+		<li>(T,x) for saturated steam
+		<li>(p,T,x) anywhere
+		<li>(p) plus one of (s,h,u,v,cp,cv,rho)
+		<li>(T) plus one of (s,h,u,v,cp,cv,rho)
+		</ul>
 
-      <p>By two-way iteration, state can be solved for:<br>
+      <p>By two-way iteration, state can furthermore be solved for:<br>
 (u,v) (p,h) (p,u) (p,s) (T,s) (T,h)<br>
       </p>
 
       <p>Alternatively, you can specify:</p>
-      <p>saturated water at T<br>
-saturated steam at T<br>
-      </p>
+      <ul>
+		<li>saturated water at T
+		<li>saturated steam at T<br>
+      </ul>
 
       </td>
       <td style="vertical-align: top;" class="bord">
@@ -167,6 +170,7 @@ the following steam <span style="font-weight: bold;">properties</span>:</p>
           </tr>
         </tbody>
       </table>
+      <p>Correlations for thermal conductivty and viscosity are also provided but these have not been rigorously validated.
       </td>
     </tr>
   </tbody>
@@ -191,25 +195,93 @@ following:</p>
 
 <p>You can also create <a href="properties/">property diagrams</a>
 from the freesteam code for most of the above combinations of
-steam properties.<br>
-<span style="font-weight: bold;"></span></p>
+steam properties.</p>
+
+
 <h3><span style="font-weight: bold;">1.2 Example usage</span></h3>
+
 <span style="font-weight: bold;">Problem:</span><br>
 <ol>
   <li>calculate the density of steam at 5 bar and 200&deg;C</li>
+
   <li>calculate the temperature if the steam from (1) is isentropically
 compressed to 10 bar.</li>
+
   <li>calculate the pressure and temperature of steam at the same
 specific volume as (2) but with the specific internal energy raised by
-200 kJ/kg<br>
-  </li>
+200 kJ/kg</li>
 </ol>
 
 <span style="font-weight: bold;">Solution: </span>(included in
 distribution as example.cpp, use '<code>make example</code>' to compile
 it)<br>
 
-<pre>#include "steamcalculator.h"<br>#include "solver.h"<br>#include "solver2.h"<br>#include &lt;iostream&gt;<br>#include &lt;iomanip&gt;<br>using namespace std;<br><br>int main(){<br>	try{<br>		SteamCalculator S1, S2, S3;<br><br>		// turn on display of units<br>		cerr.flags(ios_base::showbase);<br><br>		// initialise T1, p1, p2<br>		Temperature T1 = fromcelsius(200.0);<br>		Pressure p1 = 5.0 * bar;<br>		Pressure p2 = 10.0 * bar;<br><br>		// Part 1<br>		cerr &lt;&lt; endl &lt;&lt; "Part (1) - density at 10 bar, 200&deg;C" &lt;&lt; endl;<br>		cerr &lt;&lt; "p1 = " &lt;&lt; p1/bar &lt;&lt; " bar" &lt;&lt; endl;<br>		cerr &lt;&lt; "T1 = " &lt;&lt; T1;<br>		cerr &lt;&lt; " (" &lt;&lt; tocelsius(T1) &lt;&lt; "&deg;C)" &lt;&lt; endl;<br>		S1.set_pT(p1, T1);<br>		Density rho1 = S1.dens();<br>		cerr &lt;&lt; "rho1 = " &lt;&lt; rho1 &lt;&lt; endl;<br><br>		// Part 2<br>		cerr &lt;&lt; endl &lt;&lt; "Part (2) - isentropic compression to 10 bar" &lt;&lt; endl;<br>		SpecificEntropy s1 = S1.specentropy();<br>		cerr &lt;&lt; "s1 = " &lt;&lt; s1 &lt;&lt; endl;<br>		cerr &lt;&lt; "p2 = " &lt;&lt; p2/bar &lt;&lt; " bar" &lt;&lt; endl;<br>		Solver&lt;Pressure,SpecificEntropy,Temperature&gt; PS(p2, s1);<br>		S2 = PS.solve(0.0001 * kJ_kgK, 0.0001 * Kelvin);<br>		Temperature T2 = S2.temp();<br>		cerr &lt;&lt; "T2 = " &lt;&lt; T2;<br>		cerr &lt;&lt; " (" &lt;&lt; tocelsius(T2) &lt;&lt; "&deg;C)" &lt;&lt; endl;<br><br>		// part (3) - Finding p,T for v as above and u increased by 200 kJ_kg<br>		cerr &lt;&lt; endl &lt;&lt; "Part (3) - Finding p,T for v as above and u increased by 200 kJ_kg" &lt;&lt; endl;<br>		SpecificVolume v2 = S2.specvol();<br>		SpecificEnergy u2 = S2.specienergy();<br>		cerr &lt;&lt; "v2 = " &lt;&lt; v2 &lt;&lt; endl;<br>		cerr &lt;&lt; "u2 = " &lt;&lt; u2 &lt;&lt; endl;<br><br>		SpecificEnergy u3 = u2 + 200.0 * kJ_kg;<br>		cerr &lt;&lt; "u3 = " &lt;&lt; u3 &lt;&lt; endl;<br><br>		Solver2&lt;SpecificEnergy,SpecificVolume&gt; SUV;<br>		S3 = SUV.solve(u3,v2);<br>		Temperature T3 = S3.temp();<br>		Pressure p3 = S3.pres();<br>		cerr &lt;&lt; "p3 = " &lt;&lt; p3/bar &lt;&lt; " bar" &lt;&lt; endl;<br>		cerr &lt;&lt; "T3 = " &lt;&lt; T3;<br>		cerr &lt;&lt; " (" &lt;&lt; tocelsius(T3) &lt;&lt; "&deg;C)" &lt;&lt; endl;<br><br>		exit(0);<br><br>	}catch(Exception *E){<br>		cerr &lt;&lt; "Error: " &lt;&lt; E-&gt;what();<br>		exit(1);<br>	}<br>}<br></pre>
+<pre>#include "steamcalculator.h"
+#include "solver.h"
+#include "solver2.h"
+#include &lt;iostream&gt;
+#include &lt;iomanip&gt;
+using namespace std;
+
+int main(){
+	try{
+		SteamCalculator S1, S2, S3;
+
+		// turn on display of units
+		cerr.flags(ios_base::showbase);
+
+		// initialise T1, p1, p2
+		Temperature T1 = fromcelsius(200.0);
+		Pressure p1 = 5.0 * bar;
+		Pressure p2 = 10.0 * bar;
+
+		// Part 1
+		cerr &lt;&lt; endl &lt;&lt; "Part (1) - density at 10 bar, 200&deg;C" &lt;&lt; endl;
+		cerr &lt;&lt; "p1 = " &lt;&lt; p1/bar &lt;&lt; " bar" &lt;&lt; endl;
+		cerr &lt;&lt; "T1 = " &lt;&lt; T1;
+		cerr &lt;&lt; " (" &lt;&lt; tocelsius(T1) &lt;&lt; "&deg;C)" &lt;&lt; endl;
+		S1.set_pT(p1, T1);
+		Density rho1 = S1.dens();
+		cerr &lt;&lt; "rho1 = " &lt;&lt; rho1 &lt;&lt; endl;
+
+		// Part 2
+		cerr &lt;&lt; endl &lt;&lt; "Part (2) - isentropic compression to 10 bar" &lt;&lt; endl;
+		SpecificEntropy s1 = S1.specentropy();
+		cerr &lt;&lt; "s1 = " &lt;&lt; s1 &lt;&lt; endl;
+		cerr &lt;&lt; "p2 = " &lt;&lt; p2/bar &lt;&lt; " bar" &lt;&lt; endl;
+		Solver&lt;Pressure,SpecificEntropy,Temperature&gt; PS(p2, s1);
+		S2 = PS.solve(0.0001 * kJ_kgK, 0.0001 * Kelvin);
+		Temperature T2 = S2.temp();
+		cerr &lt;&lt; "T2 = " &lt;&lt; T2;
+		cerr &lt;&lt; " (" &lt;&lt; tocelsius(T2) &lt;&lt; "&deg;C)" &lt;&lt; endl;
+
+		// part (3) - Finding p,T for v as above and u increased by 200 kJ_kg
+		cerr &lt;&lt; endl &lt;&lt; "Part (3) - Finding p,T for v as above"
+			&lt;&lt; "and u increased by 200 kJ_kg" &lt;&lt; endl;
+		SpecificVolume v2 = S2.specvol();
+		SpecificEnergy u2 = S2.specienergy();
+		cerr &lt;&lt; "v2 = " &lt;&lt; v2 &lt;&lt; endl;
+		cerr &lt;&lt; "u2 = " &lt;&lt; u2 &lt;&lt; endl;
+
+		SpecificEnergy u3 = u2 + 200.0 * kJ_kg;
+		cerr &lt;&lt; "u3 = " &lt;&lt; u3 &lt;&lt; endl;
+
+		Solver2&lt;SpecificEnergy,SpecificVolume&gt; SUV;
+		S3 = SUV.solve(u3,v2);
+		Temperature T3 = S3.temp();
+		Pressure p3 = S3.pres();
+		cerr &lt;&lt; "p3 = " &lt;&lt; p3/bar &lt;&lt; " bar" &lt;&lt; endl;
+		cerr &lt;&lt; "T3 = " &lt;&lt; T3;
+		cerr &lt;&lt; " (" &lt;&lt; tocelsius(T3) &lt;&lt; "&deg;C)" &lt;&lt; endl;
+
+		exit(0);
+
+	}catch(Exception *E){
+		cerr &lt;&lt; "Error: " &lt;&lt; E-&gt;what();
+		exit(1);
+	}
+}
+</pre>
 
 <p><span style="font-weight: bold;">Output:</span><br></p>
 
@@ -218,54 +290,39 @@ it)<br>
 
 <h3>1.3 IAPWS-95 Scientific Formulation<br></h3>
 
-<p>The code for calculating steam properties according to the IAPWS-95
-equations, developed by Don Peterson, is include. In their present
-form, the formulation allows you to calculate the
-above properties but only in terms of <b>density</b> and <b>temperature</b>.</p>
-<p>IAWPS-95 is said to be higher accuracy but consumes greater
-computing time. This may depend on the formulation of your problem
-however - some problems require quite a lot of iterative root-finding
-when using IAPWS-IF97.<br>
-</p>
+<p>The code for calculating steam properties according to the IAPWS-95 equations, developed by Don Peterson, is include. In their present form, the formulation allows you to calculate the above properties but only in terms of <b>density</b> and <b>temperature</b>.</p> <p>IAWPS-95 is said to be higher accuracy but consumes greater computing time. This may depend on the formulation of your problem however - some problems require quite a lot of iterative root-finding when using IAPWS-IF97.</p>
 
 
 <h2><a name="quickstart"></a>2. Quick start</h2>
 
+<p>You should be able to compile on any GNU GCC system: we have
+tested on MinGW, Cygwin and Linux (Red Hat & Fedora), others should be ok too.</p>
+
 <ol>
-  <li>You should be able to compile on any GNU GCC system: we have
-tested on cygwin and Red Hat, others should be ok too.<br>
-  </li>
-  <li>Get the package <code>freesteam-0.4.tar.bz2</code> from <a
- href="http://sf.net/projects/freesteam">http://sf.net/projects/freesteam</a>.
-    <br>
-  </li>
-  <li>Get and install the package <code>cppunit-1.10.2.tar.gz</code>.
-You can get this at <a href="http://sourceforge.net/projects/cppunit">http://sourceforge.net/projects/cppunit</a>.
-It is easily built from source via '<code>./configure</code>' and '<code>make
-install</code>' using GCC. It is useful to copy the file '<code>cppunit-config</code>'
-to your path, for example to <code>/usr/local/bin</code>. You can also
-just use a binary version of CppUnit but you might need to check the
-location for the file <code>cppunit-config</code> and modify the
-freesteam <code>Makefile</code> accordingly.<br>
-  </li>
-  <li><code>tar jxvf freesteam-0.4.tar.bz2</code> and <code>cd
-freesteam-0.4</code>.<br>
-  </li>
-  <li>Edit the <code>Makefile </code>if necessary, to reflect your
-C++ compiler command and CppUnit library locations.</li>
-  <li>On a Linux system, you'll need to type <code>chmod +x
-config.guess</code><br>
-  </li>
+  <li>Get the package <code>freesteam-0.5.4.tar.bz2</code> from <a
+ href="http://sf.net/projects/freesteam">http://sf.net/projects/freesteam</a>.</li>
+ 
+  <li>Get and install the package <code>cppunit-1.10.2.tar.gz</code>. You can get this at <a href="http://sourceforge.net/projects/cppunit">http://sourceforge.net/projects/cppunit</a>. It is easily built from source via '<code>./configure</code>' and '<code>make install</code>' using GCC. It is useful to copy the file '<code>cppunit-config</code>' to your path, for example to <code>/usr/local/bin</code>. You can also just use a binary version of CppUnit but you might need to check the location for the file <code>cppunit-config</code> and modify the freesteam <code>Makefile</code> accordingly. </li>
+  
+  <li><code>tar jxvf freesteam-0.5.4.tar.bz2</code> and <code>cd freesteam-0.5.4</code>.</li>
+
+  <li>Edit the <code>Makefile </code>if necessary, to reflect your C++ compiler command and CppUnit library locations.</li>
+
+  <li>On a Linux system, you'll need to type <code>chmod +x config.guess</code></li>
+
   <li>Build/test the package:</li>
+
   <ol>
     <li><code>make test</code> to test the package</li>
-    <li><code>make example</code> to make the example program, then
-type '<code>./example</code>'<br>
-    </li>
+    <li><code>make example</code> to make the example program, then type '<code>./example</code>'</li>
   </ol>
 </ol>
+
+
 <h2><a name="othercompilers"></a>3. Other compilers</h2>
+
 freesteam is known to compile and run under the following system setups:<br>
+
 <ul>
   <li>GCC 3.3.3 (cygwin special) (active development on this platform)</li>
   <li>GCC 3.4.3 on Fedora Core 3 on a P4 (active development on this platform)</li>
@@ -301,93 +358,56 @@ also licensed under the GPL.<br>
 
 <p>For a complete up-to-date list of bugs and feature requests, visit
 the Mantis <a href="http://pye.dyndns.org/mantis/">bug tracker</a> for
-the project. We are not using the SourceForge 'tracker' at this stage.<br>
-</p>
-<p>Some of the bugs current at the time of writing:<br>
-</p>
+the project. We are not using the SourceForge 'tracker' at this stage.</p>
+
+<p>Some of the bugs current at the time of writing:</p>
 <ul>
-  <li>There is a problem with <span style="font-weight: bold;">whichStateStr
-    </span>which we need to fix.</li>
-  <li>The <span style="font-weight: bold;">one-way solver</span> has
-some problems in certain situations. For example, solving for a desired
-value of specific volume along the saturation curve will give errors at
-low temperatures, because of the 'density anomaly'. See <a
- href="http://pye.dyndns.org/mantis/bug_view_page.php?bug_id=0000060">this
-bug</a>.</li>
-  <li>The current implementation uses an IAPWS Supplementary Release
-correlation for the density of <span style="font-weight: bold;">saturated
-steam </span>when the temperature exceeds that of the region 1/region
-3 boundary. This is not in keeping with the 'pure' IAPWS-IF97 Release,
-and gives slightly different values for specific entropy at the
-critical point as a result. See <a
- href="http://pye.dyndns.org/mantis/bug_view_page.php?bug_id=0000059">this
-bug</a> for more information.</li>
+  <li>There is a problem with <span style="font-weight: bold;">whichStateStr</span> which we need to fix.</li>
+
+  <li>The <span style="font-weight: bold;">one-way solver</span> has some problems in certain situations. For example, solving for a desired value of specific volume along the saturation curve will give errors at low temperatures, because of the 'density anomaly'. See <a href="http://pye.dyndns.org/mantis/bug_view_page.php?bug_id=0000060">this bug</a>.</li>
+
+  <li>The current implementation uses an IAPWS Supplementary Release correlation for the density of <span style="font-weight: bold;">saturated steam </span>when the temperature exceeds that of the region 1/region 3 boundary. This is not in keeping with the 'pure' IAPWS-IF97 Release, and gives slightly different values for specific entropy at the critical point as a result. See <a href="http://pye.dyndns.org/mantis/bug_view_page.php?bug_id=0000059">this bug</a> for more information.</li>
 </ul>
 
 
 <h2><a name="futuredirections"></a>5. Future directions</h2>
 
+Any help from other developers willing to assist with the development of freesteam would be greatly appreciated. Some of the things waiting 'on the drawing board' are:
+
 <ul>
-  <li>Use of the <span style="font-weight: bold;">hook library </span>which
-allows the <a href="http://www.rps.eng.br/emso.html">EMSO</a> system
-modelling
-program to use the freesteam library requires a non-GPL license, which
-we are currently preparing.</li>
-  <li>Initial work is being done on an <span style="font-weight: bold;">Excel
-add-in</span> version using the <a href="http://xlw.sourceforge.net/">XLW</a>
-wrapper classes.<br>
-  </li>
-  <li>Preliminary work on another <span style="font-weight: bold;">hook
-library</span> to integrate freesteam with the <a
- href="http://www.fchart.com/ees/ees.shtml">EES</a> equation solver 
-(<a href="ees.pdf#page=211">manual</a> here)has also been performed; this will likewise require
-some special license agreement. At present, EES provides only the IAPWS-95 'scientific and general use' correlation.<br>
-  </li>
-  <li>Saturation properties for region 3 are currently implemented used
-the rho_sat(T) correlations from the IAPWS <a
- href="http://www.iapws.org/relguide/supsat.pdf">supsat</a> release.
-Need to change this to use an iterative solver based on the region 3
-correlations, since the current
-equations give slight inconsistencies with pure IAPWS data for
-pressures above about 16 MPa.<br>
-  </li>
-  <li><span style="font-weight: bold;">Backwards correlations</span>
-will massively reduce the amount of two-way iteration required when
-finding the state for unsual combinations of variables.</li>
-  <li>Perhaps <span style="font-weight: bold;">develop a GUI </span>version
-using <a href="http://www.trolltech.com/">Qt</a> or <a
- href="http://www.wxwindows.org/">wxWindows</a> or similar. I have no
-experience with these so
-let me know if you'd like to help there.<br>
-  </li>
-  <li>We plan to put in place hooks that will allow freesteam to be
-used from within <a style="font-weight: bold;"
- href="http://www.python.org/">Python</a>,
-possibly using <a href="http://www.swig.org/">SWIG</a>. Ditto.<br>
-  </li>
+  <li>Adopt the units-of-measurement C++ template classes from Boost.org, in place of those currently in use from Embedded.com, which are broken for VC6 at present.
+  
+  <li>Integration of the IAPWS-95 correlation into <a href="http://www.ginac.de/">GiNaC</a>. This work is largely complete but needs to be incorporated into the freesteam distribution.
+  
+  <li>Use of the <span style="font-weight: bold;">hook library </span>which allows the <a href="http://www.rps.eng.br/emso.html">EMSO</a> system modelling program to use the freesteam library requires a non-GPL license, which we are currently preparing.</li>
+
+  <li>Initial work is being done on an <span style="font-weight: bold;">Excel add-in</span> version using the <a href="http://xlw.sourceforge.net/">XLW</a> wrapper classes. Currently waiting for some build issues with XLW to be resolved.</li>
+
+  <li>Preliminary work on another <span style="font-weight: bold;">hook library</span> to integrate freesteam with the <a href="http://www.fchart.com/ees/ees.shtml">EES</a> equation solver (<a href="ees.pdf#page=211">manual</a> here)has also been performed; this will likewise require some special license agreement. At present, EES provides only the IAPWS-95 'scientific and general use' correlation.</li>
+
+  <li>Saturation properties for region 3 are currently implemented used the rho_sat(T) correlations from the IAPWS <a href="http://www.iapws.org/relguide/supsat.pdf">supsat</a> release. Need to change this to use an iterative solver based on the region 3 correlations, since the current equations give slight inconsistencies with pure IAPWS data for pressures above about 16 MPa.</li>
+  
+  <li><span style="font-weight: bold;">Backwards correlations</span> will massively reduce the amount of two-way iteration required when finding the state for unsual combinations of variables.</li>
+  
+  <li>Perhaps <span style="font-weight: bold;">develop a GUI </span>version using <a href="http://www.gtk.org/">GTK+</a> or similar.</li>
+
+  <li>Perhaps write hooks that will allow freesteam to be used from within <a style="font-weight: bold;" href="http://www.python.org/">Python</a> (possibly using <a href="http://www.swig.org/">SWIG</a>?). This would be useful to those <a href="http://www.scipy.org/">SciPy</a> people.</li>
+
   <li>An <span style="font-weight: bold;">interactive </span>command-line
 steam tables program for easy demonstration/interactive testing.</li>
-  <li>An add-in version for OpenOffice would be good.<br>
-  </li>
-  <li>There have been contributions for the <span
- style="font-weight: bold;">reverse equations in Region 2</span> - I
-haven't incorporated these into the source code yet though.</li>
-  <li>There have been contributions for some <span
- style="font-weight: bold;">r</span><span style="font-weight: bold;">everse
-equations in Region 3</span> - I
-haven't incorporated these into the source code yet though.</li>
-  <li>The <span style="font-weight: bold;">compiled size </span>of
-the code is quite large at the moment, probably because of the large
-amount of debugging code and GDB symbols. However some of this might be
-to do with bad use of C++ templates, need to take a look at that.</li>
-  <li><span style="font-weight: bold;">Region 5</span> has not yet been
-implemented at all, but it's a low priority. Let us know if you'd need
-it.</li>
-  <li>We'd like to extend the <span style="font-weight: bold;">phase
-diagrams</span> code so that lines of constant properties (pressure,
-temperature, entropy, enthalpy, etc) can be shown as well as the
-saturation/region lines.<br>
-  </li>
+
+  <li>An add-in version for OpenOffice would be good. Have received some partially-working source code for this from Allan Curtis</li>
+
+  <li>There have been contributions for the <span style="font-weight: bold;">reverse equations in Region 2</span> - I haven't incorporated these into the source code yet though.</li>
+  
+  <li>There have been contributions from Allan Curtis for some <span style="font-weight: bold;">r</span><span style="font-weight: bold;">everse equations in Region 3</span> - I haven't incorporated these into the source code yet though.</li>
+  
+  <li>The <span style="font-weight: bold;">compiled size </span>of the code is quite large at the moment, probably because of the large amount of debugging code and GDB symbols. However some of this might be to do with bad use of C++ templates, need to take a look at that.</li>
+  
+  <li><span style="font-weight: bold;">Region 5</span> has not yet been implemented at all, but it's a low priority. Let us know if you'd need it.</li>
+  
+  <li>We'd like to extend the <span style="font-weight: bold;">phase diagrams</span> code so that lines of constant properties (pressure, temperature, entropy, enthalpy, etc) can be shown as well as the saturation/region lines.</li>
+
 </ul>
 
 
@@ -512,6 +532,6 @@ document.write('<a href="mailto:'+e+m+a+i+l+'">'+e+m+a+i+l+'</a>');
 <hr>
 <address>
 John Pye<br/>
-Last modified: 2 June 2005</address>
+Last modified: 11 October 2005</address>
 </body>
 </html>

@@ -5,17 +5,19 @@ import os, commands, platform
 
 env = Environment(ENV=os.environ)
 
-env.Append(CPPPATH=['c:\\msys\\1.0\\include'])
-env.Append(LIBPATH=['c:\\msys\\1.0\\lib'])
-
 opts = Options(['options.cache', 'config.py'])
 
 if platform.system()=="Windows":
+	env.Append(CPPPATH=['c:\\msys\\1.0\\include'])
+	env.Append(LIBPATH=['c:\\msys\\1.0\\lib'])
+	env.Append(PATH=['c:\\msys\\1.0\bin'])
 	default_emso_location = "c:\\Program Files\\EMSO\\interface"
 else:
-	default_emso_location = "/usr/local/emso/interface"
+	default_emso_location = 'search'
 
-opts.Add(PathOption('EMSO_INCDIR',"Location of EMSO 'interface' directory", default_emso_location))
+
+
+opts.Add(PackageOption('EMSO_INCDIR',"Location of EMSO 'interface' directory", default_emso_location))
 opts.Add(BoolOption('HAVE_EMSO',"Build EMSO hook libraries", False))
 opts.Update(env)
 opts.Save('options.cache',env)
@@ -82,7 +84,7 @@ if not conf.CheckLibWithHeader('m', 'math.h', 'C++'):
 	print 'Did not find libm.a or m.lib, exiting!'
 	Exit(1)
 
-conf.env.ParseConfig('c:\\msys\\1.0\\bin\\sh.exe cppunit-config --libs --cflags')
+conf.env.ParseConfig('cppunit-config --libs --cflags')
 # CppUnit...
 
 #have_cppunit=True
