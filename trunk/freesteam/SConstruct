@@ -11,16 +11,20 @@ if platform.system()=="Windows":
 	env.Append(CPPPATH=['c:\\msys\\1.0\\include'])
 	env.Append(LIBPATH=['c:\\msys\\1.0\\lib'])
 	env.Append(PATH=['c:\\msys\\1.0\bin'])
-	env.Append(LIBDIR=['c:\\msys\\1.0\\lib'])
-	env.Append(INCDIR=['c:\\msys\\1.0\\include'])
 	default_emso_location = "c:\\Program Files\\EMSO\\interface"
+	default_libdir = 'c:\\msys\\1.0\\lib'
+	default_incdir = 'c:\\msys\\1.0\\include'
 else:
 	default_emso_location = 'search'
+	default_libdir = '/usr/local/lib'
+	default_incdir = '/usr/local/include'
 
 
 
 opts.Add(PackageOption('EMSO_INCDIR',"Location of EMSO 'interface' directory", default_emso_location))
 opts.Add(BoolOption('HAVE_EMSO',"Build EMSO hook libraries", False))
+opts.Add(PathOption('LIBDIR',"Location to install library", default_libdir))
+opts.Add(PathOption('INCDIR',"Location to install headers", default_incdir))
 opts.Update(env)
 opts.Save('options.cache',env)
 
@@ -139,10 +143,10 @@ env.Program('example.cpp'
 )
 
 
-env.Program('testnan',['testnan.cpp']
-	, LIBS = 'm'
-	, CPPFLAGS = '-fsignaling-nans'
-)
+#env.Program('testnan',['testnan.cpp']
+#	, LIBS = 'm'
+#	, CPPFLAGS = '-fsignaling-nans'
+#)
 
 #------------------------------------------------------
 # SUBDIRECTORIES....
