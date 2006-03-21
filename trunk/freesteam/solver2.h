@@ -913,4 +913,56 @@ Solver2<Pressure,Temperature,0,0>::solveRegion3(
 	const Pressure &p, const Temperature &T, const SteamCalculator &firstguess
 );
 
+template<>
+SteamCalculator
+Solver2<Pressure,Temperature,0,0>::makeRegion1Guess(
+	const Pressure& p, const Temperature &T
+);
+
+template<>
+SteamCalculator
+Solver2<Pressure,Temperature,0,0>::makeRegion2Guess(
+	const Pressure& p, const Temperature &T
+);
+
+template<>
+SteamCalculator
+Solver2<Pressure,Temperature,0,0>::solveRegion3(
+	const Pressure &p, const Temperature &T, const SteamCalculator &firstguess
+);
+
+template<>
+int
+Solver2<Temperature, SpecificEnergy, 0, SOLVE_ENTHALPY>::whichRegion(
+	const Temperature &T, const SpecificEnergy &h
+);
+
+template<>
+int
+Solver2<Temperature,SpecificEntropy,0,SOLVE_ENTROPY>::whichRegion(
+	const Temperature &T, const SpecificEntropy &s
+);
+
+template<>
+int
+Solver2<Pressure,SpecificEntropy,0,SOLVE_ENTROPY>::whichRegion(
+	const Pressure &p, const SpecificEntropy &s
+);
+
+template<>
+int
+Solver2<Pressure,SpecificEnergy,0,SOLVE_IENERGY>::whichRegion(
+	const Pressure &p, const SpecificEnergy &u
+);
+
+template<>
+int
+Solver2<Pressure, SpecificEnergy, 0, SOLVE_ENTHALPY>::whichRegion(
+	const Pressure &p, const SpecificEnergy &h
+);
+
+template<>
+int
+Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const SpecificEnergy &u, const SpecificVolume &v);
+
 #endif
