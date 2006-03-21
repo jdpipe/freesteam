@@ -26,6 +26,7 @@ For this file,
 
 #define UNITS_H
 
+#include "config.h"
 #include "isinfnan.h"
 
 #include <iostream>

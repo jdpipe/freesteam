@@ -51,7 +51,6 @@ env.SharedLibrary('emsopipe',['emsopipe.cpp']
 #   
 #   CPPFLAGS_LOCAL = $(EMSO_DEBUG_FLAG)
 #   
-
 #   
 #   #-----------------------------------------------------------
 #   # INSTALL

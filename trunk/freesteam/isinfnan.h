@@ -1,3 +1,4 @@
+
 /*
 
 freesteam - IAPWS-IF97 steam tables library
@@ -23,26 +24,34 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	This file is a hack to make everything compile as normal on MinGW, which has a funny implementation of isnan and isinf
 
 	@see
-		http://www.opensource.apple.com/darwinsource/10.3/libxml2-4/libxml2/include/win32config.h
-		and http://www.devdaily.com/scw/c/cygwin/src/winsup/mingw/mingwex/math/cbrt.c.shtml
+	http://www.opensource.apple.com/darwinsource/10.3/libxml2-4/libxml2/include/win32config.h
+and http://www.devdaily.com/scw/c/cygwin/src/winsup/mingw/mingwex/math/cbrt.c.shtml
 
 */
 
 #ifndef ISINFNAN_H
-	#define ISINFNAN_H
+# define ISINFNAN_H
 
-	#if defined(__MINGW32__)
+# include "config.h"
 
-			#include <float.h>
+# ifdef HAVE_ISNAN
+#  include <math.h>
+# else
 
-			inline int isnan(const double &x){
-				return _isnan(x);
-			}
+#  ifndef __MINGW32__
+#   error "Local 'isnan' implementation only for use with MINGW"
+#  endif
 
-			inline int isinf(const double &x){
-				return _finite(x) ? 0 : 1;
-			}
+#  include <float.h>
 
+	inline int isnan(const double &x){
+		return _isnan(x);
+	}
 
-	#endif
+	inline int isinf(const double &x){
+		return _finite(x) ? 0 : 1;
+	}
+
+# endif
+
 #endif

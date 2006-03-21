@@ -105,7 +105,9 @@ const Density REG3_ZEROIN_TOL= 1e-18 * kg_m3;
 
 const Acceleration GRAV = 9.81 * Newton / kg;	// N/kg, gravitation acceleration
 
-#define PI 3.14159265358
+#ifndef PI
+# define PI 3.14159265358
+#endif
 
 // Property 'Alternative' codes for use with SatCurve and B23Curve and Solver2
 
