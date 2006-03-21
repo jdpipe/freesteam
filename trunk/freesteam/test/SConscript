@@ -1,0 +1,26 @@
+Import('env')
+
+env.Append(CPPDEFINES='HAVE_CPPUNIT')
+env.Append(LIBS='freesteam')
+env.Append(LIBPATH='..')
+
+main = Split("test.cpp")
+
+tests = Split("cppunit.test.cpp empty.test.cpp units.test.cpp batchtest.test.cpp zeroin.test.cpp \
+	region4.test.cpp b23.test.cpp boundaries.test.cpp  rhosat.test.cpp region1.test.cpp \
+	region2.test.cpp region3.test.cpp b234point.test.cpp criticalpoint.test.cpp \
+	lowpressure.test.cpp iapws95.test.cpp iapws9795.test.cpp pressuresolver.test.cpp \
+	temperaturesolver.test.cpp satcurve.test.cpp b23curve.test.cpp b13curve.test.cpp \
+	whichstatestr.test.cpp"
+)
+	
+misc = Split(
+	"steamtestpoint.cpp"
+)
+
+	#temperaturesolver2.test.o	
+	# solver2.test.cpp
+
+
+env.Program("runtest",main + tests + misc)
+

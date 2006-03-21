@@ -12,7 +12,8 @@
 #include <map>
 #include <iostream>
 
-#include <emso/external_object.h>
+// FROM THE EMSO INCLUDE DIR...
+#include <external_object.h>
 
 
 typedef std::map<const std::string, int_t> MethodMap;

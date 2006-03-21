@@ -34,8 +34,6 @@ const int MAX_COLEBROOK_ITER=20;
 	#warning EMSO DEBUG MODE IS SET - START EMSO FROM A CONSOLE TO SEE DEBUG OUTPUT
 #endif
 
-#include <emso/external_object.h>
-
 #include <sstream>
 #include <cstring>
 #include <map>

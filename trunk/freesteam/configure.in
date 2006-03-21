@@ -1,6 +1,13 @@
-AC_INIT(region1.h)
-AC_CONFIG_AUX_DIR(config)
+AC_INIT([freesteam],[0.5.5])
+AC_CONFIG_AUX_DIR([config])
+AM_INIT_AUTOMAKE
+ 
+
 AC_CANONICAL_HOST
+
+AC_PROG_RANLIB
+
+AC_PROG_CXX(g++)
 
 AC_PROG_CC(gcc)
 AC_PROG_CPP
@@ -19,11 +26,16 @@ AC_CHECK_HEADERS([curses.h ncurses.h pdcurses.h])
 
 dnl AC_CHECK_HEADER(cppunit/TestCase.h)
 
-AM_PATH_CPPUNIT(1.10.2)
+AM_PATH_CPPUNIT(1.10.2
+,
+	# ok, found
+	AC_DEFINE(HAVE_CPPUNIT,[],[CppUnit is present])
+,
+	# CppUnit not found	
+)
+
 
 AC_DEFINE(HAVE_EMSO,[],[Set true if EMSO is installed; will create plugins for EMSO])
-
-VERSION=$host-0.5.5
 
 EXE_SUFFIX=.exe
 SO_SUFFIX=.dll
@@ -43,8 +55,7 @@ case $host in
 	PLATFORM_CPPFLAGS="-W -Wunused -O3 -I/mingw/include"
 	PLATFORM_LDFLAGS="-L/mingw/lib -lpdcurses -lm"
 
-	LINKLIBS="libsteam.a getopt/getopt.a"
-	SUBDIRS=getopt
+	LINKLIBS=libsteam.a
 	NSIS='start c:\Program Files\NSIS\makensis.exe"'
 	;;
    *-cygwin*)
@@ -65,7 +76,9 @@ AC_SUBST(SUBDIRS)
 AC_SUBST(VERSION)
 
 AC_CONFIG_HEADERS(config.h)
-AC_OUTPUT(
-       make-common.mak:make-common.in
-       Makefile
-)
+
+AC_CONFIG_FILES([Makefile])
+
+AC_CONFIG_SUBDIRS([example])
+
+AC_OUTPUT

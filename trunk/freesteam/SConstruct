@@ -1,0 +1,139 @@
+import os, commands, platform
+
+#------------------------------------------------------
+# OPTIONS
+
+env = Environment(ENV=os.environ)
+
+env.Append(CPPPATH=['c:\\msys\\1.0\\include'])
+env.Append(LIBPATH=['c:\\msys\\1.0\\lib'])
+
+opts = Options(['options.cache', 'config.py'])
+
+if platform.system()=="Windows":
+	default_emso_location = "c:\\Program Files\\EMSO\\interface"
+else:
+	default_emso_location = "/usr/local/emso/interface"
+
+opts.Add(PathOption('EMSO_INCDIR',"Location of EMSO 'interface' directory", default_emso_location))
+opts.Add(BoolOption('HAVE_EMSO',"Build EMSO hook libraries", False))
+opts.Update(env)
+opts.Save('options.cache',env)
+
+Help(opts.GenerateHelpText(env))
+
+#------------------------------------------------------
+# CPPUNIT DETECTION SCRIPT
+
+cppunit_test_source_file = """
+#include <cppunit/TestCase.h>
+using namespace CppUnit;
+int main(int argc, char **argv)
+{
+	TestCase t = TestCase();
+	return 0;
+}
+"""
+
+#def CheckCppUnit(context):
+#	#context.ParseConfig('c:\\msys\\1.0\\bin\\sh.exe cppunit-config --libs')
+#	context.Message('Checking for CppUnit...')
+#	result = context.TryLink(cppunit_test_source_file, '.cxx')
+#	context.Result(result)
+#	return result
+
+
+#def CheckCppUnit(context):
+#    lastLIBS = context.env['LIBS']
+#    try:
+#    	lastLIBPATH = context.env['LIBPATH']
+#    except:
+#    	lastLIBPATH = None
+#    try:
+#    	lastCPPPATH= context.env['CPPPATH']
+#    except:
+#    	lastCPPPATH = None
+#    
+#    context.env.ParseConfig('c:\\msys\\1.0\\bin\\sh.exe cppunit-config --libs --cflags')
+#
+#    print "LIBPATH:",context.env.Dump('LIBPATH')
+#    print "CPPPATH:",context.env.Dump('CPPPATH')
+#    print "LIBS:",context.env.Dump('LIBS')
+#
+#    context.Message( 'Checking for CppUnit ...' )
+#        	    
+#    ret = context.TryLink(cppunit_test_source_file,'.cxx')
+#    if not ret:
+#        context.env.Replace(LIBS = lastLIBS, LIBPATH=lastLIBPATH, CPPPATH=lastCPPPATH)
+#    context.Result( ret )
+#    return ret
+
+
+#------------------------------------------------------
+# CONFIGURATION
+
+# Math library...
+
+conf = Configure(env
+#	, custom_tests = {'CheckCppUnit' : CheckCppUnit}
+)
+
+if not conf.CheckLibWithHeader('m', 'math.h', 'C++'):
+	print 'Did not find libm.a or m.lib, exiting!'
+	Exit(1)
+
+conf.env.ParseConfig('c:\\msys\\1.0\\bin\\sh.exe cppunit-config --libs --cflags')
+# CppUnit...
+
+#have_cppunit=True
+#if not conf.CheckCppUnit():
+#        print 'CppUnit is not installed!'
+#        have_cppunit = False
+#        #Exit(1)
+        
+have_cppunit=True
+if not conf.CheckLib('cppunit'):
+	print "Can't find CppUnit!"
+	have_cppunit=False
+#	#Exit(1)
+#
+
+env = conf.Finish()
+
+#------------------------------------------------------
+# BUILD THE STATIC LIBRARY -- easy :-)
+
+
+list = Split("""
+	exception.cpp steamcalculator.cpp state.cpp region1.cpp region2.cpp 
+	region3.cpp region4.cpp boundaries.cpp steamcalculatorexception.cpp zeroin.cpp 
+	designbycontract.cpp units.cpp solver.cpp steamproperty.cpp satcurve.cpp b23curve.cpp 
+	b13curve.cpp convergencetest.cpp solver2.cpp iapws95.cpp
+""")
+
+env.Library('freesteam',list)
+
+examplesrc = Split("example.cpp")
+
+env.Program('example.cpp',LIBS=['freesteam'],LIBPATH='.')
+
+#------------------------------------------------------
+# SUBDIRECTORIES....
+
+# Testing with CppUnit...
+
+if have_cppunit:
+	env.SConscript(['test/SConscript'],'env have_cppunit') #, 'cli/SConscript'
+else:
+	print "Skipping... Tests (no CppUnit found)"
+
+# Command-line-interface programs
+
+env.SConscript(['cli/SConscript'],'env')
+
+# EMSO hooks
+
+if env['HAVE_EMSO']:
+	env.SConscript(['emso/SConscript'],'env')
+else:
+	print "Skipping... EMSO hook libraries"
