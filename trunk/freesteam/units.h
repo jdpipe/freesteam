@@ -47,7 +47,7 @@ For this file,
 		- It enforces self documenting code.
 
 	Original Author:  Christopher Rettig ( rettigcd@bigfoot.com )
-	\n (This is not the original version)
+	    - (This is not the original version)
 
 	Dev platform:
 		. Win2k -- gcc version 3.3.1 (cygming special)
@@ -58,8 +58,9 @@ For this file,
 		. Linux -- gcc version 3.2.2 20030222 (Red Hat Linux 3.2.2-5)
 
 	@todo
-		Get the units stuff working with a specific units-tracking flag. Should be possible to say that
-		all pressures get output in MPa, all temperatures in °C, etc etc.
+		Get the units stuff working with a specific units-tracking flag. Should
+		be possible to say that all pressures should be output in MPa, all
+		temperatures be output in °C, etc etc.
 
 	@see
 		http://www.embedded.com/shared/printableArticle.jhtml?articleID=9900094 \n

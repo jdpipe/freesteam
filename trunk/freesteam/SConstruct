@@ -25,11 +25,17 @@ opts.Add(PackageOption('EMSO_INCDIR',"Location of EMSO 'interface' directory", d
 opts.Add(BoolOption('HAVE_EMSO',"Build EMSO hook libraries", False))
 opts.Add(PathOption('LIBDIR',"Location to install library", default_libdir))
 opts.Add(PathOption('INCDIR',"Location to install headers", default_incdir))
+opts.Add(BoolOption('ENABLE_SAT_P',"Enable saturation curves in terms of pressure"+
+	"(introduces some numerical problems in iterative cases if"+
+	"you're not careful)", False))
 opts.Update(env)
 opts.Save('options.cache',env)
 
 Help(opts.GenerateHelpText(env))
 
+if env['ENABLE_SAT_P']:
+	env.Append(CPPDEFINES=['ENABLE_SAT_P'])
+	
 #------------------------------------------------------
 # ISNAN DETECTION
 

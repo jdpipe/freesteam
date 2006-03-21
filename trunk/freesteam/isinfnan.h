@@ -44,6 +44,9 @@ and http://www.devdaily.com/scw/c/cygwin/src/winsup/mingw/mingwex/math/cbrt.c.sh
 
 #  include <float.h>
 
+#   undef isnan
+#   undef isinf
+
 	inline int isnan(const double &x){
 		return _isnan(x);
 	}

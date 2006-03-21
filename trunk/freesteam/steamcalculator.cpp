@@ -30,6 +30,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "units.h"
 #include "isinfnan.h"
 
+#include "config.h"
+
 #include <cmath>
 #include <sstream>
 #include <iomanip>
@@ -230,7 +232,9 @@ SteamCalculator::set_pT(const Pressure &p, const Temperature &T, Num x) {
 void
 SteamCalculator::setSatWater_p(const Pressure &p) {
 
+#ifndef ENABLE_SAT_P
 	throw std::runtime_error("SteamCalculator::setSatWater_p: disabled for numerical consistence on sat line");
+#else
 
 	Temperature T;
 
@@ -255,6 +259,8 @@ SteamCalculator::setSatWater_p(const Pressure &p) {
 	}
 
 	_state->set_pT(*this, p, T, 0);
+#endif
+
 }
 
 /// Set state to be saturated steam at a specified pressure.
@@ -263,8 +269,9 @@ SteamCalculator::setSatWater_p(const Pressure &p) {
 void
 SteamCalculator::setSatSteam_p(const Pressure &p) {
 
+#ifndef ENABLE_SAT_P
 	throw std::runtime_error("SteamCalculator::setSatSteam_p: disabled for numerical consistence on sat line");
-
+#else
 	Temperature T;
 
 	REQUIRE(p <= P_CRIT);
@@ -283,6 +290,7 @@ SteamCalculator::setSatSteam_p(const Pressure &p) {
 
 	changeState(Region2::Instance());
 	_state->set_pT(*this, p, T, 1);
+#endif
 }
 
 /// Set state to be saturated water at a specified temperature.

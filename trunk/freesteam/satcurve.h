@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef SATCURVE_H
 #define SATCURVE_H
 
+#include "config.h"
+
 #include "steamproperty.h"
 #include "units.h"
 #include "steamcalculator.h"
@@ -213,13 +215,13 @@ class SatCurve<Ordinate,Temperature,OrdinateAlt,0>
 
 };
 
+#ifdef ENABLE_SAT_P
 /// SatCurve for case where Abscissa is pressure
 /**
 	Use T_sat(p) directly then return Ordinate(p,T_sat) - i.e. using the Region 4 backward equation
 
 	DISABLED because setSatSteam_p and setSatWater_p are inconsistent with satSatXxxxx_T
 */
-/*
 template<class Ordinate,int OrdinateAlt>
 class SatCurve<Ordinate,Pressure,OrdinateAlt,0>
 	: public SatCurveBase<Ordinate,Pressure,OrdinateAlt,0>{
@@ -239,6 +241,6 @@ class SatCurve<Ordinate,Pressure,OrdinateAlt,0>
 			return SatCurveBase<Ordinate,Pressure,OrdinateAlt,0>::getOrdinate(S);
 		}
 };
-*/
+#endif // ENABLE_SAT_P
 
 #endif

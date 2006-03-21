@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
+#include "config.h"
+
 #include "common.h"
 #include "boundaries.h"
 //#include "steamcalculator_macros.h"
@@ -73,16 +75,16 @@ const Num REGION43_C[7]
 */
 Temperature
 Boundaries::getSatTemp_p(Pressure p) {
-
+#ifndef ENABLE_SAT_P
 	throw std::runtime_error("Boundaries::getSatTemp_p: disabled due for numerical consistency on saturation line");
-
+#else
 	Num b = beta(p);
 	Num d = D(E(b), F(b), G(b));
 
 	double thet = (REGION4_N[10] + d - sqrt(sq(REGION4_N[10] + d) - 4.0 * (REGION4_N[9] + REGION4_N[10] * d))) / 2;
 
 	return thet * Kelvin;
-
+#endif
 }
 
 /// Get the saturation pressure for a specific temperature
