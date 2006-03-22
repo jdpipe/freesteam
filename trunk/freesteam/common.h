@@ -77,7 +77,7 @@ const Temperature IAPS85_TEMP_REF = 647.226 * Kelvin;
 const Pressure IAPS85_PRES_REF = 22.115 * MPa;	// MPa (THIS IS *NOT* EQUAL TO P_CRIT!)
 
 /// @see http://www.iapws.org/relguide/visc.pdf#page=7
-const Conductivity IAPS85_THCOND_REF = 0.49450 * Watt / metre / Kelvin;
+const ThermalConductivity IAPS85_THCOND_REF = 0.49450 * Watt / metre / Kelvin;
 
 const Temperature IAPS85_TEMP_REG2_REF = 540.0 * Kelvin;
 

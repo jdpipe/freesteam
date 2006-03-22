@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
+#include "config.h"
+
 #include "steamcalculator.h"
 #include "steamcalculator_macros.h"
 #include "state.h"
@@ -29,8 +31,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "zeroin.h"
 #include "units.h"
 #include "isinfnan.h"
-
-#include "config.h"
 
 #include <cmath>
 #include <sstream>
@@ -787,10 +787,10 @@ SteamCalculator::dynvisc() const{
 	@see http://www.iapws.org/relguide/thcond.pdf
 	@see http://www.iapws.org/relguide/IF97.pdf
 */
-Conductivity
+ThermalConductivity
 SteamCalculator::conductivity() const{
 	REQUIRE(isset);
-	Conductivity k = IAPS85_THCOND_REF * lam();
+	ThermalConductivity k = IAPS85_THCOND_REF * lam();
 	ENSURE(!isnan(k));
 	return k;
 }

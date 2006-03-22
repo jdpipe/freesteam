@@ -110,6 +110,22 @@ class Units {
 			return r;
 		}
 
+		/// Integer Powers
+		/**
+			Usage should be something like...
+			@code
+			   Temperature T = 300. * Kelvin;
+			   HeatFlux Q = SIGMA_C * ( T.pow<4>() - (300.*Kelvin).pow<4>())
+			@endcode
+		*/
+		template<int n>
+		Units<M*n,L*n,T*n,K*n,I*n>
+		ipow() const{
+			Units<M*n,L*n,T*n,K*n,I*n> r;
+			*reinterpret_cast<double*>(&r) = pow(double(d_val),n);
+			return r;
+		}
+
 	private:
 
 		//bool hello;
@@ -328,7 +344,7 @@ typedef Units < 1,  2, -3 > Power;
 typedef Units < 0,  2, -2 > SpecificEnergy;
 
 typedef Units < 1, -1, -1 > DynamicViscosity;
-
+typedef Units < 0,  2, -1 > KinematicViscosity;
 typedef Units < 1,  1, -3 > PowerPerLength;
 typedef Units < 1, -2, -2 > PressurePerLength;
 typedef Units < 1,  0, -2 > ForcePerLength;
@@ -339,7 +355,7 @@ typedef Units < 1, -1, -3 > DensitySpecificEnergyPerTime;
 
 typedef Units < 1,  2, -2, -1 > Entropy;
 typedef Units < 0,  2, -2, -1 > SpecificEntropy;
-typedef Units < 1,  1, -3, -1 > Conductivity;
+typedef Units < 1,  1, -3, -1 > ThermalConductivity;
 typedef Units < 1,  0, -3, -1 > HeatTransferCoefficient;
 typedef Units <-1,  0,  3,  1 > ThermalResistance;
 
@@ -464,8 +480,8 @@ const SpecificEntropy kJ_kgK = kilo * Joule / kilogram / Kelvin;
 const SpecificEntropy J_kgK = Joule / kilogram / Kelvin;
 
 const HeatTransferCoefficient W_m2K = Watt / metre2 / Kelvin;
-const Conductivity W_mK = Watt / metre / Kelvin;
-const Conductivity mW_mK = milli * W_mK;
+const ThermalConductivity W_mK = Watt / metre / Kelvin;
+const ThermalConductivity mW_mK = milli * W_mK;
 const Density kg_m3 = kilogram / metre3;
 const SpecificVolume m3_kg = metre3 / kilogram;
 
@@ -524,6 +540,11 @@ inline Temperature
 fromfahrenheit(const double &T_F){
 	return (T_F * Rankin) + ZeroFahrenheit;
 }
+
+// USEFUL CONSTANTS
+
+/// Stefan-Boltzmann Constant (radiation)
+const Units<1,0,-3,-4> SIGMA_C = (5.670e-8) * W_m2 /sq(sq(Kelvin));
 
 #endif				// UNITS_H
 

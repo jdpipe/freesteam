@@ -147,7 +147,7 @@ class SteamCalculator:public DesignByContract {
 		SpecHeatCap speccv() const;             // Specific isochoric heat capacity [kJ/kgK]
 		Num quality() const;                    // Steam quality
 		DynamicViscosity dynvisc() const;       // Dynamic viscosity, mu            [Pa.s]
-		Conductivity conductivity() const;      // Conductivity
+		ThermalConductivity conductivity() const;// Conductivity
 
 		// Design by contract stuff...
 		virtual bool isValid(void) const;

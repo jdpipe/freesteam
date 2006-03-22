@@ -7,14 +7,14 @@
 #include <iomanip>
 using namespace std;
 
-class ConductivityTest : public GridTest<Pressure,Temperature,Conductivity>{
+class ConductivityTest : public GridTest<Pressure,Temperature,ThermalConductivity>{
 
 	private:
 
 		SteamCalculator *S;
 		double tol;
 
-		void testOnePoint(Pressure& p,Temperature& T, Conductivity& k){
+		void testOnePoint(Pressure& p,Temperature& T, ThermalConductivity& k){
 
 			S->set_pT(p,T);
 
@@ -98,7 +98,7 @@ class ConductivityTest : public GridTest<Pressure,Temperature,Conductivity>{
 
 			delete S;
 
-			GridTest<Pressure,Temperature,Conductivity>::tearDown();
+			GridTest<Pressure,Temperature,ThermalConductivity>::tearDown();
 		}
 
 	public:
