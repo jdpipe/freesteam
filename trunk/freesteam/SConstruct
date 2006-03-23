@@ -7,24 +7,28 @@ env = Environment(ENV=os.environ)
 
 opts = Options(['options.cache', 'config.py'])
 
+can_install=True
 if platform.system()=="Windows":
-	env.Append(CPPPATH=['c:\\msys\\1.0\\include'])
-	env.Append(LIBPATH=['c:\\msys\\1.0\\lib'])
-	env.Append(PATH=['c:\\msys\\1.0\bin'])
 	default_emso_location = "c:\\Program Files\\EMSO\\interface"
-	default_libdir = 'c:\\msys\\1.0\\lib'
-	default_incdir = 'c:\\msys\\1.0\\include'
+	if os.getenv('MSYSTEM') or env.WhereIs('g++'):
+		print "DETECTED MINGW: setting install locations under c:\\MinGW"
+		default_libdir = 'c:\\MinGW\\lib'
+		default_incdir = 'c:\\MinGW\\include'
+	else:
+		can_install=False
+		print "WARNING: MinGW not detected: 'install' disabled"
 else:
 	default_emso_location = 'search'
 	default_libdir = '/usr/local/lib'
 	default_incdir = '/usr/local/include'
 
-
-
 opts.Add(PackageOption('EMSO_INCDIR',"Location of EMSO 'interface' directory", default_emso_location))
 opts.Add(BoolOption('HAVE_EMSO',"Build EMSO hook libraries", False))
-opts.Add(PathOption('LIBDIR',"Location to install library", default_libdir))
-opts.Add(PathOption('INCDIR',"Location to install headers", default_incdir))
+
+if can_install:
+	opts.Add(PathOption('LIBDIR',"Location to install library", default_libdir))
+	opts.Add(PathOption('INCDIR',"Location to install headers", default_incdir))
+
 opts.Add(BoolOption('ENABLE_SAT_P',"Enable saturation curves in terms of pressure"+
 	"(introduces some numerical problems in iterative cases if"+
 	"you're not careful)", False))
@@ -110,9 +114,9 @@ conf = Configure(env
 	, config_h = "config.h"
 )
 
-if not conf.CheckLibWithHeader('m', 'math.h', 'C'):
-	print 'Did not find libm.a or m.lib, exiting!'
-	Exit(1)
+#if not conf.CheckLibWithHeader(['m','c'], 'math.h', 'C','log'):
+#	print 'Did not find libm.a or m.lib, exiting!'
+#	Exit(1)
 
 
 if conf.CheckIsNan():
@@ -178,12 +182,13 @@ else:
 #------------------------------------------------------
 # INSTALLATION
 
-install_lib = env.Install("$LIBDIR", lib)
+if can_install:
+	install_lib = env.Install("$LIBDIR", lib)
 
-import glob
-files = glob.glob("*.h")
-#print files
+	import glob
+	files = glob.glob("*.h")
+	#print files
 
-install_inc = env.Install("$INCDIR/freesteam", files)
+	install_inc = env.Install("$INCDIR/freesteam", files)
 
-env.Alias('install',[install_lib, install_inc])
+	env.Alias('install',[install_lib, install_inc])

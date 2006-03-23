@@ -38,8 +38,8 @@ and http://www.devdaily.com/scw/c/cygwin/src/winsup/mingw/mingwex/math/cbrt.c.sh
 #  include <math.h>
 # else
 
-#  ifndef __MINGW32__
-#   error "Local 'isnan' implementation only for use with MINGW"
+#  if !defined(__MINGW32__) && !defined(_MSC_VER)
+#   error "Local 'isnan' implementation only for use with MINGW and VC++"
 #  endif
 
 #  include <float.h>
