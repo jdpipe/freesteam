@@ -57,36 +57,14 @@ checknansrc = """// Test for 'isnan'
 #include <iostream>
 using namespace std;
 
-class not_an_error : public exception{
-	// nothing
-};
-
 int main(void){
 	int x= isnan(1);
 	return 0;
-	/*
-	try{
-		if(isnan(1)){
-			throw runtime_error("Invalid isnan result");
-		}
-		int x = 0/(1+1-1-1);
-		if(isnan(x)){
-			throw not_an_error();
-		}
-		throw runtime_error("Failed to detect nan");
-	}catch(runtime_error E){
-		cerr << E.what() << endl;
-		return 1;
-	}catch(not_an_error E){
-		return 0;
-	}catch(...){
-		cerr << "UNCAUGHT" << endl;
-	return 0;
-	*/
 }
 #ifdef __MINGW32__
-# error "MINGW32 isnan is no good"
+# error "MINGW32 isnan is no good for our purpose"
 #endif
+
 """
 #- - - 8< - - -
 
@@ -103,6 +81,10 @@ def CheckIsNan(ctxt):
         	LIBS = lastLIBS
         	, CPPFLAGS = lastCPPFLAGS
         )
+	ctxt.config_h = ctxt.config_h +  "#undef HAVE_ISNAN\n"
+    else:
+	ctxt.config_h = ctxt.config_h +  "#define HAVE_ISNAN\n"
+    	
     ctxt.Result(tuple[0])
     return tuple[0]
 
@@ -113,18 +95,19 @@ env.ParseConfig('cppunit-config --libs --cflags')
 
 # Math library...
 
+#if not conf.CheckLibWithHeader(['m','c'], 'math.h', 'C','log'):
+#	print 'Did not find libm.a or m.lib, exiting!'
+#	Exit(1)
+
+# IsNan
+
 conf = Configure(env
 	, custom_tests = { 'CheckIsNan' : CheckIsNan} 
 	, config_h = "config.h"
 )
 
-#if not conf.CheckLibWithHeader(['m','c'], 'math.h', 'C','log'):
-#	print 'Did not find libm.a or m.lib, exiting!'
-#	Exit(1)
 
-if conf.CheckIsNan():
-	env.Append(CPPDEFINES=['HAVE_ISNAN'])
-else:
+if not conf.CheckIsNan():
 	print "NO ISNAN"
 
 # CppUnit...
