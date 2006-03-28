@@ -56,7 +56,7 @@ ctestheading:
 	@if $(CXX) -DCTEST $< $(LIB) -o $@ $(LDFLAGS); then exit 0; \
 	else \
 	  echo; \
-	  echo "$<:1: CTEST FAIL: Expected to compile, but did not."; \
+	  echo "$<:1: FAIL: Expected to compile, but did not."; \
 	  echo; \
 	  exit 1; \
 	fi;
@@ -66,7 +66,7 @@ ctestheading:
 	@echo $(CXX) -DCTEST $< $(LIB) -o cfail$(EXE_SUFFIX) $(LDFLAGS)
 	@if $(CXX) -DCTEST $< $(LIB) -o cfail$(EXE_SUFFIX) $(LDFLAGS); then \
 	  echo; \
-	  echo "$<:1: CTEST FAIL: Shouldn't have compiled, but did."; \
+	  echo "$<:1: FAIL: Shouldn't have compiled, but did."; \
 	  echo; \
 	  if [ -f $@ ]; then rm cfail$(EXE_SUFFIX); fi; \
 	  exit 1; \

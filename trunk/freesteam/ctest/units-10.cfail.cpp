@@ -1,14 +1,9 @@
 #include "../units.h"
 
-#include <iostream>
-using namespace std;
-
-/// Test of addition on different units
+// test of square root
 int main(void){
 
-	Pressure p = 1.0 * bar;
-	Distance d = 1.2 * metre;
-
-	Pressure p2 = p + d;
-
+	Area m1 = 100.0 * metre2;
+	Length l = Area::sqrt(m1);
+	Length l = Length::sqrt(2.0 * metre);
 }

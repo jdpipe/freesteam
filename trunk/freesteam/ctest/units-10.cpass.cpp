@@ -1,9 +1,8 @@
 #include "../units.h"
 
+// test of square root
 int main(void){
 
-	Pressure p = 1.0 * bar;
-	Pressure p2 = 0.001 * MPa;
-
-	Pressure p3 = p + p2;
+	Area m1 = 100.0 * metre2;
+	Length l = Length::sqrt(m1);
 }

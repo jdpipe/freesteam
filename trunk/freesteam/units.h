@@ -37,6 +37,8 @@ For this file,
 # include <stdexcept>
 #endif
 
+#define UNITS_ALLOW_CAST_TO_DOUBLE
+
 #define CHECK_UNITS
 
 // All of the reinterpret casts are work-arounds to let us make
@@ -84,6 +86,11 @@ class Units {
 		// Scalar mulitplication & division
 		Units operator*( const double d ) const { Units u; u.d_val=d_val*d; return u; }
 		Units operator/( const double d ) const { Units u; u.d_val=d_val/d; return u; }
+
+		// Integer mult and div
+		//Units operator*( const int i ) const { Units u; u.d_val=d_val*i; return u; }
+		//Units operator/( const int i ) const { Units u; u.d_val=d_val/i; return u; }
+
 		const Units& operator*=( const double d ) { d_val*=d; return *this; }
 		const Units& operator/=( const double d ) { d_val/=d; return *this; }
 
@@ -104,7 +111,9 @@ class Units {
 
 		// Scalar typecast
 #ifndef UNITS_CAST_THROW
+# ifdef UNITS_ALLOW_CAST_TO_DOUBLE
 		inline operator double() const; // Deliberately not defined, will cause linker errors if called.
+# endif
 #else
 		inline operator double() const {
 			throw new std::runtime_error("Invalid cast to double!");
@@ -137,6 +146,14 @@ class Units {
 			return r;
 		}
 
+		/// Square root (not such nice syntax)
+		static inline Units sqrt(const Units <2*M,2*L,2*T,2*K,2*I> u) {
+			Units r;
+			double n = (*reinterpret_cast<const double*>(&u));
+			*reinterpret_cast<double*>(&r) = std::sqrt(n);
+			return r;
+		}
+
 	private:
 
 		//bool hello;
@@ -152,10 +169,12 @@ class Units {
 /**
 	Only defined for dimensionless values!
 */
+#ifdef UNITS_ALLOW_CAST_TO_DOUBLE
 template<>
 inline Units<0,0,0,0,0>::operator double() const {
 	return d_val;
 }
+#endif
 
 /*
 #ifdef UNITS_CAST_THROW
@@ -258,15 +277,15 @@ cube(const Units < M, L, T, K, I > u) {
 }
 
 /// Square root
-template < int M, int L, int T, int K, int I >
+/*template < int M, int L, int T, int K, int I >
 inline Units<M, L, T, K, I>
-sqrt(const Units < 2*M, 2*L, 2*T, 2*K, 2*I > u) {
+units_sqrt(const Units < 2*M, 2*L, 2*T, 2*K, 2*I > &u) {
 	Units<M, L, T, K, I> r;
 	double n = (*reinterpret_cast<const double*>(&u));
 	*reinterpret_cast<double*>(&r) = sqrt(n);
 	return r;
 }
-
+*/
 
 // Not-a-Number test
 
