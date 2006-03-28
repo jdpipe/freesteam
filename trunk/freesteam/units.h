@@ -147,7 +147,15 @@ class Units {
 		}
 
 		/// Square root (not such nice syntax)
-		static inline Units sqrt(const Units <2*M,2*L,2*T,2*K,2*I> u) {
+		/**
+			Usage like this:
+			@code
+				Area ha = (100. * metre)*(100. * metre);
+				Length side = Length::sqrt(ha);
+			@endcode
+		*/
+		static inline Units
+		sqrt(const Units <2*M,2*L,2*T,2*K,2*I> u) {
 			Units r;
 			double n = (*reinterpret_cast<const double*>(&u));
 			*reinterpret_cast<double*>(&r) = std::sqrt(n);
@@ -193,7 +201,6 @@ Units<m,l,t,k,i>
 operator*( const double d, const Units<m,l,t,k,i> &u) {
 	return u*d;
 }
-
 
 /*
 // Scalar Multiplication & Division
@@ -275,17 +282,6 @@ inline Units<3*M, 3*L, 3*T, 3*K, 3*I>
 cube(const Units < M, L, T, K, I > u) {
 	return u * u * u;
 }
-
-/// Square root
-/*template < int M, int L, int T, int K, int I >
-inline Units<M, L, T, K, I>
-units_sqrt(const Units < 2*M, 2*L, 2*T, 2*K, 2*I > &u) {
-	Units<M, L, T, K, I> r;
-	double n = (*reinterpret_cast<const double*>(&u));
-	*reinterpret_cast<double*>(&r) = sqrt(n);
-	return r;
-}
-*/
 
 // Not-a-Number test
 
