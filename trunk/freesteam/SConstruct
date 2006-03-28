@@ -78,7 +78,7 @@ def CheckIsNan(context):
 	lastCPPFLAGS = context.env['CPPFLAGS']
 	#context.env.Append(LIBS = ['m'])
 	tuple = context.TryRun(checknansrc,'.cpp')
-	print tuple
+	#print tuple
 	if not tuple[0]:
 		context.env.Replace(
 			LIBS = lastLIBS
@@ -92,7 +92,7 @@ def CheckIsNan(context):
 	return tuple[0]
 
 def CheckCppUnitConfig(context):
-	context.Message( 'Checking for CppUnit...' )
+	context.Message( 'Checking cppunit-config...' )
 	lastLIBS = context.env['LIBS']
 	lastCPPFLAGS = context.env['CPPFLAGS']
 
@@ -106,9 +106,11 @@ def CheckCppUnitConfig(context):
 			LIBS = lastLIBS
 			, CPPFLAGS = lastCPPFLAGS
 		)
+		context.Result(0)
 		return 0
 
 	context.config_h = context.config_h + "#define HAVE_CPPUNIT_CONFIG\n"
+	context.Result(1)
 	return 1
 
 #------------------------------------------------------
@@ -135,7 +137,8 @@ conf.env.Append(LIBS="")
 conf.env.Append(CPPFLAGS="")
 
 if not conf.CheckIsNan():
-	print "NO ISNAN"
+	pass
+	#print "NO ISNAN"
 
 # CppUnit...
 
@@ -143,7 +146,7 @@ have_cppunit = False
 
 if conf.CheckCppUnitConfig():
 	if conf.CheckLibWithHeader("cppunit","cppunit/TestCase.h","C++"):
-		print "CPPUNIT OK!"
+		#print "CPPUNIT OK!"
 		have_cppunit=True
 
 
