@@ -1,3 +1,5 @@
 *.d
 *.d.????
 ctest.skip
+*.cpass.exe
+*.cfail.ok

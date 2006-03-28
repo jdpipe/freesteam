@@ -47,7 +47,7 @@ class SteamCalculatorException : public std::runtime_error {
 
 	public:
 
-		std::string what();
+		virtual std::string what();
 		SteamErrorCode getType();
 
 	protected:
@@ -71,7 +71,7 @@ class SteamCalculatorException : public std::runtime_error {
 class SteamAlmostSaturatedException : public std::runtime_error {
 
 	public:
-		std::string what();
+		virtual std::string what();
 
 	protected:
 		friend class Boundaries;

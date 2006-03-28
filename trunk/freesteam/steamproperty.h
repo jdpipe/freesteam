@@ -181,16 +181,4 @@ SteamProperty<Pressure,0>::plotOnLogAxis(){
 	return true;
 }
 
-// Plot stuff
-
-template<>
-inline
-const bool
-SteamProperty<SpecificVolume,0>::plotOnLogAxis();
-
-template<>
-inline
-const bool
-SteamProperty<Pressure,0>::plotOnLogAxis();
-
 #endif

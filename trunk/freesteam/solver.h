@@ -41,7 +41,9 @@ template<class MainProp, class OtherProp, class VaryProp, int MainPropAlt,int Ot
 class SolverBase : public DesignByContract
 {
 
-	friend class ZeroIn<SolverBase,VaryProp,OtherProp>;
+	// The following kills Borland C Builder 5.5. I don't know if it can
+	// be worked around or not. I tried :-)
+	// friend class ZeroIn<SolverBase,VaryProp,OtherProp>;
 
 	protected:
 		/// Create the solver and assign fixed and target properties

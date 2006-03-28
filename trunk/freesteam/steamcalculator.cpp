@@ -222,6 +222,7 @@ SteamCalculator::set_pT(const Pressure &p, const Temperature &T, Num x) {
 
 
 //-------------------------------------
+// Saturation curves
 
 /// Set state to be saturated water at a specified pressure.
 /*
@@ -331,6 +332,7 @@ SteamCalculator::setSatSteam_T(const Temperature &T) {
 }
 
 //---------------------------------------------------------------------------
+// Region boundaries
 
 /// Set properties on B23 curve given temperature
 void
@@ -384,6 +386,25 @@ SteamCalculator::setB23_p(const Pressure &p){
 
 //--------------------------------------------------------------------------
 // Methods for saturated liquid/gas.
+
+const SteamCalculator &
+SteamCalculator::getLiquidPart() const{
+	ASSERT(whichRegion()==4);
+	IS_VALID(this);
+
+	return *liq;
+}
+
+const SteamCalculator &
+SteamCalculator::getGasPart() const{
+	ASSERT(whichRegion()==4);
+	IS_VALID(this);
+
+	return *gas;
+}
+
+//--------------------------------------------------------------------------
+// Overall status
 
 /// Has the state of the SteamCalculator been initialised?
 bool

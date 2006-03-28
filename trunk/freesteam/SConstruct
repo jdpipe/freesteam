@@ -15,8 +15,15 @@ if platform.system()=="Windows":
 		default_libdir = 'c:\\MinGW\\lib'
 		default_incdir = 'c:\\MinGW\\include'
 	else:
+		if env.has_key('MSVS'):
+			# for exception handling, following errmsg from VC6
+			env.Append(CXXFLAGS=['/EHsc'])
+			env.Append(CPPDEFINES='UNITS_CAST_THROW');
+			print "VISUAL C++ detected... (Version",env['MSVS']['VERSION']+")"
+		else:
+			print "WARNING: non-POSIX tools"
 		can_install=False
-		print "WARNING: MinGW not detected: 'install' disabled"
+		env.Append(CPPPATH=os.environ['INCLUDE'])
 else:
 	default_emso_location = 'search'
 	default_libdir = '/usr/local/lib'
@@ -84,16 +91,13 @@ int main(void){
 #- - - 8< - - -
 
 def CheckIsNan(ctxt):
-
+    print "CHECKING ISNAN"
     ctxt.Message( 'Checking for isnan...' )
     lastLIBS = ctxt.env['LIBS']
     lastCPPFLAGS = ctxt.env['CPPFLAGS']
-    ctxt.env.Append(
-    	LIBS = ['m']
-#	    	, CPPFLAGS = ['-fsignaling-nans']
-    )
-    tuple = ctxt.TryRun(checknansrc,'.cxx')
-    
+    #ctxt.env.Append(LIBS = ['m'])
+    tuple = ctxt.TryRun(checknansrc,'.cpp')
+    print tuple
     if not tuple[0]:
         ctxt.env.Replace(
         	LIBS = lastLIBS
@@ -118,9 +122,10 @@ conf = Configure(env
 #	print 'Did not find libm.a or m.lib, exiting!'
 #	Exit(1)
 
-
 if conf.CheckIsNan():
 	env.Append(CPPDEFINES=['HAVE_ISNAN'])
+else:
+	print "NO ISNAN"
 
 # CppUnit...
 
@@ -167,6 +172,10 @@ if have_cppunit:
 	env.SConscript(['test/SConscript'],'env have_cppunit') #, 'cli/SConscript'
 else:
 	print "Skipping... Tests (no CppUnit found)"
+
+# Compile-time C++ template testing
+
+env.SConscript(['ctest/SConscript'],'env')
 
 # Command-line-interface programs
 

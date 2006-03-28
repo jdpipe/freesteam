@@ -1,0 +1,35 @@
+Import('env')
+
+env.Append(LIBS='freesteam')
+env.Append(LIBPATH='..')
+
+import platform
+import glob
+passfiles = glob.glob("*.cpass.cpp")
+failfiles = glob.glob("*.cfail.cpp")
+
+#-------------------
+# Expected PASS buils
+
+for i in passfiles:
+	env.Program(i)
+
+#-------------------
+# Expected FAIL buils
+
+def generate_xfail(source, target, env, for_signature):
+	if platform.system()=="Windows":
+		cmd = '$CXX -o %s %s' % (target[0], source[0])
+		return "("+cmd+" || EXIT 0) && EXIT 1"
+	else:
+		cmd = '$CXX -c -o %s %s' % (target[0], source[0])		
+		return 'if [ `'+cmd+'` ]; then return 0; fi; return 1'
+	
+
+bld = Builder(generator = generate_xfail, suffix = '.exe', src_suffix = '.cpp')
+
+env['BUILDERS']['XFail'] = bld
+
+
+for i in failfiles:
+	env.XFail(i)

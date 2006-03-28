@@ -131,6 +131,8 @@ class SteamCalculator:public DesignByContract {
 		// Methods to return properties and state
 
 		int whichRegion(void) const;
+		const SteamCalculator &SteamCalculator::getGasPart() const;
+		const SteamCalculator &SteamCalculator::getLiquidPart() const;
 
 		SteamStateCode whichState(void);
 		const char *SteamCalculator::whichStateStr(void);

@@ -33,6 +33,10 @@ For this file,
 #include <sstream>
 #include <cmath>
 
+#ifdef UNITS_CAST_THROW
+# include <stdexcept>
+#endif
+
 #define CHECK_UNITS
 
 // All of the reinterpret casts are work-arounds to let us make
@@ -78,10 +82,10 @@ class Units {
 		const Units& operator=( const Units& u ){	d_val=u.d_val; return *this; }
 
 		// Scalar mulitplication & division
-		Units operator*( double d ) const { Units u; u.d_val=d_val*d; return u; }
-		Units operator/( double d ) const { Units u; u.d_val=d_val/d; return u; }
-		const Units& operator*=( double d ) { d_val*=d; return *this; }
-		const Units& operator/=( double d ) { d_val/=d; return *this; }
+		Units operator*( const double d ) const { Units u; u.d_val=d_val*d; return u; }
+		Units operator/( const double d ) const { Units u; u.d_val=d_val/d; return u; }
+		const Units& operator*=( const double d ) { d_val*=d; return *this; }
+		const Units& operator/=( const double d ) { d_val/=d; return *this; }
 
 		// Unit additions & subtraction
 		Units operator+( const Units& u ) const { Units v; v.d_val=d_val+u.d_val; return v; }
@@ -99,13 +103,20 @@ class Units {
 		bool operator>=( const Units& u ) const { return d_val>=u.d_val; } ///<Greater-or-equal
 
 		// Scalar typecast
+#ifndef UNITS_CAST_THROW
 		inline operator double() const; // Deliberately not defined, will cause linker errors if called.
+#else
+		inline operator double() const {
+			throw new std::runtime_error("Invalid cast to double!");
+		}
+#endif
 
 		/// Division
 		template< int m, int l, int t, int k, int i >
 		Units<M-m,L-l,T-t,K-k,I-i>
 		operator/( const Units<m,l,t,k,i>& u2 ) const {
-			Units<M-m,L-l,T-t,K-k,I-i> r;
+			// This kills Borland C Builder 5.5. Don't think there's a workaround.
+			Units<(M-m),(L-l),(T-t),(K-k),(I-i)> r;
 			*reinterpret_cast<double*>(&r) = d_val/ *reinterpret_cast<const double*>(&u2);
 			return r;
 		}
@@ -146,6 +157,7 @@ inline Units<0,0,0,0,0>::operator double() const {
 	return d_val;
 }
 
+/*
 #ifdef UNITS_CAST_THROW
 #include <stdexcept>
 template< int m, int l, int t, int k, int i >
@@ -153,12 +165,13 @@ inline Units<m,l,t,k,i>::operator double() const {
 	throw new std::runtime_error("Invalid cast to double!");
 }
 #endif
+*/
 
 /// Scalar multiplication
 template< int m, int l, int t, int k, int i >
 inline
 Units<m,l,t,k,i>
-operator*( double d, const Units<m,l,t,k,i> &u) {
+operator*( const double d, const Units<m,l,t,k,i> &u) {
 	return u*d;
 }
 
@@ -177,12 +190,12 @@ operator*(const Units<m,l,t,k,i> &u,  double d) {
 template< int m, int l, int t, int k,int i >
 inline
 Units<-m,-l,-t,-k,-i>
-operator/( double d, const Units<m,l,t,k,i>& u) {
+operator/( const double d, const Units<m,l,t,k,i>& u) {
+	// This kills Borland C Builder 5.5. Don't think there's a workaround.
 	Units< -m, -l, -t, -k, -i > r;
 	*reinterpret_cast<double*>(&r) = d / *reinterpret_cast<const double*>(&u);
 	return r;
 }
-
 
 /// Multiplication
 template<int M, int L, int T, int K, int I,  int m, int l, int t, int k, int i >
@@ -231,13 +244,10 @@ fabs(const Units<M,L,T,K,I> u) {
 }
 
 /// Square of a value
-/**
-	This function only exists in order to override the sq() defined in common.h
-*/
 template < int M, int L, int T, int K, int I >
 inline Units<2*M, 2*L, 2*T, 2*K, 2*I>
 sq(const Units < M, L, T, K, I > u) {
-	return u * u;
+	return u*u;
 }
 
 /// Cube of a value
@@ -247,7 +257,7 @@ cube(const Units < M, L, T, K, I > u) {
 	return u * u * u;
 }
 
-// Square root (even powers of units only)
+/// Square root
 template < int M, int L, int T, int K, int I >
 inline Units<M, L, T, K, I>
 sqrt(const Units < 2*M, 2*L, 2*T, 2*K, 2*I > u) {
@@ -256,6 +266,7 @@ sqrt(const Units < 2*M, 2*L, 2*T, 2*K, 2*I > u) {
 	*reinterpret_cast<double*>(&r) = sqrt(n);
 	return r;
 }
+
 
 // Not-a-Number test
 
@@ -270,6 +281,31 @@ template < int M, int L, int T, int K, int I >
 inline bool isinf(const Units<M,L,T,K,I>& u){
 	return isinf(*reinterpret_cast<const double*>(&u));
 }
+
+// Min/Max
+
+/* Macros for MAX, MIN and ABS... */
+#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+# define MAX(X,Y) \
+	( { __typeof__ (X) x_ = (X); \
+    	__typeof__ (Y) y_ = (Y); \
+    	(x_ > y_) ? x_ : y_; \
+	} )
+# define MIN(X,Y) \
+	( { __typeof__ (X) x_ = (X); \
+    	__typeof__ (Y) y_ = (Y); \
+    	(x_ < y_) ? x_ : y_; \
+	} )
+# define ABS(X) \
+	( { __typeof__ (X) x_ = (X); \
+    	(x_ > 0) ? x_ : -x_; \
+	} )
+#else
+# define MAX(a,b) ( (a) < (b) ? (b) : (a) )
+# define MIN(a,b) ( (a) < (b) ? (a) : (b) )
+# define ABS(x) ( ((x) > 0) ? (x) : -(x) )
+#endif
+
 
 // OUTPUT
 
@@ -350,8 +386,17 @@ typedef Units < 0,  2, -1 > KinematicViscosity;
 typedef Units < 1,  1, -3 > PowerPerLength;
 typedef Units < 1, -2, -2 > PressurePerLength;
 typedef Units < 1,  0, -2 > ForcePerLength;
+typedef Units < 0,  2, -3 > PowerPerMass;
 
 typedef Units < 1, -1, -3 > DensitySpecificEnergyPerTime;
+
+typedef Units < 0,  3, -1 > VolFlowRate;
+typedef Units < 1,  0, -1 > MassFlowRate;
+typedef Units < 1, -1, -1 > MassFlowRatePerLength;
+typedef Units < 1,  0, -2 > MassFlowRatePerTime;
+
+typedef Units < 1,  0, -3 > HeatFlux;
+typedef Units < 1, -2, -1 > MassFlux;
 
 // Thermodynamics
 
@@ -365,14 +410,6 @@ typedef Units < 1,  1, -2, -1 > HeatCapacityPerLength;
 typedef Units < 1,  2, -3, -1 > PowerPerTemperature;
 
 typedef Units < 0,  0,  0, -1 > ThermalExpansionCoefficient;
-
-typedef Units < 0,  3, -1 > VolFlowRate;
-typedef Units < 1,  0, -1 > MassFlowRate;
-typedef Units < 1, -1, -1 > MassFlowRatePerLength;
-typedef Units < 1,  0, -2 > MassFlowRatePerTime;
-
-typedef Units < 1,  0, -3 > HeatFlux;
-typedef Units < 1, -2, -1 > MassFlux;
 
 // Electrical
 
@@ -470,7 +507,7 @@ const Length inch = 25.4 * milli * metre;
 
 const Temperature Rankin = 0.556 * Kelvin;
 
-const Frequency RPM = 1.0 / minute;
+const Frequency RPM = 1. / minute;
 
 //------------------------------------
 // THERMODYNAMIC MEASURES
