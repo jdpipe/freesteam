@@ -5,6 +5,7 @@ env.Append(LIBPATH='..')
 
 import platform
 import glob
+import commands
 passfiles = glob.glob("*.cpass.cpp")
 failfiles = glob.glob("*.cfail.cpp")
 
@@ -22,8 +23,10 @@ def generate_xfail(source, target, env, for_signature):
 		cmd = '$CXX $CXXFLAGS $CPPFLAGS $_CPPDEFFLAGS $_CPPINCFLAGS -o %s %s $_LIBDIRFLAGS $_LIBFLAGS' % (target[0], source[0])
 		return "("+cmd+" || EXIT 0) && EXIT 1"
 	else:
-		cmd = '$CXX $CXXFLAGS $CPPFLAGS $_CPPDEFFLAGS $_CPPINCFLAGS -o %s %s $_LIBDIRFLAGS $_LIBFLAGS' % (target[0], source[0])		
-		return "("+cmd+" || exit 0) && exit 1"
+		return "echo NOT TESTED AT THIS STAGE"
+		#cmd = '$CXX $CXXFLAGS $CPPFLAGS $_CPPDEFFLAGS $_CPPINCFLAGS -o %s %s $_LIBDIRFLAGS $_LIBFLAGS' % (target[0], #source[0])
+		#commands.getstatusoutput(cmd)
+		#return "("+cmd+" || exit 0) && exit 1"
 	
 
 bld = Builder(generator = generate_xfail, suffix = '.exe', src_suffix = '.cpp')
