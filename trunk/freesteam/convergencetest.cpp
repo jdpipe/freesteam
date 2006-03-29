@@ -22,6 +22,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "convergencetest.h"
 #include "steamcalculator.h"
 
+const double errorP = 1e-6;
+const double errorH = 1e-6;
+const double errorS = 1e-12;
+const double errorV = 1e-10;
+const double errorRHO = 0.0001;
+const double errorU = 1e-12;
+const double errorCP = 0.0001;
+const double errorCV = 0.0001;
+const double errorX = 0.00001;
+const double errorT = 1e-10;
+
 // 'test(X,p,T)' hooks
 
 template<>

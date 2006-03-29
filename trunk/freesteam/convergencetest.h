@@ -23,24 +23,54 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define CONVERGENCETEST_H
 
 #include "units.h"
+#include "common.h"
 
 template<class Property,int PropertyAlternative=0>
 class ConvergenceTest{
 
-	private:
-		static const double errorP = 1e-6;
-		static const double errorH = 1e-6;
-		static const double errorS = 1e-12;
-		static const double errorV = 1e-10;
-		static const double errorRHO = 0.0001;
-		static const double errorU = 1e-12;
-		static const double errorCP = 0.0001;
-		static const double errorCV = 0.0001;
-		static const double errorX = 0.00001;
-		static const double errorT = 1e-10;
-
 	public:
 		static bool test(const Property &X, const Pressure &p, const Temperature &T);
 };
+
+
+template<>
+bool
+ConvergenceTest<SpecificEnergy,SOLVE_IENERGY>::test(const SpecificEnergy &error, const Pressure& p, const Temperature &T);
+
+template<>
+bool
+ConvergenceTest<SpecificEnergy,SOLVE_ENTHALPY>::test(const SpecificEnergy &error, const Pressure& p, const Temperature &T);
+
+template<>
+bool
+ConvergenceTest<Density,0>::test(const Density &error, const Pressure& p, const Temperature &T);
+
+template<>
+bool
+ConvergenceTest<SpecificVolume,0>::test(const SpecificVolume &error, const Pressure& p, const Temperature &T);
+
+template<>
+bool
+ConvergenceTest<Pressure,0>::test(const Pressure &error, const Pressure& p, const Temperature &T);
+
+template<>
+bool
+ConvergenceTest<Temperature,0>::test(const Temperature &error, const Pressure& p, const Temperature &T);
+
+template<>
+bool
+ConvergenceTest<SpecificEntropy,SOLVE_ENTROPY>::test(const SpecificEntropy &error, const Pressure& p, const Temperature &T);
+
+template<>
+bool
+ConvergenceTest<SpecHeatCap,SOLVE_CP>::test(const SpecHeatCap &error, const Pressure& p, const Temperature &T);
+
+template<>
+bool
+ConvergenceTest<SpecHeatCap,SOLVE_CV>::test(const SpecHeatCap &error, const Pressure& p, const Temperature &T);
+
+template<>
+bool
+ConvergenceTest<Num,0>::test(const Num &error, const Pressure& p, const Temperature &T);
 
 #endif

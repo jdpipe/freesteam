@@ -10,6 +10,7 @@ opts = Options(['options.cache', 'config.py'])
 # Should exist in path
 cppunit_config_command = 'cppunit-config --libs --cflags'
 
+print "PLATFORM = ",platform.system()
 can_install=True
 if platform.system()=="Windows":
 	default_emso_location = "c:\\Program Files\\EMSO\\interface"
@@ -43,13 +44,21 @@ if can_install:
 opts.Add(BoolOption('ENABLE_SAT_P',"Enable saturation curves in terms of pressure"+
 	"(introduces some numerical problems in iterative cases if"+
 	"you're not careful)", False))
+
+opts.Add(BoolOption('ENABLE_DEBUG_FLAG',"Add debug symbols to object code, for use with gdb etc", False))
+
 opts.Update(env)
+
 opts.Save('options.cache',env)
 
 Help(opts.GenerateHelpText(env))
 
 if env['ENABLE_SAT_P']:
 	env.Append(CPPDEFINES=['ENABLE_SAT_P'])
+
+if env['ENABLE_DEBUG_FLAG']:
+	env.Append(CXXFLAGS=['-g'])
+	env.Append(CFLAGS=['-g'])
 	
 #------------------------------------------------------
 # ISNAN DETECTION
@@ -76,7 +85,7 @@ def CheckIsNan(context):
 	context.Message( 'Checking for isnan...' )
 	lastLIBS = context.env['LIBS']
 	lastCPPFLAGS = context.env['CPPFLAGS']
-	#context.env.Append(LIBS = ['m'])
+	context.env.Append(LIBS = ['m'])
 	tuple = context.TryRun(checknansrc,'.cpp')
 	#print tuple
 	if not tuple[0]:
@@ -108,7 +117,14 @@ def CheckCppUnitConfig(context):
 		)
 		context.Result(0)
 		return 0
-
+	except:
+		context.env.Replace(
+			LIBS = lastLIBS
+			, CPPFLAGS = lastCPPFLAGS
+		)
+		context.Result(0)
+		return 0
+		
 	context.config_h = context.config_h + "#define HAVE_CPPUNIT_CONFIG\n"
 	context.Result(1)
 	return 1
@@ -116,14 +132,6 @@ def CheckCppUnitConfig(context):
 #------------------------------------------------------
 # CONFIGURATION
 
-
-# Math library...
-
-#if not conf.CheckLibWithHeader(['m','c'], 'math.h', 'C','log'):
-#	print 'Did not find libm.a or m.lib, exiting!'
-#	Exit(1)
-
-# IsNan
 
 conf = Configure(env
 	, custom_tests = { 
@@ -136,10 +144,15 @@ conf = Configure(env
 conf.env.Append(LIBS="")
 conf.env.Append(CPPFLAGS="")
 
-if not conf.CheckIsNan():
-	pass
-	#print "NO ISNAN"
+# Math library...
 
+if not conf.CheckLibWithHeader(['m','c'], 'math.h', 'C'):
+	print 'Did not find libm.a or m.lib, exiting!'
+	Exit(1)
+
+# IsNan
+
+conf.CheckIsNan()
 # CppUnit...
 
 have_cppunit = False
