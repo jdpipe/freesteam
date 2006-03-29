@@ -364,6 +364,7 @@ DEFINE_OUTPUT_METHOD( 1, -3,  0,  0,  0, "kg/m³");
 DEFINE_OUTPUT_METHOD( 1, -1, -1,  0,  0, "Pa·s");
 DEFINE_OUTPUT_METHOD( 1,  2, -3,  0,  0, "W");
 DEFINE_OUTPUT_METHOD( 1,  0, -3,  0,  0, "W/m²");
+DEFINE_OUTPUT_METHOD( 1, -2, -1,  0,  0, "kg/s/m²");
 
 //--------------------------------
 // BASE MEASURES
