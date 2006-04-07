@@ -121,6 +121,9 @@ class Units {
 #endif
 
 		/// Division
+		/**
+			SWIG can't handle the following, so this lot can't be wrapped easily, alas :-(
+		*/
 		template< int m, int l, int t, int k, int i >
 		Units<M-m,L-l,T-t,K-k,I-i>
 		operator/( const Units<m,l,t,k,i>& u2 ) const {
@@ -351,20 +354,26 @@ std::ostream & operator <<(std::ostream & os, const Units < 0,
 			return os; \
 		}
 
-DEFINE_OUTPUT_METHOD( 0,  1,  0,  0,  0, "m");
-DEFINE_OUTPUT_METHOD( 0,  0,  1,  0,  0, "s");
-DEFINE_OUTPUT_METHOD( 0,  1, -1,  0,  0, "m/s");
 DEFINE_OUTPUT_METHOD( 1,  0,  0,  0,  0, "kg");
-DEFINE_OUTPUT_METHOD( 0,  0,  0,  1,  0, "K");
-DEFINE_OUTPUT_METHOD( 1, -1, -2,  0,  0, "Pa");
-DEFINE_OUTPUT_METHOD(-1,  3,  0,  0,  0, "m³/kg");
-DEFINE_OUTPUT_METHOD( 0,  2, -2, -1,  0, "J/kgK");
-DEFINE_OUTPUT_METHOD( 0,  2, -2,  0,  0, "J/kg");
+DEFINE_OUTPUT_METHOD( 0,  1,  0,  0,  0, "m");
+DEFINE_OUTPUT_METHOD( 0,  2,  0,  0,  0, "m²");
+DEFINE_OUTPUT_METHOD( 0,  3,  0,  0,  0, "m³");
+DEFINE_OUTPUT_METHOD( 1, -1,  0,  0,  0, "kg/m");
+DEFINE_OUTPUT_METHOD( 1, -2,  0,  0,  0, "kg/m²");
 DEFINE_OUTPUT_METHOD( 1, -3,  0,  0,  0, "kg/m³");
+DEFINE_OUTPUT_METHOD(-1,  3,  0,  0,  0, "m³/kg");
+DEFINE_OUTPUT_METHOD( 0,  0,  1,  0,  0, "s");
+DEFINE_OUTPUT_METHOD( 0,  0, -1,  0,  0, "Hz");
+DEFINE_OUTPUT_METHOD( 1,  0, -1,  0,  0, "kg/s");
+DEFINE_OUTPUT_METHOD( 1,  0, -3,  0,  0, "W/m²");
+DEFINE_OUTPUT_METHOD( 0,  1, -1,  0,  0, "m/s");
+DEFINE_OUTPUT_METHOD( 0,  2, -2,  0,  0, "J/kg");
+DEFINE_OUTPUT_METHOD( 1, -1, -2,  0,  0, "Pa");
 DEFINE_OUTPUT_METHOD( 1, -1, -1,  0,  0, "Pa·s");
 DEFINE_OUTPUT_METHOD( 1,  2, -3,  0,  0, "W");
-DEFINE_OUTPUT_METHOD( 1,  0, -3,  0,  0, "W/m²");
 DEFINE_OUTPUT_METHOD( 1, -2, -1,  0,  0, "kg/s/m²");
+DEFINE_OUTPUT_METHOD( 0,  0,  0,  1,  0, "K");
+DEFINE_OUTPUT_METHOD( 0,  2, -2, -1,  0, "J/kgK");
 
 //--------------------------------
 // BASE MEASURES
