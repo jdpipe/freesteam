@@ -44,7 +44,7 @@ class Region1:public SteamState {
 		virtual Density dens(const SteamCalculator &c) const;
 
 		static SteamState *Instance();
-		int Region1::getRegion() const;
+		int getRegion() const;
 		virtual void set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x);
 
 	private:

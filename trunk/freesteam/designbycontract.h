@@ -40,7 +40,7 @@ class DesignByContract {
 		static void __throw_error_(const char *file, const int line,
 		                             const char *expr, const char *type);
 
-		static void DesignByContract::__report_Message_(const char *file, const int line, const char *msg);
+		static void __report_Message_(const char *file, const int line, const char *msg);
 
 #endif
 
