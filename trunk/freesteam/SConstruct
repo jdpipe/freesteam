@@ -129,6 +129,49 @@ def CheckCppUnitConfig(context):
 	context.Result(1)
 	return 1
 
+#----------------
+# SWIG
+
+import os,re
+
+need_fortran = False
+
+def get_swig_version(env):
+	cmd = env['SWIG']+' -version'
+	(cin,coutcerr) = os.popen4(cmd)
+	output = coutcerr.read()
+	
+	restr = "SWIG\\s+Version\\s+(?P<maj>[0-9]+)\\.(?P<min>[0-9]+)\\.(?P<pat>[0-9]+)\\s*$"
+	expr = re.compile(restr,re.M);
+	m = expr.search(output);
+	if not m:
+		return None
+	maj = int(m.group('maj'))
+	min = int(m.group('min'))
+	pat = int(m.group('pat'))
+
+	return (maj,min,pat)
+	
+
+def CheckSwigVersion(context):
+	
+	try:
+		context.Message("Checking version of SWIG... ")
+		maj,min,pat = get_swig_version(context.env)
+	except:
+		context.Result("Failed to detect version, or failed to run SWIG")
+		return 0;
+	
+	if maj == 1 and (
+			min > 3
+			or (min == 3 and pat >= 24)
+		):
+		context.Result("ok, %d.%d.%d" % (maj,min,pat))
+		return 1;
+	else:
+		context.Result("too old, %d.%d.%d" % (maj,min,pat))
+		return 0;
+
 #------------------------------------------------------
 # CONFIGURATION
 
@@ -137,6 +180,7 @@ conf = Configure(env
 	, custom_tests = { 
 		'CheckIsNan' : CheckIsNan
 		,'CheckCppUnitConfig' : CheckCppUnitConfig
+		,'CheckSwigVersion' : CheckSwigVersion
 	} 
 	, config_h = "config.h"
 )
@@ -162,6 +206,12 @@ if conf.CheckCppUnitConfig():
 		#print "CPPUNIT OK!"
 		have_cppunit=True
 
+# Swig
+
+have_swig = False
+_swigv = conf.CheckSwigVersion()
+if _swigv:
+	have_swig = True
 
 env = conf.Finish()
 
@@ -215,6 +265,28 @@ if env['HAVE_EMSO']:
 	env.SConscript(['emso/SConscript'],'env')
 else:
 	print "Skipping... EMSO hook libraries"
+
+#------------------------------------------------------
+# PYTHON INTERFACE :-)
+
+if platform.system()=="Windows":
+	python_lib = "python24"
+else:
+	python_lib = "python2.4"
+
+import distutils.sysconfig
+
+env.Append(PYTHON_LIBPATH=[distutils.sysconfig.PREFIX+"/libs"])
+env.Append(PYTHON_CPPPATH=[distutils.sysconfig.get_python_inc()])
+
+if have_swig:
+	env.SharedLibrary('pyfreesteam',['freesteam.i']
+		, SWIGFLAGS=['-python','-c++']
+		, LIBS=['freesteam',python_lib]
+		, LIBPATH=env['PYTHON_LIBPATH']
+		, CPPPATH=env['PYTHON_CPPPATH']
+		, SHLIBPREFIX='_'
+	)
 
 #------------------------------------------------------
 # INSTALLATION

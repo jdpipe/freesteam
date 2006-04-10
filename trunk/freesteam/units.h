@@ -39,6 +39,8 @@ For this file,
 
 #define UNITS_ALLOW_CAST_TO_DOUBLE
 
+#define UNITS_ALLOW_GET_RAW_VALUE
+
 #define CHECK_UNITS
 
 // All of the reinterpret casts are work-arounds to let us make
@@ -115,8 +117,18 @@ class Units {
 		inline operator double() const; // Deliberately not defined, will cause linker errors if called.
 # endif
 #else
+		/**
+			This will be used by Python wrappers that need to access
+			values of unitful variables
+		*/
 		inline operator double() const {
 			throw new std::runtime_error("Invalid cast to double!");
+		}
+#endif
+
+#ifdef UNITS_ALLOW_GET_RAW_VALUE
+		inline double getRawValue() const{
+			return d_val;
 		}
 #endif
 
