@@ -47,6 +47,12 @@ opts.Add(BoolOption('ENABLE_SAT_P',"Enable saturation curves in terms of pressur
 
 opts.Add(BoolOption('ENABLE_DEBUG_FLAG',"Add debug symbols to object code, for use with gdb etc", False))
 
+opts.Add(BoolOption(
+	'WITH_CTESTS'
+	,"Perform compile-time testing of the units of measurement code"
+	,True
+))
+
 opts.Update(env)
 
 opts.Save('options.cache',env)
@@ -59,7 +65,7 @@ if env['ENABLE_SAT_P']:
 if env['ENABLE_DEBUG_FLAG']:
 	env.Append(CXXFLAGS=['-g'])
 	env.Append(CFLAGS=['-g'])
-	
+
 #------------------------------------------------------
 # ISNAN DETECTION
 
@@ -223,7 +229,7 @@ list = Split("""
 	exception.cpp steamcalculator.cpp state.cpp region1.cpp region2.cpp 
 	region3.cpp region4.cpp boundaries.cpp steamcalculatorexception.cpp zeroin.cpp 
 	designbycontract.cpp units.cpp solver.cpp steamproperty.cpp satcurve.cpp b23curve.cpp 
-	b13curve.cpp convergencetest.cpp solver2.cpp iapws95.cpp
+	b13curve.cpp convergencetest.cpp solver2.cpp iapws95.cpp measurement.cpp
 """)
 
 lib = env.Library('freesteam',list)
@@ -253,7 +259,8 @@ else:
 
 # Compile-time C++ template testing
 
-env.SConscript(['ctest/SConscript'],'env')
+if env['WITH_CTESTS']:
+	env.SConscript(['ctest/SConscript'],'env')
 
 # Command-line-interface programs
 

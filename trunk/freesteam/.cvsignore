@@ -24,3 +24,13 @@ diagram.m
 *.gz
 libcheck.txt
 libcheck2.txt
+.sconsign.dblite
+config.log
+config.h
+pyfreesteam.py
+options.cache
+pyfreesteam.def
+Makefile.am
+freesteam_wrap.cc
+config.py
+.sconf_temp

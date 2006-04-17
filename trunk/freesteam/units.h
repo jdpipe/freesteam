@@ -28,14 +28,12 @@ For this file,
 
 #include "config.h"
 #include "isinfnan.h"
+#include "measurement.h"
 
 #include <iostream>
 #include <sstream>
 #include <cmath>
-
-#ifdef UNITS_CAST_THROW
-# include <stdexcept>
-#endif
+#include <stdexcept>
 
 #define UNITS_ALLOW_CAST_TO_DOUBLE
 
@@ -83,6 +81,9 @@ class Units {
 
 		Units():d_val(1.0){}	// only used to consturct base units
 		Units( const Units& u ):d_val( u.d_val ){}
+
+		Units(const Measurement &m);
+
 		const Units& operator=( const Units& u ){	d_val=u.d_val; return *this; }
 
 		// Scalar mulitplication & division
@@ -382,6 +383,7 @@ DEFINE_OUTPUT_METHOD( 0,  1, -1,  0,  0, "m/s");
 DEFINE_OUTPUT_METHOD( 0,  2, -2,  0,  0, "J/kg");
 DEFINE_OUTPUT_METHOD( 1, -1, -2,  0,  0, "Pa");
 DEFINE_OUTPUT_METHOD( 1, -1, -1,  0,  0, "Pa·s");
+DEFINE_OUTPUT_METHOD( 1,  1, -3,  0,  0, "W/m");
 DEFINE_OUTPUT_METHOD( 1,  2, -3,  0,  0, "W");
 DEFINE_OUTPUT_METHOD( 1, -2, -1,  0,  0, "kg/s/m²");
 DEFINE_OUTPUT_METHOD( 0,  0,  0,  1,  0, "K");
@@ -621,6 +623,20 @@ fromfahrenheit(const double &T_F){
 
 /// Stefan-Boltzmann Constant (radiation)
 const Units<1,0,-3,-4> SIGMA_C = (5.670e-8) * W_m2 /sq(sq(Kelvin));
+
+//-----------------------------------
+// CASTING FROM 'DYNAMICALLY TYPED' MEASUREMENT OBJECTS
+
+template< int M ,int L,int T ,int K,int I >
+Units<M,L,T,K,I>::Units(const Measurement &m){
+	if(m.dim.m!=M)throw std::runtime_error("Invalid cast from Measurement (M)");
+	if(m.dim.l!=L)throw std::runtime_error("Invalid cast from Measurement (L)");
+	if(m.dim.t!=T)throw std::runtime_error("Invalid cast from Measurement (T)");
+	if(m.dim.k!=K)throw std::runtime_error("Invalid cast from Measurement (K)");
+	if(m.dim.i!=I)throw std::runtime_error("Invalid cast from Measurement (I)");
+	d_val = m.value;
+}
+
 
 #endif				// UNITS_H
 
