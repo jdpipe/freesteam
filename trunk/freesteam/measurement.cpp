@@ -28,8 +28,6 @@ class UnitsMapInitialiser{
 
 		/// This will initialise the unitsmap
 		UnitsMapInitialiser(){
-			cerr << "INITIALISING UNITS :-)" << endl;
-
 			const int NUDS = 13;
 			UnitsDimScale uds[NUDS] = {
 				{"kg", {{ 1, 0, 0, 0, 0}, 1.    }}
@@ -61,7 +59,7 @@ UnitsMapInitialiser unitsmapinitialiser;
 /// An alias to the unitsmap stored inside the unitsmap initialiser
 const UnitsMap &unitsmap = unitsmapinitialiser.unitsmap;
 
-Measurement::Measurement(const double &value, const std::string &units){
+Measurement::Measurement(const double &value, const char *units){
 
 	Dimension dim;
 	double scale;
@@ -75,4 +73,10 @@ Measurement::Measurement(const double &value, const std::string &units){
 	}
 	this->dim = ds->second.dim;
 	this->value = value * ds->second.scale;
+}
+
+Measurement::Measurement(){
+	value = 0;
+	Dimension d = {0,0,0,0,0};
+	dim = d;
 }

@@ -75,6 +75,23 @@ class MeasurementTest : public CppUnit::TestFixture{
 		CPPUNIT_ASSERT(F == 1 * Mega*Newton);
 	}
 
+	void TestCastFromUnits(){
+		Pressure p = 20. * bar;
+		Measurement M = p;
+		CPPUNIT_ASSERT(M.value==2000000.);
+		CPPUNIT_ASSERT(M.dim.m==1);
+		CPPUNIT_ASSERT(M.dim.l==-1);
+		CPPUNIT_ASSERT(M.dim.t==-2);
+		CPPUNIT_ASSERT(M.dim.k==0);
+		CPPUNIT_ASSERT(M.dim.i==0);
+	}
+
+	void TestAssignToUnits(){
+		Measurement M(50,"bar");
+		Pressure p;
+		p = M;
+	}
+
 	public:
 		void setUp(){}
 		void tearDown(){}
@@ -88,6 +105,8 @@ class MeasurementTest : public CppUnit::TestFixture{
 		CPPUNIT_TEST(TestCastToUnits);
 		CPPUNIT_TEST(TestAddToUnits);
 		CPPUNIT_TEST(TestMultiplyWithUnits);
+		CPPUNIT_TEST(TestCastFromUnits);
+		CPPUNIT_TEST(TestAssignToUnits);
 		CPPUNIT_TEST_SUITE_END();
 
 };

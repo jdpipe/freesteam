@@ -83,6 +83,7 @@ class Units {
 		Units( const Units& u ):d_val( u.d_val ){}
 
 		Units(const Measurement &m);
+		operator Measurement() const;
 
 		const Units& operator=( const Units& u ){	d_val=u.d_val; return *this; }
 
@@ -637,6 +638,20 @@ Units<M,L,T,K,I>::Units(const Measurement &m){
 	d_val = m.value;
 }
 
+/**
+	Casting *TO* Measurement objects
+*/
+template<int M,int L,int T,int K,int I>
+Units<M,L,T,K,I>::operator Measurement() const{
+	Measurement m;
+	m.dim.m=M;
+	m.dim.l=L;
+	m.dim.t=T;
+	m.dim.k=K;
+	m.dim.i=I;
+	m.value = d_val;
+	return m;
+}
 
 #endif				// UNITS_H
 

@@ -1,8 +1,6 @@
 #ifndef MEASUREMENT_H
 #define MEASUREMENT_H
 
-#include <string>
-
 /**
 	An dynamically-typed units class, for ease of
 	integration with scripting languages and the like.
@@ -32,7 +30,8 @@ class Measurement{
 		// the dimension of the measurement
 		Dimension dim;
 
-		Measurement(const double &value, const std::string &units);
+		Measurement(const double &value, const char *units);
+		Measurement();
 };
 
 /*
