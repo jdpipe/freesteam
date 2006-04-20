@@ -92,6 +92,13 @@ class MeasurementTest : public CppUnit::TestFixture{
 		p = M;
 	}
 
+	void TestCastFromConductivity(){
+		ThermalConductivity k;
+		Measurement M(10,"W/m/K");
+		k = M;
+		CPPUNIT_ASSERT(k == 10. * Watt / metre / Kelvin);
+	}
+
 	public:
 		void setUp(){}
 		void tearDown(){}
@@ -107,6 +114,7 @@ class MeasurementTest : public CppUnit::TestFixture{
 		CPPUNIT_TEST(TestMultiplyWithUnits);
 		CPPUNIT_TEST(TestCastFromUnits);
 		CPPUNIT_TEST(TestAssignToUnits);
+		CPPUNIT_TEST(TestCastFromConductivity);
 		CPPUNIT_TEST_SUITE_END();
 
 };

@@ -1,25 +1,20 @@
 import os, commands, platform
 
-#------------------------------------------------------
-# OPTIONS
+#----------------------------------------------------
+# CREATE ENVIRONMENT, LOAD TOOLS, SOME DEFAULT PATHS
 
-env = Environment(ENV=os.environ)
-
-opts = Options(['options.cache', 'config.py'])
+can_install=True
 
 # Should exist in path
 cppunit_config_command = 'cppunit-config --libs --cflags'
 
-print "PLATFORM = ",platform.system()
-can_install=True
-if platform.system()=="Windows":
-	default_emso_location = "c:\\Program Files\\EMSO\\interface"
-	if os.getenv('MSYSTEM') or env.WhereIs('g++'):
-		print "DETECTED MINGW: setting install locations under c:\\MinGW"
-		default_libdir = 'c:\\MinGW\\lib'
-		default_incdir = 'c:\\MinGW\\include'
-		cppunit_config_command = 'sh cppunit-config --libs --cflags'
-	else:
+if os.environ.has_key('OSTYPE') and os.environ['OSTYPE']=='msys':
+	env = Environment(ENV=os.environ, tools = ['mingw','swig'])
+	cppunit_config_command = 'sh cppunit-config --libs --cflags'
+else:
+	env = Environment(ENV=os.environ)
+
+	if platform.system()=="Windows":
 		if env.has_key('MSVS'):
 			# for exception handling, following errmsg from VC6
 			env.Append(CXXFLAGS=['/EHsc'])
@@ -27,25 +22,49 @@ if platform.system()=="Windows":
 			print "VISUAL C++ detected... (Version",env['MSVS']['VERSION']+")"
 		else:
 			print "WARNING: non-POSIX tools"
-		can_install=False
 		env.Append(CPPPATH=os.environ['INCLUDE'])
+		can_install=False
+	
+if platform.system()=="Windows":
+	default_emso_location = "c:\\Program Files\\EMSO\\interface"
+	default_libdir = 'c:\\MinGW\\lib'
+	default_incdir = 'c:\\MinGW\\include'
 else:
 	default_emso_location = 'search'
 	default_libdir = '/usr/local/lib'
 	default_incdir = '/usr/local/include'
 
-opts.Add(PackageOption('EMSO_INCDIR',"Location of EMSO 'interface' directory", default_emso_location))
-opts.Add(BoolOption('HAVE_EMSO',"Build EMSO hook libraries", False))
+#------------------------------------------------------
+# OPTIONS
+
+opts = Options(['options.cache', 'config.py'])
+
+opts.Add(PackageOption(
+	'EMSO_INCDIR',"Location of EMSO 'interface' directory", default_emso_location
+))
+opts.Add(BoolOption(
+	'HAVE_EMSO',"Build EMSO hook libraries", False
+))
 
 if can_install:
-	opts.Add(PathOption('LIBDIR',"Location to install library", default_libdir))
-	opts.Add(PathOption('INCDIR',"Location to install headers", default_incdir))
+	opts.Add(PathOption(
+		'LIBDIR',"Location to install library", default_libdir
+	))
+	opts.Add(PathOption(
+		'INCDIR',"Location to install headers", default_incdir
+	))
 
-opts.Add(BoolOption('ENABLE_SAT_P',"Enable saturation curves in terms of pressure"+
-	"(introduces some numerical problems in iterative cases if"+
-	"you're not careful)", False))
+opts.Add(BoolOption(
+	'ENABLE_SAT_P'
+	, "Enable saturation curves in terms of pressure"+
+		"(introduces some numerical problems in iterative cases if"+
+		"you're not careful)"
+	, False
+))
 
-opts.Add(BoolOption('ENABLE_DEBUG_FLAG',"Add debug symbols to object code, for use with gdb etc", False))
+opts.Add(BoolOption(
+	'ENABLE_DEBUG_FLAG',"Add debug symbols to object code, for use with gdb etc", False
+))
 
 opts.Add(BoolOption(
 	'WITH_CTESTS'
@@ -59,6 +78,9 @@ opts.Save('options.cache',env)
 
 Help(opts.GenerateHelpText(env))
 
+#-------------
+# Apply the options to the environment
+
 if env['ENABLE_SAT_P']:
 	env.Append(CPPDEFINES=['ENABLE_SAT_P'])
 
@@ -67,6 +89,9 @@ if env['ENABLE_DEBUG_FLAG']:
 	env.Append(CFLAGS=['-g'])
 
 #------------------------------------------------------
+# CONFIGURATION TESTS
+
+#-----------
 # ISNAN DETECTION
 
 #- - - 8< - - -
