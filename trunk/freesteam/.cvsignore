@@ -34,3 +34,8 @@ Makefile.am
 freesteam_wrap.cc
 config.py
 .sconf_temp
+freesteam.py
+freesteam.pyc
+_freesteam.def
+build
+prob

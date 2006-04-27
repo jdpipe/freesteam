@@ -26,7 +26,7 @@ class UnitsMapInitialiser{
 		/// This will initialise the unitsmap
 		UnitsMapInitialiser(){
 
-			static const int NUDS = 22;
+			static const int NUDS = 23;
 
 			UnitsDimScale uds[NUDS] = {
 				{"kg", {{ 1, 0, 0, 0, 0}, 1.    }}
@@ -38,6 +38,7 @@ class UnitsMapInitialiser{
 				, {"s",    {{ 0, 0, 1, 0, 0}, 1.  }}
 				, {"K",    {{ 0, 0, 0, 1, 0}, 1.  }}
 				, {"kg/m3",{{ 1,-3, 0, 0, 0}, 1.  }}
+				, {"kg/s", {{ 1, 0,-1, 0, 0}, 1.  }}
 				, {"J/kg", {{ 0, 2,-2, 0, 0}, 1.  }}
 				, {"kJ/kg",{{ 0, 2,-2, 0, 0}, 1e3 }}
 				, {"Pa",   {{ 1,-1,-2, 0, 0}, 1.  }}

@@ -50,7 +50,7 @@ class Solver2{
 		}
 };
 
-// Conventient names to allow python syntax like steam_ph().solve(p,h);
+// Convenient names to allow python syntax like steam_ph().solve(p,h);
 
 %template(steam_ph) Solver2<Pressure,SpecificEnergy,0,SOLVE_ENTHALPY>;
 %template(steam_uv) Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>;
@@ -67,6 +67,7 @@ class Solver2{
 %rename(Measurement) ThermalConductivity;
 %rename(Measurement) Pressure;
 %rename(Measurement) Temperature;
+%rename(Measurement) Length;
 
 %ignore DesignByContract;
 %ignore SteamCalculator::operator=;
@@ -80,9 +81,14 @@ class Solver2{
 }
 
 %ignore DesignByContract;
+
+/*
+	Measurement class, with arithmetic operators to make it behave
+	sanely -- like a runtime-checking equivalent of the
+	compiletime-checking functionality of the Units class
+*/
 %ignore operator<<;
 %include "measurement.h"
-
 %extend Measurement{
 	%pythoncode{
 		def __sub__(self,other):
