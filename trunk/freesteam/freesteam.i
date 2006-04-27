@@ -79,7 +79,6 @@ class Solver2{
 	}
 }
 
-%ignore Dimension;
 %ignore DesignByContract;
 %ignore operator<<;
 %include "measurement.h"
@@ -91,6 +90,18 @@ class Solver2{
 				raise RuntimeError("Incompatible dimensions");
 			else:
 				return Measurement(self.value - other.value, self.dim);
+
+		def __add__(self,other):
+			if dimension_cmp(self.dim,other.dim)!=0:
+				raise RuntimeError("Incompatible dimensions");
+			else:
+				return Measurement(self.value + other.value, self.dim);
+
+		def __mul__(self,other):
+			return Measurement(self.value * other.value, dimension_add(self.dim,other.dim));
+
+		def __div__(self,other):
+			return Measurement(self.value / other.value, dimension_sub(self.dim,other.dim));
 
 		def __float__(self):
 			return self.value;

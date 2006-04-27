@@ -19,11 +19,14 @@
 	from suitable Measurement values.
 */
 
-struct Dimension{
+class Dimension{
+public:
 	int m, l, t, k, i;
+	~Dimension();
 };
 
 int dimension_cmp(const Dimension &d1, const Dimension &d2);
+Dimension dimension_add(const Dimension &d1, const Dimension &d2);
 
 class Measurement{
 

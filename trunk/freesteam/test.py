@@ -11,6 +11,24 @@ class TestPythonBindings(unittest.TestCase):
 		T = Measurement(300,"K")
 		self.assertEqual(T.value, 300)
 
+	def testmeasurement_add(self):
+		p = Measurement(7,"bar")
+		p1 = Measurement(0.1,"bar")
+		p2 = p + p1;
+		self.assertAlmostEqual(p2,Measurement(7.1,"bar"))
+
+	def testmeasurement_add2(self):
+		p = Measurement(7,"bar")
+		p1 = Measurement(0.1,"bar")
+		p += p1;
+		self.assertAlmostEqual(p,Measurement(7.1,"bar"))
+
+	def testmeasurement_mul(self):
+		L = Measurement(10,"m")
+		W = Measurement(10,"cm")
+		A = L * W;
+		self.assertAlmostEqual(A,Measurement(1,"m2"))
+
 	def teststeam_ph(self):
 		S = steam_ph()
 
@@ -45,6 +63,7 @@ class TestPythonBindings(unittest.TestCase):
 		S = steam_ph().solve(p,h)
 		T = S.temp()
 		self.assertAlmostEqual(T,Measurement(165.0+273.15,"K"),1)
+
 
 if __name__ == '__main__':
     unittest.main()

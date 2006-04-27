@@ -6,16 +6,6 @@
 #include <map>
 using namespace std;
 
-int dimension_cmp(const Dimension &d1, const Dimension &d2){
-	if(d1.m==d2.m && d1.l==d2.l && d1.t==d2.t && d1.k==d2.k && d1.i==d2.i){
-		return 0;
-	}
-	if(d1.m > d2.m || d1.l > d2.l || d1.t > d2.t || d1.k > d2.k || d1.i > d2.i){
-		return 1;
-	}
-	return -1;
-}
-
 struct DimScale{
 	Dimension dim;
 	double scale;
@@ -117,4 +107,38 @@ Measurement::toString(){
 	ss << value << "<" << dim.m << "," << dim.l << "," << dim.t << "," \
 	<< dim.k << "," << dim.i << ">";
 	return ss.str();
+}
+
+int dimension_cmp(const Dimension &d1, const Dimension &d2){
+	if(d1.m==d2.m && d1.l==d2.l && d1.t==d2.t && d1.k==d2.k && d1.i==d2.i){
+		return 0;
+	}
+	if(d1.m > d2.m || d1.l > d2.l || d1.t > d2.t || d1.k > d2.k || d1.i > d2.i){
+		return 1;
+	}
+	return -1;
+}
+
+Dimension dimension_add(const Dimension &d1, const Dimension &d2){
+	Dimension d;
+	d.m = d1.m + d2.m;
+	d.l = d1.l + d2.l;
+	d.t = d1.t + d2.t;
+	d.k = d1.k + d2.k;
+	d.i = d1.i + d2.i;
+	return d;
+}
+
+Dimension dimension_sum(const Dimension &d1, const Dimension &d2){
+	Dimension d;
+	d.m = d1.m - d2.m;
+	d.l = d1.l - d2.l;
+	d.t = d1.t - d2.t;
+	d.k = d1.k - d2.k;
+	d.i = d1.i - d2.i;
+	return d;
+}
+
+Dimension::~Dimension(){
+	// nothing to do, just keeping SWIG happy
 }

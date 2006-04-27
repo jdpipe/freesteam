@@ -315,14 +315,14 @@ env.Append(PYTHON_LIBPATH=[distutils.sysconfig.PREFIX+"/libs"])
 env.Append(PYTHON_CPPPATH=[distutils.sysconfig.get_python_inc()])
 
 if have_swig:
-	env.SharedLibrary('_freesteam',['freesteam.i']
+	swiglib = env.SharedLibrary('_freesteam',['freesteam.i']
 		, SWIGFLAGS=['-python','-c++']
 		, LIBS=['freesteam',python_lib]
 		, LIBPATH=['.']+env['PYTHON_LIBPATH']
 		, CPPPATH=env['PYTHON_CPPPATH']
 		, SHLIBPREFIX=''
-	)
-	
+	)	
+	env.SideEffect('freesteam.py',swiglib)
 
 #------------------------------------------------------
 # INSTALLATION
@@ -332,8 +332,21 @@ if can_install:
 
 	import glob
 	files = glob.glob("*.h")
+	files = glob.glob("*.i")
 	#print files
 
 	install_inc = env.Install("$INCDIR/freesteam", files)
 
-	env.Alias('install',[install_lib, install_inc])
+	install_swig = []
+	if have_swig:
+		import distutils.sysconfig
+		
+		libdir = distutils.sysconfig.get_python_lib(True)
+		print "LIBDIR IS ---------->",libdir
+		
+		install_swig += env.Install(libdir,'_freesteam$SHLIBSUFFIX')
+		install_swig += env.Install(libdir,'freesteam.py')
+		
+	env.Alias('install',[install_lib, install_inc]+install_swig)
+	
+		
