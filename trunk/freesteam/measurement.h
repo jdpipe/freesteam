@@ -1,6 +1,8 @@
 #ifndef MEASUREMENT_H
 #define MEASUREMENT_H
 
+#include <iostream>
+
 /**
 	An dynamically-typed units class, for ease of
 	integration with scripting languages and the like.
@@ -21,6 +23,8 @@ struct Dimension{
 	int m, l, t, k, i;
 };
 
+int dimension_cmp(const Dimension &d1, const Dimension &d2);
+
 class Measurement{
 
 	public:
@@ -32,17 +36,17 @@ class Measurement{
 
 		Measurement(const double &value, const char *units);
 		Measurement();
+		Measurement(const double &value, const Dimension &dim, const double &scale=1);
+
+		const std::string toString();
 };
 
-/*
-#define DEFINE_OUTPUT_METHOD(MM,LL,TT,KK,II,UNITS) \
-		inline \
-		std::ostream& operator <<(std::ostream &os,const Units<MM,LL,TT,KK,II> &u){ \
-			double d = *reinterpret_cast<const double*>(&u); \
-			os << d; \
-			os.flags() & std::ios_base::showbase && os << " " << UNITS; \
-			return os; \
-		}
-*/
+
+inline
+std::ostream& operator <<(std::ostream &os,const Measurement &m){
+	os << m.value << " <" << m.dim.m << "," << m.dim.l << "," << m.dim.t << "," << m.dim.k << "," << m.dim.i << ">";
+	return os;
+}
+
 
 #endif

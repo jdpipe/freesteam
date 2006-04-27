@@ -1,4 +1,4 @@
-import os, commands, platform
+import os, os.path, commands, platform
 
 #----------------------------------------------------
 # CREATE ENVIRONMENT, LOAD TOOLS, SOME DEFAULT PATHS
@@ -30,9 +30,12 @@ if platform.system()=="Windows":
 	default_libdir = 'c:\\MinGW\\lib'
 	default_incdir = 'c:\\MinGW\\include'
 else:
-	default_emso_location = 'search'
+	default_emso_location = None
 	default_libdir = '/usr/local/lib'
 	default_incdir = '/usr/local/include'
+
+if not default_emso_location or not os.path.exists(default_emso_location):
+	default_emso_location=False
 
 #------------------------------------------------------
 # OPTIONS
@@ -312,13 +315,14 @@ env.Append(PYTHON_LIBPATH=[distutils.sysconfig.PREFIX+"/libs"])
 env.Append(PYTHON_CPPPATH=[distutils.sysconfig.get_python_inc()])
 
 if have_swig:
-	env.SharedLibrary('pyfreesteam',['freesteam.i']
+	env.SharedLibrary('_freesteam',['freesteam.i']
 		, SWIGFLAGS=['-python','-c++']
 		, LIBS=['freesteam',python_lib]
-		, LIBPATH=env['PYTHON_LIBPATH']
+		, LIBPATH=['.']+env['PYTHON_LIBPATH']
 		, CPPPATH=env['PYTHON_CPPPATH']
-		, SHLIBPREFIX='_'
+		, SHLIBPREFIX=''
 	)
+	
 
 #------------------------------------------------------
 # INSTALLATION

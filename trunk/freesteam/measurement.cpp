@@ -6,6 +6,16 @@
 #include <map>
 using namespace std;
 
+int dimension_cmp(const Dimension &d1, const Dimension &d2){
+	if(d1.m==d2.m && d1.l==d2.l && d1.t==d2.t && d1.k==d2.k && d1.i==d2.i){
+		return 0;
+	}
+	if(d1.m > d2.m || d1.l > d2.l || d1.t > d2.t || d1.k > d2.k || d1.i > d2.i){
+		return 1;
+	}
+	return -1;
+}
+
 struct DimScale{
 	Dimension dim;
 	double scale;
@@ -23,19 +33,23 @@ class UnitsMapInitialiser{
 		/// Data member: this will store the unitsmap
 		UnitsMap unitsmap;
 
-		static const int NUDS = 19;
 		/// This will initialise the unitsmap
 		UnitsMapInitialiser(){
+
+			static const int NUDS = 22;
+
 			UnitsDimScale uds[NUDS] = {
 				{"kg", {{ 1, 0, 0, 0, 0}, 1.    }}
-				, {"m",  {{ 0, 1, 0, 0, 0}, 1.    }}
-				, {"mm",  {{ 0, 1, 0, 0, 0}, 1e-3 }}
-				, {"cm",  {{ 0, 1, 0, 0, 0}, 1e-2 }}
+				, {"m",    {{ 0, 1, 0, 0, 0}, 1.  }}
+				, {"mm",   {{ 0, 1, 0, 0, 0}, 1e-3}}
+				, {"cm",   {{ 0, 1, 0, 0, 0}, 1e-2}}
 				, {"m2",   {{ 0, 2, 0, 0, 0}, 1.  }}
 				, {"m3",   {{ 0, 3, 0, 0, 0}, 1.  }}
 				, {"s",    {{ 0, 0, 1, 0, 0}, 1.  }}
 				, {"K",    {{ 0, 0, 0, 1, 0}, 1.  }}
 				, {"kg/m3",{{ 1,-3, 0, 0, 0}, 1.  }}
+				, {"J/kg", {{ 0, 2,-2, 0, 0}, 1.  }}
+				, {"kJ/kg",{{ 0, 2,-2, 0, 0}, 1e3 }}
 				, {"Pa",   {{ 1,-1,-2, 0, 0}, 1.  }}
 				, {"bar",  {{ 1,-1,-2, 0, 0}, 1e5 }}
 				, {"kPa",  {{ 1,-1,-2, 0, 0}, 1e3 }}
@@ -46,13 +60,15 @@ class UnitsMapInitialiser{
 				, {"W/m2", {{ 1, 0,-3, 0, 0}, 1.  }}
 				, {"W/m/K",{{ 1, 1,-3,-1, 0}, 1.  }}
 				,{"J/kg/K",{{ 0, 2,-2,-1, 0}, 1.  }}
+			   ,{"kJ/kg/K",{{ 0, 2,-2,-1, 0}, 1e3 }}
 			};
 
 			for(int i=0;i<NUDS;i++){
 				unitsmap[uds[i].units] = uds[i].ds;
+				//cerr << "ADDING " << uds[i].units << endl;
 			}
 
-			cerr << "INITIALISED " << unitsmap.size() << " MEASUREMENT TYPES" << endl;
+			//cerr << "INITIALISED " << unitsmap.size() << " MEASUREMENT TYPES" << endl;
 
 		}
 
@@ -84,4 +100,21 @@ Measurement::Measurement(){
 	value = 0;
 	Dimension d = {0,0,0,0,0};
 	dim = d;
+}
+
+Measurement::Measurement(const double &value, const Dimension &dim, const double &scale){
+	if(scale==1){
+		this->value = value;
+	}else{
+		this->value = value * scale;
+	}
+	this->dim = dim;
+}
+
+const std::string
+Measurement::toString(){
+	stringstream ss;
+	ss << value << "<" << dim.m << "," << dim.l << "," << dim.t << "," \
+	<< dim.k << "," << dim.i << ">";
+	return ss.str();
 }

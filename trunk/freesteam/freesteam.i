@@ -1,74 +1,101 @@
-%module pyfreesteam
+%module freesteam
+
+%include <python/std_string.i>
+%include <python/std_except.i>
+%include <python/std_vector.i>
+%include <python/std_set.i>
 
 %{
 #include "steamcalculator.h"
 #include "solver2.h"
+#include "measurement.h"
 %}
 
-%rename(steam) SteamCalculator;
+// All STL runtime_errors caught to Python
 
-class SteamCalculator{
+%exception {
+	try {
+		$action
+	}
+	catch (std::range_error &e) {
+		cerr << "RANGE ERROR: " << e.what();
+		exit(1);
+	}
+	catch (std::runtime_error &e) {
+		SWIG_exception(SWIG_RuntimeError,e.what());
+	}catch(...){
+		SWIG_exception(SWIG_RuntimeError,"uncaught unknown exception!");
+	}
+}
 
-	public:
-		SteamCalculator();
-		SteamCalculator(const SteamCalculator & original);
-		SteamCalculator const &operator=(SteamCalculator const &original);
-		~SteamCalculator();
-
-		// Defining state, simple methods
-		void set_pT(const Pressure &p, const Temperature &T, double x = 1.0);	// pressure [MPa]
-
-		template<class F,class S>
-		inline void set(const F &f, const S &s);
-
-		void setSatSteam_p(const Pressure &p);	// p Pressure [MPa]
-		void setSatWater_p(const Pressure &p);	// p Pressure [MPa]
-		void setSatWater_T(const Temperature &T);	// T Temperature [K]
-		void setSatSteam_T(const Temperature &T);	// T Temperature [K]
-
-		void setB23_T(const Temperature &T);
-		void setB23_p(const Pressure &p);
-
-		void setRegion1_pT(const Pressure &p, const Temperature &T);
-		void setRegion2_pT(const Pressure &p, const Temperature &T);
-		void setRegion4_Tx(const Temperature &T, const Num &x);
-		void setRegion3_rhoT(const Density &rho, const Temperature &T);
-
-		bool isSet(void) const;
-
-		// Methods to return properties and state
-
-		int whichRegion(void) const;
-		const SteamCalculator &getGasPart() const;
-		const SteamCalculator &getLiquidPart() const;
-
-		SteamStateCode whichState(void);
-		const char *whichStateStr(void);
-
-		Temperature temp() const;               // Temperature
-		Pressure pres() const;                  // Pressure
-		Density dens() const;                   // Density
-
-		SpecificVolume specvol() const;         // Specific volume
-		SpecificEnergy specienergy() const;     // Specific internal energy
-		SpecificEntropy specentropy() const;    // Specific entropy
-		SpecificEnergy specenthalpy() const;    // Specific entropy
-		SpecHeatCap speccp() const;             // Specific isobaric heat capacity  [kJ/kgK]
-		SpecHeatCap speccv() const;             // Specific isochoric heat capacity [kJ/kgK]
-		Num quality() const;                    // Steam quality
-		DynamicViscosity dynvisc() const;       // Dynamic viscosity, mu            [Pa.s]
-		ThermalConductivity conductivity() const;// Conductivity
-};
-
+// The Solver2 class, stripped of its base class and private/protected methods:
 
 template<class FirstProp,class SecondProp,int FirstPropAlt=0, int SecondPropAlt=0>
 class Solver2{
 	public:
 		Solver2();
-		SteamCalculator solve(const FirstProp &fp, const SecondProp &sp);
+		%extend{
+			SteamCalculator solve(const Measurement &fp, const Measurement &sp){
+				//cerr << "SETTING...." << endl;
+				//cerr << "fp = " << fp << endl;
+				//cerr << "sp = " << sp << endl;
+				//cerr << "fp is " << SteamProperty<FirstProp,FirstPropAlt>::name() << endl;
+				FirstProp fp1=fp;
+				SecondProp sp1=sp;
+				//cerr << "fp1 = " << fp1 << endl;
+				//cerr << "sp1 = " << sp1 << endl;
+				return self->solve(fp1,sp1);
+				//return SteamCalculator();
+			}
+		}
 };
 
-%template(solver_ph) Solver2<Pressure,SpecificEnergy,0,SOLVE_ENTHALPY>;
-%template(solver_uv) Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>;
-%template(solver_Ts) Solver2<Temperature,SpecificEntropy,0,SOLVE_ENTROPY>;
-%template(solver_ps) Solver2<Pressure,SpecificEntropy,0,SOLVE_ENTROPY>;
+// Conventient names to allow python syntax like steam_ph().solve(p,h);
+
+%template(steam_ph) Solver2<Pressure,SpecificEnergy,0,SOLVE_ENTHALPY>;
+%template(steam_uv) Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>;
+%template(steam_Ts) Solver2<Temperature,SpecificEntropy,0,SOLVE_ENTROPY>;
+%template(steam_ps) Solver2<Pressure,SpecificEntropy,0,SOLVE_ENTROPY>;
+
+%rename(steam) SteamCalculator;
+%rename(Measurement) SpecificVolume;
+%rename(Measurement) Density;
+%rename(Measurement) SpecificEnergy;
+%rename(Measurement) SpecificEntropy;
+%rename(Measurement) SpecHeatCap;
+%rename(Measurement) DynamicViscosity;
+%rename(Measurement) ThermalConductivity;
+%rename(Measurement) Pressure;
+%rename(Measurement) Temperature;
+
+%ignore DesignByContract;
+%ignore SteamCalculator::operator=;
+
+%include "steamcalculator.h"
+
+%extend SteamCalculator{
+	Measurement SteamCalculator::temp(){
+		return self->temp();
+	}
+}
+
+%ignore Dimension;
+%ignore DesignByContract;
+%ignore operator<<;
+%include "measurement.h"
+
+%extend Measurement{
+	%pythoncode{
+		def __sub__(self,other):
+			if dimension_cmp(self.dim,other.dim)!=0:
+				raise RuntimeError("Incompatible dimensions");
+			else:
+				return Measurement(self.value - other.value, self.dim);
+
+		def __float__(self):
+			return self.value;
+
+		def __repr__(self):
+			return self.toString();
+	}
+}

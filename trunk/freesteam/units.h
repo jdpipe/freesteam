@@ -629,13 +629,24 @@ const Units<1,0,-3,-4> SIGMA_C = (5.670e-8) * W_m2 /sq(sq(Kelvin));
 //-----------------------------------
 // CASTING FROM 'DYNAMICALLY TYPED' MEASUREMENT OBJECTS
 
+#define UNITS_CAST_ERROR(M,L,T,K,I,dim) \
+	"Invalid cast from Measurement <" << dim.m << "," << dim.l << "," << dim.t << "," \
+	<< dim.k << "," << dim.i << "> to Units <" << M << "," << L << "," << T << "," \
+	<< K << "," << I << ">"
+
 template< int M ,int L,int T ,int K,int I >
 Units<M,L,T,K,I>::Units(const Measurement &m){
-	if(m.dim.m!=M)throw std::runtime_error("Invalid cast from Measurement (M)");
-	if(m.dim.l!=L)throw std::runtime_error("Invalid cast from Measurement (L)");
-	if(m.dim.t!=T)throw std::runtime_error("Invalid cast from Measurement (T)");
-	if(m.dim.k!=K)throw std::runtime_error("Invalid cast from Measurement (K)");
-	if(m.dim.i!=I)throw std::runtime_error("Invalid cast from Measurement (I)");
+	char prob='\0';
+	if(m.dim.i!=I)prob='I';
+	if(m.dim.k!=K)prob='K';
+	if(m.dim.t!=T)prob='T';
+	if(m.dim.l!=L)prob='L';
+	if(m.dim.m!=M)prob='M';
+	if(prob!='\0'){
+		std::stringstream ss;
+		ss << UNITS_CAST_ERROR(M,L,T,K,I,m.dim) << ", mismatched " << prob << ".";
+		throw std::runtime_error(ss.str());
+	}
 	d_val = m.value;
 }
 
