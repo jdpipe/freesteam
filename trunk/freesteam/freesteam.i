@@ -89,6 +89,10 @@ class Solver2{
 */
 %ignore operator<<;
 %include "measurement.h"
+
+Dimension dimension_add(const Dimension &d1, const Dimension &d2);
+Dimension dimension_sub(const Dimension &d1, const Dimension &d2);
+
 %extend Measurement{
 	%pythoncode{
 		def __sub__(self,other):

@@ -26,10 +26,11 @@ class UnitsMapInitialiser{
 		/// This will initialise the unitsmap
 		UnitsMapInitialiser(){
 
-			static const int NUDS = 23;
+			static const int NUDS = 26;
 
 			UnitsDimScale uds[NUDS] = {
 				{"kg", {{ 1, 0, 0, 0, 0}, 1.    }}
+				, {"g",    {{ 1, 0, 0, 0, 0}, 1e-3}}
 				, {"m",    {{ 0, 1, 0, 0, 0}, 1.  }}
 				, {"mm",   {{ 0, 1, 0, 0, 0}, 1e-3}}
 				, {"cm",   {{ 0, 1, 0, 0, 0}, 1e-2}}
@@ -41,6 +42,8 @@ class UnitsMapInitialiser{
 				, {"kg/s", {{ 1, 0,-1, 0, 0}, 1.  }}
 				, {"J/kg", {{ 0, 2,-2, 0, 0}, 1.  }}
 				, {"kJ/kg",{{ 0, 2,-2, 0, 0}, 1e3 }}
+				, {"kg/sm",{{ 1,-1,-1, 0, 0}, 1.  }}
+				, {"g/sm", {{ 1,-1,-1, 0, 0}, 1e-3}}
 				, {"Pa",   {{ 1,-1,-2, 0, 0}, 1.  }}
 				, {"bar",  {{ 1,-1,-2, 0, 0}, 1e5 }}
 				, {"kPa",  {{ 1,-1,-2, 0, 0}, 1e3 }}
@@ -130,7 +133,7 @@ Dimension dimension_add(const Dimension &d1, const Dimension &d2){
 	return d;
 }
 
-Dimension dimension_sum(const Dimension &d1, const Dimension &d2){
+Dimension dimension_sub(const Dimension &d1, const Dimension &d2){
 	Dimension d;
 	d.m = d1.m - d2.m;
 	d.l = d1.l - d2.l;

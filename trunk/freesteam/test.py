@@ -17,6 +17,12 @@ class TestPythonBindings(unittest.TestCase):
 		p2 = p + p1;
 		self.assertAlmostEqual(p2,Measurement(7.1,"bar"))
 
+	def testmeasurement_sub(self):
+		p = Measurement(7,"bar")
+		p1 = Measurement(0.1,"bar")
+		p2 = p - p1;
+		self.assertAlmostEqual(p2,Measurement(6.9,"bar"))
+
 	def testmeasurement_add2(self):
 		p = Measurement(7,"bar")
 		p1 = Measurement(0.1,"bar")
@@ -37,6 +43,16 @@ class TestPythonBindings(unittest.TestCase):
 			self.fail("No error thrown!");
 		except RuntimeError, e:
 			pass
+
+	def testmeasurement_algebra(self):
+		m = Measurement(1,"g")
+		t = Measurement(1,"s")
+		l = Measurement(1,"m");
+		mu = m/t/l;
+		print mu;
+		self.assertAlmostEqual(mu,Measurement(1,"g/sm"))
+
+	# NOW FOR THE MEAT IN YOUR SANDWICH
 	
 	def teststeam_ph(self):
 		S = steam_ph()
