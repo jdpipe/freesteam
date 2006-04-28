@@ -332,7 +332,7 @@ if can_install:
 
 	import glob
 	files = glob.glob("*.h")
-	files = glob.glob("*.i")
+	files += glob.glob("*.i")
 	#print files
 
 	install_inc = env.Install("$INCDIR/freesteam", files)
@@ -348,5 +348,5 @@ if can_install:
 		install_swig += env.Install(libdir,'freesteam.py')
 		
 	env.Alias('install',[install_lib, install_inc]+install_swig)
+
 	
-		

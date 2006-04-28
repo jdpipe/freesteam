@@ -29,6 +29,15 @@ class TestPythonBindings(unittest.TestCase):
 		A = L * W;
 		self.assertAlmostEqual(A,Measurement(1,"m2"))
 
+	def testmeasurement_invalid_comparison(self):
+		L = Measurement(10,"m")
+		d = unittest.TestCase
+		try:
+			X = L - d
+			self.fail("No error thrown!");
+		except RuntimeError, e:
+			pass
+	
 	def teststeam_ph(self):
 		S = steam_ph()
 
@@ -63,7 +72,6 @@ class TestPythonBindings(unittest.TestCase):
 		S = steam_ph().solve(p,h)
 		T = S.temp()
 		self.assertAlmostEqual(T,Measurement(165.0+273.15,"K"),1)
-
 
 if __name__ == '__main__':
     unittest.main()

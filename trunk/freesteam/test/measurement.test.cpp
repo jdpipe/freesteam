@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "../measurement.h"
 #include "../units.h"
 
@@ -9,6 +11,12 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 class MeasurementTest : public CppUnit::TestFixture{
+
+	void TestSize(){
+
+		// Why is the size what I expect, PLUS sizeof(int) ?
+		CPPUNIT_ASSERT(sizeof(Measurement)==sizeof(double)+sizeof(Dimension)+sizeof(int) );
+	}
 
 	void TestOneMetre()
 	{
@@ -106,6 +114,7 @@ class MeasurementTest : public CppUnit::TestFixture{
 	public:
 		// Invoke CPPUNIT macros to add tests to a suite:
 		CPPUNIT_TEST_SUITE(MeasurementTest);
+		CPPUNIT_TEST(TestSize);
 		CPPUNIT_TEST(TestOneMetre);
 		CPPUNIT_TEST(TestFiveKilograms);
 		CPPUNIT_TEST(TestFiftyBar);

@@ -92,21 +92,32 @@ class Solver2{
 %extend Measurement{
 	%pythoncode{
 		def __sub__(self,other):
+			if other.__class__!=self.__class__:
+				raise RuntimeError("Second value in subtraction is not a Measurement")
 			if dimension_cmp(self.dim,other.dim)!=0:
-				raise RuntimeError("Incompatible dimensions");
+				raise RuntimeError("Incompatible dimensions: self=%s, other=%s" %(self,other));
 			else:
 				return Measurement(self.value - other.value, self.dim);
 
 		def __add__(self,other):
+			if other.__class__!=self.__class__:
+				raise RuntimeError("Second value in subtraction is not a Measurement")
+
 			if dimension_cmp(self.dim,other.dim)!=0:
-				raise RuntimeError("Incompatible dimensions");
+				raise RuntimeError("Incompatible dimensions: self=%s, other=%s" %(self,other));
 			else:
 				return Measurement(self.value + other.value, self.dim);
 
 		def __mul__(self,other):
+			if other.__class__!=self.__class__:
+				raise RuntimeError("Second value in subtraction is not a Measurement")
+
 			return Measurement(self.value * other.value, dimension_add(self.dim,other.dim));
 
 		def __div__(self,other):
+			if other.__class__!=self.__class__:
+				raise RuntimeError("Second value in subtraction is not a Measurement")
+
 			return Measurement(self.value / other.value, dimension_sub(self.dim,other.dim));
 
 		def __float__(self):
