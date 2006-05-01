@@ -22,7 +22,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef COMMON_H
 #define COMMON_H
 
-#include "units.h"
+#ifndef FREESTEAM_SWIG
+# include "units.h"
+#else
+# define Pressure Measurement
+# define Temperature Measurement
+# define SpecificEnergy Measurement
+# define SpecificEntropy Measurement
+#endif
 
 // this is the precision of all the parameters used in the Steam Calculator:
 typedef double Num;

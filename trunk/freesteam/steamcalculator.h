@@ -1,7 +1,7 @@
 /*
 
 freesteam - IAPWS-IF97 steam tables library
-Copyright (C) 2004-2005  John Pye
+Copyright (C) 2004-2006  John Pye
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,6 +27,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "boundaries.h"
 #include "state.h"
 #include "zeroin.h"
+
+#ifdef FREESTEAM_SWIG
+# define Pressure Measurement
+# define Temperature Measurement
+# define SpecificEnergy Measurement
+# define SpecificEntropy Measurement
+#endif
 
 typedef enum { STEAM_SUBCOOLED =
                    0, STEAM_SUPERHEATED, STEAM_SATURATED, STEAM_SUPERCRITICAL,

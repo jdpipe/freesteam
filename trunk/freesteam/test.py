@@ -49,7 +49,6 @@ class TestPythonBindings(unittest.TestCase):
 		t = Measurement(1,"s")
 		l = Measurement(1,"m");
 		mu = m/t/l;
-		print mu;
 		self.assertAlmostEqual(mu,Measurement(1,"g/sm"))
 
 	# NOW FOR THE MEAT IN YOUR SANDWICH
@@ -88,6 +87,39 @@ class TestPythonBindings(unittest.TestCase):
 		S = steam_ph().solve(p,h)
 		T = S.temp()
 		self.assertAlmostEqual(T,Measurement(165.0+273.15,"K"),1)
+
+	# SATURATION
+
+	def teststeam_sat_liq(self):
+		p = Measurement(10,"bar");
+		S = steam(); S.setSatWater_p(p)
+		T = S.temp()
+		self.assertAlmostEqual(T,Measurement(179.9+273.15,"K"),1)
+		self.assertAlmostEqual(S.specenthalpy(),Measurement(762.65,"kJ/kg"),-2)
+
+	def teststeam_sat_liq(self):
+		p = Measurement(2,"bar");
+		S = steam(); S.setSatSteam_p(p)
+		T = S.temp()
+		self.assertAlmostEqual(T,Measurement(120.2+273.15,"K"),1)
+		self.assertAlmostEqual(S.specenthalpy(),Measurement(2706.3,"kJ/kg"),-3)
+		self.assertAlmostEqual(S.specentropy(),Measurement(7.127,"kJ/kgK"),0)
+
+	def teststeam_sat_liq(self):
+		T = Measurement(111.4+273.15,"K")
+		S = steam(); S.setSatSteam_T(T)
+		p = S.pres()
+		self.assertAlmostEqual(p,Measurement(0.15,"MPa"),-5)
+		self.assertAlmostEqual(S.specenthalpy(),Measurement(2693.4,"kJ/kg"),-3)
+		self.assertAlmostEqual(S.specentropy(),Measurement(7.223,"kJ/kgK"),-1)
+
+	def teststeam_sat_liq(self):
+		p = Measurement(150,"bar")
+		S = steam(); S.setSatSteam_p(p)
+		T = S.temp()
+		self.assertAlmostEqual(T,Measurement(342.1+273.15,"K"),0)
+		self.assertAlmostEqual(S.specenthalpy(),Measurement(2615.0,"kJ/kg"),-4)
+		self.assertAlmostEqual(S.specentropy(),Measurement(5.318,"kJ/kgK"),-2)
 
 if __name__ == '__main__':
     unittest.main()

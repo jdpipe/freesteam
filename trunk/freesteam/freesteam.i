@@ -11,6 +11,8 @@
 #include "measurement.h"
 %}
 
+#define FREESTEAM_SWIG
+
 // All STL runtime_errors caught to Python
 
 %exception {
@@ -56,6 +58,7 @@ class Solver2{
 %template(steam_uv) Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>;
 %template(steam_Ts) Solver2<Temperature,SpecificEntropy,0,SOLVE_ENTROPY>;
 %template(steam_ps) Solver2<Pressure,SpecificEntropy,0,SOLVE_ENTROPY>;
+%template(steam_pT) Solver2<Pressure,Temperature,0,0>;
 
 %rename(steam) SteamCalculator;
 %rename(Measurement) SpecificVolume;
