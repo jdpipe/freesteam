@@ -94,10 +94,14 @@ class TestPythonBindings(unittest.TestCase):
 		p = Measurement(10,"bar");
 		S = steam(); S.setSatWater_p(p)
 		T = S.temp()
+		rho = S.dens()
 		self.assertAlmostEqual(T,Measurement(179.9+273.15,"K"),1)
 		self.assertAlmostEqual(S.specenthalpy(),Measurement(762.65,"kJ/kg"),-2)
+		self.assertAlmostEqual(S.dens(),Measurement(1/0.001127,"kg/m3"),0)
+		self.assertAlmostEqual(S.specienergy(),Measurement(761.5,"kJ/kg"),-3)
+		self.assertAlmostEqual(S.specentropy(),Measurement(2.138,"kJ/kgK"),0)
 
-	def teststeam_sat_liq(self):
+	def teststeam_sat_gas(self):
 		p = Measurement(2,"bar");
 		S = steam(); S.setSatSteam_p(p)
 		T = S.temp()
@@ -105,7 +109,7 @@ class TestPythonBindings(unittest.TestCase):
 		self.assertAlmostEqual(S.specenthalpy(),Measurement(2706.3,"kJ/kg"),-3)
 		self.assertAlmostEqual(S.specentropy(),Measurement(7.127,"kJ/kgK"),0)
 
-	def teststeam_sat_liq(self):
+	def teststeam_sat_gas_2(self):
 		T = Measurement(111.4+273.15,"K")
 		S = steam(); S.setSatSteam_T(T)
 		p = S.pres()
@@ -113,7 +117,7 @@ class TestPythonBindings(unittest.TestCase):
 		self.assertAlmostEqual(S.specenthalpy(),Measurement(2693.4,"kJ/kg"),-3)
 		self.assertAlmostEqual(S.specentropy(),Measurement(7.223,"kJ/kgK"),-1)
 
-	def teststeam_sat_liq(self):
+	def teststeam_sat_gas_3(self):
 		p = Measurement(150,"bar")
 		S = steam(); S.setSatSteam_p(p)
 		T = S.temp()

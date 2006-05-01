@@ -323,6 +323,8 @@ if have_swig:
 		, SHLIBPREFIX=''
 	)	
 	env.SideEffect('freesteam.py',swiglib)
+	env.Depends('freesteam_wrap.cc',['steamcalculator.h','solver2.h','config.h' \
+		,'units.h','measurement.h'])
 
 #------------------------------------------------------
 # INSTALLATION

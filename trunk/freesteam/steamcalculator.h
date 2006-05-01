@@ -21,18 +21,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef STEAMCALCULATOR_H
 #define STEAMCALCULATOR_H
 
-#include "designbycontract.h"
-#include "common.h"
-#include "steamcalculatorexception.h"
-#include "boundaries.h"
-#include "state.h"
-#include "zeroin.h"
-
 #ifdef FREESTEAM_SWIG
+# include "measurement.h"
+# define Density Measurement
 # define Pressure Measurement
 # define Temperature Measurement
 # define SpecificEnergy Measurement
 # define SpecificEntropy Measurement
+# define DynamicViscosity Measurement
+# define ThermalConductivity Measurement
+# define SpecHeatCap Measurement
+# define SpecificVolume Measurement
+#else
+# include "designbycontract.h"
+# include "steamcalculatorexception.h"
+# include "boundaries.h"
+# include "state.h"
+# include "zeroin.h"
 #endif
 
 typedef enum { STEAM_SUBCOOLED =

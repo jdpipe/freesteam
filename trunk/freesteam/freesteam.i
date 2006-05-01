@@ -61,16 +61,6 @@ class Solver2{
 %template(steam_pT) Solver2<Pressure,Temperature,0,0>;
 
 %rename(steam) SteamCalculator;
-%rename(Measurement) SpecificVolume;
-%rename(Measurement) Density;
-%rename(Measurement) SpecificEnergy;
-%rename(Measurement) SpecificEntropy;
-%rename(Measurement) SpecHeatCap;
-%rename(Measurement) DynamicViscosity;
-%rename(Measurement) ThermalConductivity;
-%rename(Measurement) Pressure;
-%rename(Measurement) Temperature;
-%rename(Measurement) Length;
 
 %ignore DesignByContract;
 %ignore SteamCalculator::operator=;

@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 # define Temperature Measurement
 # define SpecificEnergy Measurement
 # define SpecificEntropy Measurement
+# define Density Measurement
 #endif
 
 // this is the precision of all the parameters used in the Steam Calculator:
