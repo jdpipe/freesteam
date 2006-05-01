@@ -88,6 +88,10 @@ class TestPythonBindings(unittest.TestCase):
 		T = S.temp()
 		self.assertAlmostEqual(T,Measurement(165.0+273.15,"K"),1)
 
+	def teststeam_pT(self):
+		S = steam_pT().solve(Measurement(40,"bar"),Measurement(250+273.15,"K"));
+		self.assertAlmostEqual(S.dens(),Measurement(799,"kg/m3"),0)
+
 	# SATURATION
 
 	def teststeam_sat_liq(self):

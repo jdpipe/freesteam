@@ -933,6 +933,12 @@ Solver2<Pressure,Temperature,0,0>::solveRegion3(
 
 template<>
 int
+Solver2<Pressure, Temperature, 0, 0>::whichRegion(
+	const Pressure &p, const Temperature &T
+);
+
+template<>
+int
 Solver2<Temperature, SpecificEnergy, 0, SOLVE_ENTHALPY>::whichRegion(
 	const Temperature &T, const SpecificEnergy &h
 );
