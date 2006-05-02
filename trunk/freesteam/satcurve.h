@@ -141,8 +141,8 @@ class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 				z.visit(this);
 
 				if(!z.isSolved(maxerror)){
-					stringstream s;
-					s.flags(ios_base::showbase);
+					std::stringstream s;
+					s.flags(std::ios_base::showbase);
 					s << "Unable to solve for target " << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << target << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
 					throw std::runtime_error(s.str());
 				}
@@ -158,7 +158,7 @@ class SatCurve : public SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 				return SatCurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>::getOrdinate(S);
 
 			}catch(std::exception &e){
-				stringstream s;
+				std::stringstream s;
 				s << "SatCurve<" << SteamProperty<Ordinate,OrdinateAlt>::name() << "," << SteamProperty<Abscissa,AbscissaAlt>::name() << ">::solve(" << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << target << "," << (flags & SAT_STEAM ? "SAT_STEAM" : "SAT_WATER") << "): " << e.what();
 				throw std::runtime_error(s.str());
 			}

@@ -26,8 +26,8 @@ Model HotWaterTank as SteamEquipment_uv
 	m = rho * A * y;
 	
 	# Energy conservation, no work, no volume
-	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot + diff(H); 
-	H = m * h;
+	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot + diff(U); 
+	U = m * u;
 	Qdot = 0 * "W";
 	Wdot = 0 * "W";
 	

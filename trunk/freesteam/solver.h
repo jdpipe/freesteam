@@ -27,7 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "zeroin.h"
 #include <stdexcept>
 #include <string>
-using namespace std;
 
 /// Base class for one-property rootfinding
 /**
@@ -103,9 +102,9 @@ class SolverBase : public DesignByContract
 				z.visit(this);
 
 				if(!z.isSolved(maxerror)){
-					stringstream s;
-					s.flags(ios_base::showbase);
-					s << "Failed solution: target "<< SteamProperty<OtherProp,OtherPropAlt>::name() << " = " << op << ", with " << SteamProperty<MainProp,MainPropAlt>::name() << " fixed at " << mp << endl;
+					std::stringstream s;
+					s.flags(std::ios_base::showbase);
+					s << "Failed solution: target "<< SteamProperty<OtherProp,OtherPropAlt>::name() << " = " << op << ", with " << SteamProperty<MainProp,MainPropAlt>::name() << " fixed at " << mp << std::endl;
 
 					s << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
 					throw std::runtime_error(s.str());
@@ -115,7 +114,7 @@ class SolverBase : public DesignByContract
 
 				return S;
 			}catch(std::exception &e){
-				stringstream s;
+				std::stringstream s;
 				s << "Solver<" << SteamProperty<MainProp,MainPropAlt>::name() << "," << SteamProperty<OtherProp,OtherPropAlt>::name() << "," << SteamProperty<VaryProp,VaryPropAlt>::name() << ">::solve: " << e.what();
 				throw std::runtime_error(s.str());
 			}

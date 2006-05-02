@@ -20,7 +20,7 @@
 		$action
 	}
 	catch (std::range_error &e) {
-		cerr << "RANGE ERROR: " << e.what();
+		std::cerr << "RANGE ERROR: " << e.what();
 		exit(1);
 	}
 	catch (std::runtime_error &e) {
@@ -90,7 +90,7 @@ Dimension dimension_sub(const Dimension &d1, const Dimension &d2);
 	%pythoncode{
 		def __sub__(self,other):
 			if other.__class__!=self.__class__:
-				raise RuntimeError("Second value in subtraction is not a Measurement")
+				raise RuntimeError("Second value in subtraction is not a Measurement (it's a '%s')" % other.__class__)
 			if dimension_cmp(self.dim,other.dim)!=0:
 				raise RuntimeError("Incompatible dimensions: self=%s, other=%s" %(self,other));
 			else:

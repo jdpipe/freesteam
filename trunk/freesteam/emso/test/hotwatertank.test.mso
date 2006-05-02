@@ -48,7 +48,7 @@ FlowSheet HotWaterTankTest
 	TA.Out.v = 1 / (997 * "kg/m^3");
 	
 	TA.rho = 997 * "kg/m^3";
-	TA.H = 1* "m^3" * 104.9 * "kJ/kg" / (1000 * "kg/m^3");
+	TA.U = 1* "m^3" * 104.9 * "kJ/kg" / (1000 * "kg/m^3");
 	TA.Out.u = 104.8 * "kJ/kg";
 	
 	INITIAL

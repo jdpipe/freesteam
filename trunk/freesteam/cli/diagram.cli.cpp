@@ -48,7 +48,7 @@ int main(const int argc, char *argv[]){
 
 		delete D;
 	}catch(std::exception &E){
-		cerr << "main: " << E.what();
+		std::cerr << "main: " << E.what();
 		exit(1);
 	}
 }

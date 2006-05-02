@@ -202,7 +202,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				region = whichRegion(fp,sp);
 
 			}catch(std::exception &E){
-				stringstream ss;
+				std::stringstream ss;
 				ss << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::solve (no first guess): " << E.what();
 				throw std::runtime_error(ss.str());
 			}
@@ -223,12 +223,12 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 						S2 = solveRegion4(fp,sp,makeRegion4Guess(fp,sp));
 						break;
 					default:
-						stringstream ss;
+						std::stringstream ss;
 						ss << "Invalid return from whichRegion(" << fp << "," << sp << "): region = " << region;
 						throw std::runtime_error(ss.str());
 				}
 			}catch(std::exception &E){
-				stringstream s;
+				std::stringstream s;
 				s << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::solve (no first guess; found region=" << region << "): " << E.what();
 				throw std::runtime_error(s.str());
 			}
@@ -269,8 +269,8 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				}
 
 			}catch(std::exception &E){
-				stringstream ss;
-				ss.flags(ios_base::showbase);
+				std::stringstream ss;
+				ss.flags(std::ios_base::showbase);
 
 				ss << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::solve (" << SteamProperty<FirstProp,FirstPropAlt>::name() << "=" << fp << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << "=" << sp;
 
@@ -468,7 +468,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 				}
 
 			}catch(std::exception &E){
-				stringstream s;
+				std::stringstream s;
 				s << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">:solveRegion3: " << E.what();
 				throw std::runtime_error(s.str());
 			}
@@ -622,7 +622,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 					}
 				}
 			}catch(std::exception &E){
-				stringstream s;
+				std::stringstream s;
 				s<< "Solver2::solveRegion4: " << E.what();
 				throw std::runtime_error(s.str());
 			}
@@ -765,7 +765,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 			#ifdef SOLVER2_DEBUG
 				if(SOLVER2BASE_DEBUG){
-					cerr << endl << "---------------------------------" << endl << "SOLVE REGION 2";
+					std::cerr << std::endl << "---------------------------------" << std::endl << "SOLVE REGION 2";
 				}
 			#endif
 
@@ -791,7 +791,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 				#ifdef SOLVER2_DEBUG
 					if(SOLVER2BASE_DEBUG){
-						cerr << endl << "Iter " << niter << ": p = " << p / MPa << " MPa, T = " << T << " (" << tocelsius(T) << "°C)";
+						std::cerr << std::endl << "Iter " << niter << ": p = " << p / MPa << " MPa, T = " << T << " (" << tocelsius(T) << "°C)";
 					}
 				#endif
 
@@ -800,8 +800,8 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 				#ifdef SOLVER2_DEBUG
 					if(SOLVER2BASE_DEBUG){
-						cerr << ": " << SteamProperty<FirstProp,FirstPropAlt>::name() << " = " << f;
-						cerr << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << " = " << s;
+						std::cerr << ": " << SteamProperty<FirstProp,FirstPropAlt>::name() << " = " << f;
+						std::cerr << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << " = " << s;
 					}
 				#endif
 

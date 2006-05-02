@@ -41,8 +41,8 @@ FlowSheet PumpSimpleTest1
 	"Inlet temperature"
 	S1.T = (25 + 273.15) * "K";
 	
-	"Output pressure"
-	PU.Out.p = 1.3 * "bar";
+	#"Output pressure"
+	#PU.Out.p = 1.3 * "bar";
 	
 	GUESS
 	PU.Out.mdot = 1 * "kg/s";

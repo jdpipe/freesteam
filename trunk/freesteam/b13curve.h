@@ -31,7 +31,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "solver.h"
 
 #include <iostream>
-using namespace std;
 
 /// Region1-Region3 boundary solver (fixed temperature line) for arbitrary variables
 /**
@@ -88,7 +87,7 @@ class B13Curve : public B13CurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>{
 				return B13CurveBase<Ordinate,Abscissa,OrdinateAlt,AbscissaAlt>::getOrdinate(S);
 
 			}catch(std::exception &e){
-				stringstream s;
+				std::stringstream s;
 				s << "B13Curve<" << SteamProperty<Ordinate,OrdinateAlt>::name() << "," << SteamProperty<Abscissa,AbscissaAlt>::name() << ">::solve(" << SteamProperty<Abscissa,AbscissaAlt>::name() << " = " << target <<"): " << e.what();
 				throw std::runtime_error(s.str());
 			}

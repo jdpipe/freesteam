@@ -26,7 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <iostream>
 #include <cmath>
-using namespace std;
 
 #ifndef DBL_EPSILON
 	#define DBL_EPSILON 2e-16

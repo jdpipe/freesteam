@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "steamcalculator_macros.h"
 #include "isinfnan.h"
 
+using namespace std;
+
 Region3 *Region3::_instance = 0;
 
 Region3::Region3() {}

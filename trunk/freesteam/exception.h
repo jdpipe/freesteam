@@ -24,22 +24,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <iostream>
 #include <string>
-using namespace std;
 
 class Exception{
 	private:
-		string message;
+		std::string message;
 
 	public:
 		Exception(const char *c="Unknown exception!");
 
-		Exception(string s);
+		Exception(std::string s);
 
 		virtual ~Exception();
 
-		virtual string what();
+		virtual std::string what();
 
-		void setMessage(string message);
+		void setMessage(std::string message);
 };
 
 #endif

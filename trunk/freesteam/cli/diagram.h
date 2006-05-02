@@ -200,7 +200,7 @@ class Diagram : public DiagramBase{
 
 		template<class F, class S>
 		std::string
-		loopAlong(const F &fref,const S &smin, const S &smax, const string &title){
+		loopAlong(const F &fref,const S &smin, const S &smax, const std::string &title){
 			std::stringstream ss;
 			S sstep = (smax - smin) / double(200);
 

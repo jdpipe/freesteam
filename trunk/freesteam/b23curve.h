@@ -105,8 +105,8 @@ class B23Curve : public B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 				z.visit(this);
 
 				if(!z.isSolved(maxerror)){
-					stringstream s;
-					s.flags(ios_base::showbase);
+					std::stringstream s;
+					s.flags(std::ios_base::showbase);
 					s << "Unable to solve for target " << target << " (error was " << z.getError() << ", max allowed is " << maxerror << ")";
 					throw std::runtime_error(s.str());
 				}
@@ -121,7 +121,7 @@ class B23Curve : public B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,Absci
 				return B23CurveBase<Ordinate,Abscissa,OrdinateAlternative,AbscissaAlternative>::getOrdinate(S);
 
 			}catch(std::exception &e){
-				stringstream s;
+				std::stringstream s;
 				s << "B23Curve::solve: " << e.what();
 				throw std::runtime_error(s.str());
 			}
