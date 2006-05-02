@@ -302,6 +302,21 @@ else:
 	print "Skipping... EMSO hook libraries"
 
 #------------------------------------------------------
+# SWIG scanner
+
+if have_swig:
+	import SCons.Script
+
+	SWIGScanner = SCons.Scanner.ClassicCPP(
+		"SWIGScan"
+		, ".i"
+		, "CPPPATH"
+		, '^[ \t]*[%,#][ \t]*(?:include|import)[ \t]*(<|")([^>"]+)(>|")'
+	)
+
+	env.Append(SCANNERS=[SWIGScanner])
+
+#------------------------------------------------------
 # PYTHON INTERFACE :-)
 
 if platform.system()=="Windows":
@@ -323,8 +338,7 @@ if have_swig:
 		, SHLIBPREFIX=''
 	)	
 	env.SideEffect('freesteam.py',swiglib)
-	env.Depends('freesteam_wrap.cc',['steamcalculator.h','solver2.h','config.h' \
-		,'units.h','measurement.h'])
+	env.Clean(swiglib,['freesteam.py','freesteam$SWIGCXXFILESUFFIX'])
 
 #------------------------------------------------------
 # Recipe for 'CHMOD' ACTION 	 

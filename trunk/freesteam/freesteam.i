@@ -89,7 +89,8 @@ Dimension dimension_sub(const Dimension &d1, const Dimension &d2);
 %extend Measurement{
 	%pythoncode{
 		def __sub__(self,other):
-			if other.__class__!=self.__class__:
+			if self.__class__ != other.__class__ \
+					and not self.__class__ in other.__class__.__bases__:
 				raise RuntimeError("Second value in subtraction is not a Measurement (it's a '%s')" % other.__class__)
 			if dimension_cmp(self.dim,other.dim)!=0:
 				raise RuntimeError("Incompatible dimensions: self=%s, other=%s" %(self,other));
@@ -97,8 +98,9 @@ Dimension dimension_sub(const Dimension &d1, const Dimension &d2);
 				return Measurement(self.value - other.value, self.dim);
 
 		def __add__(self,other):
-			if other.__class__!=self.__class__:
-				raise RuntimeError("Second value in subtraction is not a Measurement")
+			if self.__class__ != other.__class__ \
+					and not self.__class__ in other.__class__.__bases__:
+				raise RuntimeError("Second value in addition is not a Measurement (it's a '%s')" % other.__class__)
 
 			if dimension_cmp(self.dim,other.dim)!=0:
 				raise RuntimeError("Incompatible dimensions: self=%s, other=%s" %(self,other));
@@ -106,14 +108,16 @@ Dimension dimension_sub(const Dimension &d1, const Dimension &d2);
 				return Measurement(self.value + other.value, self.dim);
 
 		def __mul__(self,other):
-			if other.__class__!=self.__class__:
-				raise RuntimeError("Second value in subtraction is not a Measurement")
+			if self.__class__ != other.__class__ \
+					and not self.__class__ in other.__class__.__bases__:
+				raise RuntimeError("Second value in multiplication is not a Measurement (it's a '%s')" % other.__class__)
 
 			return Measurement(self.value * other.value, dimension_add(self.dim,other.dim));
 
 		def __div__(self,other):
-			if other.__class__!=self.__class__:
-				raise RuntimeError("Second value in subtraction is not a Measurement")
+			if self.__class__ != other.__class__ \
+					and not self.__class__ in other.__class__.__bases__:
+				raise RuntimeError("Second value in division is not a Measurement (it's a '%s')" % other.__class__)
 
 			return Measurement(self.value / other.value, dimension_sub(self.dim,other.dim));
 
