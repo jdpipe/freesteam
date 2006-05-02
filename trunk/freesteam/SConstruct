@@ -338,6 +338,7 @@ if have_swig:
 		, SHLIBPREFIX=''
 	)	
 	env.SideEffect('freesteam.py',swiglib)
+	env.Depends('freesteam.py','freesteam.i')
 	env.Clean(swiglib,['freesteam.py','freesteam$SWIGCXXFILESUFFIX'])
 
 #------------------------------------------------------
