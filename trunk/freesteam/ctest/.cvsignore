@@ -3,3 +3,4 @@
 ctest.skip
 *.cpass.exe
 *.cfail.ok
+*.cpass
