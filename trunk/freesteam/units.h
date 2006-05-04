@@ -540,17 +540,6 @@ const HeatFlux W_m2 = Watt / metre2;
 const double Percent = 1.0 / 100;
 
 //------------------------------------
-// COMMON MEASURES (NON-SI)
-
-const Length mile = 1.609 * kilometre;
-const Length foot = 304.8 * milli * metre;
-const Length inch = 25.4 * milli * metre;
-
-const Temperature Rankin = 0.556 * Kelvin;
-
-const Frequency RPM = 1. / minute;
-
-//------------------------------------
 // THERMODYNAMIC MEASURES
 
 const SpecificEnergy kJ_kg = kilo * Joule / kilogram;
@@ -577,6 +566,22 @@ const ElecPotential volt = Watt / ampere;
 const Charge Coulomb = ampere * second;
 const Capacitance Farad = volt / Coulomb;
 const Resistance Ohm = volt / ampere;
+
+//------------------------------------
+// SOME IMPERIAL MEASURES
+
+const Temperature Rankin = 0.556 * Kelvin;
+const Frequency RPM = 1. / minute;
+
+const Length yard =  0.9144 * metre;
+const Length foot = yard / 3.;
+const Length inch = foot / 12.;
+const Length mile = 1760. * yard;
+
+const Mass lbm = 0.45359237 * kilogram;
+const Acceleration grav_accel = 9.80665 * metre / second / second;
+const Force lbf = grav_accel * lbm;
+const Pressure lbf_in2 = lbf / inch / inch;
 
 //------------------------------------
 // HANDLING TEMPERATURES
