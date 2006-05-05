@@ -18,6 +18,17 @@ struct UnitsDimScale{
 
 typedef map<string,DimScale> UnitsMap;
 
+namespace MeasurementData {
+	const double lb = 0.45359237; // kg
+	const double yd = 0.9144; // m
+	const double in = yd / 36.; // m
+	const double g = 9.80665; // N/kg
+	const double lbf = lb * g; // N
+	const double psi = lb / in / in; // Pa
+};
+
+using namespace MeasurementData;
+
 class UnitsMapInitialiser{
 	public:
 		/// Data member: this will store the unitsmap
@@ -26,7 +37,7 @@ class UnitsMapInitialiser{
 		/// This will initialise the unitsmap
 		UnitsMapInitialiser(){
 
-			static const int NUDS = 32;
+			static const int NUDS = 33;
 
 			UnitsDimScale uds[NUDS] = {
 				  {"kg", {{ 1, 0, 0, 0, 0}, 1.    }}
@@ -49,6 +60,7 @@ class UnitsMapInitialiser{
 				, {"bar",  {{ 1,-1,-2, 0, 0}, 1e5 }}
 				, {"kPa",  {{ 1,-1,-2, 0, 0}, 1e3 }}
 				, {"MPa",  {{ 1,-1,-2, 0, 0}, 1e6 }}
+				, {"psi",  {{ 1,-1,-2, 0, 0},          psi }}
 				, {"W",    {{ 1, 2,-2, 0, 0}, 1.  }}
 				, {"kW",   {{ 1, 2,-2, 0, 0}, 1e3 }}
 				, {"MW",   {{ 1, 2,-2, 0, 0}, 1e6 }}
