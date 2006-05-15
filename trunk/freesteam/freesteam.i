@@ -30,12 +30,17 @@
 	}
 }
 
+// Common stuff, values, etc. Needed for definition of SOLVE_ENTHALPY etc.
+
+#include <freesteam/common.h>
+
 // The Solver2 class, stripped of its base class and private/protected methods:
 
 template<class FirstProp,class SecondProp,int FirstPropAlt=0, int SecondPropAlt=0>
 class Solver2{
 	public:
 		Solver2();
+		~Solver2();
 		%extend{
 			SteamCalculator solve(const Measurement &fp, const Measurement &sp){
 				//cerr << "SETTING...." << endl;
@@ -89,7 +94,8 @@ Dimension dimension_sub(const Dimension &d1, const Dimension &d2);
 %extend Measurement{
 	%pythoncode{
 		def __sub__(self,other):
-			if self.__class__ != other.__class__ \
+			if str(other.__class__) != "<class 'freesteam.Measurement'>" \
+					and self.__class__ != other.__class__ \
 					and not self.__class__ in other.__class__.__bases__:
 				raise RuntimeError("Second value in subtraction is not a Measurement (it's a '%s')" % other.__class__)
 			if dimension_cmp(self.dim,other.dim)!=0:
@@ -98,7 +104,8 @@ Dimension dimension_sub(const Dimension &d1, const Dimension &d2);
 				return Measurement(self.value - other.value, self.dim);
 
 		def __add__(self,other):
-			if self.__class__ != other.__class__ \
+			if str(other.__class__) != "<class 'freesteam.Measurement'>" \
+					and self.__class__ != other.__class__ \
 					and not self.__class__ in other.__class__.__bases__:
 				raise RuntimeError("Second value in addition is not a Measurement (it's a '%s')" % other.__class__)
 
@@ -108,18 +115,23 @@ Dimension dimension_sub(const Dimension &d1, const Dimension &d2);
 				return Measurement(self.value + other.value, self.dim);
 
 		def __mul__(self,other):
-			if self.__class__ != other.__class__ \
+			if str(other.__class__) != "<class 'freesteam.Measurement'>" \
+					and self.__class__ != other.__class__ \
 					and not self.__class__ in other.__class__.__bases__:
 				raise RuntimeError("Second value in multiplication is not a Measurement (it's a '%s')" % other.__class__)
 
 			return Measurement(self.value * other.value, dimension_add(self.dim,other.dim));
 
 		def __div__(self,other):
-			if self.__class__ != other.__class__ \
+			if str(other.__class__) != "<class 'freesteam.Measurement'>" \
+					and self.__class__ != other.__class__ \
 					and not self.__class__ in other.__class__.__bases__:
 				raise RuntimeError("Second value in division is not a Measurement (it's a '%s')" % other.__class__)
 
 			return Measurement(self.value / other.value, dimension_sub(self.dim,other.dim));
+
+		def __neg__(self):
+			return Measurement(-self.value, self.dim)
 
 		def __float__(self):
 			return self.value;

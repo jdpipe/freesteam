@@ -379,7 +379,7 @@ if can_install:
 	if have_swig:
 		import distutils.sysconfig
 		
-		libdir = distutils.sysconfig.get_python_lib(True)
+		libdir = distutils.sysconfig.get_python_lib(plat_specific=True)
 		print "LIBDIR IS ---------->",libdir
 		
 		install_swig += [ env.InstallLibrary(libdir,['_freesteam$SHLIBSUFFIX']) ]

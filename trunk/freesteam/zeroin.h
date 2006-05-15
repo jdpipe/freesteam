@@ -195,6 +195,7 @@ class ZeroIn : public DesignByContract {
 
 		if(fa == 0.0 * Ordinate()){
 			fb=0.0 * Ordinate(); // used by getError
+			this->issolved = true; // perfect solution
 			return;
 		}
 

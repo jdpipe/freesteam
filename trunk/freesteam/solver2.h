@@ -169,6 +169,11 @@ class Solver2
 			//cerr << endl <<"Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::Solver2()";
 		}
 
+		~Solver2(){
+			//std::cerr << "DELETING SOLVER2" << std::endl;
+			// nothing needs to be deleted
+		}
+
 		/// Calculator the IAPWS-IF97 region number given (any combination of) property values
 		/**
 			Used in the same way as Solver2::solve but the solution is not done, only the region is found.
