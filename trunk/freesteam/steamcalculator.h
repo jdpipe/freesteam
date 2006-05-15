@@ -32,6 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 # define ThermalConductivity Measurement
 # define SpecHeatCap Measurement
 # define SpecificVolume Measurement
+# define Num double
 #else
 # include "designbycontract.h"
 # include "steamcalculatorexception.h"

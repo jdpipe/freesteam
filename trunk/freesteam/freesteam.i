@@ -90,7 +90,7 @@ class Solver2{
 
 Dimension dimension_add(const Dimension &d1, const Dimension &d2);
 Dimension dimension_sub(const Dimension &d1, const Dimension &d2);
-Dimension dimension_mul(const Dimension &d, const int n);
+Dimension dimension_mul(const Dimension &d1, const int &n);
 
 %extend Measurement{
 	%pythoncode{
