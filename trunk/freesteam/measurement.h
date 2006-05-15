@@ -28,6 +28,7 @@ public:
 int dimension_cmp(const Dimension &d1, const Dimension &d2);
 Dimension dimension_add(const Dimension &d1, const Dimension &d2);
 Dimension dimension_sub(const Dimension &d1, const Dimension &d2);
+Dimension dimension_mul(const Dimension &d, const int &n);
 
 class Measurement{
 

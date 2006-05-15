@@ -164,6 +164,19 @@ Dimension dimension_sub(const Dimension &d1, const Dimension &d2){
 	return d;
 }
 
+Dimension dimension_mul(const Dimension &d1, const int &n){
+	Dimension d;
+	d.m = d1.m * n;
+	d.l = d1.l * n;
+	d.t = d1.t * n;
+	d.k = d1.k * n;
+	d.i = d1.i * n;
+	return d;
+}
+
+
 Dimension::~Dimension(){
 	// nothing to do, just keeping SWIG happy
 }
+
+

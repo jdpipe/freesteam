@@ -90,6 +90,7 @@ class Solver2{
 
 Dimension dimension_add(const Dimension &d1, const Dimension &d2);
 Dimension dimension_sub(const Dimension &d1, const Dimension &d2);
+Dimension dimension_mul(const Dimension &d, const int n);
 
 %extend Measurement{
 	%pythoncode{
@@ -129,6 +130,11 @@ Dimension dimension_sub(const Dimension &d1, const Dimension &d2);
 				raise RuntimeError("Second value in division is not a Measurement (it's a '%s')" % other.__class__)
 
 			return Measurement(self.value / other.value, dimension_sub(self.dim,other.dim));
+
+		def __pow__(self,other):
+			if other.__class__!=int:
+				raise RuntimeError('Second value in Measurement^power must be an integer')
+			return Measurement(self.value **other, dimension_mul(self.dim,other))
 
 		def __neg__(self):
 			return Measurement(-self.value, self.dim)
