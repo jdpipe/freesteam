@@ -50,6 +50,12 @@ class TestPythonBindings(unittest.TestCase):
 		l = Measurement(1,"m");
 		mu = m/t/l;
 		self.assertAlmostEqual(mu,Measurement(1,"g/sm"))
+	
+	def testmeasurement_power(self):
+		K = Measurement(1,"K");
+		K2 = K**2;
+		K3 = K2/K;
+		self.assertAlmostEqual(K3,Measurement(1,"K"))
 
 	# NOW FOR THE MEAT IN YOUR SANDWICH
 	
