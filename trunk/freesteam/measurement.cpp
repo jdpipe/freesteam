@@ -127,11 +127,16 @@ Measurement::Measurement(const double &value, const Dimension &dim, const double
 }
 
 const std::string
-Measurement::toString(){
+Measurement::toString() const{
 	stringstream ss;
 	ss << value << "<" << dim.m << "," << dim.l << "," << dim.t << "," \
 	<< dim.k << "," << dim.i << ">";
 	return ss.str();
+}
+
+bool
+Measurement::isNonDim() const{
+	return not(dim.m || dim.l || dim.t || dim.k || dim.i);
 }
 
 int dimension_cmp(const Dimension &d1, const Dimension &d2){

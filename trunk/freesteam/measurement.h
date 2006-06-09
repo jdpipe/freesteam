@@ -43,7 +43,8 @@ class Measurement{
 		Measurement();
 		Measurement(const double &value, const Dimension &dim, const double &scale=1);
 
-		const std::string toString();
+		const std::string toString() const;
+		bool isNonDim() const;
 };
 
 

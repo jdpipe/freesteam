@@ -94,6 +94,12 @@ Dimension dimension_mul(const Dimension &d1, const int &n);
 
 %extend Measurement{
 	%pythoncode{
+		def to(self,units):
+			v = self/Measurement(1,units)
+			if not v.isNonDim():
+				raise ValueError("Incompatible dimensions");
+			return v.value
+			
 		def __sub__(self,other):
 			if str(other.__class__) != "<class 'freesteam.Measurement'>" \
 					and self.__class__ != other.__class__ \
