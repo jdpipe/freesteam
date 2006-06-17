@@ -135,24 +135,56 @@ class TestPythonBindings(unittest.TestCase):
 		self.assertAlmostEqual(S.specenthalpy(),Measurement(2615.0,"kJ/kg"),-4)
 		self.assertAlmostEqual(S.specentropy(),Measurement(5.318,"kJ/kgK"),-2)
 
-	# PICKLING / UNPICKLING OF MEASUREMENTS
+	# PICKLING / UNPICKLING
 
-	def testmeasurement_pickle1(self):
-		print "MEASUREMENT PICKLING"
+	def testpickle_measurement(self):
+		#print "MEASUREMENT PICKLING"
 		from cPickle import load,dump
+		import os
 		m = Measurement(150,"bar")
-		print "PICKLING m =",m
-		fn = "temp-pickle-test.pkl"
+		#print "PICKLING m =",m
+		fn = "temp-pickle-measurement.pkl"
 		f = file(fn,"w");
 		dump(m,f);
 		f = file(fn,"r");
 		m2 = load(f)
-		print "UNPICKLED m2 = ",m2
+		#print "UNPICKLED m2 = ",m2
 		self.assertAlmostEqual(m,m2,8)
 		m = m + Measurement(1,"bar")
 		self.assertNotAlmostEqual(m,m2,8)
+		m3 = Measurement(m.value,"m")
+		self.assertNotEqual(m3.dim,m2.dim)
+		os.unlink(fn)
 
-	
+	def testpickle_steam(self):
+		#print "STEAM PICKLING!"
+		from cPickle import load,dump
+		import os
+		self.steampickle(Measurement(30,"bar"),Measurement(2000,"kJ/kg"))
+		self.steampickle(Measurement(10,"bar"),Measurement(2000,"kJ/kg"))
+		self.steampickle(Measurement(400,"bar"),Measurement(2000,"kJ/kg"))
+		self.steampickle(Measurement(50,"bar"),Measurement(200,"kJ/kg"))
+		self.steampickle(Measurement(60,"bar"),Measurement(4000,"kJ/kg"))
+		
+	def steampickle(self,p,h):
+		from cPickle import load,dump
+		import os
+		S = steam_ph().solve(p,h)
+		#print "Pickling region ",S.whichRegion()
+		fn = "temp-pickle-steam.pkl"
+		f = file(fn,"w")
+		dump(S,f)
+		del f
+		#print "PICKLED"
+		f1 = file(fn,"r")
+		S2 = load(f1)
+		#print "UNPICKLED"
+		#print "p = ",S2.pres(),", h = ",S2.specenthalpy()
+		#print "dp = ",(S2.pres() - S.pres())
+		self.assertAlmostEqual(S2.pres(),S.pres())
+		self.assertAlmostEqual(S2.specenthalpy(),S.specenthalpy())
+		os.unlink(fn)
+		
 
 if __name__ == '__main__':
     unittest.main()

@@ -2,6 +2,7 @@
 #define MEASUREMENT_H
 
 #include <iostream>
+#include <iomanip>
 
 /**
 	An dynamically-typed units class, for ease of
@@ -50,7 +51,7 @@ class Measurement{
 
 inline
 std::ostream& operator <<(std::ostream &os,const Measurement &m){
-	os << m.value << " <" << m.dim.m << "," << m.dim.l << "," << m.dim.t << "," << m.dim.k << "," << m.dim.i << ">";
+	os << std::scientific << std::setprecision(8) << m.value << " <" << m.dim.m << "," << m.dim.l << "," << m.dim.t << "," << m.dim.k << "," << m.dim.i << ">";
 	return os;
 }
 

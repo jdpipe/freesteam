@@ -67,6 +67,31 @@ class Solver2{
 
 %rename(steam) SteamCalculator;
 
+%extend SteamCalculator{
+	%pythoncode{
+		def __reduce__(self):
+			r = self.whichRegion()
+			if r==1 or r==2:
+				tup = (r, self.pres(),self.temp())
+			elif r==3:
+				tup = (r, self.dens(),self.temp())
+			elif r==4:
+				tup = (r, self.temp(),self.quality())
+			return (steam, tuple(), tup)
+
+		def __setstate__(self,tup):
+			r=tup[0]
+			if r==1:
+				self.setRegion1_pT(tup[1],tup[2])
+			elif r==2:
+				self.setRegion2_pT(tup[1],tup[2])
+			elif r==3:
+				self.setRegion3_rhoT(tup[1],tup[2])
+			elif r==4:
+				self.setRegion4_Tx(tup[1],tup[2])
+	}				
+}
+
 %ignore DesignByContract;
 %ignore SteamCalculator::operator=;
 
