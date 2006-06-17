@@ -1031,9 +1031,13 @@ SteamCalculator::setRegion4_Tx(const Temperature &T, const Num &x){
 
 		changeState(Region4::Instance());
 
-		gas = new SteamCalculator();
+		if(gas==NULL){
+			gas = new SteamCalculator();
+		}
 		gas->setSatSteam_T(T);
-		liq = new SteamCalculator();
+		if(liq==NULL){
+			liq = new SteamCalculator();
+		}
 		liq->setSatWater_T(T);
 
 		this->x=x;
