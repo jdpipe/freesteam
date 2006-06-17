@@ -99,6 +99,12 @@ Dimension dimension_mul(const Dimension &d1, const int &n);
 			if not v.isNonDim():
 				raise ValueError("Incompatible dimensions");
 			return v.value
+
+		def __reduce__(self):
+			return (Measurement, tuple(), (self.value,self.dim.m,self.dim.l,self.dim.t,self.dim.k,self.dim.i) )
+
+		def __setstate__(self,tup):
+			self.value,self.dim.m,self.dim.l,self.dim.t,self.dim.k,self.dim.i = tup			
 			
 		def __sub__(self,other):
 			if str(other.__class__) != "<class 'freesteam.Measurement'>" \

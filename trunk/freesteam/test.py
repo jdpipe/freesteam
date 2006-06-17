@@ -135,5 +135,24 @@ class TestPythonBindings(unittest.TestCase):
 		self.assertAlmostEqual(S.specenthalpy(),Measurement(2615.0,"kJ/kg"),-4)
 		self.assertAlmostEqual(S.specentropy(),Measurement(5.318,"kJ/kgK"),-2)
 
+	# PICKLING / UNPICKLING OF MEASUREMENTS
+
+	def testmeasurement_pickle1(self):
+		print "MEASUREMENT PICKLING"
+		from cPickle import load,dump
+		m = Measurement(150,"bar")
+		print "PICKLING m =",m
+		fn = "temp-pickle-test.pkl"
+		f = file(fn,"w");
+		dump(m,f);
+		f = file(fn,"r");
+		m2 = load(f)
+		print "UNPICKLED m2 = ",m2
+		self.assertAlmostEqual(m,m2,8)
+		m = m + Measurement(1,"bar")
+		self.assertNotAlmostEqual(m,m2,8)
+
+	
+
 if __name__ == '__main__':
     unittest.main()
