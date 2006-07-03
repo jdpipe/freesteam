@@ -1,4 +1,5 @@
 import os, os.path, commands, platform
+import distutils.sysconfig
 
 #----------------------------------------------------
 # CREATE ENVIRONMENT, LOAD TOOLS, SOME DEFAULT PATHS
@@ -73,6 +74,12 @@ opts.Add(BoolOption(
 	'WITH_CTESTS'
 	,"Perform compile-time testing of the units of measurement code"
 	,True
+))
+
+opts.Add(PathOption(
+	'ASCEND_CONFIG'
+	,"Location of the 'ascend-config' script"
+	,None
 ))
 
 opts.Update(env)
@@ -240,6 +247,14 @@ if conf.CheckCppUnitConfig():
 		#print "CPPUNIT OK!"
 		have_cppunit=True
 
+# Python DEV files
+
+have_python = False
+_havepy = conf.CheckHeader(distutils.sysconfig.get_python_inc()+"/Python.h")
+if _havepy:
+	print "PYTHON ON"
+	have_python = True
+
 # Swig
 
 have_swig = False
@@ -301,6 +316,14 @@ if env['HAVE_EMSO']:
 else:
 	print "Skipping... EMSO hook libraries"
 
+# ASCEND hooks
+
+install_ascend = []
+if env.get('ASCEND_CONFIG'):
+	install_ascend.append( env.SConscript(['ascend/SConscript'],'env') )
+else:
+	print "Skipping... ASCEND hook librarys"
+
 #------------------------------------------------------
 # SWIG scanner
 
@@ -324,12 +347,10 @@ if platform.system()=="Windows":
 else:
 	python_lib = "python2.4"
 
-import distutils.sysconfig
-
 env.Append(PYTHON_LIBPATH=[distutils.sysconfig.PREFIX+"/libs"])
 env.Append(PYTHON_CPPPATH=[distutils.sysconfig.get_python_inc()])
 
-if have_swig:
+if have_swig and have_python:
 	swiglib = env.SharedLibrary('_freesteam',['freesteam.i']
 		, SWIGFLAGS=['-python','-c++']
 		, LIBS=['freesteam',python_lib]
@@ -365,18 +386,28 @@ SConsEnvironment.InstallLibrary = lambda env, dest, files: InstallPerm(env, dest
 #------------------------------------------------------
 # INSTALLATION
 
+try:
+	umask = os.umask(022)
+	print 'setting umask to 022 (was 0%o)' % umask
+except OSError:
+	# ignore on systems that don't support umask
+	pass
+
 if can_install:
 	install_lib = env.InstallLibrary("$LIBDIR", [lib])
 
 	import glob
 	files = glob.glob("*.h")
-	files += glob.glob("*.i")
+
+	if have_swig and have_python:
+		files += glob.glob("*.i")
+
 	#print files
 
 	install_inc = env.InstallHeader("$INCDIR/freesteam", files)
 
 	install_swig = []
-	if have_swig:
+	if have_swig and have_python:
 		import distutils.sysconfig
 		
 		libdir = distutils.sysconfig.get_python_lib(plat_specific=True)
@@ -387,6 +418,6 @@ if can_install:
 
 		print "INSTALL_SWIG = ",install_swig
 		
-	env.Alias('install',[install_lib, install_inc]+install_swig)
+	env.Alias('install',[install_lib, install_inc]+install_swig+install_ascend)
 
 	

@@ -567,7 +567,8 @@ Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0>::whichRegion(const Specif
 
 	}catch(exception &E){
 		stringstream s;
-		s << "Solver2<u,v>::whichRegion(u = " << u / kJ_kg << "kJ_kg, v = " << v << "): " << E.what();
+		s << "Solver2<u,v>::whichRegion(u = " << u / kJ_kg << " kJ/kg, v = " 
+			<< v/m3_kg << " m^3/kg): " << E.what();
 		throw runtime_error(s.str());
 	}
 }

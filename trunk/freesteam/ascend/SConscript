@@ -1,0 +1,42 @@
+Import("env")
+
+import os, platform
+import subprocess
+
+asc_env = env.Copy()
+
+config = env.get('ASCEND_CONFIG');
+
+srcs = Split("""
+	ascendhooks.cpp
+""")
+
+import SCons 	 
+from SCons.Script.SConscript import SConsEnvironment 	 
+SConsEnvironment.Chmod = SCons.Action.ActionFactory(os.chmod, 	 
+	lambda dest, mode: 'Chmod("%s", 0%o)' % (dest, mode)) 	 
+  	 
+def InstallPerm(env, dest, files, perm): 	 
+	obj = env.Install(dest, files) 	 
+	for i in obj: 	 
+		env.AddPostAction(i, env.Chmod(str(i), perm))
+	return dest
+  	 
+SConsEnvironment.InstallPerm = InstallPerm 	 
+
+# only build if we know where to find 'ascend-config' script.
+modeldir = None
+if config:
+	modeldir = subprocess.Popen([config,'--models'],stdout=subprocess.PIPE).communicate()[0]
+	modeldir = modeldir.strip()
+
+	asc_env.ParseConfig('%s --cppflags --libs' % config)
+
+	lib = asc_env.SharedLibrary("freesteam",srcs)
+
+	print "ASCEND hook library:",lib[0]
+	print "MODEL LIBRARY:",modeldir
+	env.InstallPerm(modeldir,lib,0644);
+	env.InstallPerm(modeldir,'testfreesteam.a4c',0644);
+
+Return('modeldir')

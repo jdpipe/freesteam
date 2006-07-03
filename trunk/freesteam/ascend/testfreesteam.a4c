@@ -1,0 +1,31 @@
+REQUIRE "atoms.a4l";
+REQUIRE "johnpye/thermo_types.a4c";
+IMPORT "freesteam";
+
+MODEL testfreesteam;
+	u IS_A specific_energy;
+	v IS_A specific_volume;
+	p IS_A pressure;
+	h IS_A specific_enthalpy;
+	mu IS_A viscosity;
+
+	steam: iapws97_phmu_rhou(
+		u,v : INPUT;
+		p,h,mu : OUTPUT
+	);
+
+METHODS
+METHOD specify;
+	FIX u,v;
+END specify;
+
+METHOD values;
+	v := 0.378 {m^3/kg};
+	u := 2570 {kJ/kg};
+END values;
+
+METHOD on_load;
+	RUN reset; RUN values;
+END on_load;
+
+END testfreesteam;

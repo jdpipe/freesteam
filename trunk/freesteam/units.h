@@ -23,7 +23,6 @@ For this file,
 */
 
 #ifndef UNITS_H
-
 #define UNITS_H
 
 #include "config.h"
@@ -48,20 +47,20 @@ For this file,
 /// Unit Checking/tracking Class
 /**
 	Purpose: Template class to create a 'Units' data type.
-		- It checks that units are correct at *COMPILE* time.
-		- It hides conversion constants.
-		- It enforces self documenting code.
+	   - It checks that units are correct at *COMPILE* time.
+	   - It hides conversion constants.
+	   - It enforces self documenting code.
 
 	Original Author:  Christopher Rettig ( rettigcd@bigfoot.com )
-	    - (This is not the original version)
+		(This is not the original version)
 
 	Dev platform:
-		. Win2k -- gcc version 3.3.1 (cygming special)
+	   - Win2k -- gcc version 3.3.1 (cygming special)
 
 	Tested on:
-		. NT4.0 -- VC++ 6.0
-		. Win2k -- gcc version 3.2.3 (mingw special 20030504-1)
-		. Linux -- gcc version 3.2.2 20030222 (Red Hat Linux 3.2.2-5)
+	   - Win2k (MinGW) -- gcc.exe (GCC) 3.4.2 (mingw-special)
+	   - Linux (Ubuntu 6.06) -- gcc (GCC) 4.0.3 (Ubuntu 4.0.3-1ubuntu5)
+	   - Linux (Fedora Core 5) -- gcc version 4.0.2
 
 	@todo
 		Get the units stuff working with a specific units-tracking flag. Should
