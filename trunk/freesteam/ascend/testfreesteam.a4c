@@ -2,16 +2,19 @@ REQUIRE "atoms.a4l";
 REQUIRE "johnpye/thermo_types.a4c";
 IMPORT "freesteam";
 
+(* test external evaluation in terms of u,v *)
 MODEL testfreesteam;
 	u IS_A specific_energy;
 	v IS_A specific_volume;
 	p IS_A pressure;
 	h IS_A specific_enthalpy;
+	T IS_A temperature;
+	s IS_A specific_entropy;
 	mu IS_A viscosity;
 
-	steam: iapws97_phmu_rhou(
+	steam: iapws97_phTsmu_uv(
 		u,v : INPUT;
-		p,h,mu : OUTPUT
+		p,h,T,s,mu : OUTPUT
 	);
 
 METHODS
@@ -27,5 +30,33 @@ END values;
 METHOD on_load;
 	RUN reset; RUN values;
 END on_load;
-
 END testfreesteam;
+
+(* test external evaluation in terms of p,h *)
+MODEL testfreesteam_ph;
+	u IS_A specific_energy;
+	v IS_A specific_volume;
+	p IS_A pressure;
+	h IS_A specific_enthalpy;
+	mu IS_A viscosity;
+
+	steam: iapws97_uvmu_ph(
+		p,h : INPUT;
+		u,v,mu : OUTPUT
+	);
+
+METHODS
+METHOD specify;
+	FIX p,h;
+END specify;
+
+METHOD values;
+	p := 50 {bar};
+	h := 3000 {kJ/kg};
+END values;
+
+METHOD on_load;
+	RUN reset; RUN values;
+END on_load;
+END testfreesteam_ph;
+
