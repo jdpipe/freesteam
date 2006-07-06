@@ -38,6 +38,20 @@ else:
 if not default_emso_location or not os.path.exists(default_emso_location):
 	default_emso_location=False
 
+# Find 'ascend-config' script, if available
+if platform.system()=='Windows':
+	default_ascend_config="C:\\Program Files\\ASCEND\\ascend-config.bat"
+else:
+	try:
+		default_ascend_config = \
+			subprocess.Popen(
+				['which','ascend-config']
+				,stdout=subprocess.PIPE
+				,stderr=subprocess.PIPE
+			).communicate()[0].strip()
+	except:
+		default_ascend_config = None
+
 #------------------------------------------------------
 # OPTIONS
 
@@ -79,6 +93,13 @@ opts.Add(BoolOption(
 opts.Add(PathOption(
 	'ASCEND_CONFIG'
 	,"Location of the 'ascend-config' script"
+	,default_ascend_config
+))
+
+opts.Add(PathOption(
+	'ASCEND_SRCROOT'
+	,"Location of top-level ASCEND source directory. Use this if ASCEND is not"
+		+"actually installed on your system (eg you are testing/developing)."
 	,None
 ))
 
@@ -319,10 +340,7 @@ else:
 # ASCEND hooks
 
 install_ascend = []
-if env.get('ASCEND_CONFIG'):
-	install_ascend.append( env.SConscript(['ascend/SConscript'],'env') )
-else:
-	print "Skipping... ASCEND hook librarys"
+install_ascend.append( env.SConscript(['ascend/SConscript'],'env') )
 
 #------------------------------------------------------
 # SWIG scanner
@@ -388,7 +406,6 @@ SConsEnvironment.InstallLibrary = lambda env, dest, files: InstallPerm(env, dest
 
 try:
 	umask = os.umask(022)
-	print 'setting umask to 022 (was 0%o)' % umask
 except OSError:
 	# ignore on systems that don't support umask
 	pass

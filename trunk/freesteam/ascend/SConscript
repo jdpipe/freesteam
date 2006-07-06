@@ -1,15 +1,12 @@
-Import("env")
-
-import os, platform
+import os, os.path, platform
 import subprocess
+
+Import("env")
 
 asc_env = env.Copy()
 
-config = env.get('ASCEND_CONFIG');
-
-srcs = Split("""
-	ascendhooks.cpp
-""")
+#-------------------------------
+# SCons 'builder' to install file and set permissions
 
 import SCons 	 
 from SCons.Script.SConscript import SConsEnvironment 	 
@@ -24,17 +21,47 @@ def InstallPerm(env, dest, files, perm):
   	 
 SConsEnvironment.InstallPerm = InstallPerm 	 
 
-# only build if we know where to find 'ascend-config' script.
+#----------------------------------
+# get the location of the ASCEND files
+
+srcs = Split("""
+	ascendhooks.cpp
+""")
+
+config = asc_env.get('ASCEND_CONFIG');
+ascsrc = asc_env.get('ASCEND_SRCROOT');
+
 modeldir = None
+ok_to_build = False
 if config:
-	modeldir = subprocess.Popen([config,'--models'],stdout=subprocess.PIPE).communicate()[0]
-	modeldir = modeldir.strip()
+	try:
+		modeldir = subprocess.Popen([config,'--models'],stdout=subprocess.PIPE).communicate()[0]
+		modeldir = modeldir.strip()
+		asc_env.ParseConfig('%s --cppflags --libs' % config)
+		ok_to_build = True
+	except OSError:
+		pass		
+elif ascsrc:
+	modeldir = None
+	asc_env.Append(LIBS=['ascend'])
+	asc_env.Append(LIBPATH=[ascsrc])
+	asc_env.Append(CPPPATH=[os.path.join(ascsrc,"base/generic")])
+	ok_to_build = True
 
-	asc_env.ParseConfig('%s --cppflags --libs' % config)
+#-------------------------------
+# Build
 
+if ok_to_build:
+	asc_env.AppendUnique(LIBS=['freesteam'])
+	asc_env.AppendUnique(LIBPATH=['..'])
 	lib = asc_env.SharedLibrary("freesteam",srcs)
 
 	print "ASCEND hook library:",lib[0]
+
+#--------------------------------
+# Install
+
+if modeldir:
 	print "MODEL LIBRARY:",modeldir
 	env.InstallPerm(modeldir,lib,0644);
 	env.InstallPerm(modeldir,'testfreesteam.a4c',0644);
