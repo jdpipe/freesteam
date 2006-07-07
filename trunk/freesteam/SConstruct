@@ -47,6 +47,9 @@ if not default_emso_location or not os.path.exists(default_emso_location):
 # Find 'ascend-config' script, if available
 if platform.system()=='Windows':
 	default_ascend_config="C:\\Program Files\\ASCEND\\ascend-config.bat"
+	if not os.path.exists(default_ascend_config):
+		default_ascend_config=None
+
 else:
 	try:
 		import subprocess
@@ -294,17 +297,17 @@ if conf.CheckCppUnitConfig():
 
 # Python DEV files
 
-have_python = False
+env['HAVE_PYTHON'] = False
 _havepy = conf.CheckHeader(distutils.sysconfig.get_python_inc()+"/Python.h")
 if _havepy:
-	have_python = True
+	env['HAVE_PYTHON'] = True
 
 # Swig
 
-have_swig = False
+env['HAVE_SWIG'] = False
 _swigv = conf.CheckSwigVersion()
 if _swigv:
-	have_swig = True
+	env['HAVE_SWIG'] = True
 
 env = conf.Finish()
 
@@ -360,58 +363,15 @@ if env['HAVE_EMSO']:
 else:
 	print "Skipping... EMSO hook libraries"
 
+# Python hooks
+
+install_python = []
+install_python.append( env.SConscript(['python/SConscript'],'env') )
+
 # ASCEND hooks
 
 install_ascend = []
 install_ascend.append( env.SConscript(['ascend/SConscript'],'env') )
-
-#------------------------------------------------------
-# SWIG scanner
-
-if have_swig:
-	import SCons.Script
-
-	SWIGScanner = SCons.Scanner.ClassicCPP(
-		"SWIGScan"
-		, ".i"
-		, "CPPPATH"
-		, '^[ \t]*[%,#][ \t]*(?:include|import)[ \t]*(<|")([^>"]+)(>|")'
-	)
-
-	env.Append(SCANNERS=[SWIGScanner])
-
-#------------------------------------------------------
-# PYTHON INTERFACE
-#
-# try 'scons install' then 'ipython' with 'from freesteam import *'
-
-if platform.system()=="Windows":
-	python_lib = "python24"
-else:
-	python_lib = "python2.4"
-
-if have_swig and have_python:
-	swigobj = env.SharedObject('freesteam.i'
-		, SWIGFLAGS=['-python','-c++']
-		, CPPPATH=[distutils.sysconfig.get_python_inc()]
-	)
-
-	env.SideEffect(['freesteam.py','freesteam_wrap.h'],'freesteam$SWIGCXXFILESUFFIX')
-	env.Depends('freesteam.py',['freesteam.i'])
-
-	env.Clean('freesteam_wrap$SWIGCXXFILESUFFIX',swigobj)
-	env.Clean('freesteam.py','freesteam$SWIGCXXFILESUFFIX')
-	env.Clean('freesteam_wrap.h','freesteam$SWIGCXXFILESUFFIX')
-
-	_libs = ['freesteam',python_lib]
-
-	swiglib = env.SharedLibrary("freesteam",swigobj
-		, LIBS = _libs
-		, LIBPATH = ['#', distutils.sysconfig.PREFIX+"/libs"]
-		, SHLIBPREFIX = '_'
-	)
-
-	env.Alias('python',swiglib)
 
 #------------------------------------------------------
 # Recipe for 'CHMOD' ACTION 	 
@@ -427,7 +387,7 @@ def InstallPerm(env, dest, files, perm):
 		env.AddPostAction(i, env.Chmod(str(i), perm))
 	return dest
   	 
-SConsEnvironment.InstallPerm = InstallPerm 	 
+SConsEnvironment.InstallPerm = InstallPerm
 
 # define wrappers 	 
 SConsEnvironment.InstallProgram = lambda env, dest, files: InstallPerm(env, dest, files, 0755) 	 
@@ -449,23 +409,14 @@ if can_install:
 	import glob
 	files = glob.glob("*.h")
 
-	if have_swig and have_python:
+	if env.get('HAVE_SWIG') and env.get('HAVE_PYTHON'):
 		files += glob.glob("*.i")
 
 	#print files
 
 	install_inc = env.InstallHeader("$INCDIR/freesteam", files)
-
-	install_swig = []
-	if have_swig and have_python:
-		import distutils.sysconfig
 		
-		libdir = distutils.sysconfig.get_python_lib(plat_specific=True)
-		
-		install_swig += [ env.InstallLibrary(libdir,['_freesteam$SHLIBSUFFIX']) ]
-		install_swig += [ env.InstallHeader(libdir,['freesteam.py']) ]
-		
-	env.Alias('install',[install_lib, install_inc]+install_swig+install_ascend)
+	env.Alias('install',[install_lib, install_inc]+install_ascend+install_python)
 
 	
 #--------------------------------------------------------
@@ -485,7 +436,7 @@ tar = env.DistTar("dist/"+env['DISTTAR_NAME']
 # DEFAULT TARGETS
 
 default_targets = ['example']
-if have_python and have_swig:
+if env.get('HAVE_PYTHON') and env.get('HAVE_SWIG'):
 	default_targets.append('python')
 
 print "Building targets: %s" % " ".join(default_targets)
