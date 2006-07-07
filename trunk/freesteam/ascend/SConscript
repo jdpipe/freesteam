@@ -33,20 +33,20 @@ ascsrc = asc_env.get('ASCEND_SRCROOT');
 
 modeldir = None
 ok_to_build = False
-if config:
+if ascsrc:
+	modeldir = None
+	asc_env.Append(LIBS=['ascend'])
+	asc_env.Append(LIBPATH=[ascsrc])
+	asc_env.Append(CPPPATH=[os.path.join(ascsrc,"base/generic")])
+	ok_to_build = True
+elif config:
 	try:
 		modeldir = subprocess.Popen([config,'--models'],stdout=subprocess.PIPE).communicate()[0]
 		modeldir = modeldir.strip()
 		asc_env.ParseConfig('%s --cppflags --libs' % config)
 		ok_to_build = True
 	except OSError:
-		pass		
-elif ascsrc:
-	modeldir = None
-	asc_env.Append(LIBS=['ascend'])
-	asc_env.Append(LIBPATH=[ascsrc])
-	asc_env.Append(CPPPATH=[os.path.join(ascsrc,"base/generic")])
-	ok_to_build = True
+		pass
 
 #-------------------------------
 # Build
