@@ -5,56 +5,31 @@
   <link rel="stylesheet" media="screen" href="freesteam.css"
  type="text/css">
   <meta name="KEYWORDS"
- content="steam tables, IAPWS, steam properties, steam calculator, density, water, steam, IF97, saturated, superheated, subcooled, properties, enthalpy, entropy, specific heat, thermodynamics, thermo-fluids, IAPWS-95">
+ content="steam tables, IAPWS, steam properties, steam calculator, density, water, steam, IF97, saturated, superheated, subcooled, properties, enthalpy, entropy, specific heat, thermodynamics, thermo-fluids, IAPWS-95, python, ASCEND, EMSO, EES">
   <meta name="DESCRIPTION"
  content="Open source implementation of IAPWS-IF97 industry-standard steam tables in C++. Steam properties can also be calculated using included IAPWS-95 correlations.">
 </head>
 <body>
 
-
 <h1>freesteam<br></h1>
 
-<table><tr><td valign=top>
-<div class="nav"><span style="font-weight: bold;">Current version: </span>0.5.4<br>
-<span style="font-weight: bold;">Released: </span>2 June 2005<br>
-<br>
-Quick links
-<ul>
-  <li><a t="Project Page" href="http://sf.net/projects/freesteam">SourceForge</a></li>
-  <li><a title="Via ViewCVS on SourceForge"
- href="http://cvs.sourceforge.net/viewcvs.py/freesteam/freesteam/CHANGELOG.txt?only_with_tag=HEAD&amp;view=markup">Change
-log</a><br>
-  </li>
-  <li><a title="File releases at SourceForge"
- href="http://sourceforge.net/project/showfiles.php?group_id=120898">Download</a>
-  </li>
-  <li><a title="Mantis bug tracker at pye.dyndns.org" href="/mantis/">Bug
-Tracker</a></li>
-  <li><a title="ViewCVS at SourceForge"
- href="http://cvs.sourceforge.net/viewcvs.py/freesteam/freesteam">Browse
-CVS</a></li>
-  <li><a title="Code docs generated with Doxygen"
- href="http://pye.dyndns.org/freesteam/docs/">Class Documentation</a></li>
-  <li><a href="properties/">Property Diagrams</a><br>
-  </li>
-</ul>
-Contents
-<ul>
-  <li><a href="#whatcanidowithit">What can I do with it?</a> </li>
-  <li><a href="#quickstart">Quick start</a> </li>
-  <li><a href="#othercompilers">Other compilers</a> </li>
+<table><tr><td valign=top><div class="nav"><span style="font-weight: bold;">Current version: </span><a href="http://sourceforge.net/project/showfiles.php?group_id=120898">0.6</a><br><span style="font-weight: bold;">Released: </span>7 July 2006<br><ul>  <li><a href="example.php" title="Examples">Examples</a></li>
+  <li><a href="http://sourceforge.net/project/showfiles.php?group_id=120898" title="Download">Download</a></li>
+  <li><a href="scons.php" title="How to compile">How to compile</a></li>
+  <li><a href="http://freesteam.cvs.sourceforge.net/freesteam/freesteam/CHANGELOG.txt?only_with_tag=HEAD&amp;amp;view=markup" title="Changelog">Changelog</a></li>
+  <li><a href="http://mantis.cruncher2.dyndns.org/" title="Report bugs">Report bugs</a></li>
+  <li><a href="http://freesteam.cvs.sourceforge.net/freesteam/freesteam/" title="Browse CVS">Browse CVS</a></li>
+  <li><a href="http://pye.dyndns.org/freesteam/docs/" title="Code docs">Code docs</a></li>
+  <li><a href="properties/">Property diagrams</a></li>
+  <li><a href="http://buildbot.cruncher2.dyndns.org/">BuildBot</a></li>
+  <li><a href="http://sf.net/projects/freesteam" title="SourceForge">SourceForge</a></li>
+</ul>On this page...
+<ul>  <li><a href="#whatcanidowithit">What can I do with it?</a></li>
   <li><a href="#license">License</a></li>
-  <li><a href="#bugs">Bugs</a><br>
-  </li>
-  <li><a href="#futuredirections">Future directions</a> </li>
-  <li><a href="#links">Links</a> </li>
-  <li><a href="#contactdetails">Contact details</a></li>
-</ul>
-</div>
-
-</td><td valign=top>
-
-
+  <li><a href="#bugs">Bugs</a></li>
+  <li><a href="#futuredirections">Future directions</a></li>
+  <li><a href="#links">Related sites</a></li>
+</ul></div></td><td valign=top>
 <h2>Introduction</h2>
 
 <p><b>freesteam</b> is an open source implementation of
@@ -68,14 +43,23 @@ Steam</a> (IAPWS). <b>freesteam</b> lets you compute water and steam properties 
   <li>IAPWS-95 Scientific formulation (low speed, but simple code)</li>
 </ul>
 
-<p>A plug-in to allow freesteam to be used from the EMSO simulation
-package has been developed; stay tuned for more of these plug-ins.</p>
+<p>Please send your comments and questions to <script><!--
 
-<p>If you find <b>freesteam</b> useful, or you have some comments, or
-you think you might be able
-to help with its development, please <span style="font-weight: bold;">contact
-us</span> using the details below.</p>
+// 3m41L harvester protection
 
+m='hn.pye@stud';
+l='u.au';
+i='nsw.ed';
+e='jo';
+a='ent.u';
+
+document.write('<a href="mailto:'+e+m+a+i+l+'">'+e+m+a+i+l+'</a>');
+
+//--></script>
+<noscript><a href="mailto:john.pye@student.removethisrubbish.unsw.edu.au">john.pye@student.removethisrubbish.unsw.edu.au</a>
+(spam protection)</noscript>. The project is under active development (as of April 2006). Contributions are most welcome!</p>
+
+<p><font color=red><i><b>New:&nbsp;</b></i></font>Version 0.6 includes bindings for the <b>Python</b> language!</p>
 
 <h2><a name="whatcanidowithit"></a>1. What can I do with it?</h2>
 
@@ -197,150 +181,25 @@ following:</p>
 from the freesteam code for most of the above combinations of
 steam properties.</p>
 
+<p>You can also access freesteam from the EMSO simulation. More plug-ins for other systems are proposed: python hooks, MATLAB, Excel and OpenOffice/Gnumeric plugins. See <a href="#futuredirections">future directions</a> (below) for more info.</p>
 
-<h3><span style="font-weight: bold;">1.2 Example usage</span></h3>
+<p><b>Please check out the <a href="example.php">example code</a></b></p>
 
-<span style="font-weight: bold;">Problem:</span><br>
-<ol>
-  <li>calculate the density of steam at 5 bar and 200&deg;C</li>
+<h3>1.2 IAPWS-95 Scientific Formulation<br></h3>
 
-  <li>calculate the temperature if the steam from (1) is isentropically
-compressed to 10 bar.</li>
+<p>The code for calculating steam properties according to the IAPWS-95 equations, developed by Don Peterson, is included. In their present form, the formulation allows you to calculate the above properties but only in terms of <b>density</b> and <b>temperature</b>.</p> <p>IAWPS-95 is said to be higher accuracy but consumes greater computing time. This may depend on the formulation of your problem however - some problems require quite a lot of iterative root-finding when using IAPWS-IF97.</p>
 
-  <li>calculate the pressure and temperature of steam at the same
-specific volume as (2) but with the specific internal energy raised by
-200 kJ/kg</li>
-</ol>
+<h3>1.3 Goal-seeking for steam state</h3>
 
-<span style="font-weight: bold;">Solution: </span>(included in
-distribution as example.cpp, use '<code>make example</code>' to compile
-it)<br>
+<p><b>freesteam</b> offers more flexibility than many other steam tables packages in its ability to find a particular steam state in terms of the combination of steam properties you desire. With other packages, you may only be given the properties correlated in terms of (<i>p</i>,<i>T</i>) or (<i>&rho;</i>,<i>T</i>), etc. This would then require you to link to or write your own root-finding code before you could use the correlation to solve your problem.</p>
 
-<pre>#include "steamcalculator.h"
-#include "solver.h"
-#include "solver2.h"
-#include &lt;iostream&gt;
-#include &lt;iomanip&gt;
-using namespace std;
+<p>At present, freesteam permits the robust solution of steam state in terms of the following sets of properties: (p,T) 
+(u,v) (p,h) (p,u) (p,s) (T,s) (T,h) (p,v) (p,cp) (p,cv) (p,rho) (T,u) (T,v) (T,cp) (T,cv) (T,rho). The architecture for adding new property combinations is modular, if you need another combination, let me know.</p>
 
-int main(){
-	try{
-		SteamCalculator S1, S2, S3;
+<p>There is a test-suite provide with the source code that allows you to verify the above iterative solutions against the results from forward computation.</p>
 
-		// turn on display of units
-		cerr.flags(ios_base::showbase);
+<h2><a name="license"></a>2. License</h2>
 
-		// initialise T1, p1, p2
-		Temperature T1 = fromcelsius(200.0);
-		Pressure p1 = 5.0 * bar;
-		Pressure p2 = 10.0 * bar;
-
-		// Part 1
-		cerr &lt;&lt; endl &lt;&lt; "Part (1) - density at 10 bar, 200&deg;C" &lt;&lt; endl;
-		cerr &lt;&lt; "p1 = " &lt;&lt; p1/bar &lt;&lt; " bar" &lt;&lt; endl;
-		cerr &lt;&lt; "T1 = " &lt;&lt; T1;
-		cerr &lt;&lt; " (" &lt;&lt; tocelsius(T1) &lt;&lt; "&deg;C)" &lt;&lt; endl;
-		S1.set_pT(p1, T1);
-		Density rho1 = S1.dens();
-		cerr &lt;&lt; "rho1 = " &lt;&lt; rho1 &lt;&lt; endl;
-
-		// Part 2
-		cerr &lt;&lt; endl &lt;&lt; "Part (2) - isentropic compression to 10 bar" &lt;&lt; endl;
-		SpecificEntropy s1 = S1.specentropy();
-		cerr &lt;&lt; "s1 = " &lt;&lt; s1 &lt;&lt; endl;
-		cerr &lt;&lt; "p2 = " &lt;&lt; p2/bar &lt;&lt; " bar" &lt;&lt; endl;
-		Solver&lt;Pressure,SpecificEntropy,Temperature&gt; PS(p2, s1);
-		S2 = PS.solve(0.0001 * kJ_kgK, 0.0001 * Kelvin);
-		Temperature T2 = S2.temp();
-		cerr &lt;&lt; "T2 = " &lt;&lt; T2;
-		cerr &lt;&lt; " (" &lt;&lt; tocelsius(T2) &lt;&lt; "&deg;C)" &lt;&lt; endl;
-
-		// part (3) - Finding p,T for v as above and u increased by 200 kJ_kg
-		cerr &lt;&lt; endl &lt;&lt; "Part (3) - Finding p,T for v as above"
-			&lt;&lt; "and u increased by 200 kJ_kg" &lt;&lt; endl;
-		SpecificVolume v2 = S2.specvol();
-		SpecificEnergy u2 = S2.specienergy();
-		cerr &lt;&lt; "v2 = " &lt;&lt; v2 &lt;&lt; endl;
-		cerr &lt;&lt; "u2 = " &lt;&lt; u2 &lt;&lt; endl;
-
-		SpecificEnergy u3 = u2 + 200.0 * kJ_kg;
-		cerr &lt;&lt; "u3 = " &lt;&lt; u3 &lt;&lt; endl;
-
-		Solver2&lt;SpecificEnergy,SpecificVolume&gt; SUV;
-		S3 = SUV.solve(u3,v2);
-		Temperature T3 = S3.temp();
-		Pressure p3 = S3.pres();
-		cerr &lt;&lt; "p3 = " &lt;&lt; p3/bar &lt;&lt; " bar" &lt;&lt; endl;
-		cerr &lt;&lt; "T3 = " &lt;&lt; T3;
-		cerr &lt;&lt; " (" &lt;&lt; tocelsius(T3) &lt;&lt; "&deg;C)" &lt;&lt; endl;
-
-		exit(0);
-
-	}catch(Exception *E){
-		cerr &lt;&lt; "Error: " &lt;&lt; E-&gt;what();
-		exit(1);
-	}
-}
-</pre>
-
-<p><span style="font-weight: bold;">Output:</span><br></p>
-
-<pre>$ ./example<br><br>Part (1) - density at 10 bar, 200&deg;C<br>p1 = 5 bar<br>T1 = 473.15 K (200&deg;C)<br>rho1 = 2.35275 kg/m3<br><br>Part (2) - isentropic compression to 10 bar<br>s1 = 7061.07 J/kgK<br>p2 = 10 bar<br>T2 = 556.418 K (283.268&deg;C)<br><br>Part (3) - Finding p,T for v as above and u increased by 200 kJ_kg<br>v2 = 0.249638 m3/kg<br>u2 = 2.76613e+06 J/kg<br>u3 = 2.96613e+06 J/kg<br>p3 = 12.372 bar<br>T3 = 679.854 K (406.704&deg;C)<br></pre>
-
-
-<h3>1.3 IAPWS-95 Scientific Formulation<br></h3>
-
-<p>The code for calculating steam properties according to the IAPWS-95 equations, developed by Don Peterson, is include. In their present form, the formulation allows you to calculate the above properties but only in terms of <b>density</b> and <b>temperature</b>.</p> <p>IAWPS-95 is said to be higher accuracy but consumes greater computing time. This may depend on the formulation of your problem however - some problems require quite a lot of iterative root-finding when using IAPWS-IF97.</p>
-
-
-<h2><a name="quickstart"></a>2. Quick start</h2>
-
-<p>You should be able to compile on any GNU GCC system: we have
-tested on MinGW, Cygwin and Linux (Red Hat & Fedora), others should be ok too.</p>
-
-<ol>
-  <li>Get the package <code>freesteam-0.5.4.tar.bz2</code> from <a
- href="http://sf.net/projects/freesteam">http://sf.net/projects/freesteam</a>.</li>
- 
-  <li>Get and install the package <code>cppunit-1.10.2.tar.gz</code>. You can get this at <a href="http://sourceforge.net/projects/cppunit">http://sourceforge.net/projects/cppunit</a>. It is easily built from source via '<code>./configure</code>' and '<code>make install</code>' using GCC. It is useful to copy the file '<code>cppunit-config</code>' to your path, for example to <code>/usr/local/bin</code>. You can also just use a binary version of CppUnit but you might need to check the location for the file <code>cppunit-config</code> and modify the freesteam <code>Makefile</code> accordingly. </li>
-  
-  <li><code>tar jxvf freesteam-0.5.4.tar.bz2</code> and <code>cd freesteam-0.5.4</code>.</li>
-
-  <li>Edit the <code>Makefile </code>if necessary, to reflect your C++ compiler command and CppUnit library locations.</li>
-
-  <li>On a Linux system, you'll need to type <code>chmod +x config.guess</code></li>
-
-  <li>Build/test the package:</li>
-
-  <ol>
-    <li><code>make test</code> to test the package</li>
-    <li><code>make example</code> to make the example program, then type '<code>./example</code>'</li>
-  </ol>
-</ol>
-
-
-<h2><a name="othercompilers"></a>3. Other compilers</h2>
-
-freesteam is known to compile and run under the following system setups:<br>
-
-<ul>
-  <li>GCC 3.3.3 (cygwin special) (active development on this platform)</li>
-  <li>GCC 3.4.3 on Fedora Core 3 on a P4 (active development on this platform)</li>
-  <li>GCC 3.4.2 (mingw-special) (active development on this platform)</li>
-  <li>GCC 3.4 (Linux 2.6 Fedora Core 3 on AMD 64 Opteron in <a href="http://sf.net/docs/E02/">cf.net compile farm</a>)</li>
-  <li>GCC 3.3.2 on Fedora Cora 1.</li>
-  <li>GCC 3.3.3 20040412 (Red Hat Linux 3.3.3-7)</li>
-  </li>
-</ul>
-<p>We hope to port freesteam to VC++ and the Intel C++ compiler. It
-might even work with
-those compilers
-already, although it is anticipated that the code will not work in
-present form
-with VC++
-6.0 because of the complexity of the template methods used
-in the units-of-measurement class, 'units.h'.</p>
-<h2><a name="license"></a>4. License</h2>
 <p><span style="font-weight: bold;">freesteam </span>is released under
 the GNU GPL, which is available online
 at
@@ -354,7 +213,7 @@ also licensed under the GPL.<br>
 </p>
 
 
-<h2><a name="bugs"></a>6. Bugs</h2>
+<h2><a name="bugs"></a>3. Bugs</h2>
 
 <p>For a complete up-to-date list of bugs and feature requests, visit
 the Mantis <a href="http://pye.dyndns.org/mantis/">bug tracker</a> for
@@ -370,29 +229,39 @@ the project. We are not using the SourceForge 'tracker' at this stage.</p>
 </ul>
 
 
-<h2><a name="futuredirections"></a>5. Future directions</h2>
+<h2><a name="futuredirections"></a>4. Future directions</h2>
 
-Any help from other developers willing to assist with the development of freesteam would be greatly appreciated. Some of the things waiting 'on the drawing board' are:
+<p>Some of the things waiting 'on the drawing board' are as follows. If you can help, please let me know!</p>
+
+<h3>High priority</h3>
 
 <ul>
-  <li>Adopt the units-of-measurement C++ template classes from Boost.org, in place of those currently in use from Embedded.com, which are broken for VC6 at present.
+  <li>Release the <b>SCons build</b> version
   
-  <li>Integration of the IAPWS-95 correlation into <a href="http://www.ginac.de/">GiNaC</a>. This work is largely complete but needs to be incorporated into the freesteam distribution.
+  <li><b>Write some documentation</b>!
   
-  <li>Use of the <span style="font-weight: bold;">hook library </span>which allows the <a href="http://www.rps.eng.br/emso.html">EMSO</a> system modelling program to use the freesteam library requires a non-GPL license, which we are currently preparing.</li>
+  <li>Add a directory with some more <b>example code</b>.
+  
+  <li>Support for Visual C++ 2005 compiler. Seems that this may require adoption of the units-of-measurement C++ template classes from Boost.org, in place of those currently in use from Embedded.com, which are broken at present.
+    
+  <li><span style="font-weight: bold;">Develop a GUI </span>version using <a href="http://www.gtk.org/">GTK+</a> or similar.</li>
 
-  <li>Initial work is being done on an <span style="font-weight: bold;">Excel add-in</span> version using the <a href="http://xlw.sourceforge.net/">XLW</a> wrapper classes. Currently waiting for some build issues with XLW to be resolved.</li>
+
+</ul>
+
+<h3>DIY Ideas 4U</h3>
+
+<ul>
+  <li>Initial work has being done on an <span style="font-weight: bold;">Excel add-in</span> version using the <a href="http://xlw.sourceforge.net/">XLW</a> wrapper classes. Currently waiting for some build issues with XLW to be resolved.</li>
 
   <li>Preliminary work on another <span style="font-weight: bold;">hook library</span> to integrate freesteam with the <a href="http://www.fchart.com/ees/ees.shtml">EES</a> equation solver (<a href="ees.pdf#page=211">manual</a> here)has also been performed; this will likewise require some special license agreement. At present, EES provides only the IAPWS-95 'scientific and general use' correlation.</li>
 
+  <li>Integration of the IAPWS-95 correlation into <a href="http://www.ginac.de/">GiNaC</a>. This work is largely complete (the code's not on the net yet though): it needs to be incorporated into the freesteam distribution.
+  
   <li>Saturation properties for region 3 are currently implemented used the rho_sat(T) correlations from the IAPWS <a href="http://www.iapws.org/relguide/supsat.pdf">supsat</a> release. Need to change this to use an iterative solver based on the region 3 correlations, since the current equations give slight inconsistencies with pure IAPWS data for pressures above about 16 MPa.</li>
   
   <li><span style="font-weight: bold;">Backwards correlations</span> will massively reduce the amount of two-way iteration required when finding the state for unsual combinations of variables.</li>
   
-  <li>Perhaps <span style="font-weight: bold;">develop a GUI </span>version using <a href="http://www.gtk.org/">GTK+</a> or similar.</li>
-
-  <li>Perhaps write hooks that will allow freesteam to be used from within <a style="font-weight: bold;" href="http://www.python.org/">Python</a> (possibly using <a href="http://www.swig.org/">SWIG</a>?). This would be useful to those <a href="http://www.scipy.org/">SciPy</a> people.</li>
-
   <li>An <span style="font-weight: bold;">interactive </span>command-line
 steam tables program for easy demonstration/interactive testing.</li>
 
@@ -411,7 +280,7 @@ steam tables program for easy demonstration/interactive testing.</li>
 </ul>
 
 
-<h2><a name="links"></a>6. Links</h2>
+<h2><a name="links"></a>5. Related sites</h2>
 
 <dl>
   <dt>IAPWS-IF97 steam tables </dt>
@@ -505,33 +374,11 @@ Properties in SI</span>, Stanford Univ, 1979:<br>
   <dd> <a href="http://www.lsbu.ac.uk/water/index.html">http://www.lsbu.ac.uk/water/index.html</a>
   </dd>
 </dl>
-<h2><a name="contactdetails"></a>7. Contact details</h2>
-<p>You can contact us either via the email form on the
-<a href="http://sourceforge.net/projects/freesteam/">project page on
-sourceforge</a>, or email directly to
-<script><!--
-
-// 3m41L harvester protection
-
-m='hn.pye@stud';
-l='u.au';
-i='nsw.ed';
-e='jo';
-a='ent.u';
-
-document.write('<a href="mailto:'+e+m+a+i+l+'">'+e+m+a+i+l+'</a>');
-
-//--></script>
-<noscript>john DOT pye AT-SIGN student DOT unsw FULLSTOP edu POINT au
-(spam protection)</noscript>
-</p>
-<p>You can also take a look at my homepage about the <a
- href="http://pye.dyndns.org/">CLFR</a> if you want...</p>
 
 </td></tr></table>
 <hr>
 <address>
 John Pye<br/>
-Last modified: 11 October 2005</address>
+Last modified: 7 July 2006</address>
 </body>
 </html>

@@ -1,5 +1,14 @@
 CHANGELOG
 
+0.6
+Friday, 7 July 2006
+-------------------
+Switched to the 'SCons' build tool. Autotools no longer supported.
+Fixed a memory leak during two-phase calculations
+Added Python bindings to allow steam calculations from Python.
+Added experimental bindings to the ASCEND modelling environment.
+Added 'Measurement' class to allow interfacing 'Units' class with Python.
+
 0.5.5
 Tuesday, 13 December 2005
 -------------------------
