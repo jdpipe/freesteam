@@ -1,5 +1,10 @@
 CHANGELOG
 
+0.6.1
+Friday, 7 July 2006
+-------------------
+Removing some binary files that crept into the last release.
+
 0.6
 Friday, 7 July 2006
 -------------------
