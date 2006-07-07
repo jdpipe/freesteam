@@ -326,11 +326,12 @@ lib = env.Library('freesteam',list)
 
 examplesrc = Split("example.cpp")
 
-env.Program('example.cpp'
+example = env.Program('example.cpp'
 	, LIBS = ['freesteam']
 	, LIBPATH='.'
 )
 
+env.Alias('example',[example])
 
 #env.Program('testnan',['testnan.cpp']
 #	, LIBS = 'm'
