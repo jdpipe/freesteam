@@ -1,8 +1,8 @@
 Import('env')
 
-env.Append(CPPDEFINES='HAVE_CPPUNIT')
-env.Append(LIBS='freesteam')
-env.Append(LIBPATH='..')
+env.AppendUnique(CPPDEFINES=['HAVE_CPPUNIT'])
+env.AppendUnique(LIBS=['freesteam'])
+env.AppendUnique(LIBPATH=['..'])
 
 main = Split("test.cpp")
 

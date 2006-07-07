@@ -1,7 +1,7 @@
 Import('env')
 
-env.Append(LIBS='freesteam')
-env.Append(LIBPATH='..')
+env.AppendUnique(LIBS=['freesteam'])
+env.AppendUnique(LIBPATH=['..'])
 
 import platform
 import glob

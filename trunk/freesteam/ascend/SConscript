@@ -5,6 +5,8 @@ Import("env")
 
 asc_env = env.Copy()
 
+without_ascend_reason = "'ascend-config' not found, nor ASCEND_SRCROOT option"
+
 #-------------------------------
 # SCons 'builder' to install file and set permissions
 
@@ -41,10 +43,17 @@ if ascsrc:
 	ok_to_build = True
 elif config:
 	try:
-		modeldir = subprocess.Popen([config,'--models'],stdout=subprocess.PIPE).communicate()[0]
-		modeldir = modeldir.strip()
-		asc_env.ParseConfig('%s --cppflags --libs' % config)
+		asc_env.ParseConfig([config,'--cppflags --libs'])
 		ok_to_build = True
+	except OSError:
+		without_ascend_reason="'ascend-config' script failed"
+
+	try:
+		modeldir = subprocess.Popen(
+			[config,'--models']
+			,stdout=subprocess.PIPE
+			,stderr=subprocess.PIPE
+		).communicate()[0].strip()
 	except OSError:
 		pass
 
@@ -55,8 +64,8 @@ if ok_to_build:
 	asc_env.AppendUnique(LIBS=['freesteam'])
 	asc_env.AppendUnique(LIBPATH=['..'])
 	lib = asc_env.SharedLibrary("freesteam",srcs)
-
-	print "ASCEND hook library:",lib[0]
+else:
+	print "Skipping... ASCEND hooks (%s)" % without_ascend_reason
 
 #--------------------------------
 # Install

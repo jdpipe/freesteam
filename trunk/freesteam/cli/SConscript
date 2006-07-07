@@ -18,54 +18,11 @@
 Import('env')
 
 env.Program('pboundt.cli',['pboundt.cli.cpp']
-	, LIBS="freesteam"
-	, LIBPATH=".."
+	, LIBS=["freesteam"]
+	, LIBPATH=[".."]
 )
 
 env.Program('diagram.cli',['diagram.cli.cpp', 'diagram.cpp']
-	, LIBS="freesteam"
-	, LIBPATH=".."
+	, LIBS=["freesteam"]
+	, LIBPATH=[".."]
 )
-
-#   CLIS = diagram.cli.cpp pboundt.cli.cpp
-#   
-#   CLIOBJS = diagram.o
-#   
-#   -include $(CLIS:.cpp=.cli.d)
-#   -include $(CLIOBJS:.o=.d)
-#   
-#   #-----------------------------
-#   # LITTLE COMMANDLINE DIAGNOSTIC PROGRAMS
-#   
-#   %.cli$(EXE_SUFFIX): %.cli.o $(CLIOBJS) libcheck
-#   	$(CXX) $(CXXFLAGS) -o $@ $< $(CLIOBJS) $(LIB) $(LDFLAGS)
-#   
-#   critsurf.m: criticalsurface.cli$(EXE_SUFFIX)
-#   	./$< > $@
-#   
-#   pboundt.m: pboundt.cli$(EXE_SUFFIX)
-#   	./$< > $@
-#   
-#   diagram.m: diagram.cli$(EXE_SUFFIX)
-#   	./$< > $@
-#   
-#   #-----------------------------------------------------------
-#   # LIBRARY
-#   
-#   $(LIB):
-#   	make -C .. lib
-#   
-#   .PHONY: libcheck
-#   
-#   libcheck: $(LIB)
-#   	make -C .. libcheck
-#   
-#   #---------------------------------------------------------
-#   # CLEAN
-#   
-#   clean:
-#   	@-rm *.o *.d.* *.stackdump
-#   
-#   distclean: clean
-#   	@-rm *.cli$(EXE_SUFFIX) critsurf.m pboundt.m diagram.m *.d
-#   

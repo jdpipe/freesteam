@@ -1,6 +1,8 @@
 import os, os.path, commands, platform
 import distutils.sysconfig
 
+version = "0.6"
+
 #----------------------------------------------------
 # CREATE ENVIRONMENT, LOAD TOOLS, SOME DEFAULT PATHS
 
@@ -10,10 +12,16 @@ can_install=True
 cppunit_config_command = 'cppunit-config --libs --cflags'
 
 if os.environ.has_key('OSTYPE') and os.environ['OSTYPE']=='msys':
-	env = Environment(ENV=os.environ, tools = ['mingw','swig'])
+	env = Environment(ENV=os.environ
+		, tools = ['mingw','swig','disttar']
+		, toolpath = ['scons']
+	)
 	cppunit_config_command = 'sh cppunit-config --libs --cflags'
 else:
-	env = Environment(ENV=os.environ)
+	env = Environment(ENV=os.environ
+		, tools = ['default','swig','disttar']
+		, toolpath = ['scons']
+	)
 
 	if platform.system()=="Windows":
 		if env.has_key('MSVS'):
@@ -23,17 +31,15 @@ else:
 			print "VISUAL C++ detected... (Version",env['MSVS']['VERSION']+")"
 		else:
 			print "WARNING: non-POSIX tools"
-		env.Append(CPPPATH=os.environ['INCLUDE'])
+		env.AppendUnique(CPPPATH=[os.environ['INCLUDE'].split(";")])
 		can_install=False
 	
 if platform.system()=="Windows":
 	default_emso_location = "c:\\Program Files\\EMSO\\interface"
-	default_libdir = 'c:\\MinGW\\lib'
-	default_incdir = 'c:\\MinGW\\include'
+	default_prefix = 'c:/MinGW'
 else:
 	default_emso_location = None
-	default_libdir = '/usr/local/lib'
-	default_incdir = '/usr/local/include'
+	default_prefix = '/usr/local'
 
 if not default_emso_location or not os.path.exists(default_emso_location):
 	default_emso_location=False
@@ -43,13 +49,15 @@ if platform.system()=='Windows':
 	default_ascend_config="C:\\Program Files\\ASCEND\\ascend-config.bat"
 else:
 	try:
+		import subprocess
 		default_ascend_config = \
 			subprocess.Popen(
 				['which','ascend-config']
 				,stdout=subprocess.PIPE
 				,stderr=subprocess.PIPE
 			).communicate()[0].strip()
-	except:
+	except Exception, e:
+		print "FAILED TO DETECT 'ascend-config' IN PATH (%s)" % e
 		default_ascend_config = None
 
 #------------------------------------------------------
@@ -66,10 +74,23 @@ opts.Add(BoolOption(
 
 if can_install:
 	opts.Add(PathOption(
-		'LIBDIR',"Location to install library", default_libdir
+		'INSTALL_PREFIX'
+		,"Base directory for install, see also INSTALL_LIB and INSTALL_INCLUDE"
+		,default_prefix
+	))
+
+	opts.Add(PathOption(
+		'LIBDIR',"Location to install library", "$INSTALL_PREFIX/lib"
 	))
 	opts.Add(PathOption(
-		'INCDIR',"Location to install headers", default_incdir
+		'INCDIR',"Location to install headers", "$INSTALL_PREFIX/include"
+	))
+
+	opts.Add(PathOption(
+		'INSTALL_ROOT'
+		,"Root onto which installation should take place. Normally only for "
+			+"use when building RPMs"
+		,None
 	))
 
 opts.Add(BoolOption(
@@ -77,7 +98,7 @@ opts.Add(BoolOption(
 	, "Enable saturation curves in terms of pressure"+
 		"(introduces some numerical problems in iterative cases if"+
 		"you're not careful)"
-	, False
+	, True
 ))
 
 opts.Add(BoolOption(
@@ -102,6 +123,12 @@ opts.Add(PathOption(
 		+"actually installed on your system (eg you are testing/developing)."
 	,None
 ))
+
+opts.Add(
+	'DISTTAR_NAME'
+	,"Stem name of the tarball created by 'scons dist'."
+	,"freesteam-"+version
+)
 
 opts.Update(env)
 
@@ -145,8 +172,8 @@ int main(void){
 
 def CheckIsNan(context):
 	context.Message( 'Checking for isnan...' )
-	lastLIBS = context.env['LIBS']
-	lastCPPFLAGS = context.env['CPPFLAGS']
+	lastLIBS = context.env.get('LIBS')
+	lastCPPFLAGS = context.env.get('CPPFLAGS')
 	context.env.Append(LIBS = ['m'])
 	tuple = context.TryRun(checknansrc,'.cpp')
 	#print tuple
@@ -164,8 +191,8 @@ def CheckIsNan(context):
 
 def CheckCppUnitConfig(context):
 	context.Message( 'Checking cppunit-config...' )
-	lastLIBS = context.env['LIBS']
-	lastCPPFLAGS = context.env['CPPFLAGS']
+	lastLIBS = context.env.get('LIBS')
+	lastCPPFLAGS = context.env.get('CPPFLAGS')
 
 #	for k in conf.env['ENV']:
 #		print "ENV:",k,"=",env['ENV'][k]
@@ -247,9 +274,6 @@ conf = Configure(env
 	, config_h = "config.h"
 )
 
-conf.env.Append(LIBS="")
-conf.env.Append(CPPFLAGS="")
-
 # Math library...
 
 if not conf.CheckLibWithHeader(['m','c'], 'math.h', 'C'):
@@ -273,7 +297,6 @@ if conf.CheckCppUnitConfig():
 have_python = False
 _havepy = conf.CheckHeader(distutils.sysconfig.get_python_inc()+"/Python.h")
 if _havepy:
-	print "PYTHON ON"
 	have_python = True
 
 # Swig
@@ -358,27 +381,37 @@ if have_swig:
 	env.Append(SCANNERS=[SWIGScanner])
 
 #------------------------------------------------------
-# PYTHON INTERFACE :-)
+# PYTHON INTERFACE
+#
+# try 'scons install' then 'ipython' with 'from freesteam import *'
 
 if platform.system()=="Windows":
 	python_lib = "python24"
 else:
 	python_lib = "python2.4"
 
-env.Append(PYTHON_LIBPATH=[distutils.sysconfig.PREFIX+"/libs"])
-env.Append(PYTHON_CPPPATH=[distutils.sysconfig.get_python_inc()])
-
 if have_swig and have_python:
-	swiglib = env.SharedLibrary('_freesteam',['freesteam.i']
+	swigobj = env.SharedObject('freesteam.i'
 		, SWIGFLAGS=['-python','-c++']
-		, LIBS=['freesteam',python_lib]
-		, LIBPATH=['.']+env['PYTHON_LIBPATH']
-		, CPPPATH=env['PYTHON_CPPPATH']
-		, SHLIBPREFIX=''
-	)	
-	env.SideEffect('freesteam.py',swiglib)
-	env.Depends('freesteam.py','freesteam.i')
-	env.Clean(swiglib,['freesteam.py','freesteam$SWIGCXXFILESUFFIX'])
+		, CPPPATH=[distutils.sysconfig.get_python_inc()]
+	)
+
+	env.SideEffect(['freesteam.py','freesteam_wrap.h'],'freesteam$SWIGCXXFILESUFFIX')
+	env.Depends('freesteam.py',['freesteam.i'])
+
+	env.Clean('freesteam_wrap$SWIGCXXFILESUFFIX',swigobj)
+	env.Clean('freesteam.py','freesteam$SWIGCXXFILESUFFIX')
+	env.Clean('freesteam_wrap.h','freesteam$SWIGCXXFILESUFFIX')
+
+	_libs = ['freesteam',python_lib]
+
+	swiglib = env.SharedLibrary("freesteam",swigobj
+		, LIBS = _libs
+		, LIBPATH = ['#', distutils.sysconfig.PREFIX+"/libs"]
+		, SHLIBPREFIX = '_'
+	)
+
+	env.Alias('python',swiglib)
 
 #------------------------------------------------------
 # Recipe for 'CHMOD' ACTION 	 
@@ -428,13 +461,33 @@ if can_install:
 		import distutils.sysconfig
 		
 		libdir = distutils.sysconfig.get_python_lib(plat_specific=True)
-		print "LIBDIR IS ---------->",libdir
 		
 		install_swig += [ env.InstallLibrary(libdir,['_freesteam$SHLIBSUFFIX']) ]
 		install_swig += [ env.InstallHeader(libdir,['freesteam.py']) ]
-
-		print "INSTALL_SWIG = ",install_swig
 		
 	env.Alias('install',[install_lib, install_inc]+install_swig+install_ascend)
 
 	
+#--------------------------------------------------------
+# DISTRIBUTION TARBALL
+
+env['DISTTAR_FORMAT']='bz2'
+env.Append(
+	DISTTAR_EXCLUDEEXTS=['.o','.os','.so','.a','.dll','.cc','.cache','.pyc','.cvsignore','.dblite','.log','.pl']
+	, DISTTAR_EXCLUDEDIRS=['CVS','.svn','.sconf_temp', 'dist']
+)
+
+tar = env.DistTar("dist/"+env['DISTTAR_NAME']
+	, [env.Dir('#')]
+)
+
+#--------------------------------------------------------
+# DEFAULT TARGETS
+
+default_targets = ['example']
+if have_python and have_swig:
+	default_targets.append('python')
+
+print "Building targets: %s" % " ".join(default_targets)
+env.Default(default_targets)
+

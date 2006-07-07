@@ -30,37 +30,3 @@ env.SharedLibrary('emsopipe',['emsopipe.cpp']
 	, CPPDEFINES = 'HAVE_EMSO'
 	, CPPPATH = '$EMSO_INCDIR'
 )
-
-# From the original makefile...
-#   
-#   #--------------------------
-#   # EMSO integration
-#   
-#   OBJS = emsohooks.o emsopipe.o
-#   
-#   EMSO = $(SO_PREFIX)$(EMSO_NAME)$(SO_SUFFIX)
-#   EMSOPIPE = $(SO_PREFIX)$(EMSOPIPE_NAME)$(SO_SUFFIX)
-#   
-#   # Debug flags for EMSO libraries
-#   
-#   ifdef EMSO_DEBUG
-#   	EMSO_DEBUG_FLAG = -DEMSO_DEBUG
-#   else
-#   	EMSO_DEBUG_FLAG = 
-#   endif
-#   
-#   CPPFLAGS_LOCAL = $(EMSO_DEBUG_FLAG)
-#   
-#   
-#   #-----------------------------------------------------------
-#   # INSTALL
-#   
-#   install: emso
-#   ifdef EMSO_INTERFACE_DIR
-#   	cp $(EMSO) $(EMSO_INTERFACE_DIR)/$(EMSO);
-#   	cp $(EMSOPIPE) $(EMSO_INTERFACE_DIR)/$(EMSOPIPE);
-#   else
-#   	@echo "Can't install, you need to specify EMSO_INTERFACE_DIR"
-#   	exit 1;
-#   endif
-#   
