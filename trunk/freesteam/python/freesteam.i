@@ -160,6 +160,9 @@ Dimension dimension_mul(const Dimension &d1, const int &n);
 
 			return Measurement(self.value * other.value, dimension_add(self.dim,other.dim));
 
+		def __rmul__(self,other):
+			return Measurement(self.value * other, dimension_add(self.dim,Dimension()) )
+
 		def __div__(self,other):
 			if str(other.__class__) != "<class 'freesteam.Measurement'>" \
 					and self.__class__ != other.__class__ \
