@@ -486,6 +486,9 @@ typedef SpecificEntropy SpecificHeatCapacity;	// not the same but the units are 
 typedef SpecificHeatCapacity SpecHeatCap;
 typedef SpecificHeatCapacity SpecificGasConstant;
 typedef SpecificGasConstant SpecGasConst;
+
+typedef ForcePerLength SurfaceTension;
+
 //------------------------------------
 // SI MULTIPLIERS
 

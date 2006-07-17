@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "zeroin.h"
 #include "units.h"
 #include "isinfnan.h"
+#include "surfacetension.h"
 
 #include <cmath>
 #include <sstream>
@@ -786,6 +787,13 @@ DynamicViscosity
 SteamCalculator::dynvisc() const{
 	REQUIRE(isset);
 	return (IAPS85_VISC_REF * mu());
+}
+
+SurfaceTension
+SteamCalculator::surftens() const{
+	REQUIRE(isset);
+	REQUIRE(temp() <= T_CRIT);
+	return surfaceTension(temp());
 }
 
 //----------------------------------------------------------------------

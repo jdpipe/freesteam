@@ -163,6 +163,7 @@ class SteamCalculator:public DesignByContract {
 		Num quality() const;                    // Steam quality
 		DynamicViscosity dynvisc() const;       // Dynamic viscosity, mu            [Pa.s]
 		ThermalConductivity conductivity() const;// Conductivity
+		SurfaceTension surftens() const;		// Surface tension
 
 		// Design by contract stuff...
 		virtual bool isValid(void) const;

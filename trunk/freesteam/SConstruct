@@ -320,6 +320,7 @@ list = Split("""
 	region3.cpp region4.cpp boundaries.cpp steamcalculatorexception.cpp zeroin.cpp 
 	designbycontract.cpp units.cpp solver.cpp steamproperty.cpp satcurve.cpp b23curve.cpp 
 	b13curve.cpp convergencetest.cpp solver2.cpp iapws95.cpp measurement.cpp
+	surfacetension.cpp
 """)
 
 lib = env.Library('freesteam',list)
