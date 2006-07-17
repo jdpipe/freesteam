@@ -22,6 +22,7 @@
 #include "../units.h"
 #include "../steamcalculator.h"
 #include "../solver2.h"
+#include "../surfacetension.h"
 
 extern "C"{
 #include <utilities/ascConfig.h>
@@ -126,6 +127,7 @@ int phmu_uv_calc(struct Slv_Interp *slv_interp,
 	return 0;
 }
 
+
 /**
 	ASCEND external evaluation function
 	Inputs: p, h
@@ -179,6 +181,42 @@ int uvmux_ph_calc(struct Slv_Interp *slv_interp,
 }
 
 
+
+/**
+	Surface tension
+	ASCEND external evaluation function
+	Inputs: T
+	Outputs: sigma
+	@return 0 on success 
+*/
+int sigma_T_calc(struct Slv_Interp *slv_interp,
+		int ninputs, int noutputs,
+		double *inputs, double *outputs,
+		double *jacobian
+){
+	(void)slv_interp; (void)jacobian; // not used
+
+	ASSERT(ninputs==1);
+	ASSERT(noutputs==1);
+
+	// convert inputs to freesteam dimensionful values
+	Temperature T = inputs[0] * Kelvin;
+
+	try{
+		// evaluate and return properties in MKS units
+		SurfaceTension sigma = surfaceTension(T);
+
+		outputs[0] = sigma / (Newton/metre);
+
+		return 0; /* success */
+	}catch(std::exception &e){
+		// report error message using the ASCEND error reporting system
+		ERROR_REPORTER_HERE(ASC_PROG_ERR,e.what());
+		return 1; /* failure */
+	}
+	return 0;
+}
+
 extern "C"{ // start of C-accessible portion
 
 	extern ASC_EXPORT(int) freesteam_register(){
@@ -216,6 +254,16 @@ extern "C"{ // start of C-accessible portion
 			, 2,4 /* inputs, outputs */
 			, "[u,v,mu,x] = iapws97_uvmu_ph(p,h) (see http://freesteam.sf.net)"
 		);
+
+		result += CreateUserFunctionBlackBox("iapws97_sigma_T"
+			, NULL /* alloc */
+			, sigma_T_calc /* value */
+			, NULL /* deriv */
+			, NULL /* deriv2 */
+			, NULL /* free */
+			, 1,1 /* inputs, outputs */
+			, "[sigma] = iapws97_sigma_T(T) (surface tension, see http://freesteam.sf.net)"
+		);			
 
 		return result;
 	}

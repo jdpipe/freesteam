@@ -60,3 +60,29 @@ METHOD on_load;
 END on_load;
 END testfreesteam_ph;
 
+MODEL testfreesteam_sigma;
+	T IS_A temperature;
+	sigma IS_A surface_tension;
+
+	sig: iapws97_sigma_T(
+		T : INPUT;
+		sigma : OUTPUT
+	);
+METHODS
+METHOD specify;
+	FIX T;
+END specify;
+
+METHOD values;
+	T := 250 {K} + 273.15 {K};
+END values;
+
+METHOD self_test;
+	ASSERT abs(sigma - 26.04{mN/m}) < 0.01 {mN/m};
+END self_test;
+
+METHOD on_load;
+	RUN reset; RUN values;
+END on_load;
+
+END testfreesteam_sigma;
