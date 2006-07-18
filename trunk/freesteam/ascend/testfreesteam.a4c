@@ -64,7 +64,7 @@ MODEL testfreesteam_sigma;
 	T IS_A temperature;
 	sigma IS_A surface_tension;
 
-	sig: iapws97_sigma_T(
+	sig: iapws_sigma_T(
 		T : INPUT;
 		sigma : OUTPUT
 	);

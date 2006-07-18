@@ -217,6 +217,54 @@ int sigma_T_calc(struct Slv_Interp *slv_interp,
 	return 0;
 }
 
+/**
+	Region 4 steam properties
+	ASCEND external evaluation function
+	Inputs: T
+	Outputs: sigma
+	@return 0 on success 
+*/
+int iapws97_region4_calc(struct Slv_Interp *slv_interp,
+		int ninputs, int noutputs,
+		double *inputs, double *outputs,
+		double *jacobian
+){
+	(void)slv_interp; (void)jacobian; // not used
+
+	ASSERT(ninputs==2);
+	ASSERT(noutputs==6);
+
+	// convert inputs to freesteam dimensionful values
+	Temperature T = inputs[0] * Kelvin;
+	double x = inputs[1];
+
+	try{
+		// evaluate and return properties in MKS units
+		SteamCalculator S;
+		S.setRegion4_Tx(T,x);
+
+		const SteamCalculator &liq = S.getLiquidPart();
+		const SteamCalculator &gas = S.getGasPart();
+
+		outputs[0] = S.pres() / Pascal;
+		outputs[1] = S.specenthalpy() / J_kg;
+		outputs[2] = liq.dens() / kg_m3;
+		outputs[3] = gas.dens() / kg_m3;
+		outputs[4] = liq.dynvisc() / (Pascal*second);
+		outputs[5] = gas.dynvisc() / (Pascal*second);
+
+		return 0; /* success */
+	}catch(std::exception &e){
+		// report error message using the ASCEND error reporting system
+		ERROR_REPORTER_HERE(ASC_PROG_ERR,"%s",e.what());
+		return 1; /* failure */
+	}catch(...){
+		ERROR_REPORTER_HERE(ASC_PROG_ERR,"unknown exception caught");
+		return 1;
+	}
+	return 0;
+}
+
 extern "C"{ // start of C-accessible portion
 
 	extern ASC_EXPORT(int) freesteam_register(){
@@ -255,14 +303,26 @@ extern "C"{ // start of C-accessible portion
 			, "[u,v,mu,x] = iapws97_uvmu_ph(p,h) (see http://freesteam.sf.net)"
 		);
 
-		result += CreateUserFunctionBlackBox("iapws97_sigma_T"
+		result += CreateUserFunctionBlackBox("iapws_sigma_T"
 			, NULL /* alloc */
 			, sigma_T_calc /* value */
 			, NULL /* deriv */
 			, NULL /* deriv2 */
 			, NULL /* free */
 			, 1,1 /* inputs, outputs */
-			, "[sigma] = iapws97_sigma_T(T) (surface tension, see http://freesteam.sf.net)"
+			, "[sigma] = iapws_sigma_T(T) (surface tension, see http://freesteam.sf.net)"
+		);			
+
+		result += CreateUserFunctionBlackBox("iapws97_region4"
+			, NULL /* alloc */
+			, iapws97_region4_calc /* value */
+			, NULL /* deriv */
+			, NULL /* deriv2 */
+			, NULL /* free */
+			, 2,6 /* inputs, outputs */
+			, "[p, h, rhof, rhog, muf, mug] = iapws97_region4(T,x)"
+				"\n\tRegion 4 (saturated) steam properties"
+				"\n\t(see http://freesteam.sf.net)"
 		);			
 
 		return result;
