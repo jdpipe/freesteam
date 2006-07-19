@@ -4,6 +4,8 @@
 <glade-interface>
 
 <widget class="GtkWindow" id="freesteam">
+  <property name="width_request">400</property>
+  <property name="height_request">500</property>
   <property name="visible">True</property>
   <property name="title" translatable="yes">freesteam: Steam Tables</property>
   <property name="type">GTK_WINDOW_TOPLEVEL</property>
@@ -820,8 +822,8 @@
   <property name="destroy_with_parent">True</property>
   <property name="name" translatable="yes">Freesteam GUI</property>
   <property name="copyright" translatable="yes">Copyright (C) John Pye 2006</property>
-  <property name="comments" translatable="yes">A small tool to help you calculate 
-steam properties on the fly.</property>
+  <property name="comments" translatable="yes">A small tool to calculate steam properties
+using the IAPWS-IF97 steam tables correlations.</property>
   <property name="license" translatable="yes">		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
 
