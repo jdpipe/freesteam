@@ -789,6 +789,10 @@ SteamCalculator::dynvisc() const{
 	return (IAPS85_VISC_REF * mu());
 }
 
+/**
+	Calculate the surface tension (sample units are N/m).
+	@since 0.7
+*/
 SurfaceTension
 SteamCalculator::surftens() const{
 	REQUIRE(isset);
