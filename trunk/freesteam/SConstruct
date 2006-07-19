@@ -13,14 +13,14 @@ cppunit_config_command = 'cppunit-config --libs --cflags'
 
 if os.environ.has_key('OSTYPE') and os.environ['OSTYPE']=='msys':
 	env = Environment(ENV=os.environ
-		, tools = ['mingw','swig','disttar']
 		, toolpath = ['scons']
+		, tools = ['mingw','swig','disttar','doxygen']
 	)
 	cppunit_config_command = 'sh cppunit-config --libs --cflags'
 else:
 	env = Environment(ENV=os.environ
-		, tools = ['default','swig','disttar']
 		, toolpath = ['scons']
+		, tools = ['default','swig','disttar','doxygen']
 	)
 
 	if platform.system()=="Windows":
@@ -397,6 +397,12 @@ SConsEnvironment.InstallHeader = lambda env, dest, files: InstallPerm(env, dest,
 SConsEnvironment.InstallLibrary = lambda env, dest, files: InstallPerm(env, dest, files, 0644) 	 
 
 #------------------------------------------------------
+# DOXYGEN DOCUMENTATION
+
+docs = env.Doxygen('Doxyfile')
+env.Alias('docs',[docs])
+
+#------------------------------------------------------
 # INSTALLATION
 
 try:
@@ -444,3 +450,6 @@ if env.get('HAVE_PYTHON') and env.get('HAVE_SWIG'):
 env.Default(default_targets)
 
 print "Building targets:"," ".join([str(i) for i in BUILD_TARGETS])
+
+# vim: set syntax=python:
+
