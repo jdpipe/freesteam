@@ -12,7 +12,7 @@ struct DimScale{
 };
 
 struct UnitsDimScale{
-	string units;
+	char *units;
 	DimScale ds;
 };
 
@@ -37,9 +37,7 @@ class UnitsMapInitialiser{
 		/// This will initialise the unitsmap
 		UnitsMapInitialiser(){
 
-			static const int NUDS = 36;
-
-			UnitsDimScale uds[NUDS] = {
+			UnitsDimScale uds[] = {
 				  {"kg", {{ 1, 0, 0, 0, 0}, 1.    }}
 				, {"g",    {{ 1, 0, 0, 0, 0}, 1e-3}}
 				, {"m",    {{ 0, 1, 0, 0, 0}, 1.  }}
@@ -55,6 +53,7 @@ class UnitsMapInitialiser{
 				, {"J/kg", {{ 0, 2,-2, 0, 0}, 1.  }}
 				, {"kJ/kg",{{ 0, 2,-2, 0, 0}, 1e3 }}
 				, {"kg/sm",{{ 1,-1,-1, 0, 0}, 1.  }}
+               ,{"kg/s/m2",{{ 1,-2,-1, 0, 0}, 1.  }}
 				, {"g/sm", {{ 1,-1,-1, 0, 0}, 1e-3}}
 				, {"Pa",   {{ 1,-1,-2, 0, 0}, 1.  }}
 				, {"bar",  {{ 1,-1,-2, 0, 0}, 1e5 }}
@@ -76,10 +75,11 @@ class UnitsMapInitialiser{
 				, {"J/kgK",{{ 0, 2,-2,-1, 0}, 1.  }}
 			   ,{"kJ/kg/K",{{ 0, 2,-2,-1, 0}, 1e3 }}
 			    ,{"kJ/kgK",{{ 0, 2,-2,-1, 0}, 1e3 }}
+				, {NULL,   {{ 0, 0, 0, 0, 0}, 0   }} // stop-data
 			};
 
-			for(int i=0;i<NUDS;i++){
-				unitsmap[uds[i].units] = uds[i].ds;
+			for(int i=0;uds[i].units!=NULL;i++){
+				unitsmap[string(uds[i].units)] = uds[i].ds;
 				//cerr << "ADDING " << uds[i].units << endl;
 			}
 
