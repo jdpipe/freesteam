@@ -187,6 +187,100 @@ int uvmux_ph_calc(struct Slv_Interp *slv_interp,
 	Outputs: u, v, mu 
 	@return 0 on success 
 */
+int Ts_ph_calc(struct Slv_Interp *slv_interp,
+		int ninputs, int noutputs,
+		double *inputs, double *outputs,
+		double *jacobian
+){
+	Solver2<Pressure,SpecificEnergy,0,SOLVE_ENTHALPY> SS;
+
+	(void)slv_interp; (void)jacobian; // not used
+
+	ASSERT(ninputs==2);
+	ASSERT(noutputs==2);
+
+	// convert inputs to freesteam dimensionful values
+	Pressure p = inputs[0] * Pascal;
+	SpecificEnergy h = inputs[1] * J_kg;
+
+	try{
+		// solve for the steam state specified
+		SteamCalculator S = SS.solve(p,h);
+
+		// evaluate and return properties in MKS units
+		Temperature T = S.temp();
+		SpecificEntropy s = S.specentropy();
+
+		outputs[0] = T / Kelvin;
+		outputs[1] = s / J_kgK;
+
+		CONSOLE_DEBUG("p = %f bar, h = %f kJ/kg --> T = %f K, s = %f kJ/kgK, x = %f"
+			, double(p / bar), double(h / kJ_kg)
+			, double(T / Kelvin), double(s / kJ_kgK)
+		);
+	
+		return 0; /* success */
+	}catch(std::exception &e){
+		// report error message using the ASCEND error reporting system
+		ERROR_REPORTER_HERE(ASC_PROG_ERR,e.what());
+		return 1; /* failure */
+	}
+	return 0;
+}
+
+/**
+	ASCEND external evaluation function
+	Inputs: p, h
+	Outputs: u, v, mu 
+	@return 0 on success 
+*/
+int ph_Ts_calc(struct Slv_Interp *slv_interp,
+		int ninputs, int noutputs,
+		double *inputs, double *outputs,
+		double *jacobian
+){
+	Solver2<Temperature,SpecificEntropy,0,SOLVE_ENTROPY> SS;
+
+	(void)slv_interp; (void)jacobian; // not used
+
+	ASSERT(ninputs==2);
+	ASSERT(noutputs==2);
+
+	// convert inputs to freesteam dimensionful values
+	Temperature T = inputs[0] * Kelvin;
+	SpecificEntropy s = inputs[1] * J_kgK;
+
+	try{
+		// solve for the steam state specified
+		SteamCalculator S = SS.solve(T,s);
+
+		// evaluate and return properties in MKS units
+		Pressure p = S.pres();
+		SpecificEnergy h = S.specenthalpy();
+
+		outputs[0] = p / Pascal;
+		outputs[1] = h / J_kg;
+
+		CONSOLE_DEBUG("T = %f K, s = %f kJ/kgK --> p = %f bar, h = %f kJ/kg"
+			, double(T / Kelvin), double(s / kJ_kgK)
+			, double(p / bar), double(h / kJ_kg)
+		);
+	
+		return 0; /* success */
+	}catch(std::exception &e){
+		// report error message using the ASCEND error reporting system
+		ERROR_REPORTER_HERE(ASC_PROG_ERR,e.what());
+		return 1; /* failure */
+	}
+	return 0;
+}
+
+/**
+	ASCEND external evaluation function
+	Inputs: p, h
+	Outputs: u, v, mu 
+	@return 0 on success 
+*/
 int uvTxmu_ph_calc(struct Slv_Interp *slv_interp,
 		int ninputs, int noutputs,
 		double *inputs, double *outputs,
@@ -355,6 +449,26 @@ extern "C"{ // start of C-accessible portion
 			, NULL /* free */
 			, 2,4 /* inputs, outputs */
 			, "[u,v,mu,x] = iapws97_uvmu_ph(p,h) (see http://freesteam.sf.net)"
+		);
+
+		result += CreateUserFunctionBlackBox("iapws97_Ts_ph"
+			, NULL /* alloc */
+			, Ts_ph_calc /* value */
+			, NULL /* deriv */
+			, NULL /* deriv2 */
+			, NULL /* free */
+			, 2,2 /* inputs, outputs */
+			, "[T,s] = iapws97_Ts_ph(p,h) (see http://freesteam.sf.net)"
+		);
+
+		result += CreateUserFunctionBlackBox("iapws97_ph_Ts"
+			, NULL /* alloc */
+			, ph_Ts_calc /* value */
+			, NULL /* deriv */
+			, NULL /* deriv2 */
+			, NULL /* free */
+			, 2,2 /* inputs, outputs */
+			, "[p,h] = iapws97_ph_Ts(T,s) (see http://freesteam.sf.net)"
 		);
 
 		result += CreateUserFunctionBlackBox("iapws97_uvTxmu_ph"
