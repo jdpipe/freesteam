@@ -214,7 +214,7 @@ int Ts_ph_calc(struct Slv_Interp *slv_interp,
 		outputs[0] = T / Kelvin;
 		outputs[1] = s / J_kgK;
 
-		CONSOLE_DEBUG("p = %f bar, h = %f kJ/kg --> T = %f K, s = %f kJ/kgK, x = %f"
+		CONSOLE_DEBUG("p = %f bar, h = %f kJ/kg --> T = %f K, s = %f kJ/kgK"
 			, double(p / bar), double(h / kJ_kg)
 			, double(T / Kelvin), double(s / kJ_kgK)
 		);
