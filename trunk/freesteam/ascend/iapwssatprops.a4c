@@ -154,4 +154,3 @@ METHOD self_test;
 	ASSERT abs(s_g - 7.355e3 {J/kg/K}) < 0.0005e3 {J/kg/K};
 END self_test;
 END iapwssatprops;
-	
