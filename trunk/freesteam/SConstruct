@@ -440,6 +440,8 @@ tar = env.DistTar("dist/"+env['DISTTAR_NAME']
 	, [env.Dir('#')]
 )
 
+#env.Depends(tar,"freesteam.spec")
+
 #--------------------------------------------------------
 # DEFAULT TARGETS
 

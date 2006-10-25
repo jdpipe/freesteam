@@ -50,12 +50,12 @@ MODEL iapwssatprops;
 	rho_c :== 322 {kg/m^3};
 
 	tau IS_A fraction;
-	tau = 1 - theta;
+	tau_expr: tau = 1 - theta;
 	theta IS_A fraction;
-	theta = T / T_c;
+	theta_expr: theta = T / T_c;
 
-	u_f = h_f - p/rho_f;
-	u_g = h_g - p/rho_g;
+	uf_expr: u_f = h_f - p/rho_f;
+	ug_expr: u_g = h_g - p/rho_g;
 
 	a[1..6] IS_A real_constant;
 	a[1] :== -7.85951783;
@@ -76,7 +76,7 @@ MODEL iapwssatprops;
 	ln(p / p_c) = T_c/T * SUM[a[i]*tau^n[i] | i IN [1..6]];
 
 	dp_dT IS_A pressure_per_temperature;
-	dp_dT = - p/T * T_c/T * SUM[a[i]*n[i]*tau^(n[i]-1) + a[i]*(1-n[i])*tau^n[i] | i IN [1..6]];
+	dpdT_expr: dp_dT = - p/T * T_c/T * SUM[a[i]*n[i]*tau^(n[i]-1) + a[i]*(1-n[i])*tau^n[i] | i IN [1..6]];
 	
 	b[1..6] IS_A real_constant;
 	b[1] :== 1.99274064;
@@ -86,7 +86,7 @@ MODEL iapwssatprops;
 	b[5] :== -45.5170352;
 	b[6] :== -6.74694450e5;
 
-	rho_f / rho_c =  1 + b[1]*tau^(1/3) + b[2]*tau^(2/3) + b[3]*tau^(5/3) + b[4]*tau^(16/3) + b[5] * tau^(43/3) + b[6]*tau^(110/3);
+	rhof_expr: rho_f / rho_c =  1 + b[1]*tau^(1/3) + b[2]*tau^(2/3) + b[3]*tau^(5/3) + b[4]*tau^(16/3) + b[5] * tau^(43/3) + b[6]*tau^(110/3);
 
 	c[1..6] IS_A real_constant;
 	c[1] :== -2.03150240;
@@ -96,9 +96,9 @@ MODEL iapwssatprops;
 	c[5] :== -44.7586581;
 	c[6] :== -63.9201063;
 
-	rho_g / rho_c = exp( c[1]*tau^(2/6) + c[2] * tau^(4/6) +c[3]*tau^(8/6) + c[4] *tau^(18/6) + c[5]*tau^(37/6) + c[6]*tau^(71/6) );
+	rhog_expr: rho_g / rho_c = exp( c[1]*tau^(2/6) + c[2] * tau^(4/6) +c[3]*tau^(8/6) + c[4] *tau^(18/6) + c[5]*tau^(37/6) + c[6]*tau^(71/6) );
 
-	alpha / alpha_0 = d_alpha + d[1]*theta^-19 +d[2]*theta + d[3]*theta^4.5 + d[4]*theta^5 + d[5]*theta^54.5;
+	alpha_expr: alpha / alpha_0 = d_alpha + d[1]*theta^-19 +d[2]*theta + d[3]*theta^4.5 + d[4]*theta^5 + d[5]*theta^54.5;
 
 	d[1..5] IS_A real_constant;
 	d[1] :== -5.65134998e-8;
@@ -109,8 +109,8 @@ MODEL iapwssatprops;
 	d_alpha IS_A real_constant;
 	d_alpha :== -1135.905627715;
 
-	h_f = alpha + T / rho_f * dp_dT;
-	h_g = alpha + T / rho_g * dp_dT;
+	hf_expr: h_f = alpha + T / rho_f * dp_dT;
+	hg_expr: h_g - alpha = T / rho_g * dp_dT;
 
 	d_phi IS_A real_constant;
 	d_phi :== 2319.5246;
@@ -119,11 +119,11 @@ MODEL iapwssatprops;
 	phi_0 :== 1000 {J/kg} / 647.096 {K};
 
 	phi IS_A specific_entropy;
-	phi / phi_0 = d_phi + 19/20*d[1]*theta^(-20) + d[2]*ln(theta) + 9/7*d[3]*theta^3.5 + 5/4*d[4]*theta^4 + 109/107*d[5]*theta^53.5;
+	phi_expr: phi / phi_0 = d_phi + 19/20*d[1]*theta^(-20) + d[2]*ln(theta) + 9/7*d[3]*theta^3.5 + 5/4*d[4]*theta^4 + 109/107*d[5]*theta^53.5;
 
 	s_f, s_g IS_A specific_entropy;	
-	s_f = phi + 1/rho_f * dp_dT;
-	s_g = phi + 1/rho_g * dp_dT;
+	sf_expr: s_f = phi + 1/rho_f * dp_dT;
+	sg_expr: s_g = phi + 1/rho_g * dp_dT;
 METHODS
 METHOD on_load;
 	RUN reset; RUN values; RUN bound_self;
