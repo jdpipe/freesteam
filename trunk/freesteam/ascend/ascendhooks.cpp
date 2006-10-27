@@ -28,6 +28,7 @@ extern "C"{
 #include <utilities/ascConfig.h>
 #include <utilities/error.h>
 
+/*
 #include <compiler/fractions.h>
 #include <compiler/compiler.h>
 #include <compiler/dimen.h>
@@ -38,6 +39,8 @@ extern "C"{
 #include <compiler/slist.h>
 #include <compiler/type_desc.h>
 #include <compiler/packages.h>
+*/
+#include <compiler/extfunc.h>
 }
 
 /**
@@ -46,7 +49,7 @@ extern "C"{
 	Outputs: u, v
 	@return 0 on success 
 */
-int phTsmu_uv_calc(struct Slv_Interp *slv_interp,
+int phTsmu_uv_calc(struct BBoxInterp *slv_interp,
 		int ninputs, int noutputs,
 		double *inputs, double *outputs,
 		double *jacobian
@@ -93,7 +96,7 @@ int phTsmu_uv_calc(struct Slv_Interp *slv_interp,
 	Outputs: u, v
 	@return 0 on success 
 */
-int phmu_uv_calc(struct Slv_Interp *slv_interp,
+int phmu_uv_calc(struct BBoxInterp *slv_interp,
 		int ninputs, int noutputs,
 		double *inputs, double *outputs,
 		double *jacobian
@@ -134,7 +137,7 @@ int phmu_uv_calc(struct Slv_Interp *slv_interp,
 	Outputs: u, v, mu 
 	@return 0 on success 
 */
-int uvmux_ph_calc(struct Slv_Interp *slv_interp,
+int uvmux_ph_calc(struct BBoxInterp *slv_interp,
 		int ninputs, int noutputs,
 		double *inputs, double *outputs,
 		double *jacobian
@@ -187,7 +190,7 @@ int uvmux_ph_calc(struct Slv_Interp *slv_interp,
 	Outputs: u, v, mu 
 	@return 0 on success 
 */
-int Ts_ph_calc(struct Slv_Interp *slv_interp,
+int Ts_ph_calc(struct BBoxInterp *slv_interp,
 		int ninputs, int noutputs,
 		double *inputs, double *outputs,
 		double *jacobian
@@ -234,7 +237,7 @@ int Ts_ph_calc(struct Slv_Interp *slv_interp,
 	Outputs: u, v, mu 
 	@return 0 on success 
 */
-int ph_Ts_calc(struct Slv_Interp *slv_interp,
+int ph_Ts_calc(struct BBoxInterp *slv_interp,
 		int ninputs, int noutputs,
 		double *inputs, double *outputs,
 		double *jacobian
@@ -281,7 +284,7 @@ int ph_Ts_calc(struct Slv_Interp *slv_interp,
 	Outputs: u, v, mu 
 	@return 0 on success 
 */
-int uvTxmu_ph_calc(struct Slv_Interp *slv_interp,
+int uvTxmu_ph_calc(struct BBoxInterp *slv_interp,
 		int ninputs, int noutputs,
 		double *inputs, double *outputs,
 		double *jacobian
@@ -337,7 +340,7 @@ int uvTxmu_ph_calc(struct Slv_Interp *slv_interp,
 	Outputs: sigma
 	@return 0 on success 
 */
-int sigma_T_calc(struct Slv_Interp *slv_interp,
+int sigma_T_calc(struct BBoxInterp *slv_interp,
 		int ninputs, int noutputs,
 		double *inputs, double *outputs,
 		double *jacobian
@@ -372,7 +375,7 @@ int sigma_T_calc(struct Slv_Interp *slv_interp,
 	Outputs: sigma
 	@return 0 on success 
 */
-int iapws97_region4_calc(struct Slv_Interp *slv_interp,
+int iapws97_region4_calc(struct BBoxInterp *slv_interp,
 		int ninputs, int noutputs,
 		double *inputs, double *outputs,
 		double *jacobian
@@ -428,6 +431,7 @@ extern "C"{ // start of C-accessible portion
 			, NULL /* free */
 			, 2,5 /* inputs, outputs */
 			, "[p,h,T,s,mu] = iapws97_phTsmu_uv(u,v) (see http://freesteam.sf.net)"
+			, 0.0
 		);
 
 
@@ -439,6 +443,7 @@ extern "C"{ // start of C-accessible portion
 			, NULL /* free */
 			, 2,3 /* inputs, outputs */
 			, "[p,h,mu] = iapws97_phmu_uv(u,v) (see http://freesteam.sf.net)"
+			, 0.0
 		);
 
 		result += CreateUserFunctionBlackBox("iapws97_uvmux_ph"
@@ -449,6 +454,7 @@ extern "C"{ // start of C-accessible portion
 			, NULL /* free */
 			, 2,4 /* inputs, outputs */
 			, "[u,v,mu,x] = iapws97_uvmu_ph(p,h) (see http://freesteam.sf.net)"
+			, 0.0
 		);
 
 		result += CreateUserFunctionBlackBox("iapws97_Ts_ph"
@@ -459,6 +465,7 @@ extern "C"{ // start of C-accessible portion
 			, NULL /* free */
 			, 2,2 /* inputs, outputs */
 			, "[T,s] = iapws97_Ts_ph(p,h) (see http://freesteam.sf.net)"
+			, 0.0
 		);
 
 		result += CreateUserFunctionBlackBox("iapws97_ph_Ts"
@@ -469,6 +476,7 @@ extern "C"{ // start of C-accessible portion
 			, NULL /* free */
 			, 2,2 /* inputs, outputs */
 			, "[p,h] = iapws97_ph_Ts(T,s) (see http://freesteam.sf.net)"
+			, 0.0
 		);
 
 		result += CreateUserFunctionBlackBox("iapws97_uvTxmu_ph"
@@ -479,6 +487,7 @@ extern "C"{ // start of C-accessible portion
 			, NULL /* free */
 			, 2,5 /* inputs, outputs */
 			, "[u,v,T,x,mu] = iapws97_uvTxmu_ph(p,h) (see http://freesteam.sf.net)"
+			, 0.0
 		);
 
 		result += CreateUserFunctionBlackBox("iapws_sigma_T"
@@ -489,6 +498,7 @@ extern "C"{ // start of C-accessible portion
 			, NULL /* free */
 			, 1,1 /* inputs, outputs */
 			, "[sigma] = iapws_sigma_T(T) (surface tension, see http://freesteam.sf.net)"
+			, 0.0
 		);			
 
 		result += CreateUserFunctionBlackBox("iapws97_region4"
@@ -501,6 +511,7 @@ extern "C"{ // start of C-accessible portion
 			, "[p, h, rhof, rhog, muf, mug] = iapws97_region4(T,x)"
 				"\n\tRegion 4 (saturated) steam properties"
 				"\n\t(see http://freesteam.sf.net)"
+			, 0.0
 		);			
 
 		return result;
