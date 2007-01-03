@@ -114,11 +114,11 @@ opts.Add(BoolOption(
 	,True
 ))
 
-opts.Add(PathOption(
+opts.Add(
 	'ASCEND_CONFIG'
 	,"Location of the 'ascend-config' script"
 	,default_ascend_config
-))
+)
 
 opts.Add(PathOption(
 	'ASCEND_SRCROOT'

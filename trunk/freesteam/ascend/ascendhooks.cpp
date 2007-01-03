@@ -421,7 +421,7 @@ extern "C"{ // start of C-accessible portion
 	extern ASC_EXPORT(int) freesteam_register(){
 		int result = 0;
 
-		ERROR_REPORTER_HERE(ASC_PROG_NOTE,"Initialising freesteam...\n");
+		CONSOLE_DEBUG("Initialising freesteam...");
 
 		result += CreateUserFunctionBlackBox("iapws97_phTsmu_uv"
 			, NULL /* alloc */
