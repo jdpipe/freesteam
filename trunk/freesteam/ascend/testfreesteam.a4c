@@ -30,6 +30,12 @@ END values;
 METHOD on_load;
 	RUN reset; RUN values;
 END on_load;
+
+METHOD self_test;
+	ASSERT abs(T - 430.17 {K}) < 0.01 {K};
+	ASSERT abs(p - 5.0309 {bar}) < 0.0001 {bar};
+END self_test;
+	
 END testfreesteam;
 
 (* test external evaluation in terms of p,h *)

@@ -27,21 +27,10 @@
 extern "C"{
 #include <utilities/ascConfig.h>
 #include <utilities/error.h>
-
-/*
-#include <compiler/fractions.h>
-#include <compiler/compiler.h>
-#include <compiler/dimen.h>
-#include <compiler/child.h>
-#include <general/list.h>
-#include <compiler/module.h>
-#include <compiler/childinfo.h>
-#include <compiler/slist.h>
-#include <compiler/type_desc.h>
-#include <compiler/packages.h>
-*/
 #include <compiler/extfunc.h>
 }
+
+/* #define FREESTEAM_DEBUG */
 
 /**
 	ASCEND external evaluation function
@@ -168,12 +157,14 @@ int uvmux_ph_calc(struct BBoxInterp *slv_interp,
 		outputs[2] = mu  / (Pascal*second);
 		outputs[3] = x;
 
+#ifdef FREESTEAM_DEBUG
 		CONSOLE_DEBUG("p = %f bar, h = %f kJ/kg --> u = %f kJ/kg, v = %f m^3/kg, x = %f"
 			, double(p / bar), double(h / kJ_kg)
 			, double(u / kJ_kg), double(v / m3_kg)
 			, x
 		);
-	
+#endif
+
 		return 0; /* success */
 	}catch(std::exception &e){
 		// report error message using the ASCEND error reporting system
@@ -217,10 +208,12 @@ int Ts_ph_calc(struct BBoxInterp *slv_interp,
 		outputs[0] = T / Kelvin;
 		outputs[1] = s / J_kgK;
 
+#ifdef FREESTEAM_DEBUG
 		CONSOLE_DEBUG("p = %f bar, h = %f kJ/kg --> T = %f K, s = %f kJ/kgK"
 			, double(p / bar), double(h / kJ_kg)
 			, double(T / Kelvin), double(s / kJ_kgK)
 		);
+#endif
 	
 		return 0; /* success */
 	}catch(std::exception &e){
@@ -264,10 +257,12 @@ int ph_Ts_calc(struct BBoxInterp *slv_interp,
 		outputs[0] = p / Pascal;
 		outputs[1] = h / J_kg;
 
+#ifdef FREESTEAM_DEBUG
 		CONSOLE_DEBUG("T = %f K, s = %f kJ/kgK --> p = %f bar, h = %f kJ/kg"
 			, double(T / Kelvin), double(s / kJ_kgK)
 			, double(p / bar), double(h / kJ_kg)
 		);
+#endif
 	
 		return 0; /* success */
 	}catch(std::exception &e){
@@ -317,12 +312,14 @@ int uvTxmu_ph_calc(struct BBoxInterp *slv_interp,
 		outputs[3] = x;
 		outputs[4] = mu  / (Pascal*second);
 
+#ifdef FREESTEAM_DEBUG
 		CONSOLE_DEBUG("p = %f bar, h = %f kJ/kg --> u = %f kJ/kg, v = %f m^3/kg, x = %f"
 			, double(p / bar), double(h / kJ_kg)
 			, double(u / kJ_kg), double(v / m3_kg)
 			, x
 		);
-	
+#endif
+
 		return 0; /* success */
 	}catch(std::exception &e){
 		// report error message using the ASCEND error reporting system
