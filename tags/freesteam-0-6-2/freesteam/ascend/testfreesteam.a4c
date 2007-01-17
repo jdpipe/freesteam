@@ -1,0 +1,94 @@
+REQUIRE "atoms.a4l";
+REQUIRE "johnpye/thermo_types.a4c";
+IMPORT "freesteam";
+
+(* test external evaluation in terms of u,v *)
+MODEL testfreesteam;
+	u IS_A specific_energy;
+	v IS_A specific_volume;
+	p IS_A pressure;
+	h IS_A specific_enthalpy;
+	T IS_A temperature;
+	s IS_A specific_entropy;
+	mu IS_A viscosity;
+
+	steam: iapws97_phTsmu_uv(
+		u,v : INPUT;
+		p,h,T,s,mu : OUTPUT
+	);
+
+METHODS
+METHOD specify;
+	FIX u,v;
+END specify;
+
+METHOD values;
+	v := 0.378 {m^3/kg};
+	u := 2570 {kJ/kg};
+END values;
+
+METHOD on_load;
+	RUN reset; RUN values;
+END on_load;
+
+METHOD self_test;
+	ASSERT abs(T - 430.17 {K}) < 0.01 {K};
+	ASSERT abs(p - 5.0309 {bar}) < 0.0001 {bar};
+END self_test;
+	
+END testfreesteam;
+
+(* test external evaluation in terms of p,h *)
+MODEL testfreesteam_ph;
+	u IS_A specific_energy;
+	v IS_A specific_volume;
+	p IS_A pressure;
+	h IS_A specific_enthalpy;
+	mu IS_A viscosity;
+
+	steam: iapws97_uvmu_ph(
+		p,h : INPUT;
+		u,v,mu : OUTPUT
+	);
+
+METHODS
+METHOD specify;
+	FIX p,h;
+END specify;
+
+METHOD values;
+	p := 50 {bar};
+	h := 3000 {kJ/kg};
+END values;
+
+METHOD on_load;
+	RUN reset; RUN values;
+END on_load;
+END testfreesteam_ph;
+
+MODEL testfreesteam_sigma;
+	T IS_A temperature;
+	sigma IS_A surface_tension;
+
+	sig: iapws_sigma_T(
+		T : INPUT;
+		sigma : OUTPUT
+	);
+METHODS
+METHOD specify;
+	FIX T;
+END specify;
+
+METHOD values;
+	T := 250 {K} + 273.15 {K};
+END values;
+
+METHOD self_test;
+	ASSERT abs(sigma - 26.04{mN/m}) < 0.01 {mN/m};
+END self_test;
+
+METHOD on_load;
+	RUN reset; RUN values;
+END on_load;
+
+END testfreesteam_sigma;

@@ -1,0 +1,32 @@
+#*
+	Model of an exit loss. All pressure is lost as flow enters atmosphere and slows down.
+	The velocity of the exit flow rate is determined by a valve coefficient
+*#
+
+using "steamequipment";
+
+Model ExitLoss as SteamEquipment_ph
+
+	VARIABLES
+	C as Real(Lower=0, Upper=1, Brief="Discharge coefficient");
+	rhoIn as Density;
+	rhoOut as Density;
+	V as Velocity;
+	
+	EQUATIONS
+	# Velocity of jet
+	
+	V = C * sqrt( 2 * (In.p / rhoIn - Out.p / rhoOut) );
+	
+	# Density
+	rhoIn=In.freesteam.rho_ph(In.p, In.h);
+	rhoOut = Out.freesteam.rho_ph(In.p, In.h);
+		
+	# No contained volume
+	m = 0 * "kg";
+	
+	# No work and no heat
+	Qdot = 0 * "W";
+	Wdot = 0 * "W";
+	
+end

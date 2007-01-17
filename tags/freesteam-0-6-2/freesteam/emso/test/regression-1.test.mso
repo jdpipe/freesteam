@@ -1,0 +1,22 @@
+#* 
+This model causes a crash in EMSO because of the 'VARIABLES' declaration in the FlowSheet
+
+To prevent the crash, the VARIABLES statement mus tbe switched to DEVICES
+*#
+
+Model AAA
+	
+	VARIABLES
+	T as Real;
+	
+end
+
+FlowSheet BBB
+
+	VARIABLES
+	In as AAA;
+	
+	SPECIFY
+	In.T=(20 + 273.15);
+
+end
