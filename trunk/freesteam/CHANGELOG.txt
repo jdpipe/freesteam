@@ -1,5 +1,11 @@
 CHANGELOG
 
+0.6.2
+Wednesday, 17 January, 2007
+---------------------------
+Correcting the conversion factor for psi, so: Measurement(1,"bar").to("psi")
+Some enhancements to the ASCEND modelling environment bindings.
+
 0.6.1
 Friday, 7 July 2006
 -------------------
