@@ -24,7 +24,7 @@ namespace MeasurementData {
 	const double in = yd / 36.; // m
 	const double g = 9.80665; // N/kg
 	const double lbf = lb * g; // N
-	const double psi = lb / in / in; // Pa
+	const double psi = lbf / (in*in); // Pa
 };
 
 using namespace MeasurementData;

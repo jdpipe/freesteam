@@ -34,8 +34,55 @@ extern "C"{
 
 /**
 	ASCEND external evaluation function
-	Inputs: p, h, T, s, mu 
-	Outputs: u, v
+	Outputs: p, h, T, x 
+	Inputs: u, v
+	@return 0 on success 
+*/
+int phTx_uv_calc(struct BBoxInterp *slv_interp,
+		int ninputs, int noutputs,
+		double *inputs, double *outputs,
+		double *jacobian
+){
+	Solver2<SpecificEnergy,SpecificVolume,SOLVE_IENERGY,0> SS;
+
+	(void)slv_interp; (void)jacobian; // not used
+
+	ASSERT(ninputs==2);
+	ASSERT(noutputs==4);
+
+	// convert inputs to freesteam dimensionful values
+	SpecificEnergy u = inputs[0] * J_kg;
+	SpecificVolume v = inputs[1] * m3_kg;
+
+	ERROR_REPORTER_HERE(ASC_USER_NOTE,
+		"Evaluating with u = %f kJ/kg, v = %f m^3/kg"
+		,double(u/kJ_kg),double(v/m3_kg)
+	);
+
+	try{
+		// solve for the steam state specified
+		SteamCalculator S = SS.solve(u,v);
+
+		// evaluate and return properties in MKS units
+		outputs[0] = S.pres() / Pascal;
+		outputs[1] = S.specenthalpy() / J_kg;
+		outputs[2] = S.temp() / Kelvin;
+		outputs[3] = S.quality();
+	
+		return 0; /* success */
+	}catch(std::exception &e){
+		// report exception via ASCEND's error reporter
+		ERROR_REPORTER_HERE(ASC_PROG_ERR,e.what());
+		return 1; /* failure */
+	}
+	return 0;
+}
+
+
+/**
+	ASCEND external evaluation function
+	Outputs: p, h, T, s, mu 
+	Inputs: u, v
 	@return 0 on success 
 */
 int phTsmu_uv_calc(struct BBoxInterp *slv_interp,
@@ -81,8 +128,8 @@ int phTsmu_uv_calc(struct BBoxInterp *slv_interp,
 
 /**
 	ASCEND external evaluation function
-	Inputs: p, h, T, s, mu 
-	Outputs: u, v
+	Outputs: p, h, T, s, mu 
+	Inputs: u, v
 	@return 0 on success 
 */
 int phmu_uv_calc(struct BBoxInterp *slv_interp,
@@ -178,7 +225,7 @@ int uvmux_ph_calc(struct BBoxInterp *slv_interp,
 /**
 	ASCEND external evaluation function
 	Inputs: p, h
-	Outputs: u, v, mu 
+	Outputs: T,s
 	@return 0 on success 
 */
 int Ts_ph_calc(struct BBoxInterp *slv_interp,
@@ -226,8 +273,8 @@ int Ts_ph_calc(struct BBoxInterp *slv_interp,
 
 /**
 	ASCEND external evaluation function
-	Inputs: p, h
-	Outputs: u, v, mu 
+	Inputs: T,s
+	Outputs: p,h
 	@return 0 on success 
 */
 int ph_Ts_calc(struct BBoxInterp *slv_interp,
@@ -275,8 +322,8 @@ int ph_Ts_calc(struct BBoxInterp *slv_interp,
 
 /**
 	ASCEND external evaluation function
-	Inputs: p, h
-	Outputs: u, v, mu 
+	Inputs: p,h
+	Outputs: u,v,T,x, mu
 	@return 0 on success 
 */
 int uvTxmu_ph_calc(struct BBoxInterp *slv_interp,
@@ -415,10 +462,21 @@ int iapws97_region4_calc(struct BBoxInterp *slv_interp,
 
 extern "C"{ // start of C-accessible portion
 
-	extern ASC_EXPORT(int) freesteam_register(){
+	extern ASC_EXPORT int freesteam_register(){
 		int result = 0;
 
 		CONSOLE_DEBUG("Initialising freesteam...");
+
+		result += CreateUserFunctionBlackBox("iapws97_phTx_uv"
+			, NULL /* alloc */
+			, phTx_uv_calc /* value */
+			, NULL /* deriv */
+			, NULL /* deriv2 */
+			, NULL /* free */
+			, 2,4 /* inputs, outputs */
+			, "[p,h,T,x] = iapws97_phTx_uv(u,v) (see http://freesteam.sf.net)"
+			, 0.0
+		);
 
 		result += CreateUserFunctionBlackBox("iapws97_phTsmu_uv"
 			, NULL /* alloc */
