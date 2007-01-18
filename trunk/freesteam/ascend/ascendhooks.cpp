@@ -32,6 +32,52 @@ extern "C"{
 
 /* #define FREESTEAM_DEBUG */
 
+
+/**
+	ASCEND external evaluation function
+	Outputs: p, h, T, x 
+	Inputs: u, v
+	@return 0 on success 
+*/
+int Tvx_pu_calc(struct BBoxInterp *slv_interp,
+		int ninputs, int noutputs,
+		double *inputs, double *outputs,
+		double *jacobian
+){
+	Solver2<Pressure,SpecificEnergy,0,SOLVE_IENERGY> SS;
+
+	(void)slv_interp; (void)jacobian; // not used
+
+	ASSERT(ninputs==2);
+	ASSERT(noutputs==3);
+
+	// convert inputs to freesteam dimensionful values
+	Pressure p = inputs[0] * Pascal;
+	SpecificEnergy u = inputs[1] * J_kg;
+
+	ERROR_REPORTER_HERE(ASC_USER_NOTE,
+		"Evaluating with p = %f bar, u = %f kJ/kg"
+		,double(p/bar),double(u/kJ_kg)
+	);
+
+	try{
+		// solve for the steam state specified
+		SteamCalculator S = SS.solve(p,u);
+
+		// evaluate and return properties in MKS units
+		outputs[0] = S.temp() / Kelvin;
+		outputs[1] = S.specvol() / m3_kg;
+		outputs[2] = S.quality();
+	
+		return 0; /* success */
+	}catch(std::exception &e){
+		// report exception via ASCEND's error reporter
+		ERROR_REPORTER_HERE(ASC_PROG_ERR,e.what());
+		return 1; /* failure */
+	}
+	return 0;
+}
+
 /**
 	ASCEND external evaluation function
 	Outputs: p, h, T, x 
@@ -466,6 +512,17 @@ extern "C"{ // start of C-accessible portion
 		int result = 0;
 
 		CONSOLE_DEBUG("Initialising freesteam...");
+
+		result += CreateUserFunctionBlackBox("iapws97_Tvx_pu"
+			, NULL /* alloc */
+			, Tvx_pu_calc /* value */
+			, NULL /* deriv */
+			, NULL /* deriv2 */
+			, NULL /* free */
+			, 2,3 /* inputs, outputs */
+			, "[T,v,x] = iapws97_Tvx_pu(p,u) (see http://freesteam.sf.net)"
+			, 0.0
+		);
 
 		result += CreateUserFunctionBlackBox("iapws97_phTx_uv"
 			, NULL /* alloc */
