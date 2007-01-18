@@ -1,0 +1,350 @@
+#* 
+	Rankine cycle simulation, closed loop
+
+	John Pye 2005 http://freesteam.sf.net
+*#
+
+using "rankine";
+
+using "streams";
+using "turbine";
+using "boiler";
+using "pump";
+using "condenser";
+using "throttle";
+
+#*
+	Rankine cycle components connected in once-through
+	configuration, with operating points specified for
+	each component.
+
+	The turbine here is ideal, isentropic.
+
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet Rankine0Test
+	
+    DEVICES # 31 DF
+    S1  as Stream_pT;  # 3
+	BO	as Boiler_pT;     # 7
+	TU	as Turbine_ideal;    # 7
+	CO	as Condenser;  # 7
+	PU 	as PumpSimple;       # 7
+	
+	CONNECTIONS # BO -> TU -> CO -> TH -> BO  ... -25 DF
+	S1      to  BO.In; # -5
+	BO.Out	to	TU.In; # -5
+	TU.Out	to  CO.In; # -5 
+	CO.Out	to  PU.In; # -5
+	#PU.Out	to  BO.In; # -5
+	
+	SPECIFY # -9 DF
+	
+	S1.mdot = 30 * "kg/s";
+	S1.p = 60 * "bar";
+	S1.T = (121 + 273.15) * "K";	
+
+	# Boiler
+	BO.Dp = -2 * "bar";
+	BO.Out.T = (300 + 273.15) * "K";
+	
+	# Turbine
+	#TU.eta = 0.85;
+	TU.Dp = -56 * "bar";
+	
+	# Condenser
+	CO.Dp = -0.5 * "bar";
+	CO.x = 0.00001;
+	
+	# Pump
+	PU.eta = 0.65;
+	PU.Out.p = 60 * "bar";
+
+OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+end
+
+#*
+	Same as Rankine0Test
+	but with non-ideal turbine
+
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet Rankine0BTest
+	
+    DEVICES # 31 DF
+    S1  as Stream_pT;  # 3
+	BO	as Boiler_pT;     # 7
+	TU	as Turbine;    # 7
+	CO	as Condenser;  # 7
+	PU 	as PumpSimple;       # 7
+	
+	CONNECTIONS # BO -> TU -> CO -> TH -> BO  ... -25 DF
+	S1      to  BO.In; # -5
+	BO.Out	to	TU.In; # -5
+	TU.Out	to  CO.In; # -5 
+	CO.Out	to  PU.In; # -5
+	#PU.Out	to  BO.In; # -5
+	
+	SPECIFY # -9 DF
+	
+	S1.mdot = 30 * "kg/s";
+	S1.p = 60 * "bar";
+	S1.T = (49 + 273.15) * "K";	
+
+	# Boiler
+	BO.Dp = 0 * "bar";
+	BO.Out.T = (500 + 273.15) * "K";
+	
+	# Turbine
+	TU.eta = 0.85;
+	TU.Out.p = 2 * "bar";
+		
+	# Condenser
+	CO.Dp = -0.5 * "bar";
+	CO.x = 0.00001;
+	
+	# Pump
+	PU.eta = 0.65;
+	PU.Out.p = 60 * "bar";
+
+OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+end
+
+
+#*
+	Once-through test using the 'RankineOnceThrough' model instead
+	of implementing the cycle right here in the flowsheet...
+
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet Rankine1Test
+	
+	DEVICES
+	cyc as Rankine1;
+	
+	SPECIFY
+	
+	cyc.S1.mdot = 30 *"kg/s";
+	cyc.S1.p = 60 * "bar";
+	cyc.S1.T = (121 + 273.15) * "K";
+	
+	#Boiler
+	cyc.BO.Dp = -2 * "bar";
+	cyc.BO.Out.T = (300 + 273.15) * "K";
+	
+	#Turbine
+	cyc.TU.Dp = -56 * "bar";
+	
+	cyc.CO.Dp = -0.5 * "bar";
+	cyc.CO.x = 0.00001;
+	
+	cyc.PU.eta = 0.65;
+	cyc.PU.Out.p = 60 * "bar";
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="all";
+end
+
+#*
+	Once-through test using a Rankine cycle Model
+	And non-ideal components...
+
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet Rankine2Test
+	
+	DEVICES
+	cyc as Rankine2;
+	
+	SPECIFY
+	
+	cyc.S1.mdot = 30 *"kg/s";
+	cyc.S1.p = 60 * "bar";
+	cyc.S1.T = (121 + 273.15) * "K";
+	
+	#Boiler
+	cyc.BO.Out.p = 58 * "bar";
+	cyc.BO.Out.T = (550 + 273.15) * "K";
+	
+	#Turbine
+	cyc.TU.Out.p = 2 * "bar";
+	cyc.TU.eta = 0.95;
+	
+	cyc.CO.Out.p = 0.05 * "bar";
+	cyc.CO.x = 0.00001;
+	
+	cyc.PU.eta = 0.65;
+	cyc.PU.Out.p = 60 * "bar";
+	
+	GUESS
+	cyc.CO.Out.s = 6 * "kJ/kg/K";
+	cyc.TU.x = 0.95;
+	cyc.TU.Out.h = 2000 * "kJ/kg";
+	cyc.TU.Out.s = 6 * "kJ/kg";
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="all";
+end
+
+#*
+	Once-through test using a Rankine cycle Model
+	And non-ideal components...
+	And boiler is specified in terms of heat input
+	
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet Rankine2Test2
+	
+	DEVICES
+	cyc as Rankine2;
+	
+	SPECIFY
+	
+	cyc.S1.mdot = 30 *"kg/s";
+	cyc.S1.p = 60 * "bar";
+	cyc.S1.T = (121 + 273.15) * "K";
+	
+	#Boiler
+	cyc.BO.Qdot = 90 * "MW";
+	cyc.BO.Out.p = 58 * "bar";
+	
+	#Turbine
+	cyc.TU.Out.p = 0.06 * "bar";
+	cyc.TU.eta = 0.95;
+	
+	cyc.CO.Out.p = 0.05 * "bar";
+	cyc.CO.x = 0.00001;
+	
+	cyc.PU.eta = 0.65;
+	cyc.PU.Out.p = 60 * "bar";
+	
+	GUESS
+	cyc.BO.Out.T = (550 + 273.15) *"K";
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="all";
+end
+
+#*
+	Rankine cycle which uses a pressure drop model in the boiler
+*#
+FlowSheet Rankine3Test
+	
+	DEVICES
+	cyc as Rankine3;
+		
+	SPECIFY # -9 DF
+	
+	cyc.BO.In.mdot = 38 * "kg/s";
+	cyc.BO.In.p = 60 * "bar";
+	cyc.BO.In.T = (121 + 273.15) * "K";	
+	
+	cyc.BO.A_1 = 3.1415926 * (0.2 * "m")^2 / 4;
+	cyc.BO.K = 20;	
+	cyc.BO.Qdot = 100 * "MW";
+		
+	cyc.TU.eta = 0.95;
+	cyc.TU.Out.p = 0.06 * "bar";
+	
+	cyc.CO.x = 0.00001;
+	cyc.CO.Out.p = 0.05 * "bar";
+	
+	cyc.PU.eta = 0.65;
+	cyc.PU.Out.p = 60 * "bar";
+	
+OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+end
+
+#*
+	Rankine cycle which uses a pressure drop model in the boiler
+	... and the condenser
+
+	DOESN'T SOLVE
+	There seems to be a limit problem with h_ps.
+*#
+FlowSheet Rankine4Test
+	
+    DEVICES
+	cyc as Rankine4;
+		
+	SPECIFY # -9 DF
+	
+	cyc.BO.In.mdot = 38 * "kg/s";
+	cyc.BO.In.p = 60 * "bar";
+	cyc.BO.In.T = (121 + 273.15) * "K";	
+	
+	cyc.BO.A_1 = 3.1415926 * (0.2 * "m")^2 / 4;
+	cyc.BO.K = 20;
+	cyc.BO.Qdot = 100 * "MW";
+		
+	cyc.TU.eta = 0.95;
+	cyc.TU.Out.p = 2 * "bar";
+	
+	cyc.CO.K = 0.144848;
+	cyc.CO.A_1 = 3.1515926 * (0.2 * "m")^2 / 4;
+	cyc.CO.x = 0.00001;
+	# cyc.CO.Out.p = 0.05 * "bar";
+	
+	cyc.PU.eta = 0.65;
+	cyc.PU.Out.p = 60 * "bar";
+	
+	GUESS
+	cyc.PU.Dp = 58  * "bar";
+	cyc.CO.Out.p = 0.05 * "bar";
+	
+OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+end
+
+#*
+	Same as Rankine4Test but doing the condenser pressure drop calc locally...
+
+	DOESN'T WORK
+*#
+FlowSheet Rankine3Test2
+	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
+    DEVICES
+	cyc as Rankine3;
+	
+	VARIABLES
+    CO_K as Positive(Brief="Minor loss coefficient for boiler");
+	CO_A_1 as Area(Brief="Boiler inlet pipe area");	
+		
+	SPECIFY # -9 DF
+	
+	cyc.BO.In.mdot = 38 * "kg/s";
+	cyc.BO.In.p = 60 * "bar";
+	cyc.BO.In.T = (121 + 273.15) * "K";	
+	
+	cyc.BO.A_1 = 3.1415926 * (0.2 * "m")^2 / 4;
+	cyc.BO.K = 20;	
+	cyc.BO.q = 100 * "MW";
+		
+	cyc.TU.eta = 0.95;
+	cyc.TU.Out.p = 0.06 * "bar";
+	
+	CO_K = 0.144;
+	CO_A_1 = 3.1515926 * (0.2 * "m")^2 / 4;
+	cyc.CO.x = 0.00001;
+	cyc.CO.Dp = - CO_K * cyc.CO.In.mdot^2 / freesteam.rho_ph(cyc.CO.In.p,cyc.CO.In.h) / CO_A_1^2;
+		
+	cyc.PU.eta = 0.65;
+	cyc.PU.Out.p = 60 * "bar";
+	
+OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+end

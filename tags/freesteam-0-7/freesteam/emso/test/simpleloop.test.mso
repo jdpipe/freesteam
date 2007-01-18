@@ -1,0 +1,110 @@
+using "streams";
+
+Model SimpleLoop
+	
+	PARAMETERS
+	freesteam_es as CalcObject(File="emsofreesteam");
+	freesteam_1 as CalcObject(File="emsofreesteam");
+	freesteam_3 as CalcObject(File="emsofreesteam");
+	
+	# Pump
+	eta as Real; # Pump efficiency
+	Dp as Pressure;
+	
+	# Tanks
+	y_0 as Length;
+	A as Area;
+	k as Real(Unit="N/m", Lower=0, Upper=1e9, Default=1);
+
+	# Valve
+	K_v as Real;
+	A_v as Area;
+	
+	VARIABLES
+	h_1 as SpecificEnthalpy;
+	h_2 as SpecificEnthalpy;
+	h_v as SpecificEnthalpy;
+	p_T1 as Pressure;
+	p_T2 as Pressure;
+	s_1 as SpecificEntropy;
+	v_1 as SpecificVolume;
+	v_3 as SpecificVolume;
+	mdot_p as MassFlowRate;
+	mdot_v as MassFlowRate;
+	
+	#Pump
+	h_es as SpecificEnthalpy;
+
+	# Tank 1
+	m_T1 as Mass;
+	H_T1 as Energy;
+	y_T1 as Length;
+
+	# Tank 2
+	m_T2 as Mass;
+	H_T2 as Energy;
+	y_T2 as Length;
+	
+	# Throttle
+	vel as Velocity;
+	
+	EQUATIONS
+	# States
+	s_1 = freesteam_1.s_ph(p_T2, h_1);
+	v_1 = freesteam_1.v_ph(p_T2,h_1);
+	v_3 = freesteam_3.v_ph(p_T1,h_v);
+	
+	# Pump rules
+	h_es = freesteam_es.h_ps(p_T1, s_1);
+	(h_1  - h_2) = eta * (h_1 - h_es);
+	p_T1 = p_T2 + Dp;
+	
+	# Tank 1
+	mdot_p - mdot_v = diff(m_T1);
+	h_2 * mdot_p - h_v * mdot_v = diff(H_T1);
+	v_3 * m_T1 = A * y_T1;
+	p_T1 = k * (y_T1 - y_0) / A;
+	h_v = H_T1 / m_T1;
+	
+	# Throttle
+	(p_T1 - p_T2) = K_v * 0.5 / v_3 * vel^2;
+	vel = v_3 * mdot_v / A_v;
+	
+	# Tank 2
+	mdot_v - mdot_p = diff(m_T2);
+	h_v * mdot_v - h_1 * mdot_p = diff(H_T2);
+	v_1 * m_T2 = A * y_T2;
+	p_T2 = k * (y_T2 - y_0) / A;
+	h_1 = H_T2 / m_T2;
+
+end
+
+FlowSheet SimpleLoopTest
+
+	DEVICES
+	L as SimpleLoop;
+
+	SET
+	# Pump
+	L.eta = 0.65;
+	L.Dp = 0.1 * "bar";
+	
+	# Tanks
+	L.A = 1 * "m^2";
+	L.k = 1 * "bar" / (0.1 * "m") * 1 * "m^2";
+	L.y_0 = 0.8 * "m";
+	
+	# Throttle
+	L.A_v = 3.1415926 * 0.01^2 / 4 * "m^2";
+	L.K_v = 5;
+	
+	INITIAL
+	L.p_T1 = 1.0 * "bar";
+	L.p_T2 = 1.0 * "bar";
+	L.v_3 = 0.00101 * "m^3/kg";
+	
+	OPTIONS
+	# differentiation="numeric";
+	mode="steady";
+	outputLevel="all";
+end

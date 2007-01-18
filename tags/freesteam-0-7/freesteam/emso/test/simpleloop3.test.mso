@@ -1,0 +1,95 @@
+using "streams";
+
+#*
+	This SimpleLoop model uses no fluid properties at all
+	
+	Aims to reproduce theoretical steady-state solution for
+	the incompressible case.
+*#
+Model SimpleLoop
+	
+	PARAMETERS	
+
+	# Pump
+	eta as Real; # Pump efficiency
+	Dp as Pressure;
+	
+	# Tanks
+	y_0 as Length;
+	A as Area;
+	k as Real(Unit="N/m", Lower=0, Upper=1e9, Default=1);
+
+	# Valve
+	K_v as Real;
+	A_v as Area;
+	
+	v as SpecificVolume;
+	
+	m_total as Mass;
+
+	VARIABLES
+	p_T1 as Pressure;
+	p_T2 as Pressure;
+	mdot_p as MassFlowRate;
+	mdot_v as MassFlowRate;
+	
+	# Tank 1
+	m_T1 as Mass;
+	y_T1 as Length;
+
+	# Tank 2
+	m_T2 as Mass;
+	y_T2 as Length;
+	
+	# Throttle
+	vel as Velocity;
+	
+	EQUATIONS	
+	# Pump rules
+	p_T1 = p_T2 + Dp;
+	
+	# Tank 1
+	mdot_p - mdot_v = diff(m_T1);
+	v * m_T1 = A * y_T1;
+	p_T1 = k * (y_T1 - y_0) / A;
+	
+	# Throttle
+	(p_T1 - p_T2) = K_v * 0.5 / v * vel^2;
+	vel = v * mdot_v / A_v;
+	
+	# Tank 2
+	v * m_T2 = A * y_T2;
+	p_T2 = k * (y_T2 - y_0) / A;
+	
+	m_T1 + m_T2 = m_total;
+	
+end
+
+FlowSheet SimpleLoopTest
+
+	DEVICES
+	L as SimpleLoop;
+
+	SET
+	L.v = 0.001 * "m^3/kg";
+	L.m_total = 2000 * "kg";
+	
+	# Pump
+	L.eta = 0.65;
+	L.Dp = 0.1 * "bar";
+	
+	# Tanks
+	L.A = 1 * "m^2";
+	L.k = 1 * "bar" / (0.1 * "m") * 1 * "m^2";
+	L.y_0 = 0.8 * "m";
+	
+	# Throttle
+	L.A_v = 3.1415926 * 0.01^2 / 4 * "m^2";
+	L.K_v = 5;
+
+	
+	OPTIONS
+	# differentiation="numeric";
+	mode="steady";
+	outputLevel="all";
+end

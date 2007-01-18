@@ -1,0 +1,19 @@
+using "newtypes";
+
+#*
+	This model shows the inability of EMSO to
+	solve solvable models for certain situations
+	
+	Intention is to use a custom (interval halving or similar) solver in these cases.
+*#
+FlowSheet Cubic
+
+	DEVICES
+	x as Real;
+	y as Real;
+	
+	EQUATIONS
+	y = x ^ 3;
+	y = 0;
+	
+end
