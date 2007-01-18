@@ -14,13 +14,13 @@ cppunit_config_command = 'cppunit-config --libs --cflags'
 if os.environ.has_key('OSTYPE') and os.environ['OSTYPE']=='msys':
 	env = Environment(ENV=os.environ
 		, toolpath = ['scons']
-		, tools = ['mingw','swig','disttar','doxygen']
+		, tools = ['mingw','swig','disttar','nsis']
 	)
 	cppunit_config_command = 'sh cppunit-config --libs --cflags'
 else:
 	env = Environment(ENV=os.environ
 		, toolpath = ['scons']
-		, tools = ['default','swig','disttar','doxygen']
+		, tools = ['default','swig','disttar']
 	)
 
 	if platform.system()=="Windows":
@@ -265,6 +265,40 @@ def CheckSwigVersion(context):
 		return 0;
 
 #------------------------------------------------------
+# ASCEND
+ 
+def CheckAscend(context):
+	try:
+		context.Message("Checking for ascend-config... ")
+
+		path = context.env.get("ASCEND_CONFIG")
+		loc = "configuration"
+		if not path and platform.system()=="Windows":
+			try:
+				import _winreg
+				x=_winreg.ConnectRegistry(None,_winreg.HKEY_LOCAL_MACHINE)
+				y= _winreg.OpenKey(x, r'SOFTWARE\ASCEND' )
+			except Exception,e:
+				context.Result("failed registry check (%s)" % str(e))
+				return 0
+			BIN,_t = _winreg.QueryValueEx(y,"INSTALL_BIN")
+			_winreg.CloseKey(y)
+			_winreg.CloseKey(x)
+			path = os.path.join(BIN,"ascend-config.bat")
+			loc = "registry"	
+		
+		if not os.path.isfile(path):
+			context.Result("not found in %s" % loc)
+			return 0
+
+		context.env['ASCEND_CONFIG'] = path
+		context.Result("ok")
+		return 1
+	except Exception,e:
+		context.Result("failed (%s)" % str(e))
+		return 0
+
+#------------------------------------------------------
 # CONFIGURATION
 
 
@@ -273,6 +307,7 @@ conf = Configure(env
 		'CheckIsNan' : CheckIsNan
 		,'CheckCppUnitConfig' : CheckCppUnitConfig
 		,'CheckSwigVersion' : CheckSwigVersion
+		,'CheckAscend' : CheckAscend
 	} 
 	, config_h = "config.h"
 )
@@ -308,6 +343,10 @@ env['HAVE_SWIG'] = False
 _swigv = conf.CheckSwigVersion()
 if _swigv:
 	env['HAVE_SWIG'] = True
+
+# ASCEND
+
+conf.CheckAscend()
 
 env = conf.Finish()
 
@@ -399,8 +438,8 @@ SConsEnvironment.InstallLibrary = lambda env, dest, files: InstallPerm(env, dest
 #------------------------------------------------------
 # DOXYGEN DOCUMENTATION
 
-docs = env.Doxygen('Doxyfile')
-env.Alias('docs',[docs])
+#docs = env.Doxygen('Doxyfile')
+#env.Alias('docs',[docs])
 
 #------------------------------------------------------
 # INSTALLATION

@@ -41,10 +41,10 @@ if python_env.get('HAVE_SWIG') and python_env.get('HAVE_PYTHON'):
 		, SWIGFLAGS=['-python','-c++']
 	)
 
-	python_env.SideEffect(['freesteam.py','freesteam_wrap.h'],'freesteam$SWIGCXXFILESUFFIX')
-	python_env.Depends('freesteam.py',['freesteam.i'])
+	#python_env.SideEffect(['freesteam.py','freesteam_wrap.h'],'freesteam$SWIGCXXFILESUFFIX')
+	#python_env.Depends('freesteam.py',['freesteam.i'])
 
-	python_env.Clean(swigobj,['freesteam_wrap$SWIGCXXFILESUFFIX','freesteam_wrap.h','freesteam.py'])
+	#python_env.Clean(swigobj,['freesteam_wrap$SWIGCXXFILESUFFIX','freesteam_wrap.h','freesteam.py'])
 
 	_libs = ['freesteam',python_lib]
 
