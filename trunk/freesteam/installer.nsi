@@ -134,7 +134,7 @@ Section "ASCEND hooks"
 		DetailPrint "--- ASCEND HOOKS ---"
 		SetOutPath $INSTDIR\ascend
 		File ascend\*.a4c
-		File ascend\libfreesteam.dll
+		File ascend\freesteam.dll
 		StrCpy $ASCENDINSTALLED "1"
 		WriteRegDWORD HKLM "SOFTWARE\freesteam" "ASCEND" 1
 	${Else}
@@ -243,9 +243,9 @@ FunctionEnd
 ; Detect ASCEND
 
 Function DetectASCEND
-	ReadRegStr $R6 HKCU "SOFTWARE\ASCEND\InstallPath" ""
+	ReadRegStr $R6 HKCU "SOFTWARE\ASCEND" "Install_Dir"
 	${If} $R6 == ''
-		ReadRegStr $R6 HKLM "SOFTWARE\ASCEND\InstallPath" ""
+		ReadRegStr $R6 HKLM "SOFTWARE\ASCEND" "Install_Dir"
 		${If} $R6 == ''
 			Push "No registry key found"
 			Push "NOK"

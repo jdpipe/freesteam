@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>freesteam: Steam Tables, Open Source, IAPWS-IF97</title>
-  <link rel="stylesheet" media="screen" href="freesteam.css"
+  <link rel="stylesheet" media="screen" href="http://pye.dyndns.org/freesteam/freesteam.css"
  type="text/css">
   <meta name="KEYWORDS"
  content="steam tables, IAPWS, steam properties, steam calculator, density, water, steam, IF97, saturated, superheated, subcooled, properties, enthalpy, entropy, specific heat, thermodynamics, thermo-fluids, IAPWS-95, python, ASCEND, EMSO, EES">
@@ -13,23 +13,23 @@
 
 <h1>freesteam<br></h1>
 
-<table><tr><td valign=top><div class="nav"><span style="font-weight: bold;">Current version: </span><a href="http://sourceforge.net/project/showfiles.php?group_id=120898">0.6.1</a><br><span style="font-weight: bold;">Released: </span>7 July 2006<br><ul>  <li><a href="example.php" title="Examples">Examples</a></li>
+<table><tr><td valign=top><div class="nav"><span style="font-weight: bold;">Current version: </span><a href="http://sourceforge.net/project/showfiles.php?group_id=120898">0.6.2</a><br><span style="font-weight: bold;">Released: </span>17 Jan 2007<br><ul>  <li><a href="http://pye.dyndns.org/freesteam/example.php" title="Examples">Examples</a></li>
   <li><a href="http://sourceforge.net/project/showfiles.php?group_id=120898" title="Download">Download</a></li>
-  <li><a href="scons.php" title="How to compile">How to compile</a></li>
+  <li><a href="http://pye.dyndns.org/freesteam/scons.php" title="How to compile">How to compile</a></li>
   <li><a href="http://freesteam.cvs.sourceforge.net/freesteam/freesteam/CHANGELOG.txt?only_with_tag=HEAD&amp;amp;view=markup" title="Changelog">Changelog</a></li>
   <li><a href="http://mantis.cruncher2.dyndns.org/" title="Report bugs">Report bugs</a></li>
   <li><a href="http://freesteam.cvs.sourceforge.net/freesteam/freesteam/" title="Browse CVS">Browse CVS</a></li>
-  <li><a href="http://pye.dyndns.org/freesteam/docs/" title="Code docs">Code docs</a></li>
-  <li><a href="properties/">Property diagrams</a></li>
+  <li><a href="http://docs.cruncher2.dyndns.org/freesteam/" title="Code docs">Code docs</a></li>
+  <li><a href="http://pye.dyndns.org/freesteam/properties/">Property diagrams</a></li>
   <li><a href="http://buildbot.cruncher2.dyndns.org/">BuildBot</a></li>
   <li><a href="http://sf.net/projects/freesteam" title="SourceForge">SourceForge</a></li>
 </ul>On this page...
-<ul>  <li><a href="#whatcanidowithit">What can I do with it?</a></li>
-  <li><a href="#license">License</a></li>
-  <li><a href="#bugs">Bugs</a></li>
-  <li><a href="#futuredirections">Future directions</a></li>
-  <li><a href="#links">Related sites</a></li>
-</ul></div></td><td valign=top>
+<ul>  <li><a href="index.html#whatcanidowithit">What can I do with it?</a></li>
+  <li><a href="index.html#license">License</a></li>
+  <li><a href="index.html#bugs">Bugs</a></li>
+  <li><a href="index.html#futuredirections">Future directions</a></li>
+  <li><a href="index.html#links">Related sites</a></li>
+</ul><SCRIPT type='text/javascript' language='JavaScript' src='http://ohloh.net/projects/3964;badge_js'></SCRIPT></div></td><td valign=top>
 <h2>Introduction</h2>
 
 <p><b>freesteam</b> is an open source implementation of
@@ -42,6 +42,10 @@ Steam</a> (IAPWS). <b>freesteam</b> lets you compute water and steam properties 
   <li>IAPWS-IF97 Industrial formulation (high speed, but complex code) </li>
   <li>IAPWS-95 Scientific formulation (low speed, but simple code)</li>
 </ul>
+
+<p>From Version 0.6, freesteam includes bindings for the Python language.</p>
+
+<p><font color=red><i><b>New:&nbsp;</b></i></font>Calculation of surface tension is now supported (in CVS version only, so far)</p>
 
 <p>Please send your comments and questions to <script><!--
 
@@ -58,8 +62,6 @@ document.write('<a href="mailto:'+e+m+a+i+l+'">'+e+m+a+i+l+'</a>');
 //--></script>
 <noscript><a href="mailto:john.pye@student.removethisrubbish.unsw.edu.au">john.pye@student.removethisrubbish.unsw.edu.au</a>
 (spam protection)</noscript>. The project is under active development (as of April 2006). Contributions are most welcome!</p>
-
-<p><font color=red><i><b>New:&nbsp;</b></i></font>Version 0.6 includes bindings for the <b>Python</b> language!</p>
 
 <h2><a name="whatcanidowithit"></a>1. What can I do with it?</h2>
 
@@ -177,13 +179,13 @@ following:</p>
   </tbody>
 </table>
 
-<p>You can also create <a href="properties/">property diagrams</a>
+<p>You can also create <a href="http://pye.dyndns.org/freesteam/properties/">property diagrams</a>
 from the freesteam code for most of the above combinations of
 steam properties.</p>
 
-<p>You can also access freesteam from the EMSO simulation. More plug-ins for other systems are proposed: python hooks, MATLAB, Excel and OpenOffice/Gnumeric plugins. See <a href="#futuredirections">future directions</a> (below) for more info.</p>
+<p>You can also access freesteam from the EMSO simulation. More plug-ins for other systems are proposed: python hooks, MATLAB, Excel and OpenOffice/Gnumeric plugins. See <a href="index.html#futuredirections">future directions</a> (below) for more info.</p>
 
-<p><b>Please check out the <a href="example.php">example code</a></b></p>
+<p><b>Please check out the <a href="http://pye.dyndns.org/freesteam/example.php">example code</a></b></p>
 
 <h3>1.2 IAPWS-95 Scientific Formulation<br></h3>
 
@@ -252,7 +254,7 @@ the project. We are not using the SourceForge 'tracker' at this stage.</p>
 <ul>
   <li>Initial work has being done on an <span style="font-weight: bold;">Excel add-in</span> version using the <a href="http://xlw.sourceforge.net/">XLW</a> wrapper classes. Currently waiting for some build issues with XLW to be resolved.</li>
 
-  <li>Preliminary work on another <span style="font-weight: bold;">hook library</span> to integrate freesteam with the <a href="http://www.fchart.com/ees/ees.shtml">EES</a> equation solver (<a href="ees.pdf#page=211">manual</a> here)has also been performed; this will likewise require some special license agreement. At present, EES provides only the IAPWS-95 'scientific and general use' correlation.</li>
+  <li>Preliminary work on another <span style="font-weight: bold;">hook library</span> to integrate freesteam with the <a href="http://www.fchart.com/ees/ees.shtml">EES</a> equation solver (<a href="http://pye.dyndns.org/freesteam/ees.pdf#page=211">manual</a> here)has also been performed; this will likewise require some special license agreement. At present, EES provides only the IAPWS-95 'scientific and general use' correlation.</li>
 
   <li>Integration of the IAPWS-95 correlation into <a href="http://www.ginac.de/">GiNaC</a>. This work is largely complete (the code's not on the net yet though): it needs to be incorporated into the freesteam distribution.
   
@@ -299,6 +301,10 @@ Journal of Engineering for Gas Turbines and Power</a><br>
   <dd><a href="http://www.iapws.org/relguide/IAPWS95.pdf">http://www.iapws.org/relguide/IAPWS95.pdf<br>
     <br>
     </a> </dd>
+   
+  <dt>Surface tension</dt>
+  <dd><a href="http://www.iapws.org/relguide/surf.pdf">http://www.iapws.org/relguide/surf.pdf</a><br><br></dd>
+    
   <dt>CppUnit </dt>
   <dd><a href="http://cppunit.sourceforge.net/cgi-bin/moin.cgi">http://cppunit.sourceforge.net/cgi-bin/moin.cgi</a>
   </dd>
@@ -316,10 +322,11 @@ Journal of Engineering for Gas Turbines and Power</a><br>
   <dd><a href="http://www.library.cornell.edu/nr/bookcpdf.html">http://www.library.cornell.edu/nr/bookcpdf.html<br>
     <br>
     </a></dd>
-  <dt><br>
-  </dt>
+  
   <dt>Free (in the OS sense) IAPWS calculators</dt>
-  <dd>Bernhard Spang's IF-97 Excel plug-in <a
+  <dd><a href="http://www.x-eng.com/">X Steam</a> (for Excel, OpenOffice and Matlab, licensing unclear)<br>
+
+  Bernhard Spang's IF-97 Excel plug-in <a
  href="http://www.cheresources.com/iapwsif97.shtml">http://www.cheresources.com/iapwsif97.shtml</a>
 (Visual Basic)<br>
   </dd>
@@ -346,7 +353,7 @@ Springer, Germany.</dd>
   <dd>GP International: <i>GPSteam</i> ("ASME
 97" formulation)</dd>
   <dd>Rudjer Boskovic Institute: <i>ISANO
-Iapwsif97</i></dd>
+Iapwsif97</i><br><br></dd>
 
   <dt>Other steam calculators (Non IF97)</dt>
   <dd>WinSim <a href="http://www.winsim.com/steam/steam.html">STEAM67</a>
@@ -376,7 +383,7 @@ Properties in SI</span>, Stanford Univ, 1979:<br>
 </td></tr></table>
 <hr>
 <address>
-John Pye<br/>
-Last modified: 7 July 2006</address>
+<a href="http://sourceforge.net"><img style="float:right" src="http://sflogo.sourceforge.net/sflogo.php?group_id=120898&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>John Pye<br/>
+Last modified: 16 January 2007</address>
 </body>
 </html>
