@@ -93,6 +93,7 @@ Section "freesteam (required)"
   File "libfreesteam.a"
   File "LICENSE.txt"
   File "README.html"
+  File "CHANGELOG.txt"
     
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\freesteam "Install_Dir" "$INSTDIR"
@@ -154,6 +155,7 @@ Section "Start Menu Shortcuts"
   CreateShortCut "$SMPROGRAMS\freesteam\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
   CreateShortCut "$SMPROGRAMS\freesteam\LICENSE.lnk" "$INSTDIR\LICENSE.txt" "" "$INSTDIR\LICENSE.txt" 0
   CreateShortCut "$SMPROGRAMS\freesteam\README.lnk" "$INSTDIR\README.html" "" "$INSTDIR\README.html" 0
+  CreateShortCut "$SMPROGRAMS\freesteam\CHANGELOG.lnk" "$INSTDIR\CHANGELOG.txt" "" "$INSTDIR\CHANGELOG.txt" 0
 
 SectionEnd
 
@@ -210,6 +212,7 @@ unnostart:
 	Delete $INSTDIR\libfreesteam.a
 	Delete $INSTDIR\LICENSE.txt
 	Delete $INSTDIR\README.html
+	Delete $INSTDIR\CHANGELOG.txt
 
 	; Remove directories used
 	RMDir "$INSTDIR"

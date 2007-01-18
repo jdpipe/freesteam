@@ -1,7 +1,7 @@
 import os, os.path, commands, platform
 import distutils.sysconfig
 
-version = "0.6.2"
+version = "0.7"
 
 #----------------------------------------------------
 # CREATE ENVIRONMENT, LOAD TOOLS, SOME DEFAULT PATHS

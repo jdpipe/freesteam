@@ -1,5 +1,12 @@
 CHANGELOG
 
+0.7
+Thursday, 18 January, 2007
+--------------------------
+Added a Windows binary installer that static library (.a) for use with 
+MinGW GCC compiler, Python bindings ("from freesteam import *"), and
+external functions for use with the ASCEND modelling environment.
+
 0.6.2
 Wednesday, 17 January, 2007
 ---------------------------
