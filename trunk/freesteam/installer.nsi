@@ -58,10 +58,12 @@ Var /GLOBAL ASCENDPATH
 
 Var /GLOBAL PYINSTALLED
 Var /GLOBAL ASCENDINSTALLED
+Var /GLOBAL LIBINSTALLED
 
 Function .onInit
 	StrCpy $PYINSTALLED ""
 	StrCpy $ASCENDINSTALLED ""
+	StrCpy $LIBINSTALLED ""
 	
 	Call DetectPython
 	Pop $PYOK
@@ -90,7 +92,6 @@ Section "freesteam (required)"
   
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
-  File "libfreesteam.a"
   File "LICENSE.txt"
   File "README.html"
   File "CHANGELOG.txt"
@@ -109,6 +110,16 @@ SectionEnd
 
 ;--------------------------------
 
+Section "Static library & header files"
+  DetailPrint "--- STATIC LIBRARY & HEADER FILES ---"
+	SetOutPath $INSTDIR\include
+	File "libfreesteam.a"
+	File "*.h"
+	WriteRegDWORD HKLM "SOFTWARE\freesteam" "Lib" 1
+	StrCpy $LIBINSTALLED "1"
+	Return
+SectionEnd
+	
 Section "Python language bindings"
 	${If} $PYOK == 'OK'
 		;MessageBox MB_OK "Python: $PYPATH, GTK: $GTKPATH"
@@ -164,6 +175,17 @@ SectionEnd
 
 Section "Uninstall"
 
+;--- header files & static lib ---
+
+	ReadRegDWORD $0 HKLM "SOFTWARE\freesteam" "Lib"
+	IntCmp $0 0 unnolib unlib
+
+unlib:
+	Delete $INSTDIR\libfreesteam.a
+	RmDir /r $INSTDIR\include
+
+unnolib:
+
 ;--- python components ---
 
 	ReadRegDWORD $0 HKLM "SOFTWARE\freesteam" "Python"
@@ -209,11 +231,12 @@ unnostart:
 
 	; Remove files and uninstaller
 
-	Delete $INSTDIR\libfreesteam.a
 	Delete $INSTDIR\LICENSE.txt
 	Delete $INSTDIR\README.html
 	Delete $INSTDIR\CHANGELOG.txt
-
+	Delete $INSTDIR\uninstall.exe
+	
+	
 	; Remove directories used
 	RMDir "$INSTDIR"
 
