@@ -14,8 +14,8 @@ class MeasurementTest : public CppUnit::TestFixture{
 
 	void TestSize(){
 
-		// Why is the size what I expect, PLUS sizeof(int) ?
-		CPPUNIT_ASSERT(sizeof(Measurement)==sizeof(double)+sizeof(Dimension)+sizeof(int) );
+		// On some systems the size comes up bigger than expected by sizeof(int). Not sure why ATM.
+		CPPUNIT_ASSERT(sizeof(Measurement)==sizeof(double)+sizeof(Dimension) );
 	}
 
 	void TestOneMetre()
