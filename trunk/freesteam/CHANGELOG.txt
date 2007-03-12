@@ -1,5 +1,14 @@
 CHANGELOG
 
+0.7.1
+Monday, 12 March 2007
+---------------------
+An update for users of the Windows installer, primarily:
+- Added missing header files in the Windows installer (woops)
+- Added example C++ code plus Makefile/SConstruct for Windows users.
+Also added a significant number of new function bindings for the
+ASCEND interface.
+
 0.7
 Thursday, 18 January, 2007
 --------------------------

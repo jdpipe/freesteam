@@ -1,0 +1,34 @@
+import SCons.Util
+import os.path
+
+env = Environment(tools=['mingw'])
+
+prefix = "/usr"
+
+if SCons.Util.can_read_reg:
+	# we attempt to read the freesteam install location from the registry
+	# in place of all this, you can just set the value of 'prefix' above,
+	# and delete this 'if' statement.
+	try:
+		k = SCons.Util.RegOpenKeyEx(
+				SCons.Util.hkey_mod.HKEY_LOCAL_MACHINE
+				,'SOFTWARE\\freesteam'
+			)
+		val, tok = SCons.Util.RegQueryValueEx(k,"Install_Dir")
+
+		if os.path.exists(val):
+			print "FOUND FREESTEAM INSTALLED",val
+			prefix = val
+		else:
+			print "FREESTEAM NOT FOUND AT EXPECTED LOCATION FROM REGISTRY"
+	except Exception,e:
+		print "FREESTEAM REGISTRY KEY NOT FOUND (%s)" % str(e)
+		pass # Couldn't find the key, just act like we can't read the registry
+else:
+	print "CAN'T READ REGISTRY"
+		
+
+env.Append(LIBPATH=[os.path.join(prefix,"lib")])
+env.Append(CPPPATH=[os.path.join(prefix,"include")])
+
+env.Program('example.cpp',LIBS=['freesteam']);

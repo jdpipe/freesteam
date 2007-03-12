@@ -59,11 +59,13 @@ Var /GLOBAL ASCENDPATH
 Var /GLOBAL PYINSTALLED
 Var /GLOBAL ASCENDINSTALLED
 Var /GLOBAL LIBINSTALLED
+Var /GLOBAL EXAMPLEINSTALLED
 
 Function .onInit
 	StrCpy $PYINSTALLED ""
 	StrCpy $ASCENDINSTALLED ""
 	StrCpy $LIBINSTALLED ""
+	StrCpy $EXAMPLEINSTALLED ""
 	
 	Call DetectPython
 	Pop $PYOK
@@ -112,19 +114,36 @@ SectionEnd
 
 Section "Static library & header files"
   DetailPrint "--- STATIC LIBRARY & HEADER FILES ---"
-	SetOutPath $INSTDIR\include
+	SetOutPath $INSTDIR\lib
 	File "libfreesteam.a"
+	SetOutPath $INSTDIR\include
 	File "*.h"
 	WriteRegDWORD HKLM "SOFTWARE\freesteam" "Lib" 1
 	StrCpy $LIBINSTALLED "1"
 	Return
 SectionEnd
-	
+
+Section "Example C++ code"
+  DetailPrint "--- EXAMPLE FILES ---"
+	SetOutPath $INSTDIR\example
+	File "example\example.cpp"
+	File "example\SConstruct"
+	File "example\Makefile"
+	File "example\README.txt"
+	WriteRegDWORD HKLM "SOFTWARE\freesteam" "Example" 1
+	StrCpy $EXAMPLEINSTALLED "1"
+	Return
+SectionEnd
+
 Section "Python language bindings"
 	${If} $PYOK == 'OK'
 		;MessageBox MB_OK "Python: $PYPATH, GTK: $GTKPATH"
 
 		DetailPrint "--- PYTHON INTERFACE ---"
+
+		; README file for python users
+		SetOutPath $INSTDIR\python
+		File python\README.txt
 
 		; Set output path to the installation directory.
 		SetOutPath $PYPATH\Lib\site-packages
@@ -168,6 +187,14 @@ Section "Start Menu Shortcuts"
   CreateShortCut "$SMPROGRAMS\freesteam\README.lnk" "$INSTDIR\README.html" "" "$INSTDIR\README.html" 0
   CreateShortCut "$SMPROGRAMS\freesteam\CHANGELOG.lnk" "$INSTDIR\CHANGELOG.txt" "" "$INSTDIR\CHANGELOG.txt" 0
 
+  ${If} $EXAMPLEINSTALLED == "1"
+	CreateShortCut "$SMPROGRAMS\freesteam\Example code.lnk" "$INSTDIR\example" "" "$INSTDIR\example" 0
+  ${EndIf}
+
+  ${If} $PYINSTALLED == "1"
+	CreateShortCut "$SMPROGRAMS\freesteam\Python README.lnk" "$INSTDIR\python\README.txt" "" "$INSTDIR\python\README.txt" 0
+  ${EndIf}
+  	
 SectionEnd
 
 ;------------------------------------------------------------------
@@ -181,10 +208,20 @@ Section "Uninstall"
 	IntCmp $0 0 unnolib unlib
 
 unlib:
-	Delete $INSTDIR\libfreesteam.a
+	RmDir /r $INSTDIR\lib
 	RmDir /r $INSTDIR\include
 
 unnolib:
+
+;--- example code ---
+
+	ReadRegDWORD $0 HKLM "SOFTWARE\freesteam" "Example"
+	IntCmp $0 0 unnoex unex
+
+unex:
+	RmDir /r $INSTDIR\example
+
+unnoex:
 
 ;--- python components ---
 

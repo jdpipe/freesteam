@@ -1,7 +1,7 @@
 import os, os.path, commands, platform
 import distutils.sysconfig
 
-version = "0.7"
+version = "0.7.1"
 
 #----------------------------------------------------
 # CREATE ENVIRONMENT, LOAD TOOLS, SOME DEFAULT PATHS
@@ -351,7 +351,7 @@ conf.CheckAscend()
 env = conf.Finish()
 
 #------------------------------------------------------
-# BUILD THE STATIC LIBRARY -- easy :-)
+# BUILD THE STATIC LIBRARY
 
 
 list = Split("""
@@ -364,11 +364,15 @@ list = Split("""
 
 lib = env.Library('freesteam',list)
 
-examplesrc = Split("example.cpp")
+#------------------------------------------------------
+# Build the example program (build-time)
 
-example = env.Program('example.cpp'
+examplesrc = Split("example/example.cpp")
+
+example = env.Program('example/example.cpp'
 	, LIBS = ['freesteam']
-	, LIBPATH='.'
+	, LIBPATH='#'
+	, CPPPATH='#'
 )
 
 env.Alias('example',[example])
