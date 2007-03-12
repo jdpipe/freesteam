@@ -1,0 +1,44 @@
+#* 
+	freesteam stream integration for use in steam system calculations
+	
+	Based on steam.mso by Rafael de Pelegrini Soares,
+
+	Copyright 2002-2005 Rafael de Pelegrini Soares.
+	Modified by John Pye 2005 http://freesteam.sf.net
+	
+	This copyright statement must not be deleted and must be
+	included in any modification or adaptation of this Model.
+*#
+
+using "streams";
+using "throttle";
+
+#*
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet TestThrottle
+		
+	DEVICES
+	S1 as Stream_ph;
+	TH as Throttle;
+	
+	CONNECTIONS
+	S1 to TH.In;
+	
+	SPECIFY
+	"Flow rate"
+	S1.mdot = 27 * "kg/min";
+	
+	"Inlet pressure"
+	S1.p = 50 * "bar";
+	
+	"Inlet enthalpy"
+	S1.h = 3500 * "kJ/kg";
+	
+	"Output pressure"
+	TH.Out.p = 65 * "bar";
+	
+	OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+end

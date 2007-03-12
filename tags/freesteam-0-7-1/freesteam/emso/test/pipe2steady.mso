@@ -1,0 +1,62 @@
+using "newtypes";
+using "streams";
+using "pipenode";
+
+Model Pipe2Steady
+	
+	PARAMETERS
+	n as Integer(Lower=3);
+	L as Length;
+	D as Length;
+	eps as Length;
+	dz as Length;
+	A as Area;
+	pi as Real;	
+	
+	VARIABLES
+	in In as Stream;
+	# out Out as Stream_uv;
+	X(n) as PipeNode;
+	
+	EQUATIONS
+	
+	# Use central difference form for the interior nodes
+		
+	for i in [2:n]
+		
+		# MASS CONSERVATION
+		X(i).mdot = X(i-1).mdot;
+		
+		# ENERGY CONSERVATION
+		X(i).Qdotdash = - (X(i).mdot*X(i).h - X(i-1).mdot*X(i-1).h) / dz;
+	
+		# MOMENTUM CONSERVATION
+		- 4 * X(i).tau / D * dz
+			= (X(i).p - X(i-1).p) + (X(i).rho * X(i).vel^2 - X(i-1).rho * X(i-1).vel^2);
+		
+	end
+		
+	# There are no equations for the first node; these are provided by the upstream equipment item
+	# Note that central difference can be optimised to use a staggered grid, not done here.
+	
+	# TODO: does this formulation work correctly with reverse flow??
+	
+	X(1).p = In.p;
+	X(1).u = In.freesteam.u_ph(In.p, In.h);
+	X(1).mdot = In.mdot;
+	
+	# Out.u = X(n).u;
+	# Out.v = 1/X(n).rho;
+	# Out.mdot = X(n).mdot;
+	
+	SET
+	pi = 3.14159265358;
+	dz = L/n;
+	A = pi * D^2 / 4;
+	X([1:n]).A = A;
+	X([1:n]).D = D;
+	X([1:n]).dz = dz;
+	X([1:n]).eps_D = eps/D;
+
+
+end

@@ -1,0 +1,116 @@
+#* 
+	freesteam stream integration for use in steam system calculations
+	
+	Based on steam.mso by Rafael de Pelegrini Soares,
+	Copyright 2002-2005 Rafael de Pelegrini Soares.
+
+	Modified by John Pye 2005 http://freesteam.sf.net
+*#
+
+using "streams";
+using "condenser";
+
+#*
+	Test condenser with specified inlet and outlet conditions.
+
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet CondenserTest
+	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
+	DEVICES
+	S as Stream_pT;
+	CO as Condenser;
+	#CO as Condenser;
+	
+	CONNECTIONS
+	S to CO.In; # (-5) - 0        = -5 DF
+	
+	SPECIFY
+	S.mdot = 1 * "kg/s";
+	S.p = 2.0 * "bar";
+	S.T = (150 + 273.15) * "K";
+	
+	CO.Out.p = 1.0 * "bar";
+	CO.Out.T = (40 + 273.15) * "K";
+	
+	OPTIONS
+	mode = "steady";
+	NLASolver="linesearch";
+	outputLevel = "high";
+end
+
+#*
+	Test condenser with specified heat removal and pressure drop
+
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet CondenserTest1
+	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
+	DEVICES
+	S as Stream_pT;
+	CO as Condenser;
+	
+	CONNECTIONS
+	S to CO.In; # (-5) - 0        = -5 DF
+	
+	SPECIFY
+	S.mdot = 1 * "kg/s";
+	S.p = 60.0 * "bar";
+	S.T = (300 + 273.15) * "K";
+	
+	CO.Qdot = -1000 * "kW";
+	CO.Dp = -10 * "bar";
+		
+	# FIXME: [rafael] this is required when DT is specified instead of q:
+	# CO.Out.h = 300 * "kJ/kg";
+	
+	OPTIONS
+	mode = "steady";
+	NLASolver="linesearch";
+	outputLevel = "high";
+end
+
+#*
+	Test condenser with specified heat removal and minor loss factor
+
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet CondenserTest2
+	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
+	DEVICES
+	S as Stream_pT;
+	CO as CondenserWithLoss;
+	
+	CONNECTIONS
+	S to CO.In; # (-5) - 0        = -5 DF
+	
+	SPECIFY
+	S.mdot = 1 * "kg/s";
+	S.p = 1 * "bar";
+	S.T = (150 + 273.15) * "K";
+	
+	CO.Qdot = -2700 * "kW";
+	CO.K = 3;
+	CO.A_1 = 3.1415926 / 4 * (0.1 *"m")^2;
+		
+	# FIXME: [rafael] this is required when DT is specified instead of q:
+	# CO.Out.h = 300 * "kJ/kg";
+	
+	OPTIONS
+	mode = "steady";
+	NLASolver="linesearch";
+	outputLevel = "all";
+end
+
+#*
+	TODO: condenser with specified outlet steam quality... looks like it could possibly be problematic...
+*#
