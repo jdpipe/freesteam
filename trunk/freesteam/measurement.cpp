@@ -25,6 +25,7 @@ namespace MeasurementData {
 	const double g = 9.80665; // N/kg
 	const double lbf = lb * g; // N
 	const double psi = lbf / (in*in); // Pa
+	const double lb_in3 = lb / (in*in*in);
 };
 
 using namespace MeasurementData;
@@ -54,6 +55,7 @@ class UnitsMapInitialiser{
 				, {"m/s",  {{ 0, 1,-1, 0, 0}, 1.  }}
 				, {"K",    {{ 0, 0, 0, 1, 0}, 1.  }}
 				, {"kg/m3",{{ 1,-3, 0, 0, 0}, 1.  }}
+				, {"lb/in3",{{1,-3, 0, 0, 0},          lb_in3 }}
 				, {"m3/kg",{{-1, 3, 0, 0, 0}, 1.  }}
 				, {"kg/s", {{ 1, 0,-1, 0, 0}, 1.  }}
 				, {"J/kg", {{ 0, 2,-2, 0, 0}, 1.  }}
