@@ -22,6 +22,7 @@ namespace MeasurementData {
 	const double lb = 0.45359237; // kg
 	const double yd = 0.9144; // m
 	const double in = yd / 36.; // m
+	const double ft = 12. * in; // m
 	const double g = 9.80665; // N/kg
 	const double lbf = lb * g; // N
 	const double psi = lbf / (in*in); // Pa
@@ -45,6 +46,7 @@ class UnitsMapInitialiser{
 				, {"mm",   {{ 0, 1, 0, 0, 0}, 1e-3}}
 				, {"cm",   {{ 0, 1, 0, 0, 0}, 1e-2}}
 				, {"in",   {{ 0, 1, 0, 0, 0},          in }}
+				, {"ft",   {{ 0, 1, 0, 0, 0},          ft }}
 				, {"m2",   {{ 0, 2, 0, 0, 0}, 1.  }}
 				, {"m3",   {{ 0, 3, 0, 0, 0}, 1.  }}
 				, {"s",    {{ 0, 0, 1, 0, 0}, 1.  }}
