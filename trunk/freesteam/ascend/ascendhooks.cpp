@@ -590,6 +590,65 @@ int uvTxmu_ph_calc(struct BBoxInterp *slv_interp,
 }
 
 
+
+/**
+	ASCEND external evaluation function
+	Inputs: p,h
+	Outputs: u,v,T,x, mu
+	@return 0 on success 
+*/
+int uvTxsmu_ph_calc(struct BBoxInterp *slv_interp,
+		int ninputs, int noutputs,
+		double *inputs, double *outputs,
+		double *jacobian
+){
+	Solver2<Pressure,SpecificEnergy,0,SOLVE_ENTHALPY> SS;
+
+	(void)slv_interp; (void)jacobian; // not used
+
+	ASSERT(ninputs==2);
+	ASSERT(noutputs==6);
+
+	// convert inputs to freesteam dimensionful values
+	Pressure p = inputs[0] * Pascal;
+	SpecificEnergy h = inputs[1] * J_kg;
+
+	try{
+		// solve for the steam state specified
+		SteamCalculator S = SS.solve(p,h);
+
+		// evaluate and return properties in MKS units
+		SpecificEnergy u = S.specienergy();
+		SpecificVolume v = S.specvol();
+		DynamicViscosity mu = S.dynvisc();
+		Temperature T = S.temp();
+		double x = S.quality();
+		SpecificEntropy s = S.specentropy();
+
+		outputs[0] = u / J_kg;
+		outputs[1] = v / m3_kg;
+		outputs[2] = T / Kelvin;
+		outputs[3] = x;
+		outputs[4] = s / J_kgK;
+		outputs[5] = mu  / (Pascal*second);
+
+#ifdef FREESTEAM_DEBUG
+		CONSOLE_DEBUG("p = %f bar, h = %f kJ/kg --> u = %f kJ/kg, v = %f m^3/kg, x = %f"
+			, double(p / bar), double(h / kJ_kg)
+			, double(u / kJ_kg), double(v / m3_kg)
+			, x
+		);
+#endif
+
+		return 0; /* success */
+	}catch(std::exception &e){
+		// report error message using the ASCEND error reporting system
+		ERROR_REPORTER_HERE(ASC_PROG_ERR,e.what());
+		return 1; /* failure */
+	}
+	return 0;
+}
+
 /**
 	Surface tension
 	ASCEND external evaluation function
@@ -879,6 +938,17 @@ extern "C"{ // start of C-accessible portion
 			, NULL /* free */
 			, 2,5 /* inputs, outputs */
 			, "[u,v,T,x,mu] = iapws97_uvTxmu_ph(p,h) (see http://freesteam.sf.net)"
+			, 0.0
+		);
+
+		result += CreateUserFunctionBlackBox("iapws97_uvTxsmu_ph"
+			, NULL /* alloc */
+			, uvTxsmu_ph_calc /* value */
+			, NULL /* deriv */
+			, NULL /* deriv2 */
+			, NULL /* free */
+			, 2,6 /* inputs, outputs */
+			, "[u,v,T,x,s,mu] = iapws97_uvTxsmu_ph(p,h) (see http://freesteam.sf.net)"
 			, 0.0
 		);
 
