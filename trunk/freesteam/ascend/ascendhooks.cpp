@@ -800,12 +800,54 @@ int iapws97_phrho_f_Tsat_calc(struct BBoxInterp *slv_interp,
 	return 0;
 }
 
+
+
+int iapws97_hfg_p_calc(struct BBoxInterp *slv_interp,
+		int ninputs, int noutputs,
+		double *inputs, double *outputs,
+		double *jacobian
+){
+	(void)slv_interp; (void)jacobian; // not used
+
+	ASSERT(ninputs==1);
+	ASSERT(noutputs==2);
+
+	// convert inputs to freesteam dimensionful values
+	Pressure p = inputs[0] * Pascal;
+
+	try{
+		// evaluate and return properties in MKS units
+		SteamCalculator S1,S2;
+		S1.setSatWater_p(p);
+		outputs[0] = S1.specenthalpy() / J_kg;
+
+		S2.setSatSteam_p(p);
+		outputs[1] = S2.specenthalpy() / J_kg;
+
+		ERROR_REPORTER_HERE(ASC_PROG_NOTE,"p = %f bar --> h_f = %f kJ/kg, k_g = %f kJ/kg"
+			,double(p/bar)
+			,double(S1.specenthalpy() / kJ_kg)
+			,double(S2.specenthalpy() / kJ_kg)
+		);
+
+		return 0; /* success */
+	}catch(std::exception &e){
+		// report error message using the ASCEND error reporting system
+		ERROR_REPORTER_HERE(ASC_PROG_ERR,"%s",e.what());
+		return 1; /* failure */
+	}catch(...){
+		ERROR_REPORTER_HERE(ASC_PROG_ERR,"unknown exception caught");
+		return 1;
+	}
+	return 0;
+}
+
 extern "C"{ // start of C-accessible portion
 
 	extern ASC_EXPORT int freesteam_register(){
 		int result = 0;
 
-		CONSOLE_DEBUG("Initialising freesteam...");
+		//CONSOLE_DEBUG("Initialising freesteam...");
 
 		result += CreateUserFunctionBlackBox("iapws97_Tvx_pu"
 			, NULL /* alloc */
@@ -999,6 +1041,19 @@ extern "C"{ // start of C-accessible portion
 				"\n\t(see http://freesteam.sf.net)"
 			, 0.0
 		);
+
+		result += CreateUserFunctionBlackBox("iapws97_hfg_p"
+			, NULL /* alloc */
+			, iapws97_hfg_p_calc /* value */
+			, NULL /* deriv */
+			, NULL /* deriv2 */
+			, NULL /* free */
+			, 1,2 /* inputs, outputs */
+			, "[hf,hg] = iapws97_hfg_p(p) (enthalpy of liquid at saturation)"
+				"\n\t(see http://freesteam.sf.net)"
+			, 0.0
+		);
+
 
 		return result;
 	}
