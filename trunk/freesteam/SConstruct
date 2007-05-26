@@ -133,6 +133,12 @@ opts.Add(
 	,"freesteam-"+version
 )
 
+opts.Add(
+	'CXX'
+	,"Your C++ compiler"
+	,None
+)
+
 opts.Update(env)
 
 opts.Save('options.cache',env)
