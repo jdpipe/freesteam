@@ -57,13 +57,19 @@ elif config:
 	print "GOT MODELDIR = %s" % modeldir
 
 	# the following JUST WON'T WORK on Windows.
-	cmd = ["python","/c/Program\\ Files/ASCEND/ascend-config","--cppflags","--libs"]
-	print "RUNNING ParseConfig on ",cmd
+	if platform.system()=="Windows":
+		cmd = ["python","/c/Program\\ Files/ASCEND/ascend-config","--cppflags","--libs"]
+	else:
+		cmd = ["ascend-config","--cppflags","--libs"]
+
 	try:
 		asc_env.ParseConfig(cmd)
 		ok_to_build = True
 	except OSError, e:
 		without_ascend_reason="'ascend-config' script failed (%s)" % str(e)
+	except Exception,e:
+		print "ERROR: %s" % str(e)
+		Exit(1)
 
 	print "DONE PARSECONFIG"
 	
