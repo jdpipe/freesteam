@@ -368,7 +368,9 @@ list = Split("""
 	surfacetension.cpp
 """)
 
-lib = env.SharedLibrary('freesteam',list)
+lib = env.SharedLibrary('freesteam',list
+	, LIBS = ['m']
+)
 
 #------------------------------------------------------
 # Build the example program (build-time)

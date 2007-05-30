@@ -534,6 +534,7 @@ const Pressure MPa = Mega * Pascal;
 const Pressure kPa = kilo * Pascal;
 const Energy Joule = Newton * metre;
 const Energy kJ = kilo * Joule;
+const Energy Btu = 1055.05585262 * Joule;
 
 const Power Watt = Joule / second;
 
