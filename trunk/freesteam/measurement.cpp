@@ -27,6 +27,7 @@ namespace MeasurementData {
 	const double lbf = lb * g; // N
 	const double psi = lbf / (in*in); // Pa
 	const double lb_in3 = lb / (in*in*in);
+	const double Btu = 1055.05585262; // Joule
 };
 
 using namespace MeasurementData;
@@ -86,6 +87,7 @@ class UnitsMapInitialiser{
 				, {"MJ",   {{ 1, 2,-2, 0, 0}, 1e6 }}
 				, {"Wh",   {{ 1, 2,-2, 0, 0},          3600 }}
 				, {"kWh",  {{ 1, 2,-2, 0, 0}, 		   1000*3600 }}
+				, {"Btu",  {{ 1, 2,-2, 0, 0},          Btu }}
 				, {"GWh",  {{ 1, 2,-2, 0, 0},          1e9*3600. }}
 				, {"GJ",   {{ 1, 2,-2, 0, 0}, 1e9 }}
 				, {"TJ",   {{ 1, 2,-2, 0, 0}, 1e12 }}
