@@ -48,7 +48,7 @@ elif config:
 			[config,'--models']
 			,stdout=subprocess.PIPE
 		).communicate()[0].strip()
-
+		modeldir = "$INSTALL_ROOT"+modeldir
 	except OSError:
 		without_ascend_reason = "Unable to locate 'modeldir'"
 		ok_to_build = False
@@ -83,7 +83,6 @@ if ok_to_build:
 	asc_env.AppendUnique(LIBS=['freesteam'])
 	asc_env.AppendUnique(LIBPATH=['..'])
 	lib = asc_env.SharedLibrary("freesteam",srcs)
-
 
 	# Install
 	if modeldir:

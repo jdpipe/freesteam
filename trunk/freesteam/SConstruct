@@ -1,7 +1,7 @@
 import os, os.path, commands, platform
 import distutils.sysconfig
 
-version = "0.7.1"
+version = "0.7.2"
 
 #----------------------------------------------------
 # CREATE ENVIRONMENT, LOAD TOOLS, SOME DEFAULT PATHS
@@ -11,16 +11,17 @@ can_install=True
 # Should exist in path
 cppunit_config_command = 'cppunit-config --libs --cflags'
 
+tools = ['swig','disttar','nsis','substinfile']
 if os.environ.has_key('OSTYPE') and os.environ['OSTYPE']=='msys':
 	env = Environment(ENV=os.environ
 		, toolpath = ['scons']
-		, tools = ['mingw','swig','disttar','nsis']
+		, tools = ['mingw']+tools
 	)
 	cppunit_config_command = 'sh cppunit-config --libs --cflags'
 else:
 	env = Environment(ENV=os.environ
 		, toolpath = ['scons']
-		, tools = ['default','swig','disttar']
+		, tools = ['default'] + tools
 	)
 
 	if platform.system()=="Windows":
@@ -83,10 +84,14 @@ if can_install:
 	))
 
 	opts.Add(PathOption(
-		'LIBDIR',"Location to install library", "$INSTALL_PREFIX/lib"
+		'LIBDIR'
+		,"Location to install library"
+		, "$INSTALL_PREFIX/lib"
 	))
 	opts.Add(PathOption(
-		'INCDIR',"Location to install headers", "$INSTALL_PREFIX/include"
+		'INCDIR'
+		,"Location to install headers"
+		,"$INSTALL_PREFIX/include"
 	))
 
 	opts.Add(PathOption(
@@ -137,6 +142,18 @@ opts.Add(
 	'CXX'
 	,"Your C++ compiler"
 	,None
+)
+
+opts.Add(
+	'SONAME'
+	,"'soname' to be assigned to the shared library. Should be 'freesteam.so.1' for example."
+	,"${SHLIBPREFIX}freesteam${SHLIBSUFFIX}"
+)
+
+opts.Add(
+	'SONAME_MINOR'
+	,"Shared library minor version number (for use in installed file name). Should be '.0' for example."
+	,""
 )
 
 opts.Update(env)
@@ -368,7 +385,12 @@ list = Split("""
 	surfacetension.cpp
 """)
 
-lib = env.SharedLibrary('freesteam',list
+lib_env = env.Copy()
+
+if platform.system()=="Linux":
+	lib_env.Append(LINKFLAGS=['-Wl,-soname,$SONAME'])
+	
+lib = lib_env.SharedLibrary('freesteam',list
 	, LIBS = ['m']
 )
 
@@ -439,6 +461,12 @@ def InstallPerm(env, dest, files, perm):
 	for i in obj: 	 
 		env.AddPostAction(i, env.Chmod(str(i), perm))
 	return dest
+
+def InstallPermAs(env, dest, filen, perm): 	 
+	obj = env.InstallAs(dest, filen) 	 
+	for i in obj: 	 
+		env.AddPostAction(i, env.Chmod(str(i), perm))
+	return dest
   	 
 SConsEnvironment.InstallPerm = InstallPerm
 
@@ -446,6 +474,12 @@ SConsEnvironment.InstallPerm = InstallPerm
 SConsEnvironment.InstallProgram = lambda env, dest, files: InstallPerm(env, dest, files, 0755) 	 
 SConsEnvironment.InstallHeader = lambda env, dest, files: InstallPerm(env, dest, files, 0644) 	 
 SConsEnvironment.InstallLibrary = lambda env, dest, files: InstallPerm(env, dest, files, 0644) 	 
+SConsEnvironment.InstallLibraryAs = lambda env, dest, files: InstallPermAs(env, dest, files, 0644) 	 
+
+#------------------------------------------------------
+# Symlink
+
+SConsEnvironment.SymLink = Builder(action='ln -s $SOURCE $TARGET')
 
 #------------------------------------------------------
 # DOXYGEN DOCUMENTATION
@@ -463,7 +497,19 @@ except OSError:
 	pass
 
 if can_install:
-	install_lib = env.InstallLibrary("$LIBDIR", [lib])
+	libname = "$LIBDIR/$SONAME$SONAME_MINOR"
+	install_lib = env.InstallLibraryAs("$INSTALL_ROOT"+libname, [lib])
+
+	link1 = "$LIBDIR/${SHLIBPREFIX}freesteam$SHLIBSUFFIX"
+	link2 = "$LIBDIR/$SONAME"
+
+	install_link1 = None
+	if link1 != libname:
+		install_link1 = env.Command("${INSTALL_ROOT}"+link1,install_lib,"ln -s %s $TARGET" % libname)
+
+	install_link2 = None
+	if env.get("SONAME_MINOR"):
+		install_link2 = env.Command("${INSTALL_ROOT}"+link2,install_lib,"ln -s %s $TARGET"%libname)
 
 	import glob
 	files = glob.glob("*.h")
@@ -473,10 +519,28 @@ if can_install:
 
 	#print files
 
-	install_inc = env.InstallHeader("$INCDIR/freesteam", files)
+	install_inc = env.InstallHeader("$INSTALL_ROOT$INCDIR/freesteam", files)
 		
-	env.Alias('install',[install_lib, install_inc]+install_ascend+install_python)
+	env.Alias('install',[install_lib, install_inc, install_link1, install_link2]+install_ascend+install_python)
 
+#---------------------------------------
+# SUBSTITUTION DICTIONARY for .in files
+
+subst_dict = {
+	'@VERSION@':version
+	,'@SONAME@':env['SONAME']
+	,'@SONAME_MINOR@':env['SONAME_MINOR']
+	,'@SHLIBSUFFIX@':env['SHLIBSUFFIX']
+	,'@SHLIBPREFIX@':env['SHLIBPREFIX']
+}
+
+env.Append(SUBST_DICT=subst_dict)
+
+#------------------------------------------------------
+# CREATE the SPEC file for generation of RPM packages
+
+if platform.system()=="Linux":
+	env.SubstInFile('freesteam.spec.in')
 	
 #--------------------------------------------------------
 # DISTRIBUTION TARBALL
@@ -491,7 +555,7 @@ tar = env.DistTar("dist/"+env['DISTTAR_NAME']
 	, [env.Dir('#')]
 )
 
-#env.Depends(tar,"freesteam.spec")
+env.Depends(tar,"freesteam.spec")
 
 #--------------------------------------------------------
 # DEFAULT TARGETS

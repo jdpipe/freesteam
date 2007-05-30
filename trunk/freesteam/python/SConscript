@@ -53,7 +53,7 @@ if python_env.get('HAVE_SWIG') and python_env.get('HAVE_PYTHON'):
 		, SHLIBPREFIX = '_'
 	)
 
-	env.Alias('python',swiglib)
+	env.Alias('python',swiglib) 
 
 #------------------------------------------------------
 # Recipe for 'CHMOD' ACTION 	 
@@ -68,6 +68,12 @@ def InstallPerm(env, dest, files, perm):
 	for i in obj: 	 
 		env.AddPostAction(i, env.Chmod(str(i), perm))
 	return dest
+
+def InstallPermAs(env, dest, filen, perm): 	 
+	obj = env.InstallAs(dest, filen) 	 
+	for i in obj: 	 
+		env.AddPostAction(i, env.Chmod(str(i), perm))
+	return dest
   	 
 SConsEnvironment.InstallPerm = InstallPerm
 
@@ -75,11 +81,12 @@ SConsEnvironment.InstallPerm = InstallPerm
 SConsEnvironment.InstallProgram = lambda env, dest, files: InstallPerm(env, dest, files, 0755) 	 
 SConsEnvironment.InstallHeader = lambda env, dest, files: InstallPerm(env, dest, files, 0644) 	 
 SConsEnvironment.InstallLibrary = lambda env, dest, files: InstallPerm(env, dest, files, 0644) 	 
+SConsEnvironment.InstallLibraryAs = lambda env, dest, files: InstallPermAs(env, dest, files, 0644) 	 
 
 #-------------------------------------------------------
 # INSTALLATION
 
-libdir = distutils.sysconfig.get_python_lib(plat_specific=True)
+libdir = "$INSTALL_ROOT"+distutils.sysconfig.get_python_lib(plat_specific=True)
 
 install_python = [ env.InstallLibrary(libdir,['_freesteam$SHLIBSUFFIX']) ]
 install_python += [ env.InstallHeader(libdir,['freesteam.py']) ]
