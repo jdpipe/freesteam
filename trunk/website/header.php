@@ -1,6 +1,13 @@
 <?php
 
-$f=$_SERVER['DOCUMENT_ROOT'].$_SERVER['PHP_SELF'];
+DEFINE(DOCROOT,'/home/groups/f/fr/freesteam/htdocs');
+
+if(!defined('DOCROOT')){
+  define(DOCROOT,$SERVER['DOCUMENT_ROOT']);
+}
+
+
+$f=DOCROOT.$_SERVER['PHP_SELF'];
 $t=filemtime($f);
 
 header("Last-Modified: " . gmdate("D, d M Y H:i:s",$t) . " GMT");
