@@ -7,7 +7,7 @@ $viewcvs_base = "http://freesteam.cvs.sourceforge.net/freesteam/freesteam/";
 
 $download_page = "http://sourceforge.net/project/platformdownload.php?group_id=120898";
 
-$freesteam_home = "/freesteam/";
+$freesteam_home = "/";
 
 class Link{
 	function Link($link,$url,$tip=NULL){

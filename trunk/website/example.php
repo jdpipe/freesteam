@@ -110,7 +110,7 @@ int main(){
 
 <h2>Problem 2</h2>
 
-<p>Use freesteam's Python bindings to quickly calculate some steam properties. This currently requires the CVS version of freesteam.</p>
+<p>Use freesteam's Python bindings to quickly calculate some steam properties. This requires versoin 0.7 or newer.</p>
 
 <h3>Solution</h3>
 
