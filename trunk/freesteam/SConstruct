@@ -504,7 +504,7 @@ if can_install:
 	link2 = "$LIBDIR/$SONAME"
 
 	install_link1 = None
-	if link1 != libname:
+	if env.subst(link1) != env.subst(libname):
 		install_link1 = env.Command("${INSTALL_ROOT}"+link1,install_lib,"ln -s %s $TARGET" % libname)
 
 	install_link2 = None
