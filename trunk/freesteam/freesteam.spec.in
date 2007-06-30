@@ -23,13 +23,43 @@ BuildRequires: python >= 2.4, python-devel
 BuildRequires: scons >= 0.96.1
 BuildRequires: swig >= 1.3.24
 BuildRequires: ascend >= 0.9.5.100
-
-Requires: python >= 2.4
+BuildRequires: gcc-c++
 
 %description
 freesteam is an open source implementation of international-standard steam tables 
 from the International Association for the Properties of Water and Steam (IAPWS). 
 See http://freesteam.sf.net for more information.
+
+#----------------------------------
+%if %{defined freesteam_split}
+%package ascend
+Summary: freesteam external library for use with ASCEND
+Group: Applications/Engineering
+Requires: %{name}-%{version}
+Requires: ascend
+%description ascend
+ASCEND bindings for the freesteam steam tables library. This package allows
+IAPWS-IF97 steam tables to be used in ASCEND for modelling of water/steam
+equipment models.
+
+%package python
+Summary: freesteam external library for use with Python
+Group: Applications/Engineering
+Requires: %{name}-%{version}
+Requires: python-{pyver}
+%description python
+Python bindings for the freesteam steam tables library. This package allows
+IAPWS-IF97 steam tables to be calculated using the Python scripting language.
+%endif
+
+%package devel
+Summary: Developer files for freesteam
+Group: Applications/Engineering
+Requires: %{name}-%{version}
+%description
+Developer files for the freesteam IAPWS steam properties library, including
+C++ header files and shared library symlinks.
+#-----------------------------------
 
 %prep
 %setup -q 
@@ -78,18 +108,39 @@ rm -rf %{buildroot}
 %files
 %defattr(-, root, root)
 %doc README.html INSTALL.html LICENSE.txt
-%{_includedir}/%{name}/*.h
-%{_libdir}/libfreesteam.so*
-%{_libdir}/python%{pyver}/site-packages/freesteam.py*
-%{_libdir}/python%{pyver}/site-packages/_freesteam.so
+%{_libdir}/@SONAME@@SONAME_MINOR@
+
+#----------------------------
+%if %{defined freesteam_split}
+%files ascend
+%defattr(-, root, root)
+%endif
 %{ASCEND_MODELS}/libfreesteam.so
 %{ASCEND_MODELS}/testfreesteam.a4c
 
-%changelog
-* Wed May 30 2007 John Pye <john@curioussymbols.com> 0.7.2-0
-- Updated for 0.7.2
+%if %{defined freesteam_split}
+%files python
+%defattr(-, root, root)
+%endif
+%{_libdir}/python%{pyver}/site-packages/freesteam.py*
+%{_libdir}/python%{pyver}/site-packages/_freesteam.so
 
-* Wed Oct 25 2006 John Pye <john.pye@student.unsw.edu.au> 0.6.1-0
+%if %{defined freesteam_split}
+%files python
+%defattr(-, root, root)
+%endif
+%{_includedir}/%{name}/*.h
+%{_libdir}/@SHLIBPREFIX@%{name}@SHLIBSSUFFIX@
+%{_libdir}/@SONAME@
+
+#-----------------------------
+
+%changelog
+* Wed May 30 2007 John Pye <john@curioussymbols.com> 0.7.2
+- Updated for 0.7.2
+- Split ASCEND and Python parts into sub-packages.
+
+* Wed Oct 25 2006 John Pye <john.pye@student.unsw.edu.au> 0.6.1
 - Added to sf.net CVS repository, updating for use with scons
 
 * Wed Sep 27 2006 Christophe Trophime <christophe.trophime@grenoble.cnrs.fr>
