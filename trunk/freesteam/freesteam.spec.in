@@ -22,7 +22,7 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 BuildRequires: python >= 2.4, python-devel
 BuildRequires: scons >= 0.96.1
 BuildRequires: swig >= 1.3.24
-BuildRequires: ascend >= 0.9.5.100
+BuildRequires: ascend-devel >= 0.9.5.100
 BuildRequires: gcc-c++
 
 %description
@@ -56,7 +56,7 @@ IAPWS-IF97 steam tables to be calculated using the Python scripting language.
 Summary: Developer files for freesteam
 Group: Applications/Engineering
 Requires: %{name}-%{version}
-%description
+%description devel
 Developer files for the freesteam IAPWS steam properties library, including
 C++ header files and shared library symlinks.
 #-----------------------------------
@@ -73,15 +73,19 @@ mkdir -p %{buildroot}%{_includedir}
 mkdir -p %{buildroot}%{_datadir}
 mkdir -p %{buildroot}%{ASCEND_MODELS}
 scons %{?_smp_mflags} \
-	SONAME=@SONAME@ \
-	SONAME_MINOR=@SONAME_MINOR@ \
-	CXX="%{?ccache} g++"
+		SONAME=@SONAME@ \
+		SONAME_MINOR=@SONAME_MINOR@ \
+		CXX="%{?ccache} g++" \
+	ascend python
 
 %install
-scons %{?_smp_mflags} install \
-	INSTALL_ROOT=%{buildroot} \
-	INSTALL_PREFIX=%{_prefix} \
-	INSTALL_SHARE=%{_datadir}
+scons %{?_smp_mflags} \
+		SONAME=@SONAME@ \
+		SONAME_MINOR=@SONAME_MINOR@ \
+		INSTALL_ROOT=%{buildroot} \
+		INSTALL_PREFIX=%{_prefix} \
+		INSTALL_SHARE=%{_datadir} \
+	install
 
 # Fix uninstalled files
 mkdir -p %{buildroot}%{_libdir}/python%{pyver}/site-packages/
@@ -96,13 +100,9 @@ cp ascend/libfreesteam.so %{buildroot}%{ASCEND_MODELS}
 rm -rf %{buildroot} 
 
 %post
-#ln -s %{_libdir}/@SONAME@@SONAME_MINOR@ %{_libdir}/@SONAME@ 
-#ln -s %{_libdir}/@SONAME@@SONAME_MINOR@ %{_libdir}/@SHLIBPREFIX@%{name}@SHLIBSSUFFIX@
 /sbin/ldconfig
 
 %postun
-#rm %{_libdir}/@SONAME@
-#rm %{_libdir}/@SHLIBPREFIX@%{name}@SHLIBSSUFFIX@
 /sbin/ldconfig
 
 %files
@@ -126,11 +126,11 @@ rm -rf %{buildroot}
 %{_libdir}/python%{pyver}/site-packages/_freesteam.so
 
 %if %{defined freesteam_split}
-%files python
+%files devel
 %defattr(-, root, root)
 %endif
 %{_includedir}/%{name}/*.h
-%{_libdir}/@SHLIBPREFIX@%{name}@SHLIBSSUFFIX@
+%{_libdir}/@SHLIBPREFIX@%{name}@SHLIBSUFFIX@
 %{_libdir}/@SONAME@
 
 #-----------------------------

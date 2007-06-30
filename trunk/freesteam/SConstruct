@@ -3,6 +3,10 @@ import distutils.sysconfig
 
 version = "0.7.2"
 
+soname_major = ".0"
+soname_minor = ".0"
+soname_default = "${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}"
+
 #----------------------------------------------------
 # CREATE ENVIRONMENT, LOAD TOOLS, SOME DEFAULT PATHS
 
@@ -145,15 +149,21 @@ opts.Add(
 )
 
 opts.Add(
-	'SONAME'
-	,"'soname' to be assigned to the shared library. Should be 'freesteam.so.1' for example."
-	,"${SHLIBPREFIX}freesteam${SHLIBSUFFIX}"
+	'SONAME_MAJOR'
+	,"major version of the freesteam library"
+	,soname_major
 )
 
 opts.Add(
 	'SONAME_MINOR'
 	,"Shared library minor version number (for use in installed file name). Should be '.0' for example."
-	,""
+	,soname_minor
+)
+
+opts.Add(
+	'SONAME'
+	,"'soname' to be assigned to the shared library. Should be 'freesteam.so.1' for example."
+	,soname_default
 )
 
 opts.Update(env)
