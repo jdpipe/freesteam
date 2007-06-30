@@ -2,7 +2,7 @@ Import('env')
 
 python_env = env.Copy()
 
-import distutils.sysconfig, platform, os
+import distutils.sysconfig, platform, os, sys
 
 python_env.Append(CPPPATH=['#'])
 python_env.Append(LIBPATH=['#'])
@@ -28,9 +28,9 @@ if python_env.get('HAVE_SWIG'):
 # try 'scons install' then 'ipython' with 'from freesteam import *'
 
 if platform.system()=="Windows":
-	python_lib = "python24"
+	python_lib = "python%s%s"%(sys.version_info[0],sys.version_info[1])
 else:
-	python_lib = "python2.4"
+	python_lib = "python%s.%s"%(sys.version_info[0],sys.version_info[1])
 
 if python_env.get('HAVE_SWIG') and python_env.get('HAVE_PYTHON'):
 

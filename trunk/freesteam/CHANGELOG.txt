@@ -1,5 +1,13 @@
 CHANGELOG
 
+0.7.2
+Saturday, 30 June 2007
+----------------------
+Fixing packaging of Freesteam so that it can be packaged correctly
+with Fedora systems, in preparation for submitting to Fedora Extras.
+There are some problems with DLL files on Windows that need to be
+resolved before this release can go ahead.
+
 0.7.1
 Monday, 12 March 2007
 ---------------------
