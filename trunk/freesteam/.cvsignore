@@ -39,3 +39,7 @@ freesteam.pyc
 _freesteam.def
 build
 prob
+*.os
+diff.patch
+dist
+
