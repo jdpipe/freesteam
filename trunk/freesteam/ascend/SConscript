@@ -45,10 +45,11 @@ elif config:
 
 	try:
 		modeldir = subprocess.Popen(
-			[config,'--models']
+			['"%s" --models' % config]
 			,stdout=subprocess.PIPE
-		).communicate()[0].strip()
-		modeldir = "$INSTALL_ROOT"+modeldir
+		).communicate()
+		modeldir = "${INSTALL_ROOT}"+modeldir
+		print "GOT MODELDIR=%s" % modeldir
 	except OSError:
 		without_ascend_reason = "Unable to locate 'modeldir'"
 		ok_to_build = False
@@ -58,12 +59,13 @@ elif config:
 
 	# the following JUST WON'T WORK on Windows.
 	if platform.system()=="Windows":
-		cmd = ["python","/c/Program\\ Files/ASCEND/ascend-config","--cppflags","--libs"]
+		cmd = ['"%s" --cppflags --libs' % config]
 	else:
 		cmd = ["ascend-config","--cppflags","--libs"]
 
 	try:
 		asc_env.ParseConfig(cmd)
+		print "GOT CPPATH=%s"%asc_env['CPPPATH']
 		ok_to_build = True
 	except OSError, e:
 		without_ascend_reason="'ascend-config' script failed (%s)" % str(e)

@@ -23,6 +23,9 @@ OutFile ${OUTFILE}.exe
 OutFile freesteam-setup.exe
 !endif
 
+!ifndef PYVERSION
+!define PYVERSION "2.5"
+!endif
 
 ;SetCompressor /FINAL zlib
 SetCompressor /SOLID lzma
@@ -283,9 +286,9 @@ SectionEnd
 ; UTILITY ROUTINES
 
 Function DetectPython
-	ReadRegStr $R6 HKCU "SOFTWARE\Python\PythonCore\2.4\InstallPath" ""
+	ReadRegStr $R6 HKCU "SOFTWARE\Python\PythonCore\${PYVERSION}\InstallPath" ""
 	${If} $R6 == ''
-		ReadRegStr $R6 HKLM "SOFTWARE\Python\PythonCore\2.4\InstallPath" ""
+		ReadRegStr $R6 HKLM "SOFTWARE\Python\PythonCore\${PYVERSION}\InstallPath" ""
 		${If} $R6 == ''
 			Push "No registry key found"
 			Push "NOK"

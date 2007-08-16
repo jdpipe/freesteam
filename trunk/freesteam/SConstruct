@@ -3,8 +3,13 @@ import distutils.sysconfig
 
 version = "0.7.2"
 
-soname_major = ".0"
-soname_minor = ".0"
+if platform.system()=="Windows":
+	soname_major = ""
+	soname_minor = ""
+else:
+	soname_major = ".0"
+	soname_minor = ".0"
+
 soname_default = "${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}"
 
 #----------------------------------------------------
@@ -21,7 +26,10 @@ if os.environ.has_key('OSTYPE') and os.environ['OSTYPE']=='msys':
 		, toolpath = ['scons']
 		, tools = ['mingw']+tools
 	)
-	cppunit_config_command = 'sh cppunit-config --libs --cflags'
+	if env.WhereIs('cppunit-config'):
+		cppunit_config_command = 'sh cppunit-config --libs --cflags'
+	else:
+		cppunit_config_command = None
 else:
 	env = Environment(ENV=os.environ
 		, toolpath = ['scons']
@@ -51,9 +59,8 @@ if not default_emso_location or not os.path.exists(default_emso_location):
 
 # Find 'ascend-config' script, if available
 if platform.system()=='Windows':
-	default_ascend_config="C:\\Program Files\\ASCEND\\ascend-config.bat"
-	if not os.path.exists(default_ascend_config):
-		default_ascend_config=None
+	# TODO should really get ascend-config location from Registry...
+	default_ascend_config=None
 
 else:
 	try:
@@ -304,6 +311,7 @@ def CheckAscend(context):
 	try:
 		context.Message("Checking for ascend-config... ")
 
+		shell = None
 		path = context.env.get("ASCEND_CONFIG")
 		loc = "configuration"
 		if not path and platform.system()=="Windows":
@@ -317,7 +325,8 @@ def CheckAscend(context):
 			BIN,_t = _winreg.QueryValueEx(y,"INSTALL_BIN")
 			_winreg.CloseKey(y)
 			_winreg.CloseKey(x)
-			path = os.path.join(BIN,"ascend-config.bat")
+			path = os.path.join(BIN,"ascend-config")
+			shell = "python"
 			loc = "registry"	
 		
 		if not os.path.isfile(path):
@@ -325,6 +334,7 @@ def CheckAscend(context):
 			return 0
 
 		context.env['ASCEND_CONFIG'] = path
+		context.env['ASCEND_CONFIG_SHELL'] = shell
 		context.Result("ok")
 		return 1
 	except Exception,e:
@@ -379,7 +389,8 @@ if _swigv:
 
 # ASCEND
 
-conf.CheckAscend()
+if conf.CheckAscend():
+	env['HAVE_ASCEND'] = True
 
 env = conf.Finish()
 
@@ -507,20 +518,29 @@ except OSError:
 	pass
 
 if can_install:
+	install_common = []
+	
 	libname = "$LIBDIR/$SONAME$SONAME_MINOR"
-	install_lib = env.InstallLibraryAs("$INSTALL_ROOT"+libname, [lib])
+	if platform.system()=="Windows":
+		install_lib = env.InstallLibrary("$INSTALL_ROOT$LIBDIR",[lib])
+	else:
+		install_lib = env.InstallLibraryAs("$INSTALL_ROOT"+libname, [lib])
 
-	link1 = "$LIBDIR/${SHLIBPREFIX}freesteam$SHLIBSUFFIX"
-	link2 = "$LIBDIR/$SONAME"
+		link1 = "$LIBDIR/${SHLIBPREFIX}freesteam$SHLIBSUFFIX"
+		link2 = "$LIBDIR/$SONAME"
 
-	install_link1 = None
-	if env.subst(link1) != env.subst(libname):
-		install_link1 = env.Command("${INSTALL_ROOT}"+link1,install_lib,"ln -s %s $TARGET" % libname)
+		install_link1 = None
+		if env.subst(link1) != env.subst(libname):
+			install_link1 = env.Command("${INSTALL_ROOT}"+link1,install_lib,"ln -s %s $TARGET" % libname)
 
-	install_link2 = None
-	if env.get("SONAME_MINOR"):
-		install_link2 = env.Command("${INSTALL_ROOT}"+link2,install_lib,"ln -s %s $TARGET"%libname)
+		install_link2 = None
+		if env.get("SONAME_MINOR"):
+			install_link2 = env.Command("${INSTALL_ROOT}"+link2,install_lib,"ln -s %s $TARGET"%libname)
+		
+		install_common += [install_link1, install_link2]
 
+	install_common += [install_lib]
+	
 	import glob
 	files = glob.glob("*.h")
 
@@ -529,9 +549,9 @@ if can_install:
 
 	#print files
 
-	install_inc = env.InstallHeader("$INSTALL_ROOT$INCDIR/freesteam", files)
+	install_common += [env.InstallHeader("$INSTALL_ROOT$INCDIR/freesteam", files)]
 		
-	env.Alias('install',[install_lib, install_inc, install_link1, install_link2]+install_ascend+install_python)
+	env.Alias('install',install_common + install_ascend + install_python)
 
 #---------------------------------------
 # SUBSTITUTION DICTIONARY for .in files
@@ -573,6 +593,9 @@ env.Depends(tar,"freesteam.spec")
 default_targets = ['example','cli','test']
 if env.get('HAVE_PYTHON') and env.get('HAVE_SWIG'):
 	default_targets.append('python')
+
+if env.get('HAVE_ASCEND'):
+	default_targets.append('ascend')
 
 env.Default(default_targets)
 
