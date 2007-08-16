@@ -197,7 +197,11 @@ Section "Start Menu Shortcuts"
   ${If} $PYINSTALLED == "1"
 	CreateShortCut "$SMPROGRAMS\freesteam\Python README.lnk" "$INSTDIR\python\README.txt" "" "$INSTDIR\python\README.txt" 0
   ${EndIf}
-  	
+  
+  ${If} $ASCENDINSTALLED == "1"
+	CreateShortCut "$SMPROGRAMS\freesteam\ASCEND models.lnk" "$INSTDIR\ascend" "" "$INSTDIR\ascend" 0
+  ${EndIf}
+  
 SectionEnd
 
 ;------------------------------------------------------------------

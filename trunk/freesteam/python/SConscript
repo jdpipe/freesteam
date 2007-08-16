@@ -51,6 +51,7 @@ if python_env.get('HAVE_SWIG') and python_env.get('HAVE_PYTHON'):
 	swiglib = python_env.SharedLibrary("freesteam",swigobj
 		, LIBS = _libs
 		, SHLIBPREFIX = '_'
+		, SHLIBSUFFIX = ".pyd"
 	)
 
 	env.Alias('python',swiglib) 
