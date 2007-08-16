@@ -130,7 +130,8 @@ rm -rf %{buildroot}
 %defattr(-, root, root)
 %endif
 %{_includedir}/%{name}/*.h
-%{_libdir}/@SHLIBPREFIX@%{name}@SHLIBSUFFIX@
+
+%{_libdir}/lib%{name}.so
 %{_libdir}/@SONAME@
 
 #-----------------------------

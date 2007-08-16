@@ -1,7 +1,9 @@
-import os, os.path, commands, platform
+import os, os.path, commands, platform, sys
 import distutils.sysconfig
 
 version = "0.7.2"
+
+pyversion = "%d.%d" % (sys.version_info[0],sys.version_info[1])
 
 if platform.system()=="Windows":
 	soname_major = ""
@@ -171,6 +173,12 @@ opts.Add(
 	'SONAME'
 	,"'soname' to be assigned to the shared library. Should be 'freesteam.so.1' for example."
 	,soname_default
+)
+
+opts.Add(
+	'WIN_INSTALLER_NAME'
+	,"Name of the installer .exe to create under Windows (minus the '.exe')"
+	,"freesteam-"+version+"-py"+pyversion+".exe"
 )
 
 opts.Update(env)
@@ -394,6 +402,14 @@ if conf.CheckAscend():
 
 env = conf.Finish()
 
+# install
+
+if platform.system()=="Windows":
+	with_installer=1
+else:
+	with_installer=0
+	without_installer_reason = "only possible under Windows"
+
 #------------------------------------------------------
 # BUILD THE STATIC LIBRARY
 
@@ -553,6 +569,26 @@ if can_install:
 		
 	env.Alias('install',install_common + install_ascend + install_python)
 
+#------------------------------------------------------
+# WINDOWS INSTALLER
+
+if not env.get('NSIS'):
+	with_installer = False
+	without_installer_reason = "NSIS not found"
+
+if with_installer:
+	env.Append(NSISDEFINES={
+		'OUTFILE':"#dist/"+env['WIN_INSTALLER_NAME']
+		,"VERSION":version
+		,'PYVERSION':pyversion
+	})
+	installer = env.Installer('installer.nsi')
+	Depends(installer,["python","ascend"])
+	env.Alias('installer',installer)
+else:
+	print "Skipping... Windows installer isn't being built:",without_installer_reason
+
+
 #---------------------------------------
 # SUBSTITUTION DICTIONARY for .in files
 
@@ -569,8 +605,7 @@ env.Append(SUBST_DICT=subst_dict)
 #------------------------------------------------------
 # CREATE the SPEC file for generation of RPM packages
 
-if platform.system()=="Linux":
-	env.SubstInFile('freesteam.spec.in')
+env.SubstInFile('freesteam.spec.in')
 	
 #--------------------------------------------------------
 # DISTRIBUTION TARBALL

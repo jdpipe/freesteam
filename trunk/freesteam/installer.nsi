@@ -12,15 +12,19 @@
 
 ; The name of the installer
 
-Name "freesteam"
+!ifndef VERSION
+!define VERSION 0.svn
+!endif
+
+Name "freesteam ${VERSION}"
 
 !include LogicLib.nsh
 
 ; The file to write
 !ifdef OUTFILE
-OutFile ${OUTFILE}.exe
+OutFile ${OUTFILE}
 !else
-OutFile freesteam-setup.exe
+OutFile freesteam-${VERSION}-py${PYVERSION}-setup.exe
 !endif
 
 !ifndef PYVERSION
@@ -116,9 +120,9 @@ SectionEnd
 ;--------------------------------
 
 Section "Static library & header files"
-  DetailPrint "--- STATIC LIBRARY & HEADER FILES ---"
-	SetOutPath $INSTDIR\lib
-	File "libfreesteam.a"
+  DetailPrint "--- LIBRARY & HEADER FILES ---"
+	SetOutPath $SYSDIR
+	File "freesteam.dll"
 	SetOutPath $INSTDIR\include
 	File "*.h"
 	WriteRegDWORD HKLM "SOFTWARE\freesteam" "Lib" 1
@@ -215,7 +219,7 @@ Section "Uninstall"
 	IntCmp $0 0 unnolib unlib
 
 unlib:
-	RmDir /r $INSTDIR\lib
+	Delete $SYSDIR\freesteam.dll
 	RmDir /r $INSTDIR\include
 
 unnolib:
