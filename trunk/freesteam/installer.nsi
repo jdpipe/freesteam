@@ -156,7 +156,7 @@ Section "Python language bindings"
 		SetOutPath $PYPATH\Lib\site-packages
 
 		; Python interface
-		File python\_freesteam.dll
+		File python\_freesteam.pyd
 		File python\freesteam.py
 
 		StrCpy $PYINSTALLED "1"
