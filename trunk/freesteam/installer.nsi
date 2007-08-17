@@ -172,7 +172,7 @@ Section "ASCEND hooks"
 		DetailPrint "--- ASCEND HOOKS ---"
 		SetOutPath $INSTDIR\ascend
 		File ascend\*.a4c
-		File ascend\freesteam.dll
+		File ascend\freesteam_ascend.dll
 		StrCpy $ASCENDINSTALLED "1"
 		WriteRegDWORD HKLM "SOFTWARE\freesteam" "ASCEND" 1
 	${Else}
