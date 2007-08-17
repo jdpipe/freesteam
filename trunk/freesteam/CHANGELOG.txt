@@ -1,12 +1,20 @@
 CHANGELOG
 
 0.7.2
-Saturday, 30 June 2007
+Friday, 17 August 2007
 ----------------------
-Fixing packaging of Freesteam so that it can be packaged correctly
-with Fedora systems, in preparation for submitting to Fedora Extras.
-There are some problems with DLL files on Windows that need to be
-resolved before this release can go ahead.
+
+For Windows users:
+- ASCEND hook DLL renamed to freesteam_ascend.dll for use with
+  current ASCEND (0.9.5.113 and newer)
+- Static library has been changed to a shared library (DLL) on Windows
+  to reduce duplication of code between Python module and core DLL.
+- Changed name of Python module to _freesteam.pyd in line with
+  the new requirements of Python 2.5.
+
+For Linux users:
+- Fixing packaging of Freesteam so that it can be packaged correctly
+  with Fedora systems, in preparation for submitting to Fedora Extras.
 
 0.7.1
 Monday, 12 March 2007
