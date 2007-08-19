@@ -1,8 +1,11 @@
 CHANGELOG
 
 0.7.2
-Friday, 17 August 2007
+Sunday, 19 August 2007
 ----------------------
+
+General:
+- libfreesteam is now a shared library/DLL.
 
 For Windows users:
 - ASCEND hook DLL renamed to freesteam_ascend.dll for use with
@@ -13,8 +16,8 @@ For Windows users:
   the new requirements of Python 2.5.
 
 For Linux users:
-- Fixing packaging of Freesteam so that it can be packaged correctly
-  with Fedora systems, in preparation for submitting to Fedora Extras.
+- Various improvements to RPM packaging.
+- Improved detection of ASCEND at compile-time.
 
 0.7.1
 Monday, 12 March 2007
