@@ -9,6 +9,7 @@ Name:		freesteam
 Summary:	Steam tables library (implements IAPWS-IF97 and IAPWS-95 correlations)
 Version:	@VERSION@
 
+# Following values are filled in by SCons when .spec.in file converted to .spec:
 %define SONAME_MAJOR @SONAME_MAJOR@
 %define SONAME_MINOR @SONAME_MINOR@
 
