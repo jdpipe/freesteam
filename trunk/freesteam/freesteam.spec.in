@@ -1,9 +1,16 @@
 %define pyver %(python -c 'import sys ; print sys.version[:3]')
+%define ascendversion %(ascend-config --version)
 %define ASCEND_MODELS %(ascend-config --models)
+
+# comment out if you want a monolithic RPM
+%define freesteam_split 1
 
 Name:		freesteam
 Summary:	Steam tables library (implements IAPWS-IF97 and IAPWS-95 correlations)
 Version:	@VERSION@
+
+%define SONAME_MAJOR @SONAME_MAJOR@
+%define SONAME_MINOR @SONAME_MINOR@
 
 # Use release 0.* so that other users can do patch releases with a higher number
 # and still have the update occur automatically.
@@ -35,8 +42,8 @@ See http://freesteam.sf.net for more information.
 %package ascend
 Summary: freesteam external library for use with ASCEND
 Group: Applications/Engineering
-Requires: %{name}-%{version}
-Requires: ascend
+Requires: %{name} = %{version}-%{release}
+Requires: ascend = %{ascendversion}
 %description ascend
 ASCEND bindings for the freesteam steam tables library. This package allows
 IAPWS-IF97 steam tables to be used in ASCEND for modelling of water/steam
@@ -45,8 +52,8 @@ equipment models.
 %package python
 Summary: freesteam external library for use with Python
 Group: Applications/Engineering
-Requires: %{name}-%{version}
-Requires: python-{pyver}
+Requires: %{name} = %{version}-%{release}
+Requires: python = %{pyver}
 %description python
 Python bindings for the freesteam steam tables library. This package allows
 IAPWS-IF97 steam tables to be calculated using the Python scripting language.
@@ -55,7 +62,7 @@ IAPWS-IF97 steam tables to be calculated using the Python scripting language.
 %package devel
 Summary: Developer files for freesteam
 Group: Applications/Engineering
-Requires: %{name}-%{version}
+Requires: %{name} = %{version}-%{release}
 %description devel
 Developer files for the freesteam IAPWS steam properties library, including
 C++ header files and shared library symlinks.
@@ -73,15 +80,11 @@ mkdir -p %{buildroot}%{_includedir}
 mkdir -p %{buildroot}%{_datadir}
 mkdir -p %{buildroot}%{ASCEND_MODELS}
 scons %{?_smp_mflags} \
-		SONAME=@SONAME@ \
-		SONAME_MINOR=@SONAME_MINOR@ \
 		CXX="%{?ccache} g++" \
 	ascend python
 
 %install
 scons %{?_smp_mflags} \
-		SONAME=@SONAME@ \
-		SONAME_MINOR=@SONAME_MINOR@ \
 		INSTALL_ROOT=%{buildroot} \
 		INSTALL_PREFIX=%{_prefix} \
 		INSTALL_SHARE=%{_datadir} \
@@ -92,9 +95,10 @@ mkdir -p %{buildroot}%{_libdir}/python%{pyver}/site-packages/
 cp python/freesteam.py %{buildroot}%{_libdir}/python%{pyver}/site-packages/
 cp python/_freesteam.so %{buildroot}%{_libdir}/python%{pyver}/site-packages/
 
+# Install ASCEND models
 mkdir -p %{buildroot}%{ASCEND_MODELS}
 cp ascend/testfreesteam.a4c %{buildroot}%{ASCEND_MODELS}
-cp ascend/libfreesteam.so %{buildroot}%{ASCEND_MODELS}
+cp ascend/libfreesteam_ascend.so %{buildroot}%{ASCEND_MODELS}
 
 %clean
 rm -rf %{buildroot} 
@@ -107,15 +111,15 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-, root, root)
-%doc README.html INSTALL.html LICENSE.txt
-%{_libdir}/@SONAME@@SONAME_MINOR@
+%doc CHANGELOG.txt README.html LICENSE.txt
+%{_libdir}/lib%{name}.so%{SONAME_MAJOR}%{SONAME_MINOR}
 
 #----------------------------
 %if %{defined freesteam_split}
 %files ascend
 %defattr(-, root, root)
 %endif
-%{ASCEND_MODELS}/libfreesteam.so
+%{ASCEND_MODELS}/libfreesteam_ascend.so
 %{ASCEND_MODELS}/testfreesteam.a4c
 
 %if %{defined freesteam_split}
@@ -130,16 +134,17 @@ rm -rf %{buildroot}
 %defattr(-, root, root)
 %endif
 %{_includedir}/%{name}/*.h
-
+%{_libdir}/lib%{name}.so%{SONAME_MAJOR}
 %{_libdir}/lib%{name}.so
-%{_libdir}/@SONAME@
 
 #-----------------------------
 
 %changelog
-* Wed May 30 2007 John Pye <john@curioussymbols.com> 0.7.2
+* Sun Aug 19 2007 John Pye <john@curioussymbols.com> 0.7.2
 - Updated for 0.7.2
 - Split ASCEND and Python parts into sub-packages.
+- Renamed ASCEND external library
+- Implemented correct 'soname' library versioning for libfreesteam.
 
 * Wed Oct 25 2006 John Pye <john.pye@student.unsw.edu.au> 0.6.1
 - Added to sf.net CVS repository, updating for use with scons
