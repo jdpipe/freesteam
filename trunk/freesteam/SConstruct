@@ -126,11 +126,11 @@ opts.Add(BoolOption(
 	,True
 ))
 
-opts.Add(
+opts.Add(PathOption(
 	'ASCEND_CONFIG'
 	,"Location of the 'ascend-config' script"
 	,default_ascend_config
-)
+))
 
 opts.Add(PathOption(
 	'ASCEND_SRCROOT'
@@ -310,15 +310,13 @@ def CheckSwigVersion(context):
 # ASCEND
  
 def CheckAscend(context):
-	try:
 		context.Message("Checking for ascend-config... ")
-
-		shell = None
-		loc = "path"
-		path = context.env.get("ASCEND_CONFIG")
-		if path != default_ascend_config:
-			loc = "user-specified location"
-		if not path and platform.system()=="Windows":
+		
+		if context.env.get("ASCEND_CONFIG"):
+			loc = "path"
+			path = str(context.env.get("ASCEND_CONFIG"))
+		elif platform.system()=="Windows":
+			loc = "registry"	
 			try:
 				import _winreg
 				x=_winreg.ConnectRegistry(None,_winreg.HKEY_LOCAL_MACHINE)
@@ -330,20 +328,20 @@ def CheckAscend(context):
 			_winreg.CloseKey(y)
 			_winreg.CloseKey(x)
 			path = os.path.join(BIN,"ascend-config")
-			shell = "python"
-			loc = "registry"	
+		else:
+			context.Result("not found")
+			return 0				
 		
 		if not os.path.isfile(path):
-			context.Result("not found in %s" % loc)
+			context.Result("not found at '%s' (from %s)" % (str(path),loc))
 			return 0
 
 		context.env['ASCEND_CONFIG'] = path
-		context.env['ASCEND_CONFIG_SHELL'] = shell
-		context.Result("ok, %s" % path)
+		context.Result("ok, %s" % str(path))
 		return 1
-	except Exception,e:
-		context.Result("failed (%s)" % str(e))
-		return 0
+#	except Exception,e:
+#		context.Result("failed (%s)" % str(e))
+#		return 0
 
 #------------------------------------------------------
 # CONFIGURATION
@@ -634,6 +632,9 @@ if env.get('HAVE_PYTHON') and env.get('HAVE_SWIG'):
 
 if env.get('HAVE_ASCEND'):
 	default_targets.append('ascend')
+
+if env.get('NSIS'):
+	default_targets.append('installer')
 
 env.Default(default_targets)
 
