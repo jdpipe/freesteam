@@ -104,6 +104,10 @@ Section "freesteam (required)"
   File "LICENSE.txt"
   File "README.html"
   File "CHANGELOG.txt"
+
+  ; We'll use the Windows directory for the DLL
+  SetOutPath $SYSDIR
+  File "freesteam.dll"
     
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\freesteam "Install_Dir" "$INSTDIR"
@@ -119,10 +123,10 @@ SectionEnd
 
 ;--------------------------------
 
-Section "Static library & header files"
-  DetailPrint "--- LIBRARY & HEADER FILES ---"
-	SetOutPath $SYSDIR
-	File "freesteam.dll"
+Section "Static library and header files"
+  DetailPrint "--- HEADER FILES ---"
+	SetOutPath $INSTDIR\lib
+	File "libfreesteam.a"
 	SetOutPath $INSTDIR\include
 	File "*.h"
 	WriteRegDWORD HKLM "SOFTWARE\freesteam" "Lib" 1
@@ -151,6 +155,7 @@ Section "Python language bindings"
 		; README file for python users
 		SetOutPath $INSTDIR\python
 		File python\README.txt
+		File python\example.py
 
 		; Set output path to the installation directory.
 		SetOutPath $PYPATH\Lib\site-packages
@@ -216,58 +221,48 @@ Section "Uninstall"
 ;--- header files & static lib ---
 
 	ReadRegDWORD $0 HKLM "SOFTWARE\freesteam" "Lib"
-	IntCmp $0 0 unnolib unlib
-
-unlib:
-	Delete $SYSDIR\freesteam.dll
-	RmDir /r $INSTDIR\include
-
-unnolib:
+	${If} $0 != 0
+		RmDir /r $INSTDIR\include
+		Delete $INSTDIR\lib\libfreesteam.a
+		RmDir $INSTDIR\lib
+	${EndIf}
 
 ;--- example code ---
 
 	ReadRegDWORD $0 HKLM "SOFTWARE\freesteam" "Example"
-	IntCmp $0 0 unnoex unex
-
-unex:
-	RmDir /r $INSTDIR\example
-
-unnoex:
+	${If} $0 != 0
+			RmDir /r $INSTDIR\example
+	${EndIf}
 
 ;--- python components ---
 
 	ReadRegDWORD $0 HKLM "SOFTWARE\freesteam" "Python"
-	IntCmp $0 0 unnopython unpython
-  
-unpython:
-	DetailPrint "--- REMOVING PYTHON COMPONENTS ---"
-	Delete $PYPATH\Lib\site-packages\_freesteam.dll
-	Delete $PYPATH\Lib\site-packages\freesteam.py*
-
-unnopython:
-
+	${If} $0 != 0
+		DetailPrint "--- REMOVING PYTHON COMPONENTS ---"
+		Delete $PYPATH\Lib\site-packages\_freesteam.dll
+		Delete $PYPATH\Lib\site-packages\freesteam.py*
+		Delete $INSTDIR\python\README.txt
+		Delete $INSTDIR\python\example.py
+		RmDir $INSTDIR\python
+	${EndIf}
+	
 ;--- ASCEND hooks ---
 
 	ReadRegDWORD $0 HKLM "SOFTWARE\freesteam" "ASCEND"
-	IntCmp $0 0 unnoascend unascend
-  
-unascend:
-	DetailPrint "--- REMOVING ASCEND HOOKS ---"
-	RmDir /r "$INSTDIR\ascend"
-	
-unnoascend:
+	${If} $0 != 0:
+		DetailPrint "--- REMOVING ASCEND HOOKS ---"
+		RmDir /r "$INSTDIR\ascend"
+	${EndIf}
 	
 
 ;--- start menu ---
 
 	ReadRegDWORD $1 HKLM "SOFTWARE\freesteam" "StartMenu"
-	IntCmp $1 0 unnostart unstart 
-unstart:
-	; Remove shortcuts, if any
-	DetailPrint "--- REMOVING START MENU SHORTCUTS ---"
-	RmDir /r "$SMPROGRAMS\freesteam"
-
-unnostart:
+	${If} $1 != 0:
+		; Remove shortcuts, if any
+		DetailPrint "--- REMOVING START MENU SHORTCUTS ---"
+		RmDir /r "$SMPROGRAMS\freesteam"
+	${EndIf}
 
 ;--- common components ---
 
@@ -277,8 +272,10 @@ unnostart:
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\freesteam"
 	DeleteRegKey HKLM "SOFTWARE\freesteam"
 
+
 	; Remove files and uninstaller
 
+	Delete $SYSDIR\freesteam.dll
 	Delete $INSTDIR\LICENSE.txt
 	Delete $INSTDIR\README.html
 	Delete $INSTDIR\CHANGELOG.txt

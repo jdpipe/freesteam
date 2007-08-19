@@ -1,6 +1,20 @@
 #!/usr/bin/python
+
+# This example program can be used with the Python bindings 
+# for freesteam. It plots a series of property curves on a T-s 
+# diagram. For it to work, you need to have 'numpy' and 
+# 'matplotlib' installed. For details of those, go to
+# http://matplotlib.sf.net.
+
 from freesteam import *
-from pylab import *
+
+try:
+	from pylab import *
+except ImportError:
+	print "This example requires that you have 'matplotlib' installed."
+	print "You can download it from http://matplotlib.sf.net."
+	import sys
+	sys.exit(1)
 
 hh = linspace(500,3700,200)
 

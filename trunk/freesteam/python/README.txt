@@ -15,14 +15,21 @@ Python code:
   print "density = %f kg/m3" % S.dens().to("kg/m3")
   
 If you try the following using IPython (http://ipython.scipy.org)
-you will find that this makes a very convenient way to quickly
-do steam calculations.
+you will find that this makes a convenient way to quickly
+do steam calculations. You might want to make the 'Measurement'
+class a little faster to type, for example as follows:
 
-Note that the 'Measurement' class has a correspondence with the
+  from freesteam import *
+  M = Measurement
+  p = M(1,"bar")
+
+Note that this 'Measurement' class has a correspondence with the
 'Units' class in the freesteam C++ code.
 
 The set of units of measurement is listed in the source code in
-the file measurement.cpp.
+the file measurement.cpp. If you find yourself needing units of
+measurement that are not available with the provided library,
+let me know and I can add them in the next release.
 
 If you have any questions with the Python interface for
 freesteam, please let me know via the contact details at
@@ -33,11 +40,11 @@ Windows users
 -------------
 
 The windows installer will place _freesteam.dll in your
-Python directory, but only if Python was detected at the 
-time you installed freesteam. If you installed python afterwards,
-just re-run the freesteam setup program and the python 
-components should then be instlled. You can check the detailed
-install log to make sure.
+Python directory, but only if Python 2.5 was detected at the 
+time you installed freesteam. If you installed Python afterwards,
+just re-run the freesteam setup program and the Python 
+components should then be installed. You can check the detailed
+install log to make sure that the required DLL is in place.
 
 Linux users
 -----------
@@ -45,7 +52,19 @@ Linux users
 'scons install' should put your _freesteam.so and freesteam.py
 files in the correct location so that python finds them.
 
+An RPM for Fedora is available. You must install 'freesteam-python'
+in order to get access to freesteam from the Python language.
+
+Example python script
+---------------------
+
+A small example script is included in the the freesteam package.
+On Windows, it is installed in the same directory as this
+README file. It can be run with python and wil produce a simple
+'T-s' diagram for steam, plotted using the matplotlib plotting
+library, which you can download from http://matplotlib.sf.net.
+
 
 -- 
 John Pye
-Mar 2007
+Aug 2007
