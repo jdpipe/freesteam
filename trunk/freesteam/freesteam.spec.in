@@ -2,7 +2,7 @@
 %define ascendversion %(ascend-config --version)
 %define ASCEND_MODELS %(ascend-config --models)
 
-# comment out if you want a monolithic RPM
+# comment out the following line if you want a monolithic RPM
 %define freesteam_split 1
 
 Name:		freesteam
@@ -25,6 +25,9 @@ Prefix:		%{_prefix}
 Packager:	John Pye
 Vendor:		John Pye
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
+
+# shouldn't be required by needed because of apparent bug in Build Service:
+BuildRequires: desktop-file-utils
 
 BuildRequires: python >= 2.4, python-devel
 BuildRequires: scons >= 0.96.1
@@ -145,6 +148,7 @@ rm -rf %{buildroot}
 - Split ASCEND and Python parts into sub-packages.
 - Renamed ASCEND external library
 - Implemented correct 'soname' library versioning for libfreesteam.
+- Fixed detection of ascend-config.
 
 * Wed Oct 25 2006 John Pye <john.pye@student.unsw.edu.au> 0.6.1
 - Added to sf.net CVS repository, updating for use with scons
