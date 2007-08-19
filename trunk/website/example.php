@@ -32,7 +32,7 @@ specific volume as (2) but with the specific internal energy raised by
 <h3>Solution</h3>
 
 <p>The following code is included in the source
-distribution as <code>example.cpp</code>. See the main page instructions for how to build and run it..</p>
+distribution as <code>example.cpp</code>. See the main page instructions for how to build and run it.</p>
 
 <pre>#include "steamcalculator.h"
 #include "solver.h"
@@ -110,7 +110,7 @@ int main(){
 
 <h2>Problem 2</h2>
 
-<p>Use freesteam's Python bindings to quickly calculate some steam properties. This requires versoin 0.7 or newer.</p>
+<p>Use freesteam's Python bindings to quickly calculate some steam properties. This requires version 0.7 or newer.</p>
 
 <h3>Solution</h3>
 

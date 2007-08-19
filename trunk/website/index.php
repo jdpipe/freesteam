@@ -30,25 +30,25 @@ Steam</a> (IAPWS). <b>freesteam</b> lets you compute water and steam properties 
   <li>IAPWS-95 Scientific formulation (low speed, but simple code)</li>
 </ul>
 
-<p>From Version 0.6, freesteam includes bindings for the Python language.</p>
+<p>The library includes bindings for the <a href="http://www.python.org">Python</a> language, as well as bindings to allow it to be used from the <a href="http://ascend.cheme.cmu.edu/">ASCEND modelling environment</a>.
 
-<p><font color=red><i><b>New:&nbsp;</b></i></font>The 0.7.1 release is also provided as a Windows installer, which now includes example C++ code with Makefile.</p>
+<p><font color=red><i><b>New:&nbsp;</b></i></font>The 0.7.2 release includes improved example code for use with C++, Python and ASCEND, and a Windows installer that allows you to chose the components you wish to use.</p>
 
-<p>Please send your comments and questions to <script><!--
+<p>There is a <a href="https://lists.sourceforge.net/lists/listinfo/freesteam-users">mailing list for freesteam users</a>, which is the preferred support mechansim (it ensures that FAQs are captured for others to re-use). Alternatively, you can email the developer directly on <script><!--
 
 // 3m41L harvester protection
 
-m='hn.pye@stud';
+m='n.pye@an';
 l='u.au';
-i='nsw.ed';
-e='jo';
-a='ent.u';
+i='d';
+e='joh';
+a='u.e';
 
 document.write('<a href="mailto:'+e+m+a+i+l+'">'+e+m+a+i+l+'</a>');
 
 //--></script>
-<noscript><a href="mailto:john.pye@student.removethisrubbish.unsw.edu.au">john.pye@student.removethisrubbish.unsw.edu.au</a>
-(spam protection)</noscript>. The project is under active development (as of January 2007). Contributions are most welcome!</p>
+<noscript><a href="mailto:john.pye@anu.removethisrubbish.edu.au">john.pye@anu.removethisrubbish.edu.au</a>
+(spam protection)</noscript>. The project is under active development as of Aug 2007, and contributions are most welcome!</p>
 
 <h2><a name="whatcanidowithit"></a>1. What can I do with it?</h2>
 
@@ -241,7 +241,7 @@ the project. We are not using the SourceForge 'tracker' at this stage.</p>
 <h3>DIY Ideas 4U</h3>
 
 <ul>
-  <li>Initial work has being done on an <span style="font-weight: bold;">Excel add-in</span> version using the <a href="http://xlw.sourceforge.net/">XLW</a> wrapper classes. Currently waiting for some build issues with XLW to be resolved.</li>
+  <li>Initial work has being done on an <span style="font-weight: bold;">Excel add-in</span> version using the <a href="http://xlw.sourceforge.net/">XLW</a> wrapper classes. There are some build issues with XLW to be resolved.</li>
 
   <li>Preliminary work on another <span style="font-weight: bold;">hook library</span> to integrate freesteam with the <a href="http://www.fchart.com/ees/ees.shtml">EES</a> equation solver (<a href="ees.pdf#page=211">manual</a> here)has also been performed; this will likewise require some special license agreement. At present, EES provides only the IAPWS-95 'scientific and general use' correlation.</li>
 
