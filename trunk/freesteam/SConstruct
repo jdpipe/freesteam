@@ -96,16 +96,17 @@ if can_install:
 		,default_prefix
 	))
 
-	opts.Add(PathOption(
+	opts.Add(
 		'LIBDIR'
 		,"Location to install library"
 		, "$INSTALL_PREFIX/lib"
-	))
-	opts.Add(PathOption(
+	)
+
+	opts.Add(
 		'INCDIR'
 		,"Location to install headers"
 		,"$INSTALL_PREFIX/include"
-	))
+	)
 
 	opts.Add(PathOption(
 		'INSTALL_ROOT'
@@ -430,6 +431,12 @@ if platform.system()=="Linux":
 lib = lib_env.SharedLibrary('freesteam',list
 	, LIBS = ['m']
 )
+
+# create local symlinks for the soname stuff.
+if platform.system()=="Linux":
+	lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}",lib
+		,"ln -s $SOURCE $TARGET"
+	)
 
 #------------------------------------------------------
 # Build the example program (build-time)

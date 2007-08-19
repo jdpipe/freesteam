@@ -65,7 +65,7 @@ elif config:
 
 	try:
 		asc_env.ParseConfig(cmd)
-		print "GOT CPPATH=%s"%asc_env['CPPPATH']
+		print "GOT CPPATH=%s"%asc_env.get('CPPPATH')
 		ok_to_build = True
 	except OSError, e:
 		without_ascend_reason="'ascend-config' script failed (%s)" % str(e)
