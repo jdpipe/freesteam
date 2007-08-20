@@ -1,5 +1,5 @@
 %define pyver %(python -c 'import sys ; print sys.version[:3]')
-%define pyversion %(python -c 'import sys; print sys.version[:5]')
+%define pyversion %(python -c 'import sys; print sys.version.split(" ")[0]')
 %define ascendversion %(ascend-config --version)
 %define ASCEND_MODELS %(ascend-config --models)
 
@@ -145,6 +145,9 @@ rm -rf %{buildroot}
 #-----------------------------
 
 %changelog
+* Mon Aug 20 2007 John Pye <john@curioussymbols.com> 0.7.3
+- Starting work on 0.7.3
+
 * Sun Aug 19 2007 John Pye <john@curioussymbols.com> 0.7.2
 - Updated for 0.7.2
 - Split ASCEND and Python parts into sub-packages.

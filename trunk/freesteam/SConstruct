@@ -1,7 +1,7 @@
 import os, os.path, commands, platform, sys
 import distutils.sysconfig
 
-version = "0.7.2"
+version = "0.7.3"
 
 pyversion = "%d.%d" % (sys.version_info[0],sys.version_info[1])
 
@@ -421,16 +421,17 @@ lib_env = env.Copy()
 
 if platform.system()=="Linux":
 	lib_env.Append(LINKFLAGS=['-Wl,-soname,$SONAME'])
-	
+
 lib = lib_env.SharedLibrary('freesteam',list
 	, LIBS = ['m']
 )
 
-# create local symlinks for the soname stuff.
+# create local symlink for the soname stuff.
 if platform.system()=="Linux":
-	lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}",lib
-		,"ln -s $SOURCE $TARGET"
-	)
+	if env['SONAME_MAJOR']:
+		lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}",lib
+			,"ln -s $SOURCE $TARGET"
+		)
 
 #------------------------------------------------------
 # Build the example program (build-time)
