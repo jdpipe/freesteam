@@ -1,8 +1,10 @@
 Import('env')
 
-env.AppendUnique(CPPDEFINES=['HAVE_CPPUNIT'])
-env.AppendUnique(LIBS=['freesteam'])
-env.AppendUnique(LIBPATH=['..'])
+test_env = env.Copy()
+
+test_env.AppendUnique(CPPDEFINES=['HAVE_CPPUNIT'])
+test_env.AppendUnique(LIBS=['freesteam'])
+test_env.AppendUnique(LIBPATH=['..'])
 
 main = Split("test.cpp")
 
@@ -23,7 +25,7 @@ misc = Split("""
 	#temperaturesolver2.test.o	
 
 
-env.Program("runtest",main + tests + misc)
+test_env.Program("runtest",main + tests + misc)
 
 
 

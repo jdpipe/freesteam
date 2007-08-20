@@ -7,6 +7,9 @@ asc_env = env.Copy()
 
 without_ascend_reason = "unknown reason"
 
+asc_env['LIBS'] =['freesteam']
+asc_env['LIBPATH'] = ['#']
+
 #-------------------------------
 # SCons 'builder' to install file and set permissions
 
@@ -37,7 +40,7 @@ modeldir = []
 ok_to_build = False
 if ascsrc:
 	modeldir = None
-	asc_env.Append(LIBS=['ascend'])
+	asc_env.AppendUnique(LIBS = ['ascend'])
 	asc_env.Append(LIBPATH=[ascsrc])
 	asc_env.Append(CPPPATH=[os.path.join(ascsrc,"base/generic")])
 	ok_to_build = True
@@ -82,8 +85,6 @@ else:
 # Build
 
 if ok_to_build:
-	asc_env.AppendUnique(LIBS=['freesteam'])
-	asc_env.AppendUnique(LIBPATH=['..'])
 	lib = asc_env.SharedLibrary("freesteam_ascend",srcs)
 
 	# Install

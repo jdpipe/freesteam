@@ -242,26 +242,27 @@ def CheckCppUnitConfig(context):
 #	for k in conf.env['ENV']:
 #		print "ENV:",k,"=",env['ENV'][k]
 
+	res = 1
 	try:
 		context.env.ParseConfig(cppunit_config_command)
 	except IOError:
-		context.env.Replace(
-			LIBS = lastLIBS
-			, CPPFLAGS = lastCPPFLAGS
-		)
-		context.Result(0)
-		return 0
+		res = 0
 	except:
-		context.env.Replace(
-			LIBS = lastLIBS
-			, CPPFLAGS = lastCPPFLAGS
-		)
-		context.Result(0)
-		return 0
-		
+		res = 0
+
+	if lastLIBS:
+		context.env.Replace(LIBS=lastLIBS)
+	else:
+		context.env['LIBS'] = []
+
+	if lastCPPFLAGS:
+		context.env.Replace(CPPFLAGS=lastCPPFLAGS)
+	else:
+		context.env['CPPFLAGS'] = []
+			
 	context.config_h = context.config_h + "#define HAVE_CPPUNIT_CONFIG\n"
-	context.Result(1)
-	return 1
+	context.Result(res)
+	return res
 
 #----------------
 # SWIG
