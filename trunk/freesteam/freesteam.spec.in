@@ -1,5 +1,4 @@
 %define pyver %(python -c 'import sys ; print sys.version[:3]')
-%define pyversion %(python -c 'import sys; print sys.version.split(" ")[0]')
 %define ascendversion %(ascend-config --version)
 %define ASCEND_MODELS %(ascend-config --models)
 
@@ -58,7 +57,7 @@ equipment models.
 Summary: freesteam external library for use with Python
 Group: Applications/Engineering
 Requires: %{name} = %{version}-%{release}
-Requires: python = %{pyversion}
+Requires: python
 %description python
 Python bindings for the freesteam steam tables library. This package allows
 IAPWS-IF97 steam tables to be calculated using the Python scripting language.
