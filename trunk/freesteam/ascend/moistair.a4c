@@ -1,0 +1,95 @@
+REQUIRE "atoms.a4l";
+REQUIRE "johnpye/thermo_types.a4c";
+REQUIRE "iapwssatprops.a4c";
+
+(*
+	Moist air calculator.
+
+	This model relates the various properties of moist air in such a
+	way that you can use it in place of a pyschrometric diagram.
+
+	We use the IAPWS saturation properties curve for the water saturation
+	pressure.
+
+	THIS IS STILL UNDER DEVELOPMENT. DON'T TRUST ANYTHING YOU SEE HERE.
+*)
+
+MODEL moistair;
+	
+	p IS_A pressure;
+	T IS_A temperature; (* dry bulb temperature *)
+
+	phi IS_A fraction; (* relative humidity *)
+
+	(* mass of air, mass of water *)
+	m IS_A mass;
+	m_a, m_w IS_A mass;
+	m = m_a + m_w;
+
+	(* volume of container *)
+	V IS_A volume;
+
+	(* molar masses *)
+	M_a IS_A molar_mass;
+
+	omega IS_A factor; (* humidity ratio *)
+	omega * m_a = m_w;
+
+	(* saturation properties for water at this temperature *)
+	sat_water IS_A iapwssatprops;
+	sat_water.T, T ARE_THE_SAME;
+	h_w = sat_water.h_g;
+	p_w ALIASES sat_water.p;
+	
+	(* dew point saturation properties *)
+	dew_point IS_A iapwssatprops;
+	T_dp ALIASES dew_point.T;
+	p_dp ALIASES sat_water.p;
+
+	(* air is treated as an idea gas *)
+	p_a IS_A pressure;
+	n_a IS_A mole;
+	p_a * V = n_a * 1{GAS_C} * T;
+	n_a * M_a = m_a;
+
+	(* partial pressure assuming idea gas behaviour *)
+	p = p_a + p_w;
+
+	(* enthalpy of the mixture *)
+	H IS_A energy;
+	h, h_a, h_w IS_A specific_enthalpy;
+	m*h = m_a*h_a + m_w*h_w;
+
+	(* enthalpy of air *)
+	h_a = 1.006 {kJ/kg/K} * (T - T_ref);
+	T_ref IS_A temperature;
+
+	(* vapour pressure for water *)
+	p_w, sat_water.p ARE_THE_SAME;
+
+	phi * p_w = p_dp; (* don't think this is right... *)
+
+METHODS
+	METHOD on_load;
+		FIX M_a;
+		M_a := 28.97 {g/mol};
+
+		FIX T, T_ref;
+		T := 300 {K};
+		T_ref := 273.15 {K}; (* arbitrarily chosen *)
+
+
+		FIX V;
+		V := 10 {m^3};
+
+		FIX h;
+		h := 2000 {kJ/kg};
+
+		FIX m_a, omega;
+		m_a := 10 {kg};
+		omega := 0.001;
+	END on_load;
+END moistair;
+
+			
+		

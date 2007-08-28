@@ -615,7 +615,7 @@ env.SubstInFile('freesteam.spec.in')
 
 env['DISTTAR_FORMAT']='bz2'
 env.Append(
-	DISTTAR_EXCLUDEEXTS=['.o','.os','.so','.a','.dll','.cc','.cache','.pyc','.cvsignore','.dblite','.log','.pl','.cli','.cpass']
+	DISTTAR_EXCLUDEEXTS=['.o','.os','.so','.a','.dll','.cc','.cache','.pyc','.cvsignore','.dblite','.log','.pl','.cli','.cpass','.0','.bak']
 	, DISTTAR_EXCLUDEDIRS=['CVS','.svn','.sconf_temp', 'dist']
 )
 
