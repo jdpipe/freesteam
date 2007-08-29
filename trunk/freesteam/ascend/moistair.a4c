@@ -1,6 +1,7 @@
 REQUIRE "atoms.a4l";
 REQUIRE "johnpye/thermo_types.a4c";
 REQUIRE "iapwssatprops.a4c";
+REQUIRE "johnpye/airprops.a4c";
 
 (*
 	Moist air calculator.
@@ -19,27 +20,80 @@ MODEL moistair;
 	p IS_A pressure;
 	T IS_A temperature; (* dry bulb temperature *)
 
-	phi IS_A fraction; (* relative humidity *)
-
 	(* mass of air, mass of water *)
 	m IS_A mass;
-	m_a, m_w IS_A mass;
-	m = m_a + m_w;
+	m_a, m_v IS_A mass;
+	m = m_a + m_v;
+
+	(* 
+		Approximate water vapour by saturated gas at temperature T.
+		(this is a good assumption for temperatures 20 to 100 °C)
+	*)
+	sat_vap IS_A iapwssatprops; (* look up saturation properties *)
+	sat_vap.T, T ARE_THE_SAME;
+	p_g ALIASES sat_vap.p;
+	h_g ALIASES sat_vap.h_g;
+	h_v = h_g;
+
+	(* air properties: use the Adebiyi correlation for air enthalpy *)
+	air IS_A airprops;
+	h_a ALIASES air.h; (* h_a will be calculated for (p_a, T) *)
+	p_a ALIASES air.p; (* still need to guess the value for this *)
+	T, air.T ARE_THE_SAME;
+
+	(* dew point *)
+	dew_point IS_A iapwssatprops; (* look up saturation properties *)
+	p_v ALIASES dew_point.p;
+
+	(* sum of partial pressures *)
+	p_a + p_v = p;
+
+	(* air as an ideal gas *)
+	V IS_A volume;
+	n_a * M_a = m_a;
+	p_a * V = n_a * 1{GAS_C} * T;
+
+	(* relative humidity *)
+	phi IS_A fraction;
+	phi = p_v / p_g;
+
+	(* humidity ratio calculated from partial pressure *)
+	omega IS_A factor;
+
+	(* humidity ratio from partial pressure *)
+	omega = m_v / m_a;
+
+	(* given relative humidity and temperature, we have p_g and hence p_v *)
+
+	(* adiabatic saturation temperature *)
+	adiab_sat IS_A iapwssatprops;
+	omega_dash IS_A factor;
+	T_as ALIASES adiab_sat.T;
+	p_g_as ALIASES adiab_sat.p;
+	omega_dash = 0.622 * p_g_as / (p - p_g_as);
+	h_g_as ALIASES adiab_sat.h_g;
+	h_f_as ALIASES adiab_sat_h_f;
+
+	(* adiabatic saturator for web-bulb temperature calculation [eq 12.52] *)
+	omega * (h_g - h_f_as) = h_a_as - h_a + omega_dash * (h_g_as - h_f_as)
+
+	(* given p_v we can calculate all the other properties of the vapour *)
+
+
+	(* given p, we then have p_a and, m_a given V, or V given m_a *)
+	v_v IS_A specific_volume;
+	V = v_v * m_v;
+
+
+	phi IS_A fraction; (* relative humidity *)
+
 
 	(* volume of container *)
 	V IS_A volume;
 
-	(* molar masses *)
-	M_a IS_A molar_mass;
-
 	omega IS_A factor; (* humidity ratio *)
 	omega * m_a = m_w;
 
-	(* saturation properties for water at this temperature *)
-	sat_water IS_A iapwssatprops;
-	sat_water.T, T ARE_THE_SAME;
-	h_w = sat_water.h_g;
-	p_w ALIASES sat_water.p;
 	
 	(* dew point saturation properties *)
 	dew_point IS_A iapwssatprops;
@@ -71,7 +125,7 @@ MODEL moistair;
 
 METHODS
 	METHOD on_load;
-		FIX M_a;
+		FIX M_a, cp_a, T_ref_a;
 		M_a := 28.97 {g/mol};
 
 		FIX T, T_ref;
