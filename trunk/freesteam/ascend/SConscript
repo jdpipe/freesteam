@@ -90,8 +90,8 @@ if ok_to_build:
 	# Install
 	if modeldir:
 		print "MODEL LIBRARY:",modeldir
-		env.InstallPerm(modeldir,lib,0644);
-		env.InstallPerm(modeldir,'testfreesteam.a4c',0644);
+		asc_env.InstallPerm(modeldir,lib,0644);
+		asc_env.InstallPerm(modeldir,'testfreesteam.a4c',0644);
 
 else:
 	print "Skipping... ASCEND hooks (%s)" % without_ascend_reason

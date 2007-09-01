@@ -125,13 +125,41 @@ SectionEnd
 
 Section "Static library and header files"
   DetailPrint "--- HEADER FILES ---"
+  	SetOutPath $INSTDIR
+  	File "freesteam-config"
+
 	SetOutPath $INSTDIR\lib
 	File "libfreesteam.a"
-	SetOutPath $INSTDIR\include
+	SetOutPath "$INSTDIR\include\freesteam"
 	File "*.h"
+	File "python\freesteam.i"
 	WriteRegDWORD HKLM "SOFTWARE\freesteam" "Lib" 1
 	StrCpy $LIBINSTALLED "1"
+
+	; Create 'freesteam-config.bat' batch file for launching the python script 'ascend-config'.
+	ClearErrors
+	FileOpen $0 $INSTDIR\freesteam-config.bat w
+	IfErrors configerror
+	FileWrite $0 "@echo off"
+	FileWriteByte $0 "13"
+	FileWriteByte $0 "10"
+	FileWrite $0 "cd "
+	FileWrite $0 $INSTDIR 
+	FileWriteByte $0 "13"
+	FileWriteByte $0 "10"
+	FileWrite $0 "$PYPATH\python "
+	FileWriteByte $0 "34" 
+	FileWrite $0 "$INSTDIR\freesteam-config"
+	FileWriteByte $0 "34"
+	FileWrite $0 " %1 %2 %3 %4 %5 %6 %7 %8"
+	FileWriteByte $0 "13"
+	FileWriteByte $0 "10"
+	
 	Return
+
+configerror:
+	MessageBox MB_OK "The 'freesteam-config.bat' file was not installed properly; problems writing to that file."	
+
 SectionEnd
 
 Section "Example C++ code"
@@ -222,6 +250,8 @@ Section "Uninstall"
 
 	ReadRegDWORD $0 HKLM "SOFTWARE\freesteam" "Lib"
 	${If} $0 != 0
+		Delete "$INSTDIR\freesteam-config"
+		Delete "$INSTDIR\freesteam-config.bat"
 		RmDir /r $INSTDIR\include
 		Delete $INSTDIR\lib\libfreesteam.a
 		RmDir $INSTDIR\lib

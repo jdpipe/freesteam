@@ -101,6 +101,12 @@ if can_install:
 		,"$INSTALL_PREFIX/include"
 	)
 
+	opts.Add(
+		'INSTALL_BIN'
+		,"Location to install binaries"
+		,"$INSTALL_PREFIX/bin"
+	)
+	
 	opts.Add(PathOption(
 		'INSTALL_ROOT'
 		,"Root onto which installation should take place. Normally only for "
@@ -526,6 +532,34 @@ SConsEnvironment.SymLink = Builder(action='ln -s $SOURCE $TARGET')
 #docs = env.Doxygen('Doxyfile')
 #env.Alias('docs',[docs])
 
+#---------------------------------------
+# SUBSTITUTION DICTIONARY for .in files
+
+subst_dict = {
+	'@VERSION@':version
+	,'@SONAME@':env['SONAME']
+	,'@SONAME_MAJOR@':env['SONAME_MAJOR']
+	,'@SONAME_MINOR@':env['SONAME_MINOR']
+	,'@SHLIBSUFFIX@':env['SHLIBSUFFIX']
+	,'@SHLIBPREFIX@':env['SHLIBPREFIX']
+	,'@INSTALL_BIN@':env['INSTALL_BIN']
+	,'@INSTALL_LIB@':env['LIBDIR']
+	,'@INSTALL_INCLUDE@':env['INCDIR']
+	,'@PYTHON@':sys.executable
+}
+
+env.Append(SUBST_DICT=subst_dict)
+
+#------------------------------------------------------
+# CREATE the SPEC file for generation of RPM packages
+
+env.SubstInFile('freesteam.spec.in')
+	
+#------------------------------------------------------
+# CREATE 'freesteam-config'
+
+configscript = env.SubstInFile('freesteam-config.in')
+
 #------------------------------------------------------
 # INSTALLATION
 
@@ -557,6 +591,7 @@ if can_install:
 		
 		install_common += [install_link1, install_link2]
 
+	install_config = env.InstallProgram("$INSTALL_ROOT$INSTALL_BIN",[configscript])
 	install_common += [install_lib]
 	
 	import glob
@@ -586,30 +621,11 @@ if with_installer:
 	})
 	installer = env.Installer('installer.nsi')
 	Depends(installer,["python","ascend"])
+	Depends(installer,[configscript])
 	env.Alias('installer',installer)
 else:
 	print "Skipping... Windows installer isn't being built:",without_installer_reason
 
-
-#---------------------------------------
-# SUBSTITUTION DICTIONARY for .in files
-
-subst_dict = {
-	'@VERSION@':version
-	,'@SONAME@':env['SONAME']
-	,'@SONAME_MAJOR@':env['SONAME_MAJOR']
-	,'@SONAME_MINOR@':env['SONAME_MINOR']
-	,'@SHLIBSUFFIX@':env['SHLIBSUFFIX']
-	,'@SHLIBPREFIX@':env['SHLIBPREFIX']
-}
-
-env.Append(SUBST_DICT=subst_dict)
-
-#------------------------------------------------------
-# CREATE the SPEC file for generation of RPM packages
-
-env.SubstInFile('freesteam.spec.in')
-	
 #--------------------------------------------------------
 # DISTRIBUTION TARBALL
 
