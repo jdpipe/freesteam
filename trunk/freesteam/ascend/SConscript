@@ -75,8 +75,6 @@ elif config:
 	except Exception,e:
 		print "ERROR: %s" % str(e)
 		Exit(1)
-
-	print "DONE PARSECONFIG"
 	
 else:
 	without_ascend_reason = "No ascsrc, not config"
@@ -91,7 +89,9 @@ if ok_to_build:
 	if modeldir:
 		print "MODEL LIBRARY:",modeldir
 		asc_env.InstallPerm(modeldir,lib,0644);
+		asc_env.InstallPerm(modeldir,'iapwssatprops.a4c', 0644);
 		asc_env.InstallPerm(modeldir,'testfreesteam.a4c',0644);
+		asc_env.InstallPerm(modeldir,'moistair.a4c', 0644);
 
 else:
 	print "Skipping... ASCEND hooks (%s)" % without_ascend_reason
