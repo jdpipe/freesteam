@@ -592,7 +592,7 @@ if can_install:
 		install_common += [install_link1, install_link2]
 
 	install_config = env.InstallProgram("$INSTALL_ROOT$INSTALL_BIN",[configscript])
-	install_common += [install_lib]
+	install_common += [install_lib,install_config]
 	
 	import glob
 	files = glob.glob("*.h")

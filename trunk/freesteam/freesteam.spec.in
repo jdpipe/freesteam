@@ -91,6 +91,9 @@ scons %{?_smp_mflags} \
 scons %{?_smp_mflags} \
 		INSTALL_ROOT=%{buildroot} \
 		INSTALL_PREFIX=%{_prefix} \
+		INSTALL_BIN=%{_bindir} \
+		LIBDIR=%{_libdir} \
+		INCDIR=%{_includedir} \
 		INSTALL_SHARE=%{_datadir} \
 	install
 
@@ -137,6 +140,7 @@ rm -rf %{buildroot}
 %files devel
 %defattr(-, root, root)
 %endif
+%{_bindir}/freesteam-config
 %{_includedir}/%{name}/*.h
 %{_libdir}/lib%{name}.so%{SONAME_MAJOR}
 %{_libdir}/lib%{name}.so
