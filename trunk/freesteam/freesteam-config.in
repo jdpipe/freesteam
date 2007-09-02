@@ -64,12 +64,12 @@ if options.libs:
 	if LIB!="/usr/lib":
 		libs = LIB
 	if -1!=libs.find(" "):
-		print "-L\""+libs+"\" -lascend"
+		print "-L\""+libs+"\" -lfreesteam"
 	else:
 		Lflag  = ""
 		if len(libs):
 			Lflag = "-L"+libs+" "
-		print Lflag + "-lascend"
+		print Lflag + "-lfreesteam"
 	ok = True
 
 if not ok:

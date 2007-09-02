@@ -130,6 +130,7 @@ Section "Static library and header files"
 
 	SetOutPath $INSTDIR\lib
 	File "libfreesteam.a"
+	File "freesteam.def"
 	SetOutPath "$INSTDIR\include\freesteam"
 	File "*.h"
 	File "python\freesteam.i"
@@ -252,9 +253,10 @@ Section "Uninstall"
 	${If} $0 != 0
 		Delete "$INSTDIR\freesteam-config"
 		Delete "$INSTDIR\freesteam-config.bat"
-		RmDir /r $INSTDIR\include
-		Delete $INSTDIR\lib\libfreesteam.a
-		RmDir $INSTDIR\lib
+		RmDir /r "$INSTDIR\include"
+		Delete "$INSTDIR\lib\libfreesteam.a"
+		Delete "$INSTDIR\lib\freesteam.def"
+		RmDir "$INSTDIR\lib"
 	${EndIf}
 
 ;--- example code ---
