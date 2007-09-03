@@ -93,5 +93,6 @@ libdir = "$INSTALL_ROOT"+distutils.sysconfig.get_python_lib(plat_specific=True)
 
 install_python = [ env.InstallLibrary(libdir,['_freesteam$SHLIBSUFFIX']) ]
 install_python += [ env.InstallHeader(libdir,['freesteam.py']) ]
+install_python += [ env.InstallHeader("$INSTALL_ROOT$INCDIR/freesteam",['freesteam.i']) ]
 
 Return('install_python')
