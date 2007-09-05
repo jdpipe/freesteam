@@ -102,13 +102,6 @@ mkdir -p %{buildroot}%{_libdir}/python%{pyver}/site-packages/
 cp python/freesteam.py %{buildroot}%{_libdir}/python%{pyver}/site-packages/
 cp python/_freesteam.so %{buildroot}%{_libdir}/python%{pyver}/site-packages/
 
-# Install ASCEND models
-mkdir -p %{buildroot}%{ASCEND_MODELS}
-cp ascend/testfreesteam.a4c %{buildroot}%{ASCEND_MODELS}
-cp ascend/iapwssatprops.a4c %{buildroot}%{ASCEND_MODELS}
-cp ascend/moistair.a4c %{buildroot}%{ASCEND_MODELS}
-cp ascend/libfreesteam_ascend.so %{buildroot}%{ASCEND_MODELS}
-
 %clean
 rm -rf %{buildroot} 
 

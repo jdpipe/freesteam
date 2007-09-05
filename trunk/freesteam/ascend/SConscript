@@ -37,7 +37,6 @@ config = asc_env.get('ASCEND_CONFIG');
 ascsrc = asc_env.get('ASCEND_SRCROOT');
 
 modeldir = []
-ok_to_build = False
 if ascsrc:
 	modeldir = None
 	asc_env.AppendUnique(LIBS = ['ascend'])
@@ -45,42 +44,50 @@ if ascsrc:
 	asc_env.Append(CPPPATH=[os.path.join(ascsrc,"base/generic")])
 	ok_to_build = True
 elif config:
-
+	ok_to_build = True
 	try:
+		cmd = [config,"--models"]
+		print "CMD =",cmd
 		modeldir = subprocess.Popen(
-			['"%s" --models' % config]
+			cmd
 			,stdout=subprocess.PIPE
-		).communicate()
-		modeldir = "${INSTALL_ROOT}"+modeldir
+		).communicate()[0]
+		modeldir = "${INSTALL_ROOT}%s" % modeldir.strip()
 		print "GOT MODELDIR=%s" % modeldir
 	except OSError:
+		print "OSERROR"
 		without_ascend_reason = "Unable to locate 'modeldir'"
 		ok_to_build = False
 		pass
 
-	print "GOT MODELDIR = %s" % modeldir
+	if ok_to_build:
+		# found the modeldir, now get the compiler/linker flags.
+		# the following fails on Windows if the ASCEND path contains a space.
+		# this is a bug in SCons that is due to be fixed in the upcoming
+		# version (after 0.97).
 
-	# the following JUST WON'T WORK on Windows.
-	if platform.system()=="Windows":
-		cmd = ['"%s" --cppflags --libs' % config]
-	else:
-		cmd = ["ascend-config","--cppflags","--libs"]
+		if platform.system()=="Windows":
+			cmd = ['"%s" --cppflags --libs' % config]
+		else:
+			cmd = ["ascend-config","--cppflags","--libs"]
 
-	try:
-		asc_env.ParseConfig(cmd)
-		print "GOT CPPATH=%s"%asc_env.get('CPPPATH')
-		ok_to_build = True
-	except OSError, e:
-		without_ascend_reason="'ascend-config' script failed (%s)" % str(e)
-	except Exception,e:
-		print "ERROR: %s" % str(e)
-		Exit(1)
+		try:
+			asc_env.ParseConfig(cmd)
+			print "GOT CPPATH=%s"%asc_env.get('CPPPATH')
+		except OSError, e:
+			without_ascend_reason="'ascend-config' script failed (%s)" % str(e)
+			ok_to_build = False
+		except Exception,e:
+			print "ERROR: %s" % str(e)
+			Exit(1)
 	
 else:
 	without_ascend_reason = "No ascsrc, not config"
 	
 #-------------------------------
 # Build
+
+print "modeldir = %s" % modeldir
 
 if ok_to_build:
 	lib = asc_env.SharedLibrary("freesteam_ascend",srcs)
@@ -95,6 +102,5 @@ if ok_to_build:
 
 else:
 	print "Skipping... ASCEND hooks (%s)" % without_ascend_reason
-
 
 Return('modeldir')
