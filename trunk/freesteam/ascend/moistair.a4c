@@ -58,7 +58,7 @@ MODEL moistair;
 	m_a, m_v IS_A mass;
 	m = m_a + m_v;
 
-	(* 
+	(*
 		Approximate water vapour by saturated gas at temperature T.
 		(this is a good assumption for temperatures 20 to 100 °C)
 	*)
@@ -76,6 +76,7 @@ MODEL moistair;
 	air IS_A airprops;
 	h_a ALIASES air.h; (* h_a will be calculated for (p_a, T) *)
 	p_a ALIASES air.p; (* still need to guess the value for this *)
+	v_a ALIASES air.v;
 	T, air.T ARE_THE_SAME;
 
 	(* dew point *)

@@ -471,7 +471,7 @@ int T_ph_calc(struct BBoxInterp *slv_interp,
 #ifdef FREESTEAM_DEBUG
 		CONSOLE_DEBUG("p = %f bar, h = %f kJ/kg --> T = %f K"
 			, double(p / bar), double(h / kJ_kg)
-			, double(T / Kelvin)
+			, double(S.temp() / Kelvin)
 		);
 #endif
 	
@@ -483,6 +483,49 @@ int T_ph_calc(struct BBoxInterp *slv_interp,
 	}
 	return 0;
 }
+
+
+int Tv_ph_calc(struct BBoxInterp *slv_interp,
+		int ninputs, int noutputs,
+		double *inputs, double *outputs,
+		double *jacobian
+){
+	Solver2<Pressure,SpecificEnergy,0,SOLVE_ENTHALPY> SS;
+
+	(void)slv_interp; (void)jacobian; // not used
+
+	ASSERT(ninputs==2);
+	ASSERT(noutputs==2);
+
+	// convert inputs to freesteam dimensionful values
+	Pressure p = inputs[0] * Pascal;
+	SpecificEnergy h = inputs[1] * J_kg;
+
+	try{
+		// solve for the steam state specified
+		SteamCalculator S = SS.solve(p,h);
+
+		outputs[0] = S.temp() / Kelvin;
+		outputs[1] = S.specvol() / m3_kg;
+
+#ifdef FREESTEAM_DEBUG
+		CONSOLE_DEBUG("p = %f bar, h = %f kJ/kg --> T = %f K, v = %f kg/m^3"
+			, double(p / bar), double(h / kJ_kg)
+			, double(S.temp() / Kelvin)
+			, double(S.specvol() / m3_kg)
+		);
+#endif
+	
+		return 0; /* success */
+	}catch(std::exception &e){
+		// report error message using the ASCEND error reporting system
+		ERROR_REPORTER_HERE(ASC_PROG_ERR,e.what());
+		return 1; /* failure */
+	}
+	return 0;
+}
+
+
 
 /**
 	ASCEND external evaluation function
@@ -995,7 +1038,7 @@ extern "C"{ // start of C-accessible portion
 			, NULL /* deriv2 */
 			, NULL /* free */
 			, 2,4 /* inputs, outputs */
-			, "[u,v,mu,x] = iapws97_uvmu_ph(p,h) (see http://freesteam.sf.net)"
+			, "[u,v,mu,x] = iapws97_uvmux_ph(p,h) (see http://freesteam.sf.net)"
 			, 0.0
 		);
 
@@ -1018,6 +1061,17 @@ extern "C"{ // start of C-accessible portion
 			, NULL /* free */
 			, 2,1 /* inputs, outputs */
 			, "[T] = iapws97_T_ph(p,h) (see http://freesteam.sf.net)"
+			, 0.0
+		);
+
+		result += CreateUserFunctionBlackBox("iapws97_Tv_ph"
+			, NULL /* alloc */
+			, Tv_ph_calc /* value */
+			, NULL /* deriv */
+			, NULL /* deriv2 */
+			, NULL /* free */
+			, 2,2 /* inputs, outputs */
+			, "[T,v] = iapws97_Tv_ph(p,h) (see http://freesteam.sf.net)"
 			, 0.0
 		);
 
