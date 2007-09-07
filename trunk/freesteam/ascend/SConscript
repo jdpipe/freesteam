@@ -45,41 +45,43 @@ if ascsrc:
 	ok_to_build = True
 elif config:
 	ok_to_build = True
+	# found the modeldir, now get the compiler/linker flags.
+	# the following fails on Windows if the ASCEND path contains a space.
+	# this is a bug in SCons that is due to be fixed in the upcoming
+	# version (after 0.97).
+
+	if platform.system()=="Windows":
+		cmd = ['"%s" --cppflags --libs' % config]
+	else:
+		cmd = ["ascend-config","--cppflags","--libs"]
+
 	try:
-		cmd = [config,"--models"]
-		print "CMD =",cmd
-		modeldir = subprocess.Popen(
-			cmd
-			,stdout=subprocess.PIPE
-		).communicate()[0]
-		modeldir = "${INSTALL_ROOT}%s" % modeldir.strip()
-		print "GOT MODELDIR=%s" % modeldir
-	except OSError:
-		print "OSERROR"
-		without_ascend_reason = "Unable to locate 'modeldir'"
+		asc_env.ParseConfig(cmd)
+		#print "GOT CPPATH=%s"%asc_env.get('CPPPATH')
+	except OSError, e:
+		without_ascend_reason="'ascend-config' script failed (%s)" % str(e)
 		ok_to_build = False
-		pass
+	except Exception,e:
+		print "ERROR: %s" % str(e)
+		Exit(1)
 
 	if ok_to_build:
-		# found the modeldir, now get the compiler/linker flags.
-		# the following fails on Windows if the ASCEND path contains a space.
-		# this is a bug in SCons that is due to be fixed in the upcoming
-		# version (after 0.97).
-
-		if platform.system()=="Windows":
-			cmd = ['"%s" --cppflags --libs' % config]
-		else:
-			cmd = ["ascend-config","--cppflags","--libs"]
-
 		try:
-			asc_env.ParseConfig(cmd)
-			print "GOT CPPATH=%s"%asc_env.get('CPPPATH')
-		except OSError, e:
-			without_ascend_reason="'ascend-config' script failed (%s)" % str(e)
+			if platform.system()=="Windows":
+				cmd = '"%s.bat" --models' % config
+			else:
+				cmd = [config,"--models"]
+			modeldir = subprocess.Popen(
+				cmd
+				,stdout=subprocess.PIPE
+			).communicate()[0]
+			modeldir = "${INSTALL_ROOT}%s" % modeldir.strip()
+			#print "GOT MODELDIR=%s" % modeldir
+		except OSError,e:
+			print "OSERROR:",str(e)
+			without_ascend_reason = "Unable to locate 'modeldir'"
 			ok_to_build = False
-		except Exception,e:
-			print "ERROR: %s" % str(e)
-			Exit(1)
+			pass
 	
 else:
 	without_ascend_reason = "No ascsrc, not config"
@@ -87,14 +89,12 @@ else:
 #-------------------------------
 # Build
 
-print "modeldir = %s" % modeldir
-
 if ok_to_build:
 	lib = asc_env.SharedLibrary("freesteam_ascend",srcs)
 
 	# Install
 	if modeldir:
-		print "MODEL LIBRARY:",modeldir
+		#print "MODEL LIBRARY:",modeldir
 		asc_env.InstallPerm(modeldir,lib,0644);
 		asc_env.InstallPerm(modeldir,'iapwssatprops.a4c', 0644);
 		asc_env.InstallPerm(modeldir,'testfreesteam.a4c',0644);

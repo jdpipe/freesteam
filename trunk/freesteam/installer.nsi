@@ -13,7 +13,7 @@
 ; The name of the installer
 
 !ifndef VERSION
-!define VERSION 0.svn
+!define VERSION 0.cvs
 !endif
 
 Name "freesteam ${VERSION}"

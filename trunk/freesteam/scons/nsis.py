@@ -24,7 +24,13 @@ to NSIS.
 import SCons.Builder
 import SCons.Util
 import SCons.Scanner
-import SCons.Sig
+# NOTE (4 September 2007):  The following import line was part of the original
+# code on this wiki page before this date.  It's not used anywhere below and
+# therefore unnecessary.  The SCons.Sig module is going away after 0.97.0d20070809,
+# so the line should be removed from your copy of this module.  There may be a
+# do-nothing SCons.Sig module that generates a warning message checked in, so existing
+# configurations won't break and can help point people to the line that needs removing.
+#import SCons.Sig
 import os.path
 import glob
 
