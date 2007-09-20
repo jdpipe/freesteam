@@ -16,6 +16,7 @@ tests = Split("""
 	lowpressure.test.cpp iapws95.test.cpp iapws9795.test.cpp pressuresolver.test.cpp
 	temperaturesolver.test.cpp satcurve.test.cpp b23curve.test.cpp b13curve.test.cpp
 	whichstatestr.test.cpp solver2.test.cpp measurement.test.cpp
+	conductivity.test.cpp
 """)
 	
 misc = Split("""

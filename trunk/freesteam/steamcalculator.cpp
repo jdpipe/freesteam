@@ -1,5 +1,4 @@
 /*
-
 freesteam - IAPWS-IF97 steam tables library
 Copyright (C) 2004-2005  John Pye
 
@@ -16,7 +15,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
 */
 
 #include "config.h"
@@ -624,7 +622,7 @@ SteamCalculator::quality(void) const{
 //------------------------------------------------------------------------
 // CORRELATION DATA FOR VISCOSITY & THERMAL CONDUCTIVITY
 
-// astyle made a mess of these :(
+// viscosity 
 
 #define VISC_N0_COUNT 4
 
@@ -632,29 +630,60 @@ const Num VISC_N0[VISC_N0_COUNT] = { 1, 0.978197, 0.579829, -0.202354 };
 
 #define VISC_COUNT 19
 
-const Num VISC_I[VISC_COUNT] = { 0, 1, 4, 5, 0, 1, 2, 3, 0, 1, 2, 0, 1, 2, 3, 0, 3, 1, 3 };
-const Num VISC_J[VISC_COUNT]= { 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 6 };
-
-const Num VISC_N[VISC_COUNT]
-= { 0.5132047, 0.3205656, -0.7782567, 0.1885447, 0.2151778, 0.7317883, 1.241044, 1.476783, -0.2818107, -1.070786, -1.263184, 0.1778064, 0.460504, 0.2340379, -0.4924179, -0.0417661, 0.1600435, -0.01578386, -0.003629481 };
-
-#define THCON_N0_COUNT 4
-
-const Num THCON_N0[THCON_N0_COUNT] = { 1, 6.978267, 2.599096, -0.998254 };
-
-#define THCON_I_COUNT 5
-#define THCON_J_COUNT 6
-
-// reference as nthcon[i][j] = down then across.
-const Num THCON_N[THCON_I_COUNT][THCON_J_COUNT]
-= {
-	{ 1.3293046, -0.40452437, 0.2440949, 0.018660751, -0.12961068, 0.044809953 }
-	, {1.7018363, -2.2156845, 1.6511057, -0.76736002, 0.37283344, -0.1120316}
-	, {5.2246158, -10.124111, 4.9874687, -0.27297694, -0.43083393, 0.13333849}
-	, {8.7127675, -9.5000611, 4.3786606, -0.91783782, 0, 0}
-	, {-1.8525999, 0.9340469, 0, 0, 0, 0}
+const Num VISC_I[VISC_COUNT] = {
+	0, 1, 4, 5, 0
+	, 1, 2, 3, 0, 1
+	, 2, 0, 1, 2, 3
+	, 0, 3, 1, 3 
 };
 
+const Num VISC_J[VISC_COUNT]= {
+	0, 0, 0, 0, 1
+	, 1, 1, 1, 2, 2
+	, 2, 3, 3, 3, 3
+	, 4, 4, 5, 6
+};
+
+const Num VISC_N[VISC_COUNT]
+= { 0.5132047, 0.3205656, -0.7782567, 0.1885447, 0.2151778
+	, 0.7317883, 1.241044 , 1.476783, -0.2818107, -1.070786
+	, -1.263184, 0.1778064, 0.460504, 0.2340379, -0.4924179
+	, -0.0417661, 0.1600435, -0.01578386, -0.003629481 
+};
+
+// conductivity (now updated to the 1998 revision of the IAPS-1985 release)
+
+/// @see http://www.iapws.org/relguide/thcond.pdf#page=8
+const Temperature IAPWS_THCOND_T_REF = 647.26 * Kelvin;
+const Density IAPWS_THCOND_DENS_REF = 317.7 * kg_m3;
+const ThermalConductivity IAPWS_THCON_REF = 1.0 * Watt / metre / Kelvin;
+
+#define THCON_a_COUNT 4
+const Num THCON_a[THCON_a_COUNT] = {
+	0.0102811
+	,0.0299621
+	,0.0156146
+	,-0.00422464
+};
+
+
+#define THCON_b0 -0.397070
+#define THCON_b1 0.400302
+#define THCON_b2 1.060000
+#define THCON_B1 -0.171587
+#define THCON_B2 2.392190
+
+#define THCON_d1 0.0701309
+#define THCON_d2 0.0118520
+#define THCON_d3 0.00169937
+#define THCON_d4 -1.0200
+
+#define THCON_C1 0.642857
+#define THCON_C2 -4.11717
+#define THCON_C3 -6.17937
+#define THCON_C4 0.00308976
+#define THCON_C5 0.0822994
+#define THCON_C6 10.0932
 
 //-------------------------------------------------------------------------
 // REDUCED QUANTITIES FOR IAPS85 / REVISED IAPWS CORRELATIONS
@@ -803,60 +832,51 @@ SteamCalculator::surftens() const{
 //----------------------------------------------------------------------
 // THERMAL CONDUCTIVITY CALCULATION TO IAPS85 / REVISED IAPWS 1998
 
-/**
-	@note
-		I can't remember why, but it appears I implemented the scientific formulation version of the conductivity equations. I think it was to do with difficulies in evaluating one of the partial derivatives, or non-availablity of some information... but I can't remember exactly why...
-*/
-
 /// Conductivity [mW/m.K]
 /**
 	Returns the thermal conductivity of water/steam.
+	@see http://www.iapws.org/relguide/thcond.pdf
+	@see J Phys Chem Ref Data, vol 13, no 1, 1984, p. 175 ff.
 
 	Range of validity is entire regions 1,2,3,4.
 
-	Reference: J Phys Chem Ref Data, vol 13, no 1, 1984, p. 175 ff.
-
 	@return Thermal conductivity [W/m.K]
-	@see http://www.iapws.org/relguide/thcond.pdf
-	@see http://www.iapws.org/relguide/IF97.pdf
 */
 ThermalConductivity
 SteamCalculator::conductivity() const{
 	REQUIRE(isset);
-	ThermalConductivity k = IAPS85_THCOND_REF * lam();
+	Num Tbar = this->T / IAPWS_THCOND_T_REF;
+	Num rhobar = dens() / IAPWS_THCOND_DENS_REF;
+
+	ThermalConductivity k = IAPWS_THCON_REF * lam(Tbar,rhobar);
 	ENSURE(!isnan(k));
 	return k;
 }
 
-/// Used in the calculation of reduced thermal conductivity
+/// Ideal-gas limit for thermal conductivity, lamda_0
 /**
 * Reference: IAPWS Revised Release on the IAPS Formulation 1985 for the Thermal
 * Conductivity of Ordinary Water Substance, 1998, IAPWS.
 *
-* @return lambda_0 [dim'less]
-* @see http://www.iapws.org/relguide/IF97.pdf
-*
+* @see http://www.iapws.org/relguide/thcond.pdf
+* @return glambda_0 [dim'less]
 */
 Num
-SteamCalculator::lam0() const{
+SteamCalculator::lam0(const Num &Tbar) const{
 
-	Num l = 0;
-	Num ttau = this->tau_iaps85();
-
-	for (int i = 0; i < THCON_N0_COUNT; i++) {	// nb i is important here...
-		l += THCON_N0[i] / pow(ttau, i);
-		//printf("NOTE: i=%d, n0_i=%.5f, l = %.5f\n",i,THCON_N0[i],l);
+	Num acc = 0;
+	for(int k = 0; k < THCON_a_COUNT; ++k) {
+		acc += THCON_a[k] * pow(Tbar,k);
 	}
 
-	Num l1 = (sqrt(ttau) / l);
-	//printf("NOTE: lam0 = %.5f\n",l1);
+	Num l0 = sqrt(Tbar) * acc;
 
-	ENSURE(!isnan(l1));
-	ENSURE(!isinf(l1));
-	return l1;
+	ENSURE(!isnan(l0));
+	ENSURE(!isinf(l0));
+	return l0;
 }
 
-/// Used in the calculation of reduced thermal conductivity
+/// Density adjustment for thermal conductivity
 /**
 * Reference: IAPWS Revised Release on the IAPS Formulation 1985 for the Thermal
 * Conductivity of Ordinary Water Substance, 1998, IAPWS.
@@ -866,20 +886,10 @@ SteamCalculator::lam0() const{
 *
 */
 Num
-SteamCalculator::lam1() const{
+SteamCalculator::lam1(const Num &rhobar) const{
 	Num l = 0;
-	Num tttau = 1 / this->tau_iaps85();
-	Num ddel = this->del_iaps85();
 
-	for (int i = 0; i < THCON_I_COUNT; i++) {
-		for (int j = 0; j < THCON_J_COUNT; j++) {	// nb i and j important here...
-			l += THCON_N[i][j] * pow(tttau - 1, i) * pow(ddel - 1, j);
-			//printf("NOTE: i=%2d, j=%2d, n_ij=%.5f, l=%.5f\n",i,j,THCON_N[i][j],l);
-		}
-	}
-
-	Num l1 = exp(ddel * l);
-	//printf("NOTE: lam1 = %.5f\n",l1);
+	Num l1 = THCON_b0 + THCON_b1 * rhobar + THCON_b2 * exp(THCON_B1 * sq(rhobar + THCON_B2));
 
 	ENSURE(!isnan(l1));
 	ENSURE(!isinf(l1));
@@ -897,53 +907,32 @@ SteamCalculator::lam1() const{
 *
 * @return lambda_0 [dim'less]
 * @see http://www.iapws.org/relguide/IF97.pdf
-*
 */
 Num
-SteamCalculator::lam2() const{
+SteamCalculator::lam2(const Num &Tbar, const Num &rhobar) const{
 
-	Num tt = tau_iaps85();
-	Num dd = del_iaps85();
+	Num DTbar = fabs(Tbar - 1) + THCON_C4;
 
+	Num Q = 2 + THCON_C5 / pow(DTbar,0.6);
 
-	//fprintf(stderr,"SteamCalculator::lam2 dd=%.5f\n",dd);
-
-	Num ddpp = this->delpi_iaps85();
-	if (isnan(ddpp)) {
-		printf("ERROR: delpi_iaps85 returns not a number\n");
-	}
-	//printf("NOTE: delpi_iaps85 = %.5f\n",ddpp);
-
-
-	Num pptt = this->pitau_iaps85();
-	if (isnan(pptt)) {
-		printf("ERROR: pitau_iaps85 returns not a number\n");
-	}
-	//printf("NOTE: pitau_iaps85 = %.5f\n",ddpp);
-
-	ASSERT(!isinf(tt));
-	ASSERT(dd != 0);
-	ASSERT(!isinf(pptt));
-	ASSERT(!isinf(dd));
-
-	Num chi = dd * ddpp;
-
-	ASSERT(!isinf(chi));
-
-	Num ll = 0.0013848 / mu0() / mu1()
-	                * sq(tt / dd)
-	                * sq(pptt)
-	                * pow(chi, (Num) 0.4678)
-	                * sqrt(dd)
-	                * exp(-18.66 * sq(tt - 1) - pow(dd - 1, 4));
-
-	if (isnan(ll)) {
-		printf("ERROR: lam2 returns not a number\n");
+	Num S;
+	if(Tbar > 1){
+		S = 1 / DTbar;
+	}else{
+		S = THCON_C6 / pow(DTbar,0.6);
 	}
 
-	ENSURE(!isnan(ll));
-	ENSURE(!isinf(ll));
-	return ll;
+	Num l2 = 
+		(THCON_d1 / pow(Tbar,10) + THCON_d2) * pow(rhobar,1.8) * 
+			exp(THCON_C1 * (1 - pow(rhobar,2.8)))
+		+ THCON_d3 * S * pow(rhobar,Q) *
+			exp((Q/1+Q)*(1 - pow(rhobar,1+Q)))
+		+ THCON_d4 *
+			exp(THCON_C2 * pow(Tbar,1.5) + THCON_C3 / pow(rhobar,5));
+
+	ENSURE(!isnan(l2));
+	ENSURE(!isinf(l2));
+	return l2;
 }
 
 Num
@@ -975,15 +964,13 @@ SteamCalculator::pitau_iaps85(void) const{
 //EVAL_STEAM(lam, lam0() * lam1() + lam2())
 
 Num
-SteamCalculator::lam() const{
-	//Num l0 = lam0();
-	//Num l1 = lam1();
-	//Num l2 = lam2();
-	//Num l2=0;
-	Num lam = (lam0() * lam1() + lam2());
-	//printf("NOTE: lam0=%.5f, lam1=%.5f, lam2=%.5f => lam=%.5f\n",l0,l1,l2,lam);
+SteamCalculator::lam(const Num &Tbar, const Num &rhobar) const{
+
+	Num lam = (lam0(Tbar) + lam1(rhobar) + lam2(Tbar,rhobar));
+
 	ENSURE(!isnan(lam));
 	ENSURE(!isinf(lam));
+
 	return lam;
 }
 

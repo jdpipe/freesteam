@@ -59,7 +59,7 @@ MODEL moistair;
 	m = m_a + m_v;
 
 	(*
-		Approximate water vapour by saturated gas at temperature T.
+		Approximate water vapour enthalpy by saturated gas at temperature T.
 		(this is a good assumption for temperatures 20 to 100 °C)
 	*)
 	sat_vap IS_A iapwssatprops; (* look up saturation properties *)
@@ -71,7 +71,9 @@ MODEL moistair;
 
 	(* 
 		Air properties: use the Adebiyi correlation for air enthalpy
-		at the partial pressure p_a and temperature T.
+		at the partial pressure p_a and temperature T. Also calculate
+		the specific volume using the equation of state (which will be
+		fairly accurate, ±0.52% as I recall).
 	*)
 	air IS_A airprops;
 	h_a ALIASES air.h; (* h_a will be calculated for (p_a, T) *)
@@ -105,6 +107,10 @@ MODEL moistair;
 
 	h IS_A specific_enthalpy;
 	m*h = m_a * h_a + m_v * h_v;
+	
+	(* specific volume *)
+	v IS_A specific_volume;
+	m * v = m_a * v_a;
 
 METHODS
 	METHOD on_load;

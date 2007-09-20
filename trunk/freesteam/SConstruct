@@ -432,12 +432,17 @@ lib = lib_env.SharedLibrary('freesteam',list
 	, LIBS = ['m']
 )
 
+libs = [lib]
+
 # create local symlink for the soname stuff.
 if platform.system()=="Linux":
+	print "MAKING LINK, SONAME_MAJOR = %s" % env['SONAME_MAJOR']
 	if env['SONAME_MAJOR']:
-		lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}",lib
+		liblink = lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}"
+			,lib
 			,"ln -s $SOURCE $TARGET"
 		)
+		libs.append(liblink)
 
 #------------------------------------------------------
 # Build the example program (build-time)
@@ -644,7 +649,8 @@ env.Depends(tar,"freesteam.spec")
 #--------------------------------------------------------
 # DEFAULT TARGETS
 
-default_targets = ['example','cli','test']
+default_targets = ['example','cli','test'] + libs
+
 if env.get('HAVE_PYTHON') and env.get('HAVE_SWIG'):
 	default_targets.append('python')
 

@@ -180,10 +180,11 @@ class SteamCalculator:public DesignByContract {
 		Num delpi_iaps85() const;
 		Num pitau_iaps85() const;
 
-		Num lam() const;	// for thermal conductivity.
-		Num lam0() const;
-		Num lam1() const;
-		Num lam2() const;
+		// reduced thermal conductivity correlations
+		Num lam(const Num &Tbar, const Num &rhobar) const;
+		Num lam0(const Num &Tbar) const;
+		Num lam1(const Num &rhobar) const;
+		Num lam2(const Num &Tbar, const Num &rhobar) const;
 
 		Num mu() const;
 		Num mu0() const;

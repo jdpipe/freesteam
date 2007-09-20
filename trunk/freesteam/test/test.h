@@ -9,7 +9,7 @@
 using namespace std;
 
 #ifndef HAVE_CPPUNIT
-	#error CPPUNIT IS NOT AVAIABLE: CHECK YOUR ../make-xxxxxx.mak FILE AND SET CPPFLAGS WITH -DHAVE_CPPUNIT
+	#error CPPUNIT IS NOT AVAIABLE...?
 #else
 	#include <cppunit/extensions/TestFactoryRegistry.h>
 	#include <cppunit/ui/text/TestRunner.h>
