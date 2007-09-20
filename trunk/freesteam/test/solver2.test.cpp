@@ -100,8 +100,8 @@ class Solver2Test : public CppUnit::TestFixture
 				}
 				Pressure pstep = (pmax - pmin) / double(i);
 
-				for(Pressure p = pmin + pstep * 0.5 ; p <= pmax; p +=pstep){
-					//cerr << endl << "Solver2Test::testRegion2: p = " << p;
+				for(Pressure p = pmin + pstep * 0.004 ; p <= pmax; p +=pstep){
+					//cerr << endl << "Solver2Test::testRegion2: p = " << p / MPa << " MPa";
 					SteamCalculator S;
 					S.setRegion2_pT(p,T);
 					testWith(S,2);
