@@ -30,9 +30,9 @@ Steam</a> (IAPWS). <b>freesteam</b> lets you compute water and steam properties 
   <li>IAPWS-95 Scientific formulation (low speed, but simple code)</li>
 </ul>
 
-<p>The library includes bindings for the <a href="http://www.python.org">Python</a> language, as well as bindings to allow it to be used from the <a href="http://ascend.cheme.cmu.edu/">ASCEND modelling environment</a>.
+<p>The library includes bindings for the <a href="http://www.python.org">Python</a> language, as well as bindings to allow it to be used from the <a href="http://ascend.cheme.cmu.edu/">ASCEND modelling environment</a>. For Windows users, a convenient .exe installer is provided.
 
-<p><font color=red><i><b>New:&nbsp;</b></i></font>The 0.7.2 release includes improved example code for use with C++, Python and ASCEND, and a Windows installer that allows you to chose the components you wish to use.</p>
+<p><font color=red><i><b>New:&nbsp;</b></i></font>The 0.8 release contains a rewrite of the thermal conductivity correlation, and fixes a bug in the calculation of densities in the two-phase Region 4.</p>
 
 <p>There is a <a href="https://lists.sourceforge.net/lists/listinfo/freesteam-users">mailing list for freesteam users</a>, which is the preferred support mechansim (it ensures that FAQs are captured for others to re-use). Alternatively, you can email the developer directly on <script><!--
 
@@ -141,9 +141,13 @@ the following steam <span style="font-weight: bold;">properties</span>:</p>
             <td style="vertical-align: top;">Quality (when saturated)<br>
             </td>
           </tr>
+          <tr>
+            <td style="vertical-align: top;">k</td>
+            <td style="vertical-align: top;">Thermal conductivity</td>
+          </tr>
         </tbody>
       </table>
-      <p>Correlations for thermal conductivty and viscosity are also provided but these have not been rigorously validated.
+      <p>A correlation for viscosity is also provided but this has not been rigorously validated.
 
 <p><font color=red><i><b>New:&nbsp;</b></i></font>Calculation of surface tension is now supported (from version 0.6.2)</p>
 

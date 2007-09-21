@@ -1,7 +1,7 @@
 <?php
 
-$latestversion ="0.7.2";
-$releasedate = "19 Aug 2007";
+$latestversion ="0.8";
+$releasedate = "21 Sep 2007";
 
 $viewcvs_base = "http://freesteam.cvs.sourceforge.net/freesteam/freesteam/";
 
