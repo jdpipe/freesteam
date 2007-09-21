@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>freesteam: Steam Tables, Open Source, IAPWS-IF97</title>
-  <link rel="stylesheet" media="screen" href="http://freesteam.sf.net/freesteam.css"
+  <link rel="stylesheet" media="screen" href="freesteam.css"
  type="text/css">
   <meta name="KEYWORDS"
  content="steam tables, IAPWS, steam properties, steam calculator, density, water, steam, IF97, saturated, superheated, subcooled, properties, enthalpy, entropy, specific heat, thermodynamics, thermo-fluids, IAPWS-95, python, ASCEND, EMSO, EES">
@@ -13,7 +13,7 @@
 
 <h1>freesteam<br></h1>
 
-<table><tr><td valign=top><div class="nav"><span style="font-weight: bold;">Current version: </span><a href="http://sourceforge.net/project/platformdownload.php?group_id=120898">0.7.2</a><br><span style="font-weight: bold;">Released: </span>19 Aug 2007<br><ul>  <li><a href="http://freesteam.sf.net/example.php" title="Examples">Examples</a></li>
+<table><tr><td valign=top><div class="nav"><span style="font-weight: bold;">Current version: </span><a href="http://sourceforge.net/project/platformdownload.php?group_id=120898">0.8</a><br><span style="font-weight: bold;">Released: </span>21 Sep 2007<br><ul>  <li><a href="http://freesteam.sf.net/example.php" title="Examples">Examples</a></li>
   <li><a href="http://sourceforge.net/project/platformdownload.php?group_id=120898" title="Download">Download</a></li>
   <li><a href="http://freesteam.sf.net/scons.php" title="How to compile">How to compile</a></li>
   <li><a href="https://lists.sourceforge.net/lists/listinfo/freesteam-users" title="Support">Support</a></li>
@@ -21,7 +21,7 @@
   <li><a href="http://mantis.cruncher2.dyndns.org/" title="Report bugs">Report bugs</a></li>
   <li><a href="http://freesteam.cvs.sourceforge.net/freesteam/freesteam/" title="Browse CVS">Browse CVS</a></li>
   <li><a href="http://docs.cruncher2.dyndns.org/freesteam/" title="Code docs">Code docs</a></li>
-  <li><a href="properties/">Property diagrams</a></li>
+  <li><a href="http://freesteam.sf.net/properties/">Property diagrams</a></li>
   <li><a href="http://buildbot.cruncher2.dyndns.org/">BuildBot</a></li>
   <li><a href="http://sf.net/projects/freesteam" title="SourceForge">SourceForge</a></li>
 </ul>On this page...
@@ -44,9 +44,9 @@ Steam</a> (IAPWS). <b>freesteam</b> lets you compute water and steam properties 
   <li>IAPWS-95 Scientific formulation (low speed, but simple code)</li>
 </ul>
 
-<p>The library includes bindings for the <a href="http://www.python.org">Python</a> language, as well as bindings to allow it to be used from the <a href="http://ascend.cheme.cmu.edu/">ASCEND modelling environment</a>.
+<p>The library includes bindings for the <a href="http://www.python.org">Python</a> language, as well as bindings to allow it to be used from the <a href="http://ascend.cheme.cmu.edu/">ASCEND modelling environment</a>. For Windows users, a convenient .exe installer is provided.
 
-<p><font color=red><i><b>New:&nbsp;</b></i></font>The 0.7.2 release includes improved example code for use with C++, Python and ASCEND, and a Windows installer that allows you to chose the components you wish to use.</p>
+<p><font color=red><i><b>New:&nbsp;</b></i></font>The 0.8 release contains a rewrite of the thermal conductivity correlation, and fixes a bug in the calculation of densities in the two-phase Region 4.</p>
 
 <p>There is a <a href="https://lists.sourceforge.net/lists/listinfo/freesteam-users">mailing list for freesteam users</a>, which is the preferred support mechansim (it ensures that FAQs are captured for others to re-use). Alternatively, you can email the developer directly on <script><!--
 
@@ -155,9 +155,13 @@ the following steam <span style="font-weight: bold;">properties</span>:</p>
             <td style="vertical-align: top;">Quality (when saturated)<br>
             </td>
           </tr>
+          <tr>
+            <td style="vertical-align: top;">k</td>
+            <td style="vertical-align: top;">Thermal conductivity</td>
+          </tr>
         </tbody>
       </table>
-      <p>Correlations for thermal conductivty and viscosity are also provided but these have not been rigorously validated.
+      <p>A correlation for viscosity is also provided but this has not been rigorously validated.
 
 <p><font color=red><i><b>New:&nbsp;</b></i></font>Calculation of surface tension is now supported (from version 0.6.2)</p>
 
@@ -199,7 +203,7 @@ steam properties.</p>
 
 <p><b>freesteam</b> offers more flexibility than many other steam tables packages in its ability to find a particular steam state in terms of the combination of steam properties you desire. With other packages, you may only be given the properties correlated in terms of (<i>p</i>,<i>T</i>) or (<i>&rho;</i>,<i>T</i>), etc. This would then require you to link to or write your own root-finding code before you could use the correlation to solve your problem.</p>
 
-<p>At present, freesteam permits the robust solution of steam state in terms of the following sets of properties: (p,T)
+<p>At present, freesteam permits the robust solution of steam state in terms of the following sets of properties: (p,T) 
 (u,v) (p,h) (p,u) (p,s) (T,s) (T,h) (p,v) (p,cp) (p,cv) (p,rho) (T,u) (T,v) (T,cp) (T,cv) (T,rho). The architecture for adding new property combinations is modular, if you need another combination, let me know.</p>
 
 <p>There is a test-suite provide with the source code that allows you to verify the above iterative solutions against the results from forward computation.</p>
@@ -229,9 +233,9 @@ the project. We are not using the SourceForge 'tracker' at this stage.</p>
 <ul>
   <li>There is a problem with <span style="font-weight: bold;">whichStateStr</span> which we need to fix.</li>
 
-  <li>The <span style="font-weight: bold;">one-way solver</span> has some problems in certain situations. For example, solving for a desired value of specific volume along the saturation curve will give errors at low temperatures, because of the 'density anomaly'. See <a href="http://pye.dyndns.org/mantis/bug_view_page.php?bug_id=0000060">this bug</a>.</li>
+  <li>The <span style="font-weight: bold;">one-way solver</span> has some problems in certain situations. For example, solving for a desired value of specific volume along the saturation curve will give errors at low temperatures, because of the 'density anomaly'. See <a href="http://mantis.cruncher2.dyndns.org/bug_view_page.php?bug_id=0000060">this bug</a>.</li>
 
-  <li>The current implementation uses an IAPWS Supplementary Release correlation for the density of <span style="font-weight: bold;">saturated steam </span>when the temperature exceeds that of the region 1/region 3 boundary. This is not in keeping with the 'pure' IAPWS-IF97 Release, and gives slightly different values for specific entropy at the critical point as a result. See <a href="http://pye.dyndns.org/mantis/bug_view_page.php?bug_id=0000059">this bug</a> for more information.</li>
+  <li>The current implementation uses an IAPWS Supplementary Release correlation for the density of <span style="font-weight: bold;">saturated steam </span>when the temperature exceeds that of the region 1/region 3 boundary. This is not in keeping with the 'pure' IAPWS-IF97 Release, and gives slightly different values for specific entropy at the critical point as a result. See <a href="http://mantis.cruncher2.dyndns.org/bug_view_page.php?bug_id=0000059">this bug</a> for more information.</li>
 </ul>
 
 
@@ -243,11 +247,11 @@ the project. We are not using the SourceForge 'tracker' at this stage.</p>
 
 <ul>
   <li><b>Write some documentation</b>!
-
+  
   <li>Add a directory with some more <b>example code</b>.
-
+  
   <li>Support for Visual C++ 2005 compiler. Seems that this may require adoption of the units-of-measurement C++ template classes from Boost.org, in place of those currently in use from Embedded.com, which are broken at present.
-
+    
   <li><a href="http://www.potto.org">Genick Bar-Meir</a> has started working on a <span style="font-weight:bold">Qt-based GUI</span> for freesteam. Stay tuned!</li>
 
 </ul>
@@ -260,24 +264,24 @@ the project. We are not using the SourceForge 'tracker' at this stage.</p>
   <li>Preliminary work on another <span style="font-weight: bold;">hook library</span> to integrate freesteam with the <a href="http://www.fchart.com/ees/ees.shtml">EES</a> equation solver (<a href="ees.pdf#page=211">manual</a> here)has also been performed; this will likewise require some special license agreement. At present, EES provides only the IAPWS-95 'scientific and general use' correlation.</li>
 
   <li>Integration of the IAPWS-95 correlation into <a href="http://www.ginac.de/">GiNaC</a>. This work is largely complete (the code's not on the net yet though): it needs to be incorporated into the freesteam distribution.
-
+  
   <li>Saturation properties for region 3 are currently implemented used the rho_sat(T) correlations from the IAPWS <a href="http://www.iapws.org/relguide/supsat.pdf">supsat</a> release. Need to change this to use an iterative solver based on the region 3 correlations, since the current equations give slight inconsistencies with pure IAPWS data for pressures above about 16 MPa.</li>
-
+  
   <li><span style="font-weight: bold;">Backwards correlations</span> will massively reduce the amount of two-way iteration required when finding the state for unsual combinations of variables.</li>
-
+  
   <li>An <span style="font-weight: bold;">interactive </span>command-line
 steam tables program for easy demonstration/interactive testing.</li>
 
   <li>An add-in version for OpenOffice would be good. Have received some partially-working source code for this from Allan Curtis</li>
 
   <li>There have been contributions for the <span style="font-weight: bold;">reverse equations in Region 2</span> - I haven't incorporated these into the source code yet though.</li>
-
+  
   <li>There have been contributions from Allan Curtis for some <span style="font-weight: bold;">r</span><span style="font-weight: bold;">everse equations in Region 3</span> - I haven't incorporated these into the source code yet though.</li>
-
+  
   <li>The <span style="font-weight: bold;">compiled size </span>of the code is quite large at the moment, probably because of the large amount of debugging code and GDB symbols. However some of this might be to do with bad use of C++ templates, need to take a look at that.</li>
-
+  
   <li><span style="font-weight: bold;">Region 5</span> has not yet been implemented at all, but it's a low priority. Let us know if you'd need it.</li>
-
+  
   <li>We'd like to extend the <span style="font-weight: bold;">phase diagrams</span> code so that lines of constant properties (pressure, temperature, entropy, enthalpy, etc) can be shown as well as the saturation/region lines.</li>
 
   <li><span style="font-weight: bold;">Develop a GUI </span>version using <a href="http://www.gtk.org/">GTK+</a> or similar.</li>
@@ -305,10 +309,10 @@ Journal of Engineering for Gas Turbines and Power</a><br>
   <dd><a href="http://www.iapws.org/relguide/IAPWS95.pdf">http://www.iapws.org/relguide/IAPWS95.pdf<br>
     <br>
     </a> </dd>
-
+   
   <dt>Surface tension</dt>
   <dd><a href="http://www.iapws.org/relguide/surf.pdf">http://www.iapws.org/relguide/surf.pdf</a><br><br></dd>
-
+    
   <dt>CppUnit </dt>
   <dd><a href="http://cppunit.sourceforge.net/cgi-bin/moin.cgi">http://cppunit.sourceforge.net/cgi-bin/moin.cgi</a>
   </dd>
@@ -326,7 +330,7 @@ Journal of Engineering for Gas Turbines and Power</a><br>
   <dd><a href="http://www.library.cornell.edu/nr/bookcpdf.html">http://www.library.cornell.edu/nr/bookcpdf.html<br>
     <br>
     </a></dd>
-
+  
   <dt>Free (in the OS sense) IAPWS calculators</dt>
   <dd><a href="http://www.x-eng.com/">X Steam</a> (for Excel, OpenOffice and Matlab, licensing unclear)<br>
 
@@ -388,6 +392,6 @@ Properties in SI</span>, Stanford Univ, 1979:<br>
 <hr>
 <address>
 <a href="http://sourceforge.net"><img style="float:right" src="http://sflogo.sourceforge.net/sflogo.php?group_id=120898&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>John Pye<br/>
-Last modified: 19 August 2007</address>
+Last modified: 21 September 2007</address>
 </body>
 </html>

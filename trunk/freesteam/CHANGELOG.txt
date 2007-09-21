@@ -1,5 +1,17 @@
 CHANGELOG
 
+0.8
+Friday, 21 September
+--------------------
+
+General:
+- Fixed errors in the conductivity correlation.
+- Some methods in steamcalculator.h have had their parameters changed.
+- Fixed incorrect interpolation of densities in the saturation region.
+- Added ASCEND model to calculate moist air properties.
+- Added support for a 'freesteam-config' program.
+- Added 'mW/mK' to measurement.cpp for conductivity values.
+
 0.7.2
 Sunday, 19 August 2007
 ----------------------
