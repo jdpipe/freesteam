@@ -219,9 +219,9 @@ the project. We are not using the SourceForge 'tracker' at this stage.</p>
 <ul>
   <li>There is a problem with <span style="font-weight: bold;">whichStateStr</span> which we need to fix.</li>
 
-  <li>The <span style="font-weight: bold;">one-way solver</span> has some problems in certain situations. For example, solving for a desired value of specific volume along the saturation curve will give errors at low temperatures, because of the 'density anomaly'. See <a href="http://pye.dyndns.org/mantis/bug_view_page.php?bug_id=0000060">this bug</a>.</li>
+  <li>The <span style="font-weight: bold;">one-way solver</span> has some problems in certain situations. For example, solving for a desired value of specific volume along the saturation curve will give errors at low temperatures, because of the 'density anomaly'. See <a href="http://mantis.cruncher2.dyndns.org/bug_view_page.php?bug_id=0000060">this bug</a>.</li>
 
-  <li>The current implementation uses an IAPWS Supplementary Release correlation for the density of <span style="font-weight: bold;">saturated steam </span>when the temperature exceeds that of the region 1/region 3 boundary. This is not in keeping with the 'pure' IAPWS-IF97 Release, and gives slightly different values for specific entropy at the critical point as a result. See <a href="http://pye.dyndns.org/mantis/bug_view_page.php?bug_id=0000059">this bug</a> for more information.</li>
+  <li>The current implementation uses an IAPWS Supplementary Release correlation for the density of <span style="font-weight: bold;">saturated steam </span>when the temperature exceeds that of the region 1/region 3 boundary. This is not in keeping with the 'pure' IAPWS-IF97 Release, and gives slightly different values for specific entropy at the critical point as a result. See <a href="http://mantis.cruncher2.dyndns.org/bug_view_page.php?bug_id=0000059">this bug</a> for more information.</li>
 </ul>
 
 
