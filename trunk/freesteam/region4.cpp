@@ -107,7 +107,14 @@ INTERP_REGION4(specentropy,  SpecificEntropy);
 INTERP_REGION4(specenthalpy, SpecificEnergy);
 INTERP_REGION4(speccp,       SpecHeatCap);
 INTERP_REGION4(speccv,       SpecHeatCap);
-INTERP_REGION4(dens,         Density);
+
+Density Region4::dens(const SteamCalculator &c) const{
+	ASSERT(c.x >= 0);
+	ASSERT(c.x <= 1);
+	Density rhof = c.liq->dens();
+	Density rhog = c.gas->dens();
+	return 1. / (1./rhof * (1-c.x) + c.x/rhog);
+}
 
 Pressure
 Region4::pres(const SteamCalculator &c) const{
