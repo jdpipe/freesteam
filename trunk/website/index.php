@@ -212,7 +212,7 @@ also licensed under the GPL.<br>
 <h2><a name="bugs"></a>3. Bugs</h2>
 
 <p>For a complete up-to-date list of bugs and feature requests, visit
-the Mantis <a href="http://pye.dyndns.org/mantis/">bug tracker</a> for
+the Mantis <a href="http://mantis.cruncher2.dyndns.org/">bug tracker</a> for
 the project. We are not using the SourceForge 'tracker' at this stage.</p>
 
 <p>Some of the bugs current at the time of writing:</p>
