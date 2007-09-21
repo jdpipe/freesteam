@@ -164,8 +164,6 @@ class TestPythonBindings(unittest.TestCase):
 		S = steam(); S.set_pT(p,T)
 		k = S.conductivity()
 		rho = S.dens()
-		print "dens = ",rho.to("kg/m3"),"kg/m3"
-		print "k = ",k.to("mW/mK"),"mW/mK"
 		self.assertAlmostEqual(k,Measurement(34.2,"mW/mK"),4)
 
 	def testconductivity_5(self):
@@ -174,8 +172,6 @@ class TestPythonBindings(unittest.TestCase):
 		S = steam(); S.set_pT(p,T)
 		k = S.conductivity()
 		rho = S.dens()
-		print "dens = ",rho.to("kg/m3"),"kg/m3"
-		print "k = ",k.to("mW/mK"),"mW/mK"
 		self.assertAlmostEqual(k,Measurement(100.8,"mW/mK"),4)
 
 	def testconductivity_6(self):
@@ -184,8 +180,6 @@ class TestPythonBindings(unittest.TestCase):
 		S = steam(); S.set_pT(p,T)
 		k = S.conductivity()
 		rho = S.dens()
-		print "dens = ",rho.to("kg/m3"),"kg/m3"
-		print "k = ",k.to("mW/mK"),"mW/mK"
 		self.assertAlmostEqual(k,Measurement(213.2,"mW/mK"),4)
 
 	# PICKLING / UNPICKLING
