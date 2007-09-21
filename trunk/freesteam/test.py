@@ -135,6 +135,59 @@ class TestPythonBindings(unittest.TestCase):
 		self.assertAlmostEqual(S.specenthalpy(),Measurement(2615.0,"kJ/kg"),-4)
 		self.assertAlmostEqual(S.specentropy(),Measurement(5.318,"kJ/kgK"),-2)
 
+	# CONDUCTIVITY
+
+	def testconductivity_1(self):
+		p = Measurement(1,"MPa")
+		T = Measurement(350+273.15,"K")
+		S = steam(); S.set_pT(p,T)
+		k = S.conductivity()
+		self.assertAlmostEqual(k,Measurement(49.8,"mW/mK"),4)
+
+	def testconductivity_2(self):
+		p = Measurement(5,"MPa")
+		T = Measurement(25+273.15,"K")
+		S = steam(); S.set_pT(p,T)
+		k = S.conductivity()
+		self.assertAlmostEqual(k,Measurement(610.1,"mW/mK"),4)
+
+	def testconductivity_3(self):
+		p = Measurement(1,"MPa")
+		T = Measurement(600+273.15,"K")
+		S = steam(); S.set_pT(p,T)
+		k = S.conductivity()
+		self.assertAlmostEqual(k,Measurement(80.4,"mW/mK"),4)
+
+	def testconductivity_4(self):
+		p = Measurement(0.5,"MPa")
+		T = Measurement(200+273.15,"K")
+		S = steam(); S.set_pT(p,T)
+		k = S.conductivity()
+		rho = S.dens()
+		print "dens = ",rho.to("kg/m3"),"kg/m3"
+		print "k = ",k.to("mW/mK"),"mW/mK"
+		self.assertAlmostEqual(k,Measurement(34.2,"mW/mK"),4)
+
+	def testconductivity_5(self):
+		p = Measurement(0.5,"MPa")
+		T = Measurement(750+273.15,"K")
+		S = steam(); S.set_pT(p,T)
+		k = S.conductivity()
+		rho = S.dens()
+		print "dens = ",rho.to("kg/m3"),"kg/m3"
+		print "k = ",k.to("mW/mK"),"mW/mK"
+		self.assertAlmostEqual(k,Measurement(100.8,"mW/mK"),4)
+
+	def testconductivity_6(self):
+		p = Measurement(100,"MPa")
+		T = Measurement(800+273.15,"K")
+		S = steam(); S.set_pT(p,T)
+		k = S.conductivity()
+		rho = S.dens()
+		print "dens = ",rho.to("kg/m3"),"kg/m3"
+		print "k = ",k.to("mW/mK"),"mW/mK"
+		self.assertAlmostEqual(k,Measurement(213.2,"mW/mK"),4)
+
 	# PICKLING / UNPICKLING
 
 	def testpickle_measurement(self):

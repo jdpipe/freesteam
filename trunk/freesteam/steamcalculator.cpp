@@ -863,13 +863,15 @@ SteamCalculator::conductivity() const{
 */
 Num
 SteamCalculator::lam0(const Num &Tbar) const{
-
+	// we craftily avoid using the 'pow' function... maybe it's a good idea?
+	Num Tpow = sqrt(Tbar);
 	Num acc = 0;
 	for(int k = 0; k < THCON_a_COUNT; ++k) {
-		acc += THCON_a[k] * pow(Tbar,k);
+		acc += THCON_a[k] * Tpow;
+		Tpow *= Tbar;
 	}
 
-	Num l0 = sqrt(Tbar) * acc;
+	Num l0 = acc;
 
 	ENSURE(!isnan(l0));
 	ENSURE(!isinf(l0));
@@ -926,7 +928,7 @@ SteamCalculator::lam2(const Num &Tbar, const Num &rhobar) const{
 		(THCON_d1 / pow(Tbar,10) + THCON_d2) * pow(rhobar,1.8) * 
 			exp(THCON_C1 * (1 - pow(rhobar,2.8)))
 		+ THCON_d3 * S * pow(rhobar,Q) *
-			exp((Q/1+Q)*(1 - pow(rhobar,1+Q)))
+			exp((Q/(1+Q))*(1 - pow(rhobar,1+Q)))
 		+ THCON_d4 *
 			exp(THCON_C2 * pow(Tbar,1.5) + THCON_C3 / pow(rhobar,5));
 
