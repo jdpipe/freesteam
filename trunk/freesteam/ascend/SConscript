@@ -38,6 +38,7 @@ ascsrc = asc_env.get('ASCEND_SRCROOT');
 
 modeldir = []
 if ascsrc:
+	print "ASCEND_SRCROOT"
 	modeldir = None
 	asc_env.AppendUnique(LIBS = ['ascend'])
 	asc_env.Append(LIBPATH=[ascsrc])
@@ -84,6 +85,7 @@ elif config:
 			pass
 	
 else:
+	ok_to_build = 0
 	without_ascend_reason = "No ascsrc, not config"
 	
 #-------------------------------

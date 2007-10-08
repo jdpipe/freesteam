@@ -654,8 +654,9 @@ default_targets = ['example','cli','test'] + libs
 if env.get('HAVE_PYTHON') and env.get('HAVE_SWIG'):
 	default_targets.append('python')
 
-if env.get('HAVE_ASCEND'):
-	default_targets.append('ascend')
+#if env.get('HAVE_ASCEND'):
+# above test doesn't work for case of ASCEND_SRCROOT
+default_targets.append('ascend')
 
 if env.get('NSIS'):
 	default_targets.append('installer')
