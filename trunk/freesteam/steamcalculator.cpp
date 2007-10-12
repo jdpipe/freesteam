@@ -726,7 +726,7 @@ SteamCalculator::pi_iaps85() const{
 //-------------------------------------------------------------------------
 // VISCOSITY CALCULATIONS ACCORDING TO IAPS85 / REVISED IAPWS 1997
 
-/// @see http://www.iapws.org/relguide/IF97.pdf
+/// @see http://www.iapws.org/relguide/visc.pdf
 Num
 SteamCalculator::mu0() const{
 
@@ -742,7 +742,7 @@ SteamCalculator::mu0() const{
 
 }
 
-/// @see http://www.iapws.org/relguide/IF97.pdf
+/// @see http://www.iapws.org/relguide/visc.pdf
 Num
 SteamCalculator::mu1() const{
 
@@ -764,7 +764,7 @@ SteamCalculator::mu1() const{
 
 }
 
-/// @see http://www.iapws.org/relguide/IF97.pdf
+/// @see http://www.iapws.org/relguide/visc.pdf
 Num
 SteamCalculator::mu2() const{
 
@@ -794,7 +794,7 @@ SteamCalculator::mu2() const{
 
 }
 
-/// @see http://www.iapws.org/relguide/IF97.pdf
+/// @see http://www.iapws.org/relguide/visc.pdf
 Num
 SteamCalculator::mu() const{
 	return mu0() * mu1() * mu2();

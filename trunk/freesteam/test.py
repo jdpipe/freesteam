@@ -1,3 +1,4 @@
+# vim: set fileencoding=utf-8 :
 from freesteam import *
 import unittest
 
@@ -182,6 +183,51 @@ class TestPythonBindings(unittest.TestCase):
 		rho = S.dens()
 		self.assertAlmostEqual(k,Measurement(213.2,"mW/mK"),4)
 
+	# VISCOSITY
+	# values taken from IAPWS 'visc.pdf', Appendix A.
+
+	def testviscosity_1(self):
+		p = Measurement(1,"MPa")
+		T = Measurement(25+273.15,"K")
+		S = steam(); S.set_pT(p,T)
+		mu = S.dynvisc()
+		assert abs(float(mu - Measurement(891.1,"µPa*s"))) <  float(Measurement(8.9,"µPa*s"))
+
+	def testviscosity_2(self):
+		p = Measurement(10,"MPa")
+		T = Measurement(100+273.15,"K")
+		S = steam(); S.set_pT(p,T)
+		mu = S.dynvisc()
+		assert abs(float(mu - Measurement(284.7,"µPa*s"))) <  float(Measurement(2.9,"µPa*s"))
+
+	def testviscosity_3(self):
+		p = Measurement(1,"MPa")
+		T = Measurement(400+273.15,"K")
+		S = steam(); S.set_pT(p,T)
+		mu = S.dynvisc()
+		assert abs(float(mu - Measurement(24.43,"µPa*s"))) <  float(Measurement(0.49,"µPa*s"))
+
+	def testviscosity_4(self):
+		p = Measurement(5,"MPa")
+		T = Measurement(800+273.15,"K")
+		S = steam(); S.set_pT(p,T)
+		mu = S.dynvisc()
+		assert abs(float(mu - Measurement(40.6,"µPa*s"))) <  float(Measurement(1.2,"µPa*s"))
+
+	def testviscosity_5(self):
+		p = Measurement(100,"MPa")
+		T = Measurement(800+273.15,"K")
+		S = steam(); S.set_pT(p,T)
+		mu = S.dynvisc()
+		assert abs(float(mu - Measurement(51.0,"µPa*s"))) <  float(Measurement(1.5,"µPa*s"))
+
+	def testviscosity_6(self):
+		p = Measurement(100,"MPa")
+		T = Measurement(0+273.15,"K")
+		S = steam(); S.set_pT(p,T)
+		mu = S.dynvisc()
+		assert abs(float(mu - Measurement(1651,"µPa*s"))) <  float(Measurement(17,"µPa*s"))
+
 	# PICKLING / UNPICKLING
 
 	def testpickle_measurement(self):
@@ -235,3 +281,4 @@ class TestPythonBindings(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+

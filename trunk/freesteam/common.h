@@ -74,13 +74,10 @@ const Density RHO_CRIT = 322.0 * kg / metre3;	// critical-point density / [kg/m³
 
 /// @see http://www.iapws.org/relguide/visc.pdf#page=7 Eq (4)
 const DynamicViscosity IAPS85_VISC_REF = 55.071 * micro * Pascal * second;
-
 /// @see http://www.iapws.org/relguide/visc.pdf#page=7 Eq (2)
 const Density IAPS85_DENS_REF = 317.763 * kg_m3;
-
 /// @see http://www.iapws.org/relguide/visc.pdf#page=7 Eq (1)
 const Temperature IAPS85_TEMP_REF = 647.226 * Kelvin;
-
 /// @see http://www.iapws.org/relguide/visc.pdf#page=7 Eq (4)
 const Pressure IAPS85_PRES_REF = 22.115 * MPa;	// MPa (THIS IS *NOT* EQUAL TO P_CRIT!)
 
