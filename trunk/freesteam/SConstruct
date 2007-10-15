@@ -204,20 +204,18 @@ if env['ENABLE_DEBUG_FLAG']:
 # ISNAN DETECTION
 
 #- - - 8< - - -
-checknansrc = """// Test for 'isnan'
-#include <cmath>
-#include <stdexcept>
-#include <iostream>
-using namespace std;
+checknansrc = """/* Test for 'isnan' */
+#include <math.h>
 
 int main(void){
-	int x= isnan(1);
+	int x = 1;
+	int y;
+	y = isnan(x);
 	return 0;
 }
 #ifdef __MINGW32__
-# error "MINGW32 isnan is no good for our purpose"
+# error "MINGW32 isnan is no good for our purpose - a macro isnan is no good"
 #endif
-
 """
 #- - - 8< - - -
 
@@ -226,7 +224,7 @@ def CheckIsNan(context):
 	lastLIBS = context.env.get('LIBS')
 	lastCPPFLAGS = context.env.get('CPPFLAGS')
 	context.env.Append(LIBS = ['m'])
-	tuple = context.TryRun(checknansrc,'.cpp')
+	tuple = context.TryRun(checknansrc,'.c')
 	#print tuple
 	if not tuple[0]:
 		context.env.Replace(
