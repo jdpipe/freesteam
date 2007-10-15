@@ -19,9 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-#include "steamcalculator.h"
-#include "solver.h"
-#include "solver2.h"
+#include "freesteam/steamcalculator.h"
+#include "freesteam/solver.h"
+#include "freesteam/solver2.h"
 #include <iostream>
 #include <iomanip>
 using namespace std;
