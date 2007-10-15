@@ -1,7 +1,7 @@
 <?php
 
-$latestversion ="0.8";
-$releasedate = "21 Sep 2007";
+$latestversion ="0.8.1";
+$releasedate = "15 Oct 2007";
 
 $viewcvs_base = "http://freesteam.cvs.sourceforge.net/freesteam/freesteam/";
 
@@ -42,7 +42,7 @@ function show_nav($this_page=NULL,$current_page=NULL){
 		,new Link("How to compile", "scons.php", "Instructions for building the software from source")
 		,new Link("Support", "https://lists.sourceforge.net/lists/listinfo/freesteam-users", "Get support for Freesteam (mailing list)")
 		,new Link("Changelog", "${viewcvs_base}CHANGELOG.txt?only_with_tag=HEAD&amp;view=markup", "via ViewCVS on SourceForge")
-		,new Link("Report bugs", "http://mantis.cruncher2.dyndns.org/", "Mantis bug tracker at cruncher2.dyndns.org")
+		,new Link("Report bugs", "http://ascendbugs.cheme.cmu.edu/", "Mantis bug tracker at cmu.edu")
 		,new Link("Browse CVS", $viewcvs_base, "ViewCVS at SourceForge")
 		,new Link("Code docs", "http://docs.cruncher2.dyndns.org/freesteam/", "Code docs generated with Doxygen")
 		,new Link("Property diagrams", "properties/")
