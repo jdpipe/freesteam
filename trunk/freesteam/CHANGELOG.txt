@@ -1,8 +1,19 @@
 CHANGELOG
 
+0.8.1
+Monday, 15 October 2007
+-----------------------
+
+General
+- Added some test cases to check viscosity correlation in test.py
+
+For Windows users:
+- Fixed bug in isinfnan.h (missing #include <math.h>), with thanks to
+  Bruna Abreu Calfa.
+
 0.8
-Friday, 21 September
---------------------
+Friday, 21 September 2007
+-------------------------
 
 General:
 - Fixed errors in the conductivity correlation.
