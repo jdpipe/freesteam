@@ -175,11 +175,12 @@ opts.Add(
 	,soname_default
 )
 
-opts.Add(
-	'WIN_INSTALLER_NAME'
-	,"Name of the installer .exe to create under Windows (minus the '.exe')"
-	,"freesteam-"+version+"-py"+pyversion+".exe"
-)
+if platform.system()=="Windows":
+	opts.Add(
+		'WIN_INSTALLER_NAME'
+		,"Name of the installer .exe to create under Windows (minus the '.exe')"
+		,"freesteam-"+version+"-py"+pyversion+".exe"
+	)
 
 opts.Update(env)
 
@@ -364,7 +365,7 @@ conf = Configure(env
 
 # Math library...
 
-if not conf.CheckLibWithHeader(['m','c'], 'math.h', 'C'):
+if conf.CheckLibWithHeader(['m','c'], 'math.h', 'C') == False:
 	print 'Did not find libm.a or m.lib, exiting!'
 	Exit(1)
 
@@ -434,8 +435,9 @@ libs = [lib]
 
 # create local symlink for the soname stuff.
 if platform.system()=="Linux":
-	print "MAKING LINK, SONAME_MAJOR = %s" % env['SONAME_MAJOR']
-	if env['SONAME_MAJOR']:
+	if env.get('SONAME_MAJOR'):
+		lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}",lib,Move("$TARGET","$SOURCE"))
+		print "MAKING LINK, SONAME_MAJOR =",env.get('SONAME_MAJOR')
 		liblink = lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}"
 			,lib
 			,"ln -s $SOURCE $TARGET"
@@ -616,18 +618,19 @@ if not env.get('NSIS'):
 	with_installer = False
 	without_installer_reason = "NSIS not found"
 
-if with_installer:
-	env.Append(NSISDEFINES={
-		'OUTFILE':"#dist/"+env['WIN_INSTALLER_NAME']
-		,"VERSION":version
-		,'PYVERSION':pyversion
-	})
-	installer = env.Installer('installer.nsi')
-	Depends(installer,["python","ascend"])
-	Depends(installer,[configscript])
-	env.Alias('installer',installer)
-else:
-	print "Skipping... Windows installer isn't being built:",without_installer_reason
+if platform.system()=="Windows":
+	if with_installer:
+		env.Append(NSISDEFINES={
+			'OUTFILE':"#dist/"+env['WIN_INSTALLER_NAME']
+			,"VERSION":version
+			,'PYVERSION':pyversion
+		})
+		installer = env.Installer('installer.nsi')
+		Depends(installer,["python","ascend"])
+		Depends(installer,[configscript])
+		env.Alias('installer',installer)
+	else:
+		print "Skipping... Windows installer isn't being built:",without_installer_reason
 
 #--------------------------------------------------------
 # DISTRIBUTION TARBALL
@@ -638,11 +641,11 @@ env.Append(
 	, DISTTAR_EXCLUDEDIRS=['CVS','.svn','.sconf_temp', 'dist']
 )
 
-tar = env.DistTar("dist/"+env['DISTTAR_NAME']
-	, [env.Dir('#')]
-)
-
-env.Depends(tar,"freesteam.spec")
+if env.get('DISTTAR_NAME'):
+	tar = env.DistTar("dist/"+env.get('DISTTAR_NAME')
+		, [env.Dir('#')]
+	)
+	env.Depends(tar,"freesteam.spec")
 
 #--------------------------------------------------------
 # DEFAULT TARGETS
