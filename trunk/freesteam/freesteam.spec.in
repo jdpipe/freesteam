@@ -139,6 +139,7 @@ rm -rf %{buildroot}
 %endif
 %{_bindir}/freesteam-config
 %{_includedir}/%{name}/*.h
+%{_includedir}/%{name}/freesteam.i
 %{_libdir}/lib%{name}.so%{SONAME_MAJOR}
 %{_libdir}/lib%{name}.so
 
