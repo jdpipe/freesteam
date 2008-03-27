@@ -34,6 +34,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	@param OtherProp target value
 	@param VaryProp value which is varied unti OtherProp has desired value
 
+	Note that dimensionally some properties are equivalent, for example
+	specific internal energy and specific enthalpy. In these cases you need
+	to use the OtherPropAlt template parameter to specify which one you want.
+	Values of this parameter are defined in common.h, such as SOLVE_ENTHALPY
+	and SOLVE_IENERGY, etc.
+
 	See SteamProperty
 */
 template<class MainProp, class OtherProp, class VaryProp, int MainPropAlt,int OtherPropAlt,int VaryPropAlt>
@@ -150,16 +156,28 @@ class SolverBase : public DesignByContract
 		To find p such that (T=600K, u=1500 kJ/kg):
 
 @code
-	Solver<Temperature,SpecificEnergy,Pressure> PS1(600 * Kelvin,1500 * kJ_kg);
+	Solver<Temperature,SpecificEnergy,Pressure,0,SOLVE_ENERGY> PS1(600 * Kelvin,1500 * kJ_kg);
 	SteamCalculator S = PS1.solve(0.00001 * kJ_kg, 0.1 * Pascal);
 	cout << S.pres() << end;
 @endcode
+
+	Note that dimensionally some properties are equivalent, for example
+	specific internal energy and specific enthalpy. In these cases you need
+	to use the OtherPropAlt template parameter to specify which one you want.
+	Values of this parameter are defined in common.h, such as SOLVE_ENTHALPY
+	and SOLVE_IENERGY, etc.
 
 	@param MainProp is the one of the correlation properties. In other words it can be fed directly into the known correlation equations.
 
 	@param OtherProp is the quantity to be solved for. In other words it is not correlated for and must be solved for by varying VaryProp.
 
 	@param VaryProp is the quantity which will be varied to in order to home in on the desired value of OtherProp.
+
+	@param OtherPropAlt is the 'alt code' for the other (target) property. You will
+	need to set it to SOLVE_ENTHALPY, SOLVE_ENTROPY, etc, becuase dimensional
+	equivalence means that this C++ template can't distinguish between SpecificEnergy
+	and SpecificEnthalpy (as far as the Units<...> class goes, these are the
+	same thing).
 */
 template<class MainProp, class OtherProp, class VaryProp, int MainPropAlt=0,int OtherPropAlt=0,int VaryPropAlt=0>
 class Solver
@@ -254,6 +272,7 @@ class Solver<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>
 
 		Solver(Pressure p, OtherProp op)
 			: SolverBase<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>(p,op){
+			//std::cerr << "Varying Temperature!" << std::endl;
 			SolverBase<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>::lowerbound = T_MIN;
 			SolverBase<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>::upperbound = T_MAX;
 		}
@@ -261,7 +280,9 @@ class Solver<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>
 	protected:
 
 		virtual void setVaryProp(const Temperature &T){
+			//std::cerr << "Setting temperature to " << T;
 			SolverBase<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>::S.set_pT(SolverBase<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>::mp,T);
+			//std::cerr << "Gives h = " << SolverBase<Pressure,OtherProp,Temperature,0,OtherPropAlt,0>::S.specenthalpy() << std::endl;
 		}
 };
 

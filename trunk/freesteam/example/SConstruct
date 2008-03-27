@@ -1,7 +1,12 @@
 import SCons.Util
-import os.path
+import os.path, platform
 
-env = Environment(tools=['mingw'])
+if platform.system()=="Windows":
+	tools = ['mingw']
+else:
+	tools = ['default']
+
+env = Environment(tools=tools)
 
 prefix = "/usr"
 

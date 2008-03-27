@@ -14,21 +14,24 @@ Download and install MinGW and MSYS from the MinGW website
 the MSYS prompt.
 
 
-Using SCons 0.96.93
+Using SCons
 -------------------
 
 This is the preferred method. SCons (http://www.scons.org/) is a build tool 
-that requires Python (http://www.python.org/) to be on your system.
+that requires Python (http://www.python.org/) to be on your system. You should
+ensure that you have got SCons version 0.96.93 or later installed on your
+system.
 
-Open 
-
-Then using your MSYS command prompt:
+Using your MSYS command prompt:
 (you might need to change the first line)
 
-  cp -R /c/Program\ Files/freesteam/example .
-  cd example
+  cp -R /c/Program\ Files/freesteam/example ~
+  cd ~/example
   scons
   ./example
+
+The 'scons' line should perform the necessary compilation steps for the 
+example code, including locating the freesteam 'include' and 'lib' files.
 
 
 Using GNU Make

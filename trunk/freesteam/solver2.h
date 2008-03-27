@@ -35,7 +35,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /// Base class for all two-property solvers
 /**
-	This class is abstract. Use it when creating template Solver2 classes for particular combinations of variables, so that all Solver2 classes will have common methods whichRegion, solve, getFirstProp, etc, defined.
+	This class is abstract. Use it when creating template Solver2 classes for 
+	particular combinations of variables, so that all Solver2 classes will have
+	common methods whichRegion, solve, getFirstProp, etc, defined.
+
+	Note that dimensionally some properties are equivalent, for example
+	specific internal energy and specific enthalpy. In these cases you need
+	to use the FirstPropAlt and/or SecondPropAlt template parameter to specify 
+	which one you want. Values of these parameters are defined in common.h, such
+	as SOLVE_ENTHALPY and SOLVE_IENERGY, etc.
 
 	@param FirstProp (Units of) first property to be solved for
 	@param SecondProp (Units of) second property to be solved for
@@ -77,7 +85,9 @@ class Solver2Base{
 
 ///	Two-way solver class for the steam tables
 /**
-	This is intended to be a general purpose way of defining steam state in terms of any combination of properties, eg to find the pressure at which rho = 1.1 kg/m3 and u = 2500 kJ/kg, use:
+	This is intended to be a general purpose way of defining steam state in 
+	terms of any combination of properties, eg to find the pressure at which
+	rho = 1.1 kg/m3 and u = 2500 kJ/kg, use:
 
 		@code
 			Solver2<Density,SpecificEnergy> SS;
@@ -112,7 +122,11 @@ class Solver2
 
 		/// Return a Solver2 first guess in Region 1
 		/**
-			Override this method if you have a better way of getting estimates in region 1 for this particular combination of FirstProp, SecondProp. For example, if you have a region 1 backwards correlation for <p,h> you would use that correlation to obtain your first guess. Hopefully then Solver2 would not have to do any further iterations.
+			Override this method if you have a better way of getting estimates
+			in region 1 for this particular combination of FirstProp, SecondProp.
+			For example, if you have a region 1 backwards correlation for <p,h>
+			you would use that correlation to obtain your first guess. Hopefully
+			then Solver2 would not have to do any further iterations.
 		*/
 		SteamCalculator makeRegion1Guess(const FirstProp& f, const SecondProp &s){
 			SteamCalculator S;
@@ -123,7 +137,8 @@ class Solver2
 
 		/// Return a Solver2 first guess in Region 2
 		/**
-			Override this method if you have a better way of getting estimates in region 2 for this particular combination of FirstProp, SecondProp.
+			Override this method if you have a better way of getting estimates
+			in region 2 for this particular combination of FirstProp, SecondProp.
 
 			@see makeRegion1Guess
 		*/
@@ -135,7 +150,8 @@ class Solver2
 
 		/// Return a Solver2 first guess in Region 3
 		/**
-			Override this method if you have a better way of getting estimates in region 3 for this particular combination of FirstProp, SecondProp.
+			Override this method if you have a better way of getting estimates
+			in region 3 for this particular combination of FirstProp, SecondProp.
 
 			@see makeRegion1Guess
 		*/
@@ -147,7 +163,8 @@ class Solver2
 
 		/// Return a Solver2 first guess in Region 4
 		/**
-			Override this method if you have a better way of getting estimates in region 4 for this particular combination of FirstProp, SecondProp.
+			Override this method if you have a better way of getting estimates
+			in region 4 for this particular combination of FirstProp, SecondProp.
 
 			@see makeRegion1Guess
 		*/
@@ -243,7 +260,11 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 
 		/// Solve with a first guess provided
 		/**
-			If you already have steam properties very close to your expected point, you can use this method. Note that it will not use the 'make guess' (eg Solver2::makeRegion1Guess etc) methods, so if you have faster methods like that, it may be better not to provide a first guess for Solver2 iterations.
+			If you already have steam properties very close to your expected
+			point, you can use this method. Note that it will not use the 'make
+			guess' (eg Solver2::makeRegion1Guess etc) methods, so if you have
+			faster methods like that, it may be better not to provide a first 
+			guess for Solver2 iterations.
 
 			@param fp Value of FirstProp property
 			@param sp Value of SecondProp property

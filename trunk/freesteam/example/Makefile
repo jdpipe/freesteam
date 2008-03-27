@@ -17,3 +17,7 @@ example.o: example.cpp
 example.exe: example.o
 	$(CXX) -o $@ -L"${LIB}" $< -lfreesteam
 
+clean:
+	-rm example.o
+	-rm example.exe
+
