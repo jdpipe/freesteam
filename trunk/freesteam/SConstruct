@@ -115,6 +115,12 @@ if can_install:
 	))
 
 opts.Add(BoolOption(
+	'STATIC_LIBRARY'
+	,"Build freesteam as a static library"
+	,False
+))
+
+opts.Add(BoolOption(
 	'ENABLE_SAT_P'
 	, "Enable saturation curves in terms of pressure"+
 		"(introduces some numerical problems in iterative cases if"+
@@ -411,7 +417,7 @@ else:
 	without_installer_reason = "only possible under Windows"
 
 #------------------------------------------------------
-# BUILD THE STATIC LIBRARY
+# BUILD THE STATIC OR SHARED LIBRARY
 
 
 list = Split("""
@@ -427,22 +433,28 @@ lib_env = env.Copy()
 if platform.system()=="Linux":
 	lib_env.Append(LINKFLAGS=['-Wl,-soname,$SONAME'])
 
-lib = lib_env.SharedLibrary('freesteam',list
-	, LIBS = ['m']
-)
+if lib_env.get('STATIC_LIBRARY'):
+	lib = lib_env.Library('freesteam',list
+		, LIBS = ['m']
+	)
+	libs = [lib]
+else:
+	lib = lib_env.SharedLibrary('freesteam',list
+		, LIBS = ['m']
+	)
 
-libs = [lib]
+	libs = [lib]
 
-# create local symlink for the soname stuff.
-if platform.system()=="Linux":
-	if env.get('SONAME_MAJOR'):
-		lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}",lib,Move("$TARGET","$SOURCE"))
-		print "MAKING LINK, SONAME_MAJOR =",env.get('SONAME_MAJOR')
-		liblink = lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}"
-			,lib
-			,"ln -s $SOURCE $TARGET"
-		)
-		libs.append(liblink)
+	# create local symlink for the soname stuff.
+	if platform.system()=="Linux":
+		if env.get('SONAME_MAJOR'):
+			lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}",lib,Move("$TARGET","$SOURCE"))
+			print "MAKING LINK, SONAME_MAJOR =",env.get('SONAME_MAJOR')
+			liblink = lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}"
+				,lib
+				,"ln -s $SOURCE $TARGET"
+			)
+			libs.append(liblink)
 
 #------------------------------------------------------
 # Build the example program (build-time)
