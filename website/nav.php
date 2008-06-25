@@ -3,7 +3,7 @@
 $latestversion ="0.8.1";
 $releasedate = "15 Oct 2007";
 
-$viewsvn_base = "http://freesteam.svn.sourceforge.net/viewvc/freesteam/freesteam/trunk";
+$viewsvn_base = "http://freesteam.svn.sourceforge.net/viewvc/freesteam/freesteam/trunk/";
 
 $download_page = "http://sourceforge.net/project/platformdownload.php?group_id=120898";
 
