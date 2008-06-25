@@ -44,10 +44,10 @@ function show_nav($this_page=NULL,$current_page=NULL){
 		,new Link("Changelog", "${viewsvn_base}CHANGELOG.txt?only_with_tag=HEAD&amp;view=markup", "via ViewVC on SourceForge")
 		,new Link("Report bugs", "http://ascendbugs.cheme.cmu.edu/", "Mantis bug tracker at cmu.edu")
 		,new Link("Browse SVN", $viewsvn_base, "ViewVC at SourceForge")
-		,new Link("Code docs", "http://docs.cruncher2.dyndns.org/freesteam/", "Code docs generated with Doxygen")
+		,new Link("Code docs", "docs/", "Code docs generated with Doxygen")
 		,new Link("Property diagrams", "properties/")
 		,new Link("BuildBot","http://buildbot.cruncher2.dyndns.org/")
-		,new Link("SourceForge",	"http://sf.net/projects/freesteam", "Project page")
+		,new Link("SourceForge",	"http://sourceforge.net/projects/freesteam/", "Project page")
 	);
 
 	print "<ul>";
