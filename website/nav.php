@@ -3,7 +3,7 @@
 $latestversion ="0.8.1";
 $releasedate = "15 Oct 2007";
 
-$viewcvs_base = "http://freesteam.cvs.sourceforge.net/freesteam/freesteam/";
+$viewsvn_base = "http://freesteam.svn.sourceforge.net/viewvc/freesteam/freesteam/trunk";
 
 $download_page = "http://sourceforge.net/project/platformdownload.php?group_id=120898";
 
@@ -24,7 +24,7 @@ class Link{
 }
 
 function show_nav($this_page=NULL,$current_page=NULL){
-	global $latestversion, $releasedate, $viewcvs_base, $download_page, $freesteam_home;
+	global $latestversion, $releasedate, $viewsvn_base, $download_page, $freesteam_home;
 
 	print "<table><tr><td valign=top><div class=\"nav\">";
 
@@ -41,9 +41,9 @@ function show_nav($this_page=NULL,$current_page=NULL){
 		,new Link("Download", $download_page, "File releases at SourceForge (source code only, no binaries)")
 		,new Link("How to compile", "scons.php", "Instructions for building the software from source")
 		,new Link("Support", "https://lists.sourceforge.net/lists/listinfo/freesteam-users", "Get support for Freesteam (mailing list)")
-		,new Link("Changelog", "${viewcvs_base}CHANGELOG.txt?only_with_tag=HEAD&amp;view=markup", "via ViewCVS on SourceForge")
+		,new Link("Changelog", "${viewsvn_base}CHANGELOG.txt?only_with_tag=HEAD&amp;view=markup", "via ViewVC on SourceForge")
 		,new Link("Report bugs", "http://ascendbugs.cheme.cmu.edu/", "Mantis bug tracker at cmu.edu")
-		,new Link("Browse CVS", $viewcvs_base, "ViewCVS at SourceForge")
+		,new Link("Browse SVN", $viewsvn_base, "ViewVC at SourceForge")
 		,new Link("Code docs", "http://docs.cruncher2.dyndns.org/freesteam/", "Code docs generated with Doxygen")
 		,new Link("Property diagrams", "properties/")
 		,new Link("BuildBot","http://buildbot.cruncher2.dyndns.org/")
