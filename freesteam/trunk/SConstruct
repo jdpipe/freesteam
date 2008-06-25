@@ -465,7 +465,10 @@ example = env.Program('example/example.cpp'
 	, LIBS = ['freesteam']
 	, LIBPATH='#'
 	, CPPPATH='#'
+	, CPPDEFINES=['FREESTEAM_NOT_INSTALLED']
 )
+
+env.Depends(example,libs)
 
 env.Alias('example',[example])
 
@@ -662,7 +665,7 @@ if env.get('DISTTAR_NAME'):
 #--------------------------------------------------------
 # DEFAULT TARGETS
 
-default_targets = ['example','cli','test'] + libs
+default_targets = libs + ['example','cli','test']
 
 if env.get('HAVE_PYTHON') and env.get('HAVE_SWIG'):
 	default_targets.append('python')
