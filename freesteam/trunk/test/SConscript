@@ -1,6 +1,6 @@
 Import('env')
 
-test_env = env.Copy()
+test_env = env.Clone()
 
 test_env.AppendUnique(CPPDEFINES=['HAVE_CPPUNIT'])
 test_env.AppendUnique(LIBS=['freesteam'])

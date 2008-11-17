@@ -1,6 +1,6 @@
 Import('env')
 
-python_env = env.Copy()
+python_env = env.Clone()
 
 import distutils.sysconfig, platform, os, sys
 

@@ -428,7 +428,7 @@ list = Split("""
 	surfacetension.cpp
 """)
 
-lib_env = env.Copy()
+lib_env = env.Clone()
 
 if platform.system()=="Linux":
 	lib_env.Append(LINKFLAGS=['-Wl,-soname,$SONAME'])

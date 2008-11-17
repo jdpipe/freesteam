@@ -217,9 +217,9 @@ namespace IAPWS95
             Num a1 = pow(d1*d1, 1/(2*beta[i])-1);
             Num d2Deltaddelta2 = 1/d1*dDeltaddelta + d1*d1*(4*B[i]*a[i]* 
                 (a[i]-1)*pow(d1*d1, a[i]-2) + 2*A[i]*A[i]*
-                (1/(beta[i]*beta[i]))*a1*a1) +
+                (1/(beta[i]*beta[i]))*a1*a1 +
                 A[i]*theta*4/beta[i]*(1/(2*beta[i]) - 1)*
-                pow(d1*d1, 1/(2*beta[i]) - 2);
+                pow(d1*d1, 1/(2*beta[i]) - 2));
             Num d2Deltabiddelta2 = b[i]*(pow(Delta, (b[i]-1)) *
                 d2Deltaddelta2 + (b[i]-1)*pow(Delta, (b[i]-2))*
                 dDeltaddelta*dDeltaddelta);

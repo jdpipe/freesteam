@@ -3,7 +3,7 @@ import subprocess
 
 Import("env")
 
-asc_env = env.Copy()
+asc_env = env.Clone()
 
 without_ascend_reason = "unknown reason"
 
