@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	properties in terms of (p,h) without requiring any iteration.
 
 	TODO add boundary curves?
-	TODO add region 3
 	TODO add more equations for (p,s) calculation?
 
 	Numerical for T(p,h) and v(p,h) correlations was extracted from
@@ -28,13 +27,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "backwards.h"
+#include "backwards_impl.h"
 #include <math.h>
 
 /*------------------------------------------------------------------------------
   REGION 1
 */
-
-#define SQ(X) ((X)*(X))
 
 typedef struct{
 	int I, J;
@@ -217,6 +215,8 @@ const double REGION2AB_P = 4.e6; /* Pa */
 const double REGION2_HSTAR = 2000e3;
 const double REGION2_PSTAR = 1.e6;
 
+/* REGION2_B2BC_PH defined in backwards_impl.h */
+
 /**
 	Backward equation for temperature in terms of pressure and enthalpy
 	in IAPWS-IF97 Region 2 (composed of sub-regions 2a, 2b, 2c).
@@ -238,7 +238,7 @@ double freesteam_region2_T_ph(double p, double h){
 		d = REGION2A_TPH_DATA;
 		n = REGION2A_TPH_MAX;
 	}else{
-		if(p < 905.84278514723 - 0.67955786399241 * h + 1.2809002730136E-04 * SQ(h)){
+		if(REGION2_B2BC_PH(p,h) < 0.){
 			pi1 = pi - 2.; eta1 = eta - 2.6;
 			d = REGION2B_TPH_DATA;
 			n = REGION2B_TPH_MAX;
@@ -258,7 +258,7 @@ double freesteam_region2_T_ph(double p, double h){
 
 
 /*------------------------------------------------------------------------------
-  REGION 3 T_PH
+  REGION 3 T(P,H)
 */
 
 /* sub-region 3a */
@@ -336,15 +336,7 @@ BackwardsData REGION3B_TPH_DATA[] = {
 
 const unsigned REGION3B_TPH_MAX = sizeof(REGION3B_TPH_DATA)/sizeof(BackwardsData);
 
-#define REGION3AB_PSTAR (1.e6)
-#define REGION3AB_HSTAR (1.e3)
-
-#define REGION3AB_PH(P,H) ((H)/REGION3AB_HSTAR - (\
-	2014.64004206875 \
-	+ 3.74696550136983*((P)/REGION3AB_PSTAR) \
-	- 2.19921901054187E-02 * SQ((P)/REGION3AB_PSTAR) \
-	+ 8.7513168600995E-05 * (P)/REGION3AB_PSTAR*SQ((P)/REGION3AB_HSTAR) \
-	))
+/* REGION3_B3AB_PH(P,H) boundary test declared in backwards_impl.h */
 
 const double REGION3A_TPH_HSTAR = 2300e3;
 const double REGION3A_TPH_PSTAR = 100.e6;
@@ -372,7 +364,7 @@ double freesteam_region3_T_ph(double p, double h){
 	BackwardsData *d;
 	unsigned i, n;
 	double sum = 0;
-	if(REGION3AB_PH(p,h) <= 0.){
+	if(REGION3_B3AB_PH(p,h) <= 0.){
 		/* sub-region 3a */
 		pi1 = p/REGION3A_TPH_PSTAR + 0.240; eta1 = h/REGION3A_TPH_HSTAR - 0.615;
 		d = REGION3A_TPH_DATA;
@@ -395,7 +387,7 @@ double freesteam_region3_T_ph(double p, double h){
 
 
 /*------------------------------------------------------------------------------
-  REGION 3 V_PH
+  REGION 3 V(P,H)
 */
 
 BackwardsData REGION3A_VPH_DATA[] = {
@@ -496,7 +488,7 @@ double freesteam_region3_v_ph(double p, double h){
 	unsigned i, n;
 	double sum = 0;
 	double vstar;
-	if(REGION3AB_PH(p,h) <= 0.){
+	if(REGION3_B3AB_PH(p,h) <= 0.){
 		/* sub-region 3a */
 		pi1 = p/REGION3A_VPH_PSTAR + 0.128; eta1 = h/REGION3A_VPH_HSTAR - 0.727;
 		d = REGION3A_VPH_DATA;
@@ -516,6 +508,10 @@ double freesteam_region3_v_ph(double p, double h){
 
 	return sum * vstar;
 }
+
+/*------------------------------------------------------------------------------
+  REGION 3 PSAT(H) BOUNDARY
+*/
 
 BackwardsData REGION3_PSATH_DATA[] = {
 	{ 0,	0,	 0.600073641753024}
