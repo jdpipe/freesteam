@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 double freesteam_region1_T_ph(double p, double h);
 double freesteam_region2_T_ph(double p, double h);
+double freesteam_region3_T_ph(double p, double h);
+double freesteam_region3_v_ph(double p, double h);
 
 #endif
 

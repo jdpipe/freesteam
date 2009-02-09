@@ -22,6 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	TODO add boundary curves?
 	TODO add region 3
 	TODO add more equations for (p,s) calculation?
+
+	Numerical for T(p,h) and v(p,h) correlations was extracted from
+	the Matlab version 2.6 of Xsteam by by Magnus Holmgren.
 */
 
 #include "backwards.h"
@@ -34,7 +37,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define SQ(X) ((X)*(X))
 
 typedef struct{
-	double I, J, n;
+	int I, J;
+	double n;
 } TPHData;
 
 /**
@@ -250,5 +254,262 @@ double freesteam_region2_T_ph(double p, double h){
 	}
 
 	return sum /* * REGION2_TSTAR = 1 K */;
+}
+
+
+/*------------------------------------------------------------------------------
+  REGION 3 T_PH
+*/
+
+/* sub-region 3a */
+TPHData REGION3A_TPH_DATA[] = {
+	{-12,	0,	-1.33645667811215E-07}
+	,{-12,	1,	4.55912656802978E-06}
+	,{-12,	2,	-1.46294640700979E-05}
+	,{-12,	6,	6.3934131297008E-03}
+	,{-12,	14,	372.783927268847}
+	,{-12,	16,	-7186.54377460447}
+	,{-12,	20,	573494.7521034}
+	,{-12,	22,	-2675693.29111439}
+	,{-10,	1,	-3.34066283302614E-05}
+	,{-10,	5,	-2.45479214069597E-02}
+	,{-10,	12,	47.8087847764996}
+	,{-8,	0,	7.64664131818904E-06}
+	,{-8,	2,	1.28350627676972E-03}
+	,{-8,	4,	1.71219081377331E-02}
+	,{-8,	10,	-8.51007304583213}
+	,{-5,	2,	-1.36513461629781E-02}
+	,{-3,	0,	-3.84460997596657E-06}
+	,{-2,	1,	3.37423807911655E-03}
+	,{-2,	3,	-0.551624873066791}
+	,{-2,	4,	0.72920227710747}
+	,{-1,	0,	-9.92522757376041E-03}
+	,{-1,	2,	-0.119308831407288}
+	,{0,	0,	0.793929190615421}
+	,{0,	1,	0.454270731799386}
+	,{1,	1,	0.20999859125991}
+	,{3,	0,	-6.42109823904738E-03}
+	,{3,	1,	-0.023515586860454}
+	,{4,	0,	2.52233108341612E-03}
+	,{4,	3,	-7.64885133368119E-03}
+	,{10,	4,	1.36176427574291E-02}
+	,{12,	5,	-1.33027883575669E-02}
+};
+
+const unsigned REGION3A_TPH_MAX = sizeof(REGION3A_TPH_DATA)/sizeof(TPHData);
+
+TPHData REGION3B_TPH_DATA[] = {
+	{-12,	0,	3.2325457364492E-05}
+	,{-12,	1,	-1.27575556587181E-04}
+	,{-10,	0,	-4.75851877356068E-04}
+	,{-10,	1,	1.56183014181602E-03}
+	,{-10,	5,	0.105724860113781}
+	,{-10,	10,	-85.8514221132534}
+	,{-10,	12,	724.140095480911}
+	,{-8,	0,	2.96475810273257E-03}
+	,{-8,	1,	-5.92721983365988E-03}
+	,{-8,	2,	-1.26305422818666E-02}
+	,{-8,	4,	-0.115716196364853}
+	,{-8,	10,	84.9000969739595}
+	,{-6,	0,	-1.08602260086615E-02}
+	,{-6,	1,	1.54304475328851E-02}
+	,{-6,	2,	7.50455441524466E-02}
+	,{-4,	0,	2.52520973612982E-02}
+	,{-4,	1,	-6.02507901232996E-02}
+	,{-3,	5,	-3.07622221350501}
+	,{-2,	0,	-5.74011959864879E-02}
+	,{-2,	4,	5.03471360939849}
+	,{-1,	2,	-0.925081888584834}
+	,{-1,	4,	3.91733882917546}
+	,{-1,	6,	-77.314600713019}
+	,{-1,	10,	9493.08762098587}
+	,{-1,	14,	-1410437.19679409}
+	,{-1,	16,	8491662.30819026}
+	,{0,	0,	0.861095729446704}
+	,{0,	2,	0.32334644281172}
+	,{1,	1,	0.873281936020439}
+	,{3,	1,	-0.436653048526683}
+	,{5,	1,	0.286596714529479}
+	,{6,	1,	-0.131778331276228}
+	,{8,	1,	6.76682064330275E-03}
+};
+
+const unsigned REGION3B_TPH_MAX = sizeof(REGION3B_TPH_DATA)/sizeof(TPHData);
+
+#define REGION3AB_PSTAR (1.e6)
+#define REGION3AB_HSTAR (1.e3)
+
+#define REGION3AB_PH(P,H) ((H)/REGION3AB_HSTAR - (\
+	2014.64004206875 \
+	+ 3.74696550136983*((P)/REGION3AB_PSTAR) \
+	- 2.19921901054187E-02 * SQ((P)/REGION3AB_PSTAR) \
+	+ 8.7513168600995E-05 * (P)/REGION3AB_PSTAR*SQ((P)/REGION3AB_HSTAR) \
+	))
+
+const double REGION3A_TPH_HSTAR = 2300e3;
+const double REGION3A_TPH_PSTAR = 100.e6;
+const double REGION3A_TPH_TSTAR = 760;
+
+const double REGION3B_TPH_HSTAR = 2800e3;
+const double REGION3B_TPH_PSTAR = 100.e6;
+const double REGION3B_TPH_TSTAR = 860;
+
+/**
+	Backward equation for temperature in terms of pressure and enthalpy
+	in IAPWS-IF97 Region 3 (composed of sub-regions 3a, 3b).
+	Source: IAPWS 'Revised Supplementary Release on Backward Equations for the Functions
+	T(p,h), v(p,h) and T(p,s), v(p,s) for Region 3 of the IAPWS Industrial
+	Formulation 1997 for the Thermodynamic Properties of Water and Steam', 2004.
+
+	@param p pressure in Pa
+	@param h enthalpy in J/kgK
+	@return temperature in K
+*/
+double freesteam_region3_T_ph(double p, double h){
+	double pi1, eta1;
+	double Tstar;
+	TPHData *d;
+	unsigned i, n;
+	double sum = 0;
+	if(REGION3AB_PH(p,h) <= 0.){
+		/* sub-region 3a */
+		pi1 = p/REGION3A_TPH_PSTAR + 0.240; eta1 = h/REGION3A_TPH_HSTAR - 0.615;
+		d = REGION3A_TPH_DATA;
+		n = REGION3A_TPH_MAX;
+		Tstar = REGION3A_TPH_TSTAR;
+	}else{
+		/* sub-region 3b */
+		pi1 = p/REGION3B_TPH_PSTAR + 0.298; eta1 = h/REGION3B_TPH_HSTAR - 0.720;
+		d = REGION3B_TPH_DATA;
+		n = REGION3B_TPH_MAX;
+		Tstar = REGION3B_TPH_TSTAR;
+	}
+
+	for(i = 0; i<n; ++i, ++d){
+		sum += d->n * pow(pi1, d->I) * pow(eta1, d->J);
+	}
+
+	return sum * Tstar;
+}
+
+
+/*------------------------------------------------------------------------------
+  REGION 3 V_PH
+*/
+
+TPHData REGION3A_VPH_DATA[] = {
+	{-12,	6,	5.29944062966028E-03}
+	,{-12,	8,	-0.170099690234461}
+	,{-12,	12,	11.1323814312927}
+	,{-12,	18,	-2178.98123145125}
+	,{-10,	4,	-5.06061827980875E-04}
+	,{-10,	7,	0.556495239685324}
+	,{-10,	10,	-9.43672726094016}
+	,{-8,	5,	-0.297856807561527}
+	,{-8,	12,	93.9353943717186}
+	,{-6,	3,	1.92944939465981E-02}
+	,{-6,	4,	0.421740664704763}
+	,{-6,	22,	-3689141.2628233}
+	,{-4,	2,	-7.37566847600639E-03}
+	,{-4,	3,	-0.354753242424366}
+	,{-3,	7,	-1.99768169338727}
+	,{-2,	3,	1.15456297059049}
+	,{-2,	16,	5683.6687581596}
+	,{-1,	0,	8.08169540124668E-03}
+	,{-1,	1,	0.172416341519307}
+	,{-1,	2,	1.04270175292927}
+	,{-1,	3,	-0.297691372792847}
+	,{0,	0,	0.560394465163593}
+	,{0,	1,	0.275234661176914}
+	,{1,	0,	-0.148347894866012}
+	,{1,	1,	-6.51142513478515E-02}
+	,{1,	2,	-2.92468715386302}
+	,{2,	0,	6.64876096952665E-02}
+	,{2,	2,	3.52335014263844}
+	,{3,	0,	-1.46340792313332E-02}
+	,{4,	2,	-2.24503486668184}
+	,{5,	2,	1.10533464706142}
+	,{8,	2,	-4.08757344495612E-02}
+};
+
+const unsigned REGION3A_VPH_MAX = sizeof(REGION3A_VPH_DATA)/sizeof(TPHData);
+
+TPHData REGION3B_VPH_DATA[] = {
+	{-12,	0,	-2.25196934336318E-09}
+	,{-12,	1,	1.40674363313486E-08}
+	,{-8,	0,	2.3378408528056E-06}
+	,{-8,	1,	-3.31833715229001E-05}
+	,{-8,	3,	1.07956778514318E-03}
+	,{-8,	6,	-0.271382067378863}
+	,{-8,	7,	1.07202262490333}
+	,{-8,	8,	-0.853821329075382}
+	,{-6,	0,	-2.15214194340526E-05}
+	,{-6,	1,	7.6965608822273E-04}
+	,{-6,	2,	-4.31136580433864E-03}
+	,{-6,	5,	0.453342167309331}
+	,{-6,	6,	-0.507749535873652}
+	,{-6,	10,	-100.475154528389}
+	,{-4,	3,	-0.219201924648793}
+	,{-4,	6,	-3.21087965668917}
+	,{-4,	10,	607.567815637771}
+	,{-3,	0,	5.57686450685932E-04}
+	,{-3,	2,	0.18749904002955}
+	,{-2,	1,	9.05368030448107E-03}
+	,{-2,	2,	0.285417173048685}
+	,{-1,	0,	3.29924030996098E-02}
+	,{-1,	1,	0.239897419685483}
+	,{-1,	4,	4.82754995951394}
+	,{-1,	5,	-11.8035753702231}
+	,{0,	0,	0.169490044091791}
+	,{1,	0,	-1.79967222507787E-02}
+	,{1,	1,	3.71810116332674E-02}
+	,{2,	2,	-5.36288335065096E-02}
+	,{2,	6,	1.6069710109252}
+};
+
+const unsigned REGION3B_VPH_MAX = sizeof(REGION3B_VPH_DATA)/sizeof(TPHData);
+
+const double REGION3A_VPH_HSTAR = 2100e3; /* J/kg */
+const double REGION3A_VPH_PSTAR = 100.e6; /* Pa */
+const double REGION3A_VPH_VSTAR = 0.0028; /* m³/kg */
+
+const double REGION3B_VPH_HSTAR = 2800e3;
+const double REGION3B_VPH_PSTAR = 100.e6;
+const double REGION3B_VPH_VSTAR = 0.0088;
+
+/**
+	Backward equation for temperature in terms of pressure and enthalpy
+	in IAPWS-IF97 Region 2 (composed of sub-regions 2a, 2b, 2c).
+	Source: IAPWS-IF97-Rev section 5.2.1.
+
+	@param p pressure in Pa
+	@param h enthalpy in J/kgK
+	@return temperature in K
+*/
+double freesteam_region3_v_ph(double p, double h){
+	double pi1, eta1;
+	TPHData *d;
+	unsigned i, n;
+	double sum = 0;
+	double vstar;
+	if(REGION3AB_PH(p,h) <= 0.){
+		/* sub-region 3a */
+		pi1 = p/REGION3A_VPH_PSTAR + 0.128; eta1 = h/REGION3A_VPH_HSTAR - 0.727;
+		d = REGION3A_VPH_DATA;
+		n = REGION3A_VPH_MAX;
+		vstar = REGION3A_VPH_VSTAR;
+	}else{
+		/* sub-region 3b */
+		pi1 = p/REGION3B_VPH_PSTAR + 0.0661; eta1 = h/REGION3B_VPH_HSTAR - 0.720;
+		d = REGION3B_VPH_DATA;
+		n = REGION3B_VPH_MAX;
+		vstar = REGION3B_VPH_VSTAR;
+	}
+
+	for(i = 0; i<n; ++i, ++d){
+		sum += d->n * pow(pi1, d->I) * pow(eta1, d->J);
+	}
+
+	return sum * vstar;
 }
 
