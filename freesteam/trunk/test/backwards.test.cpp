@@ -40,12 +40,19 @@ class BackwardsTest: public CppUnit::TestFixture{
 			CPPUNIT_ASSERT(fabs(REGION3_B3AB_PH(25e6, 2095936.454))<5e-8);
 		}
 
+		void test_Tph_3a(){
+			CPPUNIT_ASSERT(fabs(freesteam_region3_T_ph(20e6,1700e3)-629.3083892)<1e-7);
+			CPPUNIT_ASSERT(fabs(freesteam_region3_T_ph(50e6,1700e3)-690.5718338)<1e-7);
+			CPPUNIT_ASSERT(fabs(freesteam_region3_T_ph(100e6,1700e3)-733.6163014)<1e-7);
+		}
+
 	public:
 		// Invoke CPPUNIT macros to add tests to a suite:
 		CPPUNIT_TEST_SUITE(BackwardsTest);
 				
 		CPPUNIT_TEST(test_B2bc);
 		CPPUNIT_TEST(test_B3ab);
+		CPPUNIT_TEST(test_Tph_3a);
 
 		CPPUNIT_TEST_SUITE_END();
 
