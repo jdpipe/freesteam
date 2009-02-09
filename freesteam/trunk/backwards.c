@@ -39,12 +39,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 typedef struct{
 	int I, J;
 	double n;
-} TPHData;
+} BackwardsData;
 
 /**
 	Source: IAPWS-IF97-REV section 5.2.1
 */
-TPHData REGION1_TPH_DATA[] = {
+BackwardsData REGION1_TPH_DATA[] = {
 	{0, 0, -238.72489924521}
 	,{0, 1, 404.21188637945}
 	,{0, 2, 113.49746881718}
@@ -67,7 +67,7 @@ TPHData REGION1_TPH_DATA[] = {
 	,{6,32,-1.5020185953503E-17}
 };
 
-const unsigned REGION1_TPH_MAX = sizeof(REGION1_TPH_DATA)/sizeof(TPHData);
+const unsigned REGION1_TPH_MAX = sizeof(REGION1_TPH_DATA)/sizeof(BackwardsData);
 
 const double REGION1_TPH_HSTAR = 2500e3; /* J/kg */
 const double REGION1_TPH_PSTAR = 1e6; /* Pa */
@@ -84,7 +84,7 @@ double freesteam_region1_T_ph(double p, double h){
 	double pi = p / REGION1_TPH_PSTAR;
 	double e1 = 1. + (h / REGION1_TPH_HSTAR);
 	unsigned i;
-	TPHData *d;
+	BackwardsData *d;
 	double sum = 0;
 	for(i=0, d = REGION1_TPH_DATA; i<REGION1_TPH_MAX; ++i, ++d){
 		/* TODO some optimisations are possible here with pow(pi,...) */
@@ -99,7 +99,7 @@ double freesteam_region1_T_ph(double p, double h){
 */
 
 /* sub-region 2a */
-TPHData REGION2A_TPH_DATA[] = {
+BackwardsData REGION2A_TPH_DATA[] = {
 	{0,	0,	1089.8952318288}
 	,{1,	0,	849.51654495535}
 	,{2,	0,	-107.81748091826}
@@ -136,11 +136,11 @@ TPHData REGION2A_TPH_DATA[] = {
 	,{28,	7,	-62.459855192507}
 };
 
-const unsigned REGION2A_TPH_MAX = sizeof(REGION2A_TPH_DATA)/sizeof(TPHData);
+const unsigned REGION2A_TPH_MAX = sizeof(REGION2A_TPH_DATA)/sizeof(BackwardsData);
 
 /* sub-region 2b */
 
-TPHData REGION2B_TPH_DATA[] = {
+BackwardsData REGION2B_TPH_DATA[] = {
 	{0,	0,	1489.5041079516}
 	,{1,	0,	743.07798314034}
 	,{2,	0,	-97.708318797837}
@@ -181,10 +181,10 @@ TPHData REGION2B_TPH_DATA[] = {
 	,{40,	9,	8.6934156344163E-15}
 };
 
-const unsigned REGION2B_TPH_MAX = sizeof(REGION2B_TPH_DATA)/sizeof(TPHData);
+const unsigned REGION2B_TPH_MAX = sizeof(REGION2B_TPH_DATA)/sizeof(BackwardsData);
 
 /* sub-region 2c */
-TPHData REGION2C_TPH_DATA[] ={
+BackwardsData REGION2C_TPH_DATA[] ={
 	{0,	-7,	-3236839855524.2}
 	,{4,	-7,	7326335090218.1}
 	,{0,	-6,	358250899454.47}
@@ -210,7 +210,7 @@ TPHData REGION2C_TPH_DATA[] ={
 	,{22,	6,	1.2918582991878E-03}
 };
 
-const unsigned REGION2C_TPH_MAX = sizeof(REGION2C_TPH_DATA)/sizeof(TPHData);
+const unsigned REGION2C_TPH_MAX = sizeof(REGION2C_TPH_DATA)/sizeof(BackwardsData);
 
 const double REGION2AB_P = 4.e6; /* Pa */
 
@@ -230,7 +230,7 @@ double freesteam_region2_T_ph(double p, double h){
 	double eta = h / REGION2_HSTAR;
 	double pi = p / REGION2_PSTAR;
 	double pi1, eta1;
-	TPHData *d;
+	BackwardsData *d;
 	unsigned i, n;
 	double sum = 0;
 	if(p < REGION2AB_P){
@@ -262,7 +262,7 @@ double freesteam_region2_T_ph(double p, double h){
 */
 
 /* sub-region 3a */
-TPHData REGION3A_TPH_DATA[] = {
+BackwardsData REGION3A_TPH_DATA[] = {
 	{-12,	0,	-1.33645667811215E-07}
 	,{-12,	1,	4.55912656802978E-06}
 	,{-12,	2,	-1.46294640700979E-05}
@@ -296,9 +296,9 @@ TPHData REGION3A_TPH_DATA[] = {
 	,{12,	5,	-1.33027883575669E-02}
 };
 
-const unsigned REGION3A_TPH_MAX = sizeof(REGION3A_TPH_DATA)/sizeof(TPHData);
+const unsigned REGION3A_TPH_MAX = sizeof(REGION3A_TPH_DATA)/sizeof(BackwardsData);
 
-TPHData REGION3B_TPH_DATA[] = {
+BackwardsData REGION3B_TPH_DATA[] = {
 	{-12,	0,	3.2325457364492E-05}
 	,{-12,	1,	-1.27575556587181E-04}
 	,{-10,	0,	-4.75851877356068E-04}
@@ -334,7 +334,7 @@ TPHData REGION3B_TPH_DATA[] = {
 	,{8,	1,	6.76682064330275E-03}
 };
 
-const unsigned REGION3B_TPH_MAX = sizeof(REGION3B_TPH_DATA)/sizeof(TPHData);
+const unsigned REGION3B_TPH_MAX = sizeof(REGION3B_TPH_DATA)/sizeof(BackwardsData);
 
 #define REGION3AB_PSTAR (1.e6)
 #define REGION3AB_HSTAR (1.e3)
@@ -357,6 +357,7 @@ const double REGION3B_TPH_TSTAR = 860;
 /**
 	Backward equation for temperature in terms of pressure and enthalpy
 	in IAPWS-IF97 Region 3 (composed of sub-regions 3a, 3b).
+
 	Source: IAPWS 'Revised Supplementary Release on Backward Equations for the Functions
 	T(p,h), v(p,h) and T(p,s), v(p,s) for Region 3 of the IAPWS Industrial
 	Formulation 1997 for the Thermodynamic Properties of Water and Steam', 2004.
@@ -368,7 +369,7 @@ const double REGION3B_TPH_TSTAR = 860;
 double freesteam_region3_T_ph(double p, double h){
 	double pi1, eta1;
 	double Tstar;
-	TPHData *d;
+	BackwardsData *d;
 	unsigned i, n;
 	double sum = 0;
 	if(REGION3AB_PH(p,h) <= 0.){
@@ -397,7 +398,7 @@ double freesteam_region3_T_ph(double p, double h){
   REGION 3 V_PH
 */
 
-TPHData REGION3A_VPH_DATA[] = {
+BackwardsData REGION3A_VPH_DATA[] = {
 	{-12,	6,	5.29944062966028E-03}
 	,{-12,	8,	-0.170099690234461}
 	,{-12,	12,	11.1323814312927}
@@ -432,9 +433,9 @@ TPHData REGION3A_VPH_DATA[] = {
 	,{8,	2,	-4.08757344495612E-02}
 };
 
-const unsigned REGION3A_VPH_MAX = sizeof(REGION3A_VPH_DATA)/sizeof(TPHData);
+const unsigned REGION3A_VPH_MAX = sizeof(REGION3A_VPH_DATA)/sizeof(BackwardsData);
 
-TPHData REGION3B_VPH_DATA[] = {
+BackwardsData REGION3B_VPH_DATA[] = {
 	{-12,	0,	-2.25196934336318E-09}
 	,{-12,	1,	1.40674363313486E-08}
 	,{-8,	0,	2.3378408528056E-06}
@@ -467,7 +468,7 @@ TPHData REGION3B_VPH_DATA[] = {
 	,{2,	6,	1.6069710109252}
 };
 
-const unsigned REGION3B_VPH_MAX = sizeof(REGION3B_VPH_DATA)/sizeof(TPHData);
+const unsigned REGION3B_VPH_MAX = sizeof(REGION3B_VPH_DATA)/sizeof(BackwardsData);
 
 const double REGION3A_VPH_HSTAR = 2100e3; /* J/kg */
 const double REGION3A_VPH_PSTAR = 100.e6; /* Pa */
@@ -478,9 +479,12 @@ const double REGION3B_VPH_PSTAR = 100.e6;
 const double REGION3B_VPH_VSTAR = 0.0088;
 
 /**
-	Backward equation for temperature in terms of pressure and enthalpy
-	in IAPWS-IF97 Region 2 (composed of sub-regions 2a, 2b, 2c).
-	Source: IAPWS-IF97-Rev section 5.2.1.
+	Backward equation for specific volume in terms of pressure and enthalpy
+	in IAPWS-IF97 Region 3 (composed of sub-regions 3a, 3b).
+
+	Source: IAPWS 'Revised Supplementary Release on Backward Equations for the Functions
+	T(p,h), v(p,h) and T(p,s), v(p,s) for Region 3 of the IAPWS Industrial
+	Formulation 1997 for the Thermodynamic Properties of Water and Steam', 2004.
 
 	@param p pressure in Pa
 	@param h enthalpy in J/kgK
@@ -488,7 +492,7 @@ const double REGION3B_VPH_VSTAR = 0.0088;
 */
 double freesteam_region3_v_ph(double p, double h){
 	double pi1, eta1;
-	TPHData *d;
+	BackwardsData *d;
 	unsigned i, n;
 	double sum = 0;
 	double vstar;
@@ -511,5 +515,42 @@ double freesteam_region3_v_ph(double p, double h){
 	}
 
 	return sum * vstar;
+}
+
+BackwardsData REGION3_PSATH_DATA[] = {
+	{ 0,	0,	 0.600073641753024}
+	,{1,	1,	-0.936203654849857e1}
+	,{1,	3,	 0.246590798594147e2}
+	,{1,	4,	-0.107014222858224e3}
+	,{1,	36,	-0.915821315805768e14}
+	,{5,	3,	-0.862332011700662e4}
+	,{7,	0,	-0.235837344740032e2}
+	,{8,	24,	 0.252304969384128e18}
+	,{14,	16,	-0.389718771997719e19}
+	,{20,	16,	-0.333775713645296e23}
+	,{22,	3,	 0.356499469636328e11}
+	,{24,	18,	-0.148547544720641e27}
+	,{28,	8,	 0.330611514838798e19}
+	,{36,	24,	 0.813641294467829e38}
+};
+
+const unsigned REGION3_PSATH_MAX = sizeof(REGION3_PSATH_DATA)/sizeof(BackwardsData);
+
+const double REGION3_PSATH_HSTAR = 2600e3;
+const double REGION3_PSATH_PSTAR = 22.e6;
+
+double freesteam_region3_psat_h(double h){
+	BackwardsData *d;
+	unsigned i, n;
+	double eta = h / REGION3_PSATH_HSTAR;
+	double eta1 = eta - 1.02;
+	double eta2 = eta - 0.608;
+	double sum;
+	d = REGION3_PSATH_DATA;
+	n = REGION3_PSATH_MAX;
+	for(i = 0; i<n; ++i, ++d){
+		sum += d->n * pow(eta1, d->I) * pow(eta2, d->J);
+	}
+	return sum * REGION3_PSATH_PSTAR;
 }
 

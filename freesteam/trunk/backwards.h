@@ -23,6 +23,7 @@ double freesteam_region1_T_ph(double p, double h);
 double freesteam_region2_T_ph(double p, double h);
 double freesteam_region3_T_ph(double p, double h);
 double freesteam_region3_v_ph(double p, double h);
+double freesteam_region3_psat_h(double h);
 
 #endif
 
