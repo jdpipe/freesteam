@@ -564,7 +564,7 @@ cerr << SS.whichRegion(1500. * kJ_kg, 0.02 * m3_kg);
 					ASSERT(petT.whichRegion()==4);
 
 					// ensure we don't go over x limits
-					dx = 0.001;
+					dx = 0.0001;
 					if(x + dx > 1.0){
 						dx = -dx;
 					}
