@@ -1,0 +1,7 @@
+
+env = Environment()
+
+srcs = ["region1.c", "region2.c", "region3.c", "region4.c", "steam.c", "backwards.c","b23.c"]
+
+env.SharedLibrary("freesteam",srcs)
+
