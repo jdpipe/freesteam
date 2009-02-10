@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+double freesteam_region2_v_pT(double p, double T);
 double freesteam_region2_u_pT(double p, double T);
 double freesteam_region2_s_pT(double p, double T);
 double freesteam_region2_h_pT(double p, double T);
@@ -61,6 +62,12 @@ static double gam0tautau(double tau);
 	double pi = p / REGION2_GPT_PSTAR; \
 	double tau = REGION2_GPT_TSTAR / T
 
+
+double freesteam_region2_v_pT(double p, double T){
+	DEFINE_PITAU(p,T);
+	return (R * T / p) * pi * gampi(pi,tau);
+}
+
 double freesteam_region2_u_pT(double p, double T){
 	DEFINE_PITAU(p,T);
 	return (R * T) * (tau * gamtau(pi,tau) - pi * gampi(pi,tau));
@@ -97,7 +104,7 @@ typedef struct{
 	double n;
 } JNData;
 
-JNData REGION2_GPT_IDEAL_DATA[] = {
+const JNData REGION2_GPT_IDEAL_DATA[] = {
 	{0,	-0.96927686500217E+01}
 	,{1,	0.10086655968018E+02}
 	,{-5,	-0.56087911283020E-02}
@@ -113,7 +120,7 @@ const unsigned REGION2_GPT_IDEAL_MAX = sizeof(REGION2_GPT_IDEAL_DATA)/sizeof(JND
 
 #define REGION2_GPT_IDEAL_LOOP \
 	double sum = 0; \
-	JNData *d, *e = REGION2_GPT_IDEAL_DATA + REGION2_GPT_IDEAL_MAX; \
+	const JNData *d, *e = REGION2_GPT_IDEAL_DATA + REGION2_GPT_IDEAL_MAX; \
 	for(d = REGION2_GPT_IDEAL_DATA; d < e; ++d)
 
 double gam0(double pi, double tau){
@@ -154,7 +161,7 @@ typedef struct{
 	double n;
 } IJNData;
 
-IJNData REGION2_GPT_RESID_DATA[] = {
+const IJNData REGION2_GPT_RESID_DATA[] = {
 	{1,	0,	-0.17731742473213E-02}
 	,{1,	1,	-0.17834862292358E-01}
 	,{1,	2,	-0.45996013696365E-01}
@@ -204,7 +211,7 @@ const unsigned REGION2_GPT_RESID_MAX = sizeof(REGION2_GPT_RESID_DATA)/sizeof(IJN
 
 #define REGION2_GPT_RESID_LOOP \
 	double sum = 0; \
-	IJNData *d, *e = REGION2_GPT_RESID_DATA + REGION2_GPT_RESID_MAX; \
+	const IJNData *d, *e = REGION2_GPT_RESID_DATA + REGION2_GPT_RESID_MAX; \
 	for(d = REGION2_GPT_RESID_DATA; d < e; ++d)
 	
 double gamr(double pi, double tau){

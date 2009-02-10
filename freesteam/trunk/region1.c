@@ -76,7 +76,7 @@ typedef struct{
 	double n;
 } IJNData;
 
-IJNData REGION1_GPT_DATA[] = {
+const IJNData REGION1_GPT_DATA[] = {
 	{0,	-2,	0.14632971213167E+00}
 	,{0,	-1,	-0.84548187169114E+00}
 	,{0,	0,	-0.37563603672040E+01}
@@ -117,7 +117,7 @@ const unsigned REGION1_GPT_MAX = sizeof(REGION1_GPT_DATA)/sizeof(IJNData);
 
 #define REGION1_GPT_LOOP \
 	double sum = 0; \
-	IJNData *d, *e = REGION1_GPT_DATA + REGION1_GPT_MAX; \
+	const IJNData *d, *e = REGION1_GPT_DATA + REGION1_GPT_MAX; \
 	for(d = REGION1_GPT_DATA; d < e; ++d)
 	
 double gam(double pi, double tau){
