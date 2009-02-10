@@ -17,13 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-double freesteam_region4_Tsat_p(double p);
+#include "region4.h"
+
+#include <math.h>
 
 /*------------------------------------------------------------------------------
   REGION 4 SATURATION CURVE Tsat(p)
 */
 
-const Num REGION4_N[11] = { 0, 0.11670521452767E+04, -0.72421316703206E+06
+const double REGION4_N[11] = { 0, 0.11670521452767E+04, -0.72421316703206E+06
 	, -0.17073846940092E+02, 0.12020824702470E+05, -0.32325550322333E+07
 	, 0.14915108613530E+02, -0.48232657361591E+04, 0.40511340542057E+06
 	, -0.23855557567849E+00, 0.65017534844798E+03
@@ -34,6 +36,8 @@ const Num REGION4_N[11] = { 0, 0.11670521452767E+04, -0.72421316703206E+06
 #define REGION4_F(BET) (REGION4_N[1] * SQ(BET) + REGION4_N[4] * BET + REGION4_N[7])
 #define REGION4_G(BET) (REGION4_N[2] * SQ(BET) + REGION4_N[5] * BET + REGION4_N[8])
 
+#define REGION4_PSTAR 1e6 /* Pa */
+
 double freesteam_region4_Tsat_p(double p){
 	double beta = REGION4_BETA(p);
 	double E = REGION4_E(beta);
@@ -43,12 +47,10 @@ double freesteam_region4_Tsat_p(double p){
 
 	double theta = 0.5 * (REGION4_N[10] + D - sqrt(SQ(REGION4_N[10] + D) - 4.0 * (REGION4_N[9] + REGION4_N[10] * D)));
 
-	return theta /* * REGION4_TSTAR = 1 K */
+	return theta /* * REGION4_TSTAR = 1 K */;
 }
 
 #if 0
-
-#define REGION4_PSTAR XXXXX
 
 #define REGION4_A(UPS) (SQ(ups) + REGION4_N[1] * UPS + REGION4_N[2])
 #define REGION4_B(UPS) (REGION4_N[3] * SQ(UPS) + REGION4_N[4] * UPS + REGION4_N[5])
