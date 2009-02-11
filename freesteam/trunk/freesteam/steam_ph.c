@@ -73,6 +73,84 @@ int freesteam_region_ph(double p, double h){
 	return 4;
 }
 
+SteamState freesteam_set_ph(double p, double h){
+	SteamState S;
+
+	/* give warnings about outer limits */
+	double hmax = freesteam_region2_h_pT(p,REGION2_TMAX);
+	if(h>hmax){
+		fprintf(stderr,"WARNING: freesteam_region_ph: h > hmax\n");
+	}
+	if(p > IAPWS97_PMAX){
+		fprintf(stderr,"WARNING: freesteam_region_ph: p > pmax\n");
+	}
+	if(p <= 0){
+		fprintf(stderr,"WARNING: freesteam_region_ph: p <= 0\n");
+	}
+	double hmin = freesteam_region1_h_pT(p,IAPWS97_TMIN);
+	if(h < hmin){
+		fprintf(stderr,"WARNING: freesteam_region_ph: h < hmin\n");
+	}
+
+	double p13 = freesteam_region4_psat_T(REGION1_TMAX);
+
+	if(p <= p13){
+		double Tsat = freesteam_region4_Tsat_p(p);
+		double hf = freesteam_region1_h_pT(p,Tsat);
+		if(h<hf){
+			S.region = 1;
+			S.R1.p = p;
+			S.R1.T = freesteam_region1_T_ph(p, h);
+			return S;
+		}
+		double hg = freesteam_region2_h_pT(p,Tsat);
+		if(h>hg){
+			S.region = 2;
+			S.R2.p = p;
+			S.R2.T = freesteam_region2_T_ph(p, h);
+			return S;
+		}
+		S.region = 4;
+		S.R4.T = freesteam_region4_Tsat_p(p);
+		/* TODO iteratively improve estimate of T */
+		S.R4.x = (h - hg)/(hf - hg);
+		return S;
+	}
+	
+	double h13 = freesteam_region1_h_pT(p,REGION1_TMAX);
+	if(h <= h13){
+		S.region = 1;
+		S.R1.p = p;
+		S.R1.T = freesteam_region1_T_ph(p, h);
+		return S;
+	}
+
+	double T23 = freesteam_b23_T_p(p);
+	double h23 = freesteam_region1_h_pT(p,T23);
+	if(h >= h23){
+		S.region = 2;
+		S.R2.p = p;
+		S.R2.T = freesteam_region2_T_ph(p, h);
+		return S;
+	}
+
+	double psat = freesteam_region3_psat_h(h);
+	if(p > psat){
+		S.region = 3;
+		S.R3.rho = 1./freesteam_region3_v_ph(p, h);
+		S.R3.T = freesteam_region3_T_ph(p, h);
+		return S;
+	}
+
+	S.region = 4;
+	double Tsat = freesteam_region4_Tsat_p(psat);
+	S.R4.T = Tsat;
+	double hf = freesteam_region1_h_pT(p,Tsat);
+	double hg = freesteam_region2_h_pT(p,Tsat);
+	S.R4.x = (h - hf)/(hg - hf);
+	return S;
+}
+
 double freesteam_T_ph(double p, double h){
 	int r = freesteam_region_ph(p,h);
 	switch(r){
@@ -90,21 +168,16 @@ double freesteam_T_ph(double p, double h){
 	}
 }
 
-double freesteam_v_ph(double p, double h){
-	int r = freesteam_region_ph(p,h);
-	double rho,T;
-	switch(r){
+double freesteam_v(SteamState S){
+	switch(S.region){
 		case 1:
-			T = freesteam_region1_T_ph(p,h);
-			return freesteam_region1_v_pT(p,T);
+			return freesteam_region1_v_pT(S.R1.p,S.R1.T);
 		case 2:
-			T = freesteam_region2_T_ph(p,h);
-			return freesteam_region2_v_pT(p,T);
+			return freesteam_region2_v_pT(S.R2.p,S.R2.T);
 		case 3:
-			rho = freesteam_region3_rho_ph(p,h);
-			T = freesteam_region3_T_ph(p,h);
-			return freesteam_region3_v_rhoT(rho,T);
+			return freesteam_region3_v_rhoT(S.R3.rho,S.R3.T);
 		case 4:
+			return freesteam_region4_v_px(S.R4.T, S.R4.x);
 		default:
 			fprintf(stderr,"ERROR: invalid region in freesteam_T_ph\n");
 			exit(1);
