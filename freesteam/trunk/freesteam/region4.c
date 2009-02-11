@@ -63,6 +63,8 @@ double freesteam_region4_Tsat_p(double p){
 
 	double theta = 0.5 * (REGION4_N[10] + D - sqrt(SQ(REGION4_N[10] + D) - 4.0 * (REGION4_N[9] + REGION4_N[10] * D)));
 
+	/* FIXME iterative improve this estimate? is it necessary? */
+
 	return theta /* * REGION4_TSTAR = 1 K */;
 }
 

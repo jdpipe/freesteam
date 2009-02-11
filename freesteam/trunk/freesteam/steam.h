@@ -16,14 +16,44 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#ifndef FREESTEAM_STEAMPH_H
-#define FREESTEAM_STEAMPH_H
+#ifndef FREESTEAM_STEAM_H
+#define FREESTEAM_STEAM_H
 
-#include "steam.h"
+typedef struct SteamState_R1_struct{
+	double p, T;
+} SteamState_R1;
 
-int freesteam_region_ph(double p, double h);
+typedef struct SteamState_R2_struct{
+	double p, T;
+} SteamState_R2;
 
-SteamState freesteam_set_ph(double p, double h);
+typedef struct SteamState_R3_struct{
+	double rho, T;
+} SteamState_R3;
+
+typedef struct SteamState_R4_struct{
+	double T, x;
+} SteamState_R4;
+
+typedef struct SteamState_struct{
+	char region;
+	union{
+		SteamState_R1 R1;
+		SteamState_R2 R2;
+		SteamState_R3 R3;
+		SteamState_R4 R4;
+	};			
+} SteamState;
+
+double freesteam_p(SteamState S);
+double freesteam_T(SteamState S);
+double freesteam_v(SteamState S);
+double freesteam_u(SteamState S);
+double freesteam_h(SteamState S);
+double freesteam_s(SteamState S);
+double freesteam_cp(SteamState S);
+double freesteam_cv(SteamState S);
 
 #endif
+
 
