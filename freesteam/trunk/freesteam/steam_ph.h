@@ -1,6 +1,6 @@
 /*
 freesteam - IAPWS-IF97 steam tables library
-Copyright (C) 2004-2005  John Pye
+Copyright (C) 2004-2009  John Pye
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

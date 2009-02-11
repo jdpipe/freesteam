@@ -2,6 +2,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "region1.h"
+#include "region2.h"
+#include "region3.h"
+#include "region4.h"
+#include "b23.h"
+#include "backwards.h"
+
+
+int freesteam_region(SteamState S){
+	return (int)S.region;
+}
+
 double freesteam_T(SteamState S){
 	switch(S.region){
 		case 1:	
@@ -42,9 +54,9 @@ double freesteam_v(SteamState S){
 		case 2:
 			return freesteam_region2_v_pT(S.R2.p,S.R2.T);
 		case 3:
-			return freesteam_region3_v_rhoT(S.R3.rho,S.R3.T);
+			return 1./S.R3.rho;
 		case 4:
-			return freesteam_region4_v_px(S.R4.T, S.R4.x);
+			return freesteam_region4_v_Tx(S.R4.T, S.R4.x);
 		default:
 			fprintf(stderr,"ERROR: invalid region in freesteam_v\n");
 			exit(1);
@@ -93,7 +105,7 @@ double freesteam_s(SteamState S){
 		case 3:
 			return freesteam_region3_s_rhoT(S.R3.rho,S.R3.T);
 		case 4:
-			return freesteam_region4_s_px(S.R4.T, S.R4.x);
+			return freesteam_region4_s_Tx(S.R4.T, S.R4.x);
 		default:
 			fprintf(stderr,"ERROR: invalid region in freesteam_s\n");
 			exit(1);
@@ -109,7 +121,7 @@ double freesteam_cp(SteamState S){
 		case 3:
 			return freesteam_region3_cp_rhoT(S.R3.rho,S.R3.T);
 		case 4:
-			return freesteam_region4_cp_px(S.R4.T, S.R4.x);
+			return freesteam_region4_cp_Tx(S.R4.T, S.R4.x);
 		default:
 			fprintf(stderr,"ERROR: invalid region in freesteam_cp\n");
 			exit(1);
@@ -124,7 +136,7 @@ double freesteam_cv(SteamState S){
 		case 3:
 			return freesteam_region3_cv_rhoT(S.R3.rho,S.R3.T);
 		case 4:
-			return freesteam_region4_cv_px(S.R4.T, S.R4.x);
+			return freesteam_region4_cv_Tx(S.R4.T, S.R4.x);
 		default:
 			fprintf(stderr,"ERROR: invalid region in freesteam_cv\n");
 			exit(1);

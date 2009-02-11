@@ -28,6 +28,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "backwards.h"
 #include "backwards_impl.h"
+#include "common.h"
+
 #include <math.h>
 
 /*------------------------------------------------------------------------------
@@ -227,6 +229,9 @@ const double REGION2_PSTAR = 1.e6;
 	@return temperature in K
 */
 double freesteam_region2_T_ph(double p, double h){
+
+	IAPWS97_APPROXIMATE;
+
 	double eta = h / REGION2_HSTAR;
 	double pi = p / REGION2_PSTAR;
 	double pi1, eta1;
@@ -359,6 +364,9 @@ const double REGION3B_TPH_TSTAR = 860;
 	@return temperature in K
 */
 double freesteam_region3_T_ph(double p, double h){
+
+	IAPWS97_APPROXIMATE;
+
 	double pi1, eta1;
 	double Tstar;
 	BackwardsData *d;
@@ -483,6 +491,9 @@ const double REGION3B_VPH_VSTAR = 0.0088;
 	@return temperature in K
 */
 double freesteam_region3_v_ph(double p, double h){
+
+	IAPWS97_APPROXIMATE;
+
 	double pi1, eta1;
 	BackwardsData *d;
 	unsigned i, n;
@@ -536,6 +547,9 @@ const double REGION3_PSATH_HSTAR = 2600e3;
 const double REGION3_PSATH_PSTAR = 22.e6;
 
 double freesteam_region3_psat_h(double h){
+
+	IAPWS97_APPROXIMATE;
+
 	BackwardsData *d;
 	unsigned i, n;
 	double eta = h / REGION3_PSATH_HSTAR;

@@ -37,13 +37,20 @@ static double gampitau(double pi, double tau);
 	double pi = p / REGION1_GPT_PSTAR; \
 	double tau = REGION1_GPT_TSTAR / T
 
-#define R 461.526 /* J/kgK */
+#define R IAPWS97_R
+
+#include "common.h"
 
 #include <math.h>
 
 double freesteam_region1_u_pT(double p, double T){
 	DEFINE_PITAU(P,T);
 	return (R * T) * (tau * gamtau(pi,tau) - pi * gampi(pi,tau));
+}
+
+double freesteam_region1_v_pT(double p, double T){
+	DEFINE_PITAU(P,T);
+	return (R * T / p) * pi * gampi(pi,tau);
 }
 
 double freesteam_region1_s_pT(double p, double T){

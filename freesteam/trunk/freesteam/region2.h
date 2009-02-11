@@ -17,8 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef FREESTEAM_REGION4_H
-#define FREESTEAM_REGION4_H
+#ifndef FREESTEAM_REGION2_H
+#define FREESTEAM_REGION2_H
 
 #define REGION2_TMAX 1073.15
 

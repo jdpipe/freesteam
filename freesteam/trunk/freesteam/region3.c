@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#include "common.h"
+
 double freesteam_region3_p_rhoT(double rho, double T);
 double freesteam_region3_u_rhoT(double rho, double T);
 double freesteam_region3_s_rhoT(double rho, double T);
@@ -152,7 +154,7 @@ double phideldel(double del, double tau){
 	REGION3_ARHOT_LOOP{
 		sum += d->n * d->I * (d->I - 1) * pow(del, d->I - 2) * pow(tau, d->J);
 	}
-	return sum - REGION3_N1 / sq(del) ;
+	return sum - REGION3_N1 / SQ(del) ;
 }
 
 double phitau(double del, double tau){

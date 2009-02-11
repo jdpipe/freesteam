@@ -8,6 +8,8 @@
 #define IAPWS97_PCRIT 22.064e6 /* Pa */
 #define IAPWS97_RHOCRIT 322. /* kg/m³ */
 
+#define IAPWS97_R 461.526 /* J/kgK */
+
 #define IAPWS97_WARN_APPROX
 
 #ifndef __function__
@@ -27,4 +29,6 @@
 	}
 
 #endif
+
+#define SQ(X) ((X)*(X))
 

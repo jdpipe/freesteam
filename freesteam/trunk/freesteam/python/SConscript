@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+Import('env')
+
+python_env = env.Clone()
+
+python_env.Append(
+	CPPPATH=['#']
+	,LIBPATH=['#']
+)
+
+import distutils.sysconfig, platform, os, sys
+
+#------------------------------------------------------
+# SWIG scanner
+
+if platform.system()=="Windows":
+	python_lib = "python%s%s"%(sys.version_info[0],sys.version_info[1])
+else:
+	python_lib = "python%s.%s"%(sys.version_info[0],sys.version_info[1])
+
+python_env.Append(CPPPATH = [distutils.sysconfig.get_python_inc()])
+python_env.Append(LIBPATH = [distutils.sysconfig.get_python_lib()])
+
+swigobj = python_env.SharedObject('freesteam.i'
+	, SWIGFLAGS=['-python']
+)
+
+if platform.system()=="Windows":
+	python_env['SHLIBSUFFIX']=".pyd"
+
+swiglib = python_env.SharedLibrary("freesteam",swigobj
+	, LIBS = ['freesteam',python_lib]
+	, SHLIBPREFIX = '_'
+)
+
+

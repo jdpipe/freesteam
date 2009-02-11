@@ -52,8 +52,9 @@ static double gam0tau(double tau);
 static double gam0tautau(double tau);
 
 #include <math.h>
+#include "common.h"
 
-#define R 461.526 /* J/kgK */
+#define R IAPWS97_R
 
 #define REGION2_GPT_PSTAR 1.e6 /* Pa */
 #define REGION2_GPT_TSTAR 540. /* K */

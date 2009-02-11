@@ -45,6 +45,8 @@ typedef struct SteamState_struct{
 	};			
 } SteamState;
 
+int freesteam_region(SteamState S);
+
 double freesteam_p(SteamState S);
 double freesteam_T(SteamState S);
 double freesteam_v(SteamState S);
