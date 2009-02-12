@@ -28,7 +28,8 @@
 		$self->R1.p = S.R1.p;
 		$self->R1.T = S.R1.T;
 	}
-
+	
+	%immutable;
 	const double p;
 	const double h;
 	const double u;
@@ -40,7 +41,6 @@
 
 %{
 double SteamState_p_get(SteamState *S){
-	fprintf(stderr,"steam region = %d\n");
 	return freesteam_p(*S);
 }
 
@@ -66,10 +66,6 @@ double SteamState_cp_get(SteamState *S){
 
 double SteamState_cv_get(SteamState *S){
 	return freesteam_cv(*S);
-}
-
-int SteamState_region_get(SteamState *S){
-	return freesteam_region(*S);
 }
 
 %}
