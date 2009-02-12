@@ -47,6 +47,11 @@ typedef struct SteamState_struct{
 
 int freesteam_region(SteamState S);
 
+SteamState freesteam_region1_set_pT(double p, double T);
+SteamState freesteam_region2_set_pT(double p, double T);
+SteamState freesteam_region3_set_rhoT(double rho, double T);
+SteamState freesteam_region4_set_Tx(double T, double x);
+
 double freesteam_p(SteamState S);
 double freesteam_T(SteamState S);
 double freesteam_v(SteamState S);

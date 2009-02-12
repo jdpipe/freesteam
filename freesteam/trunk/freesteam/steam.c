@@ -9,6 +9,45 @@
 #include "b23.h"
 #include "backwards.h"
 
+/* 'setter' functions for SteamState (forwards equations) */
+
+SteamState freesteam_region1_set_pT(double p, double T){
+	SteamState S;
+	S.region = 1;
+	S.R1.p = p;
+	S.R1.T = T;
+	/* FIXME add bounds check? */
+	return S;
+}
+
+SteamState freesteam_region2_set_pT(double p, double T){
+	SteamState S;
+	S.region = 2;
+	S.R2.p = p;
+	S.R2.T = T;
+	/* FIXME add bounds check? */
+	return S;
+}
+
+SteamState freesteam_region3_set_rhoT(double rho, double T){
+	SteamState S;
+	S.region = 3;
+	S.R3.rho = rho;
+	S.R3.T = T;
+	/* FIXME add bounds check? */
+	return S;
+}
+
+SteamState freesteam_region4_set_Tx(double T, double x){
+	SteamState S;
+	S.region = 4;
+	S.R4.T = T;
+	S.R4.x = x;
+	/* FIXME add bounds check? */
+	return S;
+}
+
+/* 'getter' functions for SteamState */
 
 int freesteam_region(SteamState S){
 	return (int)S.region;

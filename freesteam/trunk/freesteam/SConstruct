@@ -12,5 +12,5 @@ env.SharedLibrary("freesteam",srcs,LIBS=['m'])
 
 env.SConscript(["python/SConscript"],'env')
 
-env.Program("test","test.c",LIBS=['freesteam'],LIBPATH=['#'])
+env.Program("test","test.c",LINKFLAGS=['-Wl,-rpath,'+str(Dir('#'))],LIBS=['freesteam'],LIBPATH=['#'])
 
