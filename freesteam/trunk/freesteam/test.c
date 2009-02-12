@@ -15,15 +15,17 @@ int errorflag = 0;
 			__FILE__,__LINE__,#EXPR, calc, (VAL), error/VAL*100., RELTOL*100.\
 		);\
 		errorflag = 1; \
-	}else{\
-		fprintf(stderr,"OK: %s = %f with %f %% error (test value = %f).\n", #EXPR, calc, error/VAL*100,VAL);\
-	}\
+	/* }else{ */ \
+	/*	fprintf(stderr,"OK: %s = %f with %e %% error (test value = %f).\n", #EXPR, calc, error/(VAL)/100,(VAL));*/ \
+	} \
 }
 
 /*------------------------------------------------------------------------------
   REGION 1: FORWARDS
 */
-		
+
+#define RELTOL 5e-9
+	
 void test_region1_point(double T,double p, double v,double h,double u, double s, double cp, double w){
 
 /*
@@ -39,11 +41,13 @@ void test_region1_point(double T,double p, double v,double h,double u, double s,
 */
 
 	SteamState S = freesteam_region1_set_pT(p*1e6, T);
-	CHECK_VAL(freesteam_v(S),v,1e-8);
-	CHECK_VAL(freesteam_h(S),h*1e3,1e-8);
-	CHECK_VAL(freesteam_u(S),u*1e3,1e-8);
-	CHECK_VAL(freesteam_s(S),s*1e3,1e-8);
-	CHECK_VAL(freesteam_cp(S),cp*1e3,1e-8);
+	CHECK_VAL(freesteam_p(S),p*1e6,RELTOL);
+	CHECK_VAL(freesteam_T(S),T,RELTOL);
+	CHECK_VAL(freesteam_v(S),v,RELTOL);
+	CHECK_VAL(freesteam_h(S),h*1e3,RELTOL);
+	CHECK_VAL(freesteam_u(S),u*1e3,RELTOL);
+	CHECK_VAL(freesteam_s(S),s*1e3,RELTOL);
+	CHECK_VAL(freesteam_cp(S),cp*1e3,RELTOL);
 
 }	
 
@@ -63,11 +67,13 @@ void test_region2_point(double T,double p, double v,double h,double u, double s,
 	/* units of measurement as for region1 test */
 
 	SteamState S = freesteam_region2_set_pT(p*1e6, T);
-	CHECK_VAL(freesteam_v(S),v,1e-8);
-	CHECK_VAL(freesteam_h(S),h*1e3,1e-8);
-	CHECK_VAL(freesteam_u(S),u*1e3,1e-8);
-	CHECK_VAL(freesteam_s(S),s*1e3,1e-8);
-	CHECK_VAL(freesteam_cp(S),cp*1e3,1e-8);
+	CHECK_VAL(freesteam_p(S),p*1e6,RELTOL);
+	CHECK_VAL(freesteam_T(S),T,RELTOL);
+	CHECK_VAL(freesteam_v(S),v,RELTOL);
+	CHECK_VAL(freesteam_h(S),h*1e3,RELTOL);
+	CHECK_VAL(freesteam_u(S),u*1e3,RELTOL);
+	CHECK_VAL(freesteam_s(S),s*1e3,RELTOL);
+	CHECK_VAL(freesteam_cp(S),cp*1e3,RELTOL);
 }
 
 void testregion2(void){
@@ -77,10 +83,49 @@ void testregion2(void){
 	test_region2_point(700, 30, 0.542946619E-02, 0.263149474E+4, 0.246861076E+4, 0.517540298E+1, 0.103505092E+2, 0.480386523E+3);
 }
 
+/*------------------------------------------------------------------------------
+  REGION 3: FORWARDS
+*/
+
+void test_region3_point(double T,double rho, double p,double h,double u, double s, double cp, double w){
+
+	/* units of measurement as for region1 test */
+
+	SteamState S = freesteam_region3_set_rhoT(rho, T);
+	CHECK_VAL(freesteam_p(S),p*1e6,RELTOL);
+	CHECK_VAL(freesteam_T(S),T,RELTOL);
+	CHECK_VAL(freesteam_v(S),1./rho,RELTOL);
+	CHECK_VAL(freesteam_h(S),h*1e3,RELTOL);
+	CHECK_VAL(freesteam_u(S),u*1e3,RELTOL);
+	CHECK_VAL(freesteam_s(S),s*1e3,RELTOL);
+	CHECK_VAL(freesteam_cp(S),cp*1e3,RELTOL);
+}
+
+void testregion3(void){
+	fprintf(stderr,"REGION 3 TESTS\n");
+
+	test_region3_point(650.00000000, 500.0000, 0.255837018E2,
+			           0.186343019E4, 0.181226279E4, 0.405427273E1,
+			           0.138935717E2, 0.502005554E3);
+
+	test_region3_point(650.0000000, 200.00000000, 0.222930643E2,
+			           0.237512401E4, 0.226365868E4, 0.485438792E1,
+			           0.446579342E2, 0.383444594E3);
+
+	test_region3_point(750, 500, 0.783095639E2, 0.225868845E4,
+			           0.210206932E4, 0.446971906E1, 0.634165359E1,
+			           0.760696041E3);
+}
+
+/*------------------------------------------------------------------------------
+  MAIN ROUTINE
+*/
+
 int main(void){
 	errorflag = 0;
 	testregion1();
 	testregion2();
+	testregion3();
 
 #if 0
 	SteamState S;
@@ -93,7 +138,7 @@ int main(void){
 	fprintf(stderr,"s = %f\n",freesteam_s(S));
 #endif
 	if(!errorflag){
-		fprintf(stderr,"SUCCESS\n");
+		fprintf(stderr,"SUCCESS!\n");
 	}else{
 		fprintf(stderr,"ERRORS ENCOUNTERED. Return code %d.\n",errorflag);
 	}
