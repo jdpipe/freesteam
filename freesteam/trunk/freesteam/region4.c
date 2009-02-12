@@ -18,12 +18,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "region4.h"
+
+#include <math.h>
+
 #include "common.h"
 #include "region1.h"
 #include "region3.h"
 #include "region2.h"
-
-#include <math.h>
 
 const double REGION4_N[11] = { 0, 0.11670521452767E+04, -0.72421316703206E+06
 	, -0.17073846940092E+02, 0.12020824702470E+05, -0.32325550322333E+07
@@ -40,7 +41,7 @@ const double REGION4_N[11] = { 0, 0.11670521452767E+04, -0.72421316703206E+06
 
 double freesteam_region4_psat_T(double T){
 
-	fprintf(stderr,"freesteam_region4_psat_T(T = %f)\n", T );
+	/*fprintf(stderr,"freesteam_region4_psat_T(T = %f)\n", T );*/
 
 	double ups = T/REGION4_TSTAR + REGION4_N[9] / (T/REGION4_TSTAR - REGION4_N[10]);
 	double A = SQ(ups) + REGION4_N[1] * ups + REGION4_N[2];
@@ -50,7 +51,7 @@ double freesteam_region4_psat_T(double T){
 	double expr = 2. * C / (- B + sqrt(SQ(B) - 4. * A * C));
 	double psat = SQ(SQ(expr)) * REGION4_PSTAR;
 
-	fprintf(stderr,"freesteam_region4_psat_T = %f MPa\n", psat/1e6);
+	/* fprintf(stderr,"freesteam_region4_psat_T = %f MPa\n", psat/1e6);*/
 	return psat;
 }
 
@@ -72,7 +73,7 @@ double freesteam_region4_Tsat_p(double p){
 
 	/* FIXME iterative improve this estimate? is it necessary? */
 
-	return theta /* * REGION4_TSTAR = 1 K */;
+	return theta /* * REGION4_TSTAR = 1 {K} */;
 }
 
 /*------------------------------------------------------------------------------

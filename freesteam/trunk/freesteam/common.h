@@ -12,8 +12,8 @@
 
 #define IAPWS97_WARN_APPROX
 
-#ifndef __function__
-# define __function__ "<function>"
+#ifndef __GNUC__
+# define __func__ "<function>"
 #endif
 
 #include <stdio.h>
@@ -24,7 +24,7 @@
 		_warn_approx = 1; \
 		fprintf(stderr \
 			,"WARNING: %s (%s:%d): backwards or approximation function used!\n" \
-			,__function__,__FILE__,__LINE__ \
+			,__func__,__FILE__,__LINE__ \
 		); \
 	}
 

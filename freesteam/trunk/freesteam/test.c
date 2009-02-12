@@ -1,5 +1,6 @@
 #include "steam.h"
 #include "steam_ph.h"
+#include "region4.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -117,6 +118,21 @@ void testregion3(void){
 			           0.760696041E3);
 }
 
+void test_region4_point(double T,double p){
+	SteamState S = freesteam_region4_set_Tx(T,0);	
+	double p1 = freesteam_p(S);
+	CHECK_VAL(p1,p*1e6,RELTOL);
+	double T1 = freesteam_region4_Tsat_p(p1);
+	CHECK_VAL(T1,T,RELTOL);
+}
+
+void testregion4(void){
+	fprintf(stderr,"REGION 4 TESTS\n");
+	test_region4_point(300,	0.353658941E-2);
+	test_region4_point(500,	0.263889776E1);
+	test_region4_point(600,	0.123443146E2);
+}
+
 /*------------------------------------------------------------------------------
   MAIN ROUTINE
 */
@@ -126,6 +142,7 @@ int main(void){
 	testregion1();
 	testregion2();
 	testregion3();
+	testregion4();
 
 #if 0
 	SteamState S;
