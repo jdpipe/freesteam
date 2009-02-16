@@ -60,6 +60,7 @@ double freesteam_h(SteamState S);
 double freesteam_s(SteamState S);
 double freesteam_cp(SteamState S);
 double freesteam_cv(SteamState S);
+double freesteam_w(SteamState S);
 
 #endif
 

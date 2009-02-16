@@ -51,6 +51,7 @@ void test_region1_point(double T,double p, double v,double h,double u, double s,
 	CHECK_VAL(freesteam_u(S),u*1e3,RELTOL);
 	CHECK_VAL(freesteam_s(S),s*1e3,RELTOL);
 	CHECK_VAL(freesteam_cp(S),cp*1e3,RELTOL);
+	CHECK_VAL(freesteam_w(S),w,RELTOL);
 
 }	
 
@@ -77,6 +78,7 @@ void test_region2_point(double T,double p, double v,double h,double u, double s,
 	CHECK_VAL(freesteam_u(S),u*1e3,RELTOL);
 	CHECK_VAL(freesteam_s(S),s*1e3,RELTOL);
 	CHECK_VAL(freesteam_cp(S),cp*1e3,RELTOL);
+	CHECK_VAL(freesteam_w(S),w,RELTOL);
 }
 
 void testregion2(void){
@@ -217,6 +219,22 @@ void testregion3ph(void){
 }
 
 /*------------------------------------------------------------------------------
+  REGION 3 PSAT(H)
+*/
+
+void test_region3_psath_point(double h,double p){
+	double p1 = freesteam_region3_psat_h(h*1e3);
+	CHECK_VAL(p1,p*1e6,RELTOL);
+}
+
+void testregion3psath(void){
+	fprintf(stderr,"REGION 3 Psat(H) TESTS\n");
+	test_region3_psath_point(1700, 1.724175718e1);
+	test_region3_psath_point(2000, 2.193442957e1);
+	test_region3_psath_point(2400, 2.018090839e1);
+}
+
+/*------------------------------------------------------------------------------
   MAIN ROUTINE
 */
 
@@ -229,6 +247,7 @@ int main(void){
 	testregion1ph();
 	testregion2ph();
 	testregion3ph();
+	testregion3psath();
 
 #if 0
 	SteamState S;

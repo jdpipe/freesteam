@@ -166,6 +166,7 @@ double freesteam_cp(SteamState S){
 			exit(1);
 	}
 }
+
 double freesteam_cv(SteamState S){
 	switch(S.region){
 		case 1:
@@ -182,4 +183,20 @@ double freesteam_cv(SteamState S){
 	}
 }
 
-
+double freesteam_w(SteamState S){
+	switch(S.region){
+		case 1:
+			return freesteam_region1_w_pT(S.R1.p, S.R1.T);
+		case 2:
+			return freesteam_region2_w_pT(S.R2.p, S.R2.T);
+#if 0
+		case 3:
+			return freesteam_region3_w_rhoT(S.R3.rho,S.R3.T);
+		case 4:
+			return freesteam_region4_w_Tx(S.R4.T, S.R4.x);
+#endif
+		default:
+			fprintf(stderr,"ERROR: invalid region in freesteam_w\n");
+			exit(1);
+	}
+}

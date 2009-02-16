@@ -26,6 +26,7 @@ double freesteam_region1_s_pT(double p, double T);
 double freesteam_region1_h_pT(double p, double T);
 double freesteam_region1_cp_pT(double p, double T);
 double freesteam_region1_cv_pT(double p, double T);
+double freesteam_region1_w_pT(double p, double T);
 
 #define REGION1_TMAX 623.15 /* K */
 

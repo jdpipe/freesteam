@@ -553,15 +553,12 @@ double freesteam_region3_psat_h(double h){
 
 	IAPWS97_APPROXIMATE;
 
-	BackwardsData *d;
-	unsigned i, n;
+	BackwardsData *d, *e = REGION3_PSATH_DATA + REGION3_PSATH_MAX;
 	double eta = h / REGION3_PSATH_HSTAR;
 	double eta1 = eta - 1.02;
 	double eta2 = eta - 0.608;
-	double sum;
-	d = REGION3_PSATH_DATA;
-	n = REGION3_PSATH_MAX;
-	for(i = 0; i<n; ++i, ++d){
+	double sum = 0;
+	for(d = REGION3_PSATH_DATA; d<e; ++d){
 		sum += d->n * pow(eta1, d->I) * pow(eta2, d->J);
 	}
 	return sum * REGION3_PSATH_PSTAR;

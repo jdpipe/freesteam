@@ -23,10 +23,11 @@ double freesteam_region2_s_pT(double p, double T);
 double freesteam_region2_h_pT(double p, double T);
 double freesteam_region2_cp_pT(double p, double T);
 double freesteam_region2_cv_pT(double p, double T);
+double freesteam_region2_w_pT(double p, double T);
 
 #define GAM0(PI,TAU) gam0(PI,TAU)
-#define GAM0PI(PI,TAU) gam0pi(PI)
-#define GAM0PIPI(PI,TAU) gam0pipi(PI)
+#define GAM0PI(PI,TAU) (1./PI)
+#define GAM0PIPI(PI,TAU) (-1./SQ(PI))
 #define GAM0TAU(PI,TAU) gam0tau(TAU)
 #define GAM0TAUTAU(PI,TAU) gam0tautau(TAU)
 #define GAM0PITAU(PI,TAU) (0)
@@ -46,8 +47,6 @@ static double gamrtautau(double pi, double tau);
 static double gamrpitau(double pi, double tau);
 
 static double gam0(double pi, double tau);
-static double gam0pi(double pi);
-static double gam0pipi(double pi);
 static double gam0tau(double tau);
 static double gam0tautau(double tau);
 
@@ -96,6 +95,14 @@ double freesteam_region2_cv_pT(double p, double T){
 	);
 }
 
+double freesteam_region2_w_pT(double p, double T){
+	DEFINE_PITAU(p,T);
+	double gp = gamrpi(pi,tau);
+	return sqrt(R * T * (1. + 2.*pi*gp+SQ(pi*gp))/
+		((1. - SQ(pi)*gamrpipi(pi,tau))	+ SQ(1. + pi*gp - tau*pi*gamrpitau(pi,tau))/SQ(tau)/gamtautau(pi,tau))
+	);
+}
+
 /*------------------------------------------------------------------------------
   REGION 2 IDEAL PART - GAM0(PI,TAU)
 */
@@ -129,14 +136,6 @@ double gam0(double pi, double tau){
 		sum += d->n * pow(tau, d->J);
 	}
 	return log(pi) + sum;
-}
-
-double gam0pi(double pi){
-	return 1. / pi;
-}
-
-double gam0pipi(double pi){
-	return - 1. / SQ(pi);
 }
 
 double gam0tau(double tau){

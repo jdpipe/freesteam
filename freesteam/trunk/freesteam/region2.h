@@ -28,6 +28,7 @@ double freesteam_region2_s_pT(double p, double T);
 double freesteam_region2_h_pT(double p, double T);
 double freesteam_region2_cp_pT(double p, double T);
 double freesteam_region2_cv_pT(double p, double T);
+double freesteam_region2_w_pT(double p, double T);
 
 #endif
 

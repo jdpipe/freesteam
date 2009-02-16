@@ -22,6 +22,7 @@ double freesteam_region1_s_pT(double p, double T);
 double freesteam_region1_h_pT(double p, double T);
 double freesteam_region1_cp_pT(double p, double T);
 double freesteam_region1_cv_pT(double p, double T);
+double freesteam_region1_w_pT(double p, double T);
 
 static double gam(double pi, double tau);
 static double gampi(double pi, double tau);
@@ -74,6 +75,15 @@ double freesteam_region1_cv_pT(double p, double T){
 		tau * gampitau(pi,tau)) / gampipi(pi,tau)
 	);
 }
+
+double freesteam_region1_w_pT(double p, double T){
+	DEFINE_PITAU(P,T);
+	double gp = gampi(pi,tau);
+	return sqrt(R * T * SQ(gp) / \
+		(SQ(gp - tau*gampitau(pi,tau))/SQ(tau)/gamtautau(pi,tau) - gampipi(pi,tau))
+	);
+}
+	
 
 //----------------------------------------------------------------
 // REGION 1 G(p,T) EQUATIONS

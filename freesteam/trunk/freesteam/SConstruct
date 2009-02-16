@@ -1,6 +1,15 @@
 #!/usr/bin/env python
 
+opts = Options()
+
+opts.Add(BoolOption(
+	'GCOV'
+	,"Build for coverage testing using gcov."
+	,False
+))
+
 env = Environment()
+opts.Update(env)
 
 srcs = ["region1.c", "region2.c", "region3.c", "region4.c", "steam_ph.c"
 	,"steam.c", "backwards.c","b23.c"
@@ -8,9 +17,26 @@ srcs = ["region1.c", "region2.c", "region3.c", "region4.c", "steam_ph.c"
 
 env.Append(CFLAGS=['-Wall','-W','-Wconversion'])
 
-env.SharedLibrary("freesteam",srcs,LIBS=['m'])
+if env.get('GCOV'):
+	env.Append(
+		CFLAGS=['-fprofile-arcs','-ftest-coverage']
+		,LIBS=['gcov']
+	)
+
+lib_env = env.Clone()
+lib_env.Append(
+	LIBS = ['m']
+)
+lib_env.SharedLibrary("freesteam",srcs)
 
 env.SConscript(["python/SConscript"],'env')
 
-env.Program("test","test.c",LINKFLAGS=['-Wl,-rpath,'+str(Dir('#'))],LIBS=['freesteam'],LIBPATH=['#'])
+prog_env = env.Clone()
+prog_env.Append(
+	LIBS=['freesteam']
+	,LIBPATH=['#']
+	,LINKFLAGS=['-Wl,-rpath,'+str(Dir('#'))]
+)
+
+prog_env.Program("test","test.c")
 
