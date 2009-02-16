@@ -6,7 +6,7 @@ srcs = ["region1.c", "region2.c", "region3.c", "region4.c", "steam_ph.c"
 	,"steam.c", "backwards.c","b23.c"
 ]
 
-env.Append(CFLAGS=['-Wall'])
+env.Append(CFLAGS=['-Wall','-W','-Wconversion'])
 
 env.SharedLibrary("freesteam",srcs,LIBS=['m'])
 

@@ -8,7 +8,7 @@
 #include <math.h>
 
 int errorflag = 0;
-int verbose = 1;
+int verbose = 0;
 
 #define CHECK_VAL(EXPR, VAL, RELTOL){ \
 	double calc = (EXPR); \
@@ -182,7 +182,7 @@ void test_region2_ph_point(double p,double h, double T){
 void testregion2ph(void){
 	fprintf(stderr,"REGION 2 (P,H) TESTS\n");
 	test_region2_ph_point(0.001,3000,	0.534433241e3);
-	test_region2_ph_point(3,	3000,	0.378108626e3);
+	test_region2_ph_point(3,	3000,	0.575373370e3);
 	test_region2_ph_point(3,	4000,	0.101077577e4);
 
 	test_region2_ph_point(5,	3500,	0.801299102e3);
