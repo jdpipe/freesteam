@@ -195,6 +195,28 @@ void testregion2ph(void){
 }
 
 /*------------------------------------------------------------------------------
+  REGION 3 BACKWARDS (P,H)
+*/
+
+void test_region3_ph_point(double p,double h, double T, double v){
+	double T1 = freesteam_region3_T_ph(p*1e6,h*1e3);	
+	CHECK_VAL(T1,T,RELTOL);
+	double v1 = freesteam_region3_v_ph(p*1e6,h*1e3);
+	CHECK_VAL(v1,v,RELTOL);
+}
+
+void testregion3ph(void){
+	fprintf(stderr,"REGION 3 (P,H) TESTS\n");
+	test_region3_ph_point(20,	1700,	6.293083892e2, 1.749903962e-3);
+	test_region3_ph_point(50,	2000,	6.905718338e2, 1.908139035e-3);
+	test_region3_ph_point(100,	2100,	7.336163014e2, 1.676229776e-3);
+
+	test_region3_ph_point(20,	2500,	6.418418053e2, 6.670547043e-3);
+	test_region3_ph_point(50,	2400,	7.351848618e2, 2.801244590e-3);
+	test_region3_ph_point(100,	2700,	8.420460876e2, 2.404234998e-3);
+}
+
+/*------------------------------------------------------------------------------
   MAIN ROUTINE
 */
 
@@ -206,6 +228,7 @@ int main(void){
 	testregion4();
 	testregion1ph();
 	testregion2ph();
+	testregion3ph();
 
 #if 0
 	SteamState S;
