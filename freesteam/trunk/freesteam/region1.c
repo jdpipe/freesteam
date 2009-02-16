@@ -83,7 +83,7 @@ double freesteam_region1_w_pT(double p, double T){
 		(SQ(gp - tau*gampitau(pi,tau))/SQ(tau)/gamtautau(pi,tau) - gampipi(pi,tau))
 	);
 }
-	
+
 
 //----------------------------------------------------------------
 // REGION 1 G(p,T) EQUATIONS
@@ -136,45 +136,45 @@ const unsigned REGION1_GPT_MAX = sizeof(REGION1_GPT_DATA)/sizeof(IJNData);
 	double sum = 0; \
 	const IJNData *d, *e = REGION1_GPT_DATA + REGION1_GPT_MAX; \
 	for(d = REGION1_GPT_DATA; d < e; ++d)
-	
+
 double gam(double pi, double tau){
 	REGION1_GPT_LOOP{
-		sum += d->n * pow(7.1 - pi,d->I) * pow(tau - 1.222,d->J);
+		sum += d->n * ipow(7.1 - pi,d->I) * ipow(tau - 1.222,d->J);
 	}
 	return sum;
 }
 
 double gampi(double pi, double tau){
 	REGION1_GPT_LOOP{
-		sum +=  -d->n * d->I * pow(7.1 - pi,d->I -1) * pow(tau - 1.222,d->J);
+		sum +=  -d->n * d->I * ipow(7.1 - pi,d->I -1) * ipow(tau - 1.222,d->J);
 	}
 	return sum;
 }
 
 double gampipi(double pi, double tau){
 	REGION1_GPT_LOOP{
-		sum += d->n * d->I * (d->I - 1) * pow(7.1 - pi, d->I - 2) * pow(tau - 1.222, d->J);
+		sum += d->n * d->I * (d->I - 1) * ipow(7.1 - pi, d->I - 2) * ipow(tau - 1.222, d->J);
     }
 	return sum;
 }
 
 double gamtau(double pi, double tau){
 	REGION1_GPT_LOOP{
-		sum += d->n * pow(7.1 - pi, d->I) * d->J * pow(tau - 1.222, d->J - 1);
+		sum += d->n * ipow(7.1 - pi, d->I) * d->J * ipow(tau - 1.222, d->J - 1);
 	}
 	return sum;
 }
 
 double gamtautau(double pi, double tau){
 	REGION1_GPT_LOOP{
-		sum += d->n * pow(7.1 - pi, d->I) * d->J * (d->J - 1) * pow(tau - 1.222, d->J - 2);
+		sum += d->n * ipow(7.1 - pi, d->I) * d->J * (d->J - 1) * ipow(tau - 1.222, d->J - 2);
 	}
 	return sum;
 }
 
 double gampitau(double pi, double tau){
 	REGION1_GPT_LOOP{
-		sum += -d->n * d->I * pow(7.1 - pi, d->I - 1) * d->J * pow(tau - 1.222, d->J - 1);
+		sum += -d->n * d->I * ipow(7.1 - pi, d->I - 1) * d->J * ipow(tau - 1.222, d->J - 1);
 	}
 	return sum;
 }

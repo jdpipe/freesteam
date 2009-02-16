@@ -133,21 +133,21 @@ const unsigned REGION2_GPT_IDEAL_MAX = sizeof(REGION2_GPT_IDEAL_DATA)/sizeof(JND
 
 double gam0(double pi, double tau){
 	REGION2_GPT_IDEAL_LOOP{
-		sum += d->n * pow(tau, d->J);
+		sum += d->n * ipow(tau, d->J);
 	}
 	return log(pi) + sum;
 }
 
 double gam0tau(double tau){
 	REGION2_GPT_IDEAL_LOOP{
-		sum += d->n * d->J * pow(tau, d->J - 1);
+		sum += d->n * d->J * ipow(tau, d->J - 1);
 	}
 	return sum;
 }
 
 double gam0tautau(double tau){
 	REGION2_GPT_IDEAL_LOOP{
-		sum += d->n * d->J * (d->J - 1) * pow(tau, d->J - 2);
+		sum += d->n * d->J * (d->J - 1) * ipow(tau, d->J - 2);
 	}
 	return sum;
 }
@@ -213,45 +213,45 @@ const unsigned REGION2_GPT_RESID_MAX = sizeof(REGION2_GPT_RESID_DATA)/sizeof(IJN
 	double sum = 0; \
 	const IJNData *d, *e = REGION2_GPT_RESID_DATA + REGION2_GPT_RESID_MAX; \
 	for(d = REGION2_GPT_RESID_DATA; d < e; ++d)
-	
+
 double gamr(double pi, double tau){
 	REGION2_GPT_RESID_LOOP{
-		sum += d->n * pow(pi,d->I) * pow(tau - 0.5,d->J);
+		sum += d->n * ipow(pi,d->I) * ipow(tau - 0.5,d->J);
 	}
 	return sum;
 }
 
 double gamrpi(double pi, double tau){
 	REGION2_GPT_RESID_LOOP{
-		sum +=  d->n * d->I * pow(pi,d->I -1) * pow(tau - 0.5,d->J);
+		sum +=  d->n * d->I * ipow(pi,d->I -1) * ipow(tau - 0.5,d->J);
 	}
 	return sum;
 }
 
 double gamrpipi(double pi, double tau){
 	REGION2_GPT_RESID_LOOP{
-		sum += d->n * d->I * (d->I - 1) * pow(pi, d->I - 2) * pow(tau - 0.5, d->J);
+		sum += d->n * d->I * (d->I - 1) * ipow(pi, d->I - 2) * ipow(tau - 0.5, d->J);
     }
 	return sum;
 }
 
 double gamrtau(double pi, double tau){
 	REGION2_GPT_RESID_LOOP{
-		sum += d->n * pow(pi, d->I) * d->J * pow(tau - 0.5, d->J - 1);
+		sum += d->n * ipow(pi, d->I) * d->J * ipow(tau - 0.5, d->J - 1);
 	}
 	return sum;
 }
 
 double gamrtautau(double pi, double tau){
 	REGION2_GPT_RESID_LOOP{
-		sum += d->n * pow(pi, d->I) * d->J * (d->J - 1) * pow(tau - 0.5, d->J - 2);
+		sum += d->n * ipow(pi, d->I) * d->J * (d->J - 1) * ipow(tau - 0.5, d->J - 2);
 	}
 	return sum;
 }
 
 double gamrpitau(double pi, double tau){
 	REGION2_GPT_RESID_LOOP{
-		sum += d->n * d->I * pow(pi, d->I - 1) * d->J * pow(tau - 0.5, d->J - 1);
+		sum += d->n * d->I * ipow(pi, d->I - 1) * d->J * ipow(tau - 0.5, d->J - 1);
 	}
 	return sum;
 }

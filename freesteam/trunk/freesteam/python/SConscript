@@ -19,7 +19,7 @@ else:
 	python_lib = "python%s.%s"%(sys.version_info[0],sys.version_info[1])
 
 python_env.Append(CPPPATH = [distutils.sysconfig.get_python_inc()])
-python_env.Append(LIBPATH = [distutils.sysconfig.get_python_lib()])
+python_env.Append(LIBPATH = [distutils.sysconfig.PREFIX+"/libs"])
 
 swigobj = python_env.SharedObject('freesteam.i'
 	, SWIGFLAGS=['-python']

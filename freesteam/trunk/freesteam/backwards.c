@@ -1,4 +1,4 @@
-/* 
+/*
 freesteam - IAPWS-IF97 steam tables library
 Copyright (C) 2004-2009  John Pye
 
@@ -88,14 +88,14 @@ double freesteam_region1_T_ph(double p, double h){
 	double sum = 0;
 	for(i=0, d = REGION1_TPH_DATA; i<REGION1_TPH_MAX; ++i, ++d){
 		/* TODO some optimisations are possible here with pow(pi,...) */
-		sum += d->n * pow(pi,d->I) * pow(e1, d->J);
+		sum += d->n * ipow(pi,d->I) * ipow(e1, d->J);
 	}
 	return sum /* * REGION1_TPH_TSTAR = 1. */;
 }
 
 
 /*------------------------------------------------------------------------------
-  REGION 2 
+  REGION 2
 */
 
 /* sub-region 2a */
@@ -258,7 +258,7 @@ double freesteam_region2_T_ph(double p, double h){
 	}
 
 	for(i = 0; i<n; ++i, ++d){
-		sum += d->n * pow(pi1, d->I) * pow(eta1, d->J);
+		sum += d->n * ipow(pi1, d->I) * ipow(eta1, d->J);
 	}
 
 	return sum /* * REGION2_TSTAR = 1 K */;
@@ -390,7 +390,7 @@ double freesteam_region3_T_ph(double p, double h){
 	}
 
 	for(i = 0; i<n; ++i, ++d){
-		sum += d->n * pow(pi1, d->I) * pow(eta1, d->J);
+		sum += d->n * ipow(pi1, d->I) * ipow(eta1, d->J);
 	}
 
 	return sum * Tstar;
@@ -517,7 +517,7 @@ double freesteam_region3_v_ph(double p, double h){
 	}
 
 	for(i = 0; i<n; ++i, ++d){
-		sum += d->n * pow(pi1, d->I) * pow(eta1, d->J);
+		sum += d->n * ipow(pi1, d->I) * ipow(eta1, d->J);
 	}
 
 	return sum * vstar;
@@ -559,7 +559,7 @@ double freesteam_region3_psat_h(double h){
 	double eta2 = eta - 0.608;
 	double sum = 0;
 	for(d = REGION3_PSATH_DATA; d<e; ++d){
-		sum += d->n * pow(eta1, d->I) * pow(eta2, d->J);
+		sum += d->n * ipow(eta1, d->I) * ipow(eta2, d->J);
 	}
 	return sum * REGION3_PSATH_PSTAR;
 }

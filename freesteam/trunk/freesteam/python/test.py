@@ -1,13 +1,21 @@
 #!/usr/bin/env python
 # trickery to add .. to LD_LIBRARY_PATH before attempting to load freesteam lib
-import os, sys
+import os, sys, platform
 up = os.path.abspath(os.path.join(sys.path[0],'..'))
-if not os.environ.get('LD_LIBRARY_PATH') or up not in os.environ.get('LD_LIBRARY_PATH'):
-	os.environ['LD_LIBRARY_PATH'] = up
-	script = os.path.join(sys.path[0],"test.py")					
-	os.execvp("python",[script] + sys.argv)
 
-if not os.path.exists(os.path.join(sys.path[0],'_freesteam.so')):
+if platform.system()=="Windows":
+	lib = '_freesteam.pyd'
+	pathvar = 'PATH'
+else:
+	pathvar = 'LD_LIBARY_PATH'
+	lib = '_freesteam.so'
+	
+if not os.environ.get(pathvar) or up not in os.environ.get(pathvar):
+	os.environ[pathvar] = up
+	script = os.path.join(sys.path[0],"test.py")					
+	os.execvp(sys.executable,[script] + sys.argv)
+	
+if not os.path.exists(os.path.join(sys.path[0],lib)):
 	sys.stderr.write("Library _freesteam.so not present in %s\n" % sys.path[0])
 	sys.exit(1);
 

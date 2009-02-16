@@ -69,7 +69,7 @@ double freesteam_region3_cp_rhoT(double rho, double T){
 	return R * (
 		-SQ(tau) * phitautau(del,tau)
 		+ (
-			pow (del * phidel(del,tau) - del * tau * phideltau(del,tau), 2)
+			ipow (del * phidel(del,tau) - del * tau * phideltau(del,tau), 2)
 			/ (2 * del * phidel(del,tau) + SQ(del) * phideldel(del,tau))
 		)
 	);
@@ -138,42 +138,42 @@ const unsigned REGION3_ARHOT_MAX = sizeof(REGION3_ARHOT_DATA)/sizeof(IJNData);
 
 double phi(double del, double tau){
 	REGION3_ARHOT_LOOP{
-		sum += d->n * pow(del, d->I) * pow(tau, d->J);
+		sum += d->n * ipow(del, d->I) * ipow(tau, d->J);
 	}
 	return sum + REGION3_N1 * log(del);
 }
 
 double phidel(double del, double tau){
 	REGION3_ARHOT_LOOP{
-		sum += +d->n * d->I * pow(del, d->I - 1) * pow(tau, d->J);
+		sum += +d->n * d->I * ipow(del, d->I - 1) * ipow(tau, d->J);
 	}
 	return sum + REGION3_N1 / del;
 }
 
 double phideldel(double del, double tau){
 	REGION3_ARHOT_LOOP{
-		sum += d->n * d->I * (d->I - 1) * pow(del, d->I - 2) * pow(tau, d->J);
+		sum += d->n * d->I * (d->I - 1) * ipow(del, d->I - 2) * ipow(tau, d->J);
 	}
 	return sum - REGION3_N1 / SQ(del) ;
 }
 
 double phitau(double del, double tau){
 	REGION3_ARHOT_LOOP{
-		sum += d->n * pow(del, d->I) * d->J * pow(tau, d->J - 1);
+		sum += d->n * ipow(del, d->I) * d->J * ipow(tau, d->J - 1);
 	}
 	return sum;
 }
 
 double phitautau(double del, double tau){
 	REGION3_ARHOT_LOOP{
-		sum += d->n * pow(del, d->I) * d->J * (d->J - 1) * pow(tau, d->J - 2);
+		sum += d->n * ipow(del, d->I) * d->J * (d->J - 1) * ipow(tau, d->J - 2);
 	}
 	return sum;
 }
 
 double phideltau(double del, double tau){
 	REGION3_ARHOT_LOOP{
-		sum += d->n * d->I * pow(del, d->I - 1) * d->J * pow(tau, d->J - 1);
+		sum += d->n * d->I * ipow(del, d->I - 1) * d->J * ipow(tau, d->J - 1);
 	}
 	return sum;
 }

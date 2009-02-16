@@ -28,7 +28,7 @@ int verbose = 0;
 */
 
 #define RELTOL 5e-9
-	
+
 void test_region1_point(double T,double p, double v,double h,double u, double s, double cp, double w){
 
 /*
@@ -53,14 +53,14 @@ void test_region1_point(double T,double p, double v,double h,double u, double s,
 	CHECK_VAL(freesteam_cp(S),cp*1e3,RELTOL);
 	CHECK_VAL(freesteam_w(S),w,RELTOL);
 
-}	
+}
 
 void testregion1(void){
 	fprintf(stderr,"REGION 1 TESTS\n");
 	test_region1_point(300, 3, 0.100215168E-2, 0.115331273E3, 0.112324818E3, 0.392294792, 0.417301218E1, 0.150773921E4);
 	test_region1_point(300, 80, 0.971180894E-3, 0.184142828E3, 0.106448356E3, 0.368563852, 0.401008987E1, 0.163469054E4);
 	test_region1_point(500, 3, 0.120241800E-2, 0.975542239E3, 0.971934985E3, 0.258041912E1, 0.465580682E1, 0.124071337E4);
-}	
+}
 
 /*------------------------------------------------------------------------------
   REGION 2: FORWARDS
@@ -127,7 +127,7 @@ void testregion3(void){
 */
 
 void test_region4_point(double T,double p){
-	SteamState S = freesteam_region4_set_Tx(T,0);	
+	SteamState S = freesteam_region4_set_Tx(T,0);
 	double p1 = freesteam_p(S);
 	CHECK_VAL(p1,p*1e6,RELTOL);
 	double T1 = freesteam_region4_Tsat_p(p1);
@@ -146,7 +146,7 @@ void testregion4(void){
 */
 
 void test_region1_ph_point(double p,double h, double T){
-	double T1 = freesteam_region1_T_ph(p*1e6,h*1e3);	
+	double T1 = freesteam_region1_T_ph(p*1e6,h*1e3);
 	CHECK_VAL(T1,T,RELTOL);
 }
 
@@ -159,7 +159,7 @@ void testregion1ph(void){
 
 #if 0
 void test_region1_ps_point(double p,double s, double T){
-	double T1 = freesteam_region1_T_ps(p*1e6,s*1e3);	
+	double T1 = freesteam_region1_T_ps(p*1e6,s*1e3);
 	CHECK_VAL(T1,T,RELTOL);
 }
 
@@ -177,7 +177,7 @@ void testregion1ps(void){
 */
 
 void test_region2_ph_point(double p,double h, double T){
-	double T1 = freesteam_region2_T_ph(p*1e6,h*1e3);	
+	double T1 = freesteam_region2_T_ph(p*1e6,h*1e3);
 	CHECK_VAL(T1,T,RELTOL);
 }
 
@@ -201,7 +201,7 @@ void testregion2ph(void){
 */
 
 void test_region3_ph_point(double p,double h, double T, double v){
-	double T1 = freesteam_region3_T_ph(p*1e6,h*1e3);	
+	double T1 = freesteam_region3_T_ph(p*1e6,h*1e3);
 	CHECK_VAL(T1,T,RELTOL);
 	double v1 = freesteam_region3_v_ph(p*1e6,h*1e3);
 	CHECK_VAL(v1,v,RELTOL);
@@ -209,13 +209,13 @@ void test_region3_ph_point(double p,double h, double T, double v){
 
 void testregion3ph(void){
 	fprintf(stderr,"REGION 3 (P,H) TESTS\n");
-	test_region3_ph_point(20,	1700,	6.293083892e2, 1.749903962e-3);
-	test_region3_ph_point(50,	2000,	6.905718338e2, 1.908139035e-3);
-	test_region3_ph_point(100,	2100,	7.336163014e2, 1.676229776e-3);
+	test_region3_ph_point(20.,	1700.,	6.293083892e2, 1.749903962e-3);
+	test_region3_ph_point(50.,	2000.,	6.905718338e2, 1.908139035e-3);
+	test_region3_ph_point(100.,	2100.,	7.336163014e2, 1.676229776e-3);
 
-	test_region3_ph_point(20,	2500,	6.418418053e2, 6.670547043e-3);
-	test_region3_ph_point(50,	2400,	7.351848618e2, 2.801244590e-3);
-	test_region3_ph_point(100,	2700,	8.420460876e2, 2.404234998e-3);
+	test_region3_ph_point(20.,	2500.,	6.418418053e2, 6.670547043e-3);
+	test_region3_ph_point(50.,	2400.,	7.351848618e2, 2.801244590e-3);
+	test_region3_ph_point(100.,	2700.,	8.420460876e2, 2.404234998e-3);
 }
 
 /*------------------------------------------------------------------------------

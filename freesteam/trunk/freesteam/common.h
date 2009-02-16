@@ -1,6 +1,8 @@
 #ifndef FREESTEAM_COMMON_H
 #define FREESTEAM_COMMON_H
 
+/* Constants used throughout IAPWS-IF97 */
+
 #define IAPWS97_PMAX 100e6 /* Pa */
 #define IAPWS97_TMIN 273.15 /* K */
 
@@ -28,7 +30,10 @@
 		); \
 	}
 
-#endif
-
 #define SQ(X) ((X)*(X))
 
+/* Basic math routines, if necesary... */
+
+double ipow(double x, int n);
+
+#endif /* FREESTEAM_COMMON_H */
