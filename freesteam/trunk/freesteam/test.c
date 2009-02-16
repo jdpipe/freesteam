@@ -1,12 +1,14 @@
 #include "steam.h"
 #include "steam_ph.h"
 #include "region4.h"
+#include "backwards.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
 int errorflag = 0;
+int verbose = 1;
 
 #define CHECK_VAL(EXPR, VAL, RELTOL){ \
 	double calc = (EXPR); \
@@ -16,8 +18,8 @@ int errorflag = 0;
 			__FILE__,__LINE__,#EXPR, calc, (VAL), error/VAL*100., RELTOL*100.\
 		);\
 		errorflag = 1; \
-	/* }else{ */ \
-	/*	fprintf(stderr,"OK: %s = %f with %e %% error (test value = %f).\n", #EXPR, calc, error/(VAL)/100,(VAL));*/ \
+	 }else if(verbose){ \
+		fprintf(stderr,"OK: %s = %f with %e %% error (test value = %f).\n", #EXPR, calc, error/(VAL)/100,(VAL)); \
 	} \
 }
 
@@ -118,6 +120,10 @@ void testregion3(void){
 			           0.760696041E3);
 }
 
+/*------------------------------------------------------------------------------
+  REGION 4 SATURATION LINE
+*/
+
 void test_region4_point(double T,double p){
 	SteamState S = freesteam_region4_set_Tx(T,0);	
 	double p1 = freesteam_p(S);
@@ -134,6 +140,61 @@ void testregion4(void){
 }
 
 /*------------------------------------------------------------------------------
+  REGION 1 BACKWARDS (P,H)
+*/
+
+void test_region1_ph_point(double p,double h, double T){
+	double T1 = freesteam_region1_T_ph(p*1e6,h*1e3);	
+	CHECK_VAL(T1,T,RELTOL);
+}
+
+void testregion1ph(void){
+	fprintf(stderr,"REGION 1 (P,H) TESTS\n");
+	test_region1_ph_point(3,	500,	0.391798509e3);
+	test_region1_ph_point(80,	500,	0.378108626e3);
+	test_region1_ph_point(80,	1500,	0.611041229e3);
+}
+
+#if 0
+void test_region1_ps_point(double p,double s, double T){
+	double T1 = freesteam_region1_T_ps(p*1e6,s*1e3);	
+	CHECK_VAL(T1,T,RELTOL);
+}
+
+void testregion1ps(void){
+	fprintf(stderr,"REGION 1 (P,S) TESTS\n");
+	test_region1_ps_point(3,	0.5,  0.307842258e3);
+	test_region1_ps_point(80,	0.5,  0.309979785e3);
+	test_region1_ps_point(80,	3,    0.565899909E3);
+}
+#endif
+
+
+/*------------------------------------------------------------------------------
+  REGION 2 BACKWARDS (P,H)
+*/
+
+void test_region2_ph_point(double p,double h, double T){
+	double T1 = freesteam_region2_T_ph(p*1e6,h*1e3);	
+	CHECK_VAL(T1,T,RELTOL);
+}
+
+void testregion2ph(void){
+	fprintf(stderr,"REGION 2 (P,H) TESTS\n");
+	test_region2_ph_point(0.001,3000,	0.534433241e3);
+	test_region2_ph_point(3,	3000,	0.378108626e3);
+	test_region2_ph_point(3,	4000,	0.101077577e4);
+
+	test_region2_ph_point(5,	3500,	0.801299102e3);
+	test_region2_ph_point(5,	4000,	0.101531583e4);
+	test_region2_ph_point(25,	3500,	0.875279054e3);
+
+	test_region2_ph_point(40,	2700,	0.743056411e3);
+	test_region2_ph_point(60, 	2700,	0.791137067e3);
+	test_region2_ph_point(60,	3200,	0.882756860e3);
+}
+
+/*------------------------------------------------------------------------------
   MAIN ROUTINE
 */
 
@@ -143,6 +204,8 @@ int main(void){
 	testregion2();
 	testregion3();
 	testregion4();
+	testregion1ph();
+	testregion2ph();
 
 #if 0
 	SteamState S;
