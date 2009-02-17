@@ -17,12 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-double freesteam_region1_u_pT(double p, double T);
-double freesteam_region1_s_pT(double p, double T);
-double freesteam_region1_h_pT(double p, double T);
-double freesteam_region1_cp_pT(double p, double T);
-double freesteam_region1_cv_pT(double p, double T);
-double freesteam_region1_w_pT(double p, double T);
+#define FREESTEAM_BUILDING_LIB
+#include "region1.h"
 
 static double gam(double pi, double tau);
 static double gampi(double pi, double tau);
@@ -39,8 +35,6 @@ static double gampitau(double pi, double tau);
 	double tau = REGION1_GPT_TSTAR / T
 
 #define R IAPWS97_R
-
-#include "common.h"
 
 #include <math.h>
 

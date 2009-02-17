@@ -1,4 +1,4 @@
-/* 
+/*
 freesteam - IAPWS-IF97 steam tables library
 Copyright (C) 2004-2009  John Pye
 
@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #ifndef FREESTEAM_BACKWARDS_IMPL_H
 #define FREESTEAM_BACKWARDS_IMPL_H
+
+#include "common.h"
 
 #define SQ(X) ((X)*(X))
 #define CUBE(X) ((X)*(X)*(X))

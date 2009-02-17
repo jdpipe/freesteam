@@ -1,3 +1,4 @@
+#define FREESTEAM_BUILDING_LIB
 #include "common.h"
 
 /* ipow:  public domain by Mark Stephen with suggestions by Keiichi Nakasato */

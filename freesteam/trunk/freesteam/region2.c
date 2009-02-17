@@ -17,13 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-double freesteam_region2_v_pT(double p, double T);
-double freesteam_region2_u_pT(double p, double T);
-double freesteam_region2_s_pT(double p, double T);
-double freesteam_region2_h_pT(double p, double T);
-double freesteam_region2_cp_pT(double p, double T);
-double freesteam_region2_cv_pT(double p, double T);
-double freesteam_region2_w_pT(double p, double T);
+#define FREESTEAM_BUILDING_LIB
+#include "region2.h"
 
 #define GAM0(PI,TAU) gam0(PI,TAU)
 #define GAM0PI(PI,TAU) (1./PI)

@@ -1,4 +1,4 @@
-/* 
+/*
 freesteam - IAPWS-IF97 steam tables library
 Copyright (C) 2004-2009  John Pye
 
@@ -19,19 +19,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef FREESTEAM_BACKWARDS_H
 #define FREESTEAM_BACKWARDS_H
 
-#ifdef __cplusplus
-extern "C"{
-#endif
+#include "common.h"
 
-extern double freesteam_region1_T_ph(double p, double h);
-extern double freesteam_region2_T_ph(double p, double h);
-extern double freesteam_region3_T_ph(double p, double h);
-extern double freesteam_region3_v_ph(double p, double h);
-extern double freesteam_region3_psat_h(double h);
-
-#ifdef __cplusplus
-};
-#endif
+FREESTEAM_DLL double freesteam_region1_T_ph(double p, double h);
+FREESTEAM_DLL double freesteam_region2_T_ph(double p, double h);
+FREESTEAM_DLL double freesteam_region3_T_ph(double p, double h);
+FREESTEAM_DLL double freesteam_region3_v_ph(double p, double h);
+FREESTEAM_DLL double freesteam_region3_psat_h(double h);
 
 #endif
 

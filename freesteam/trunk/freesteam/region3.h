@@ -20,12 +20,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef FREESTEAM_REGION3_H
 #define FREESTEAM_REGION3_H
 
-double freesteam_region3_p_rhoT(double rho, double T);
-double freesteam_region3_u_rhoT(double rho, double T);
-double freesteam_region3_s_rhoT(double rho, double T);
-double freesteam_region3_h_rhoT(double rho, double T);
-double freesteam_region3_cp_rhoT(double rho, double T);
-double freesteam_region3_cv_rhoT(double rho, double T);
+#include "common.h"
+
+FREESTEAM_DLL double freesteam_region3_p_rhoT(double rho, double T);
+FREESTEAM_DLL double freesteam_region3_u_rhoT(double rho, double T);
+FREESTEAM_DLL double freesteam_region3_s_rhoT(double rho, double T);
+FREESTEAM_DLL double freesteam_region3_h_rhoT(double rho, double T);
+FREESTEAM_DLL double freesteam_region3_cp_rhoT(double rho, double T);
+FREESTEAM_DLL double freesteam_region3_cv_rhoT(double rho, double T);
 
 #endif
 

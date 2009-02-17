@@ -17,14 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "common.h"
-
-double freesteam_region3_p_rhoT(double rho, double T);
-double freesteam_region3_u_rhoT(double rho, double T);
-double freesteam_region3_s_rhoT(double rho, double T);
-double freesteam_region3_h_rhoT(double rho, double T);
-double freesteam_region3_cp_rhoT(double rho, double T);
-double freesteam_region3_cv_rhoT(double rho, double T);
+#define FREESTEAM_BUILDING_LIB
+#include "region3.h"
 
 const double REGION3_ARHOT_TSTAR = 647.096 /* K */;
 const double REGION3_ARHOT_RHOSTAR = 322. /* K */;

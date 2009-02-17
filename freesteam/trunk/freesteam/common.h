@@ -1,6 +1,40 @@
 #ifndef FREESTEAM_COMMON_H
 #define FREESTEAM_COMMON_H
 
+/*
+	ASCEND code in base/generic only EXPORTS symbols, no imports.
+	The FREESTEAM_DLLSPEC macro will, depending on whether we are
+	FREESTEAM_BUILDING_LIBASCEND (building libascend.so aka ascend.dll)
+	or FREESTEAM_BUILDING_INTERFACE (building for example _ascpy.dll or
+	ascendtcl.dll), act respectively to declare symbols as being
+	*exported* or *imported*.
+
+	New versions of GCC are able to make use of these declarations
+	as well.
+*/
+#ifdef __WIN32__
+# define FREESTEAM_EXPORT __declspec(dllexport)
+# define FREESTEAM_IMPORT __declspec(dllimport)
+#else
+# ifdef HAVE_GCCVISIBILITY
+#  define FREESTEAM_EXPORT __attribute__ ((visibility("default")))
+#  define FREESTEAM_IMPORT
+# else
+#  define FREESTEAM_EXPORT
+#  define FREESTEAM_IMPORT
+# endif
+#endif
+
+#ifdef FREESTEAM_BUILDING_LIB
+# define FREESTEAM_DLL extern FREESTEAM_EXPORT
+#else
+# define FREESTEAM_DLL extern FREESTEAM_IMPORT
+#endif
+
+#if !defined(FREESTEAM_DLL) || !defined(FREESTEAM_EXPORT) || !defined(FREESTEAM_IMPORT)
+# error "NO FREESTEAM_DLL DEFINED"
+#endif
+
 /* Constants used throughout IAPWS-IF97 */
 
 #define IAPWS97_PMAX 100e6 /* Pa */
@@ -34,6 +68,6 @@
 
 /* Basic math routines, if necesary... */
 
-double ipow(double x, int n);
+FREESTEAM_DLL double ipow(double x, int n);
 
 #endif /* FREESTEAM_COMMON_H */

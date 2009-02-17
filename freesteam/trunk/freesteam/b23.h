@@ -19,8 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef FREESTEAM_B23_H
 #define FREESTEAM_B23_H
 
-double freesteam_b23_p_T(double T);
-double freesteam_b23_T_p(double p);
+#include "common.h"
+
+FREESTEAM_DLL double freesteam_b23_p_T(double T);
+FREESTEAM_DLL double freesteam_b23_T_p(double p);
 
 #endif
 

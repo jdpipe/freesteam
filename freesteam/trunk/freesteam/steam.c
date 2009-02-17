@@ -1,4 +1,6 @@
+#define FREESTEAM_BUILDING_LIB
 #include "steam.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -65,7 +67,7 @@ int freesteam_fprint(FILE *f, SteamState S){
 			break;
 	}
 	return n;
-}	
+}
 
 /* 'getter' functions for SteamState */
 
@@ -75,7 +77,7 @@ int freesteam_region(SteamState S){
 
 double freesteam_T(SteamState S){
 	switch(S.region){
-		case 1:	
+		case 1:
 			return S.R1.T;
 		case 2:
 			return S.R2.T;
@@ -91,7 +93,7 @@ double freesteam_T(SteamState S){
 
 double freesteam_p(SteamState S){
 	switch(S.region){
-		case 1:	
+		case 1:
 			return S.R1.p;
 		case 2:
 			return S.R2.p;

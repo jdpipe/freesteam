@@ -20,15 +20,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef FREESTEAM_REGION2_H
 #define FREESTEAM_REGION2_H
 
+#include "common.h"
+
 #define REGION2_TMAX 1073.15
 
-double freesteam_region2_v_pT(double p, double T);
-double freesteam_region2_u_pT(double p, double T);
-double freesteam_region2_s_pT(double p, double T);
-double freesteam_region2_h_pT(double p, double T);
-double freesteam_region2_cp_pT(double p, double T);
-double freesteam_region2_cv_pT(double p, double T);
-double freesteam_region2_w_pT(double p, double T);
+FREESTEAM_DLL double freesteam_region2_v_pT(double p, double T);
+FREESTEAM_DLL double freesteam_region2_u_pT(double p, double T);
+FREESTEAM_DLL double freesteam_region2_s_pT(double p, double T);
+FREESTEAM_DLL double freesteam_region2_h_pT(double p, double T);
+FREESTEAM_DLL double freesteam_region2_cp_pT(double p, double T);
+FREESTEAM_DLL double freesteam_region2_cv_pT(double p, double T);
+FREESTEAM_DLL double freesteam_region2_w_pT(double p, double T);
 
 #endif
 

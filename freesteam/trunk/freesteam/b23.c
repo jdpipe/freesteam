@@ -17,13 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#define FREESTEAM_BUILDING_LIB
 #include "b23.h"
-#include "common.h"
 
 #include <math.h>
 
 const double B23_N[6] = { 0, 0.34805185628969E+03, -0.11671859879975E+01
-	, 0.10192970039326E-02, 0.57254459862746E+03, 0.13918839778870E+02 
+	, 0.10192970039326E-02, 0.57254459862746E+03, 0.13918839778870E+02
 };
 
 const double B23_PSTAR = 1e6;

@@ -18,6 +18,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #ifndef FREESTEAM_STEAM_H
 #define FREESTEAM_STEAM_H
+
+#include "common.h"
+
 #include <stdio.h>
 
 typedef struct SteamState_R1_struct{
@@ -43,17 +46,17 @@ typedef struct SteamState_struct{
 		SteamState_R2 R2;
 		SteamState_R3 R3;
 		SteamState_R4 R4;
-	};			
+	};
 } SteamState;
 
-int freesteam_region(SteamState S);
+FREESTEAM_DLL int freesteam_region(SteamState S);
 
-SteamState freesteam_region1_set_pT(double p, double T);
-SteamState freesteam_region2_set_pT(double p, double T);
-SteamState freesteam_region3_set_rhoT(double rho, double T);
-SteamState freesteam_region4_set_Tx(double T, double x);
+FREESTEAM_DLL SteamState freesteam_region1_set_pT(double p, double T);
+FREESTEAM_DLL SteamState freesteam_region2_set_pT(double p, double T);
+FREESTEAM_DLL SteamState freesteam_region3_set_rhoT(double rho, double T);
+FREESTEAM_DLL SteamState freesteam_region4_set_Tx(double T, double x);
 
-int freesteam_fprint(FILE *f, SteamState S);
+FREESTEAM_DLL int freesteam_fprint(FILE *f, SteamState S);
 
 #if 0
 # define FREESTEAM_DEBUG(NAME,STATE)\
@@ -63,15 +66,15 @@ int freesteam_fprint(FILE *f, SteamState S);
 # define FREESTEAM_DEBUG(NAME,STATE)
 #endif
 
-double freesteam_p(SteamState S);
-double freesteam_T(SteamState S);
-double freesteam_v(SteamState S);
-double freesteam_u(SteamState S);
-double freesteam_h(SteamState S);
-double freesteam_s(SteamState S);
-double freesteam_cp(SteamState S);
-double freesteam_cv(SteamState S);
-double freesteam_w(SteamState S);
+FREESTEAM_DLL double freesteam_p(SteamState S);
+FREESTEAM_DLL double freesteam_T(SteamState S);
+FREESTEAM_DLL double freesteam_v(SteamState S);
+FREESTEAM_DLL double freesteam_u(SteamState S);
+FREESTEAM_DLL double freesteam_h(SteamState S);
+FREESTEAM_DLL double freesteam_s(SteamState S);
+FREESTEAM_DLL double freesteam_cp(SteamState S);
+FREESTEAM_DLL double freesteam_cv(SteamState S);
+FREESTEAM_DLL double freesteam_w(SteamState S);
 
 #endif
 

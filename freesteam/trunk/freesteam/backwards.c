@@ -26,10 +26,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	the Matlab version 2.6 of Xsteam by by Magnus Holmgren.
 */
 
+#define FREESTEAM_BUILDING_LIB
 #include "backwards.h"
-#include "backwards_impl.h"
-#include "common.h"
 
+#include "backwards_impl.h"
 #include <math.h>
 
 /*------------------------------------------------------------------------------

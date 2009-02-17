@@ -20,18 +20,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef FREESTEAM_REGION4_H
 #define FREESTEAM_REGION4_H
 
-double freesteam_region4_psat_T(double T);
-double freesteam_region4_Tsat_p(double p);
+#include "common.h"
 
-double freesteam_region4_rhof_T(double T);
-double freesteam_region4_rhog_T(double T);
+FREESTEAM_DLL double freesteam_region4_psat_T(double T);
+FREESTEAM_DLL double freesteam_region4_Tsat_p(double p);
 
-double freesteam_region4_v_Tx(double T, double x);
-double freesteam_region4_u_Tx(double T, double x);
-double freesteam_region4_h_Tx(double T, double x);
-double freesteam_region4_s_Tx(double T, double x);
-double freesteam_region4_cp_Tx(double T, double x);
-double freesteam_region4_cv_Tx(double T, double x);
+FREESTEAM_DLL double freesteam_region4_rhof_T(double T);
+FREESTEAM_DLL double freesteam_region4_rhog_T(double T);
+
+FREESTEAM_DLL double freesteam_region4_v_Tx(double T, double x);
+FREESTEAM_DLL double freesteam_region4_u_Tx(double T, double x);
+FREESTEAM_DLL double freesteam_region4_h_Tx(double T, double x);
+FREESTEAM_DLL double freesteam_region4_s_Tx(double T, double x);
+FREESTEAM_DLL double freesteam_region4_cp_Tx(double T, double x);
+FREESTEAM_DLL double freesteam_region4_cv_Tx(double T, double x);
 
 #endif
 

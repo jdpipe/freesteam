@@ -72,9 +72,9 @@ void test_region1_point(double T,double p, double v,double h,double u, double s,
 
 void testregion1(void){
 	fprintf(stderr,"REGION 1 TESTS\n");
-	test_region1_point(300, 3, 0.100215168E-2, 0.115331273E3, 0.112324818E3, 0.392294792, 0.417301218E1, 0.150773921E4);
-	test_region1_point(300, 80, 0.971180894E-3, 0.184142828E3, 0.106448356E3, 0.368563852, 0.401008987E1, 0.163469054E4);
-	test_region1_point(500, 3, 0.120241800E-2, 0.975542239E3, 0.971934985E3, 0.258041912E1, 0.465580682E1, 0.124071337E4);
+	test_region1_point(300., 3., 0.100215168E-2, 0.115331273E3, 0.112324818E3, 0.392294792, 0.417301218E1, 0.150773921E4);
+	test_region1_point(300., 80., 0.971180894E-3, 0.184142828E3, 0.106448356E3, 0.368563852, 0.401008987E1, 0.163469054E4);
+	test_region1_point(500., 3., 0.120241800E-2, 0.975542239E3, 0.971934985E3, 0.258041912E1, 0.465580682E1, 0.124071337E4);
 }
 
 /*------------------------------------------------------------------------------
@@ -98,9 +98,9 @@ void test_region2_point(double T,double p, double v,double h,double u, double s,
 
 void testregion2(void){
 	fprintf(stderr,"REGION 2 TESTS\n");
-	test_region2_point(300, 0.0035, 0.394913866E2, 0.254991145E4, 0.241169160E4, 0.852238967E1, 0.191300162E1, 0.427920172E3);
-	test_region2_point(700, 0.0035, 0.923015898E2, 0.333568375E4, 0.301262819E4, 0.101749996E2, 0.208141274E1, 0.644289068E3);
-	test_region2_point(700, 30, 0.542946619E-02, 0.263149474E+4, 0.246861076E+4, 0.517540298E+1, 0.103505092E+2, 0.480386523E+3);
+	test_region2_point(300., 0.0035, 0.394913866E2, 0.254991145E4, 0.241169160E4, 0.852238967E1, 0.191300162E1, 0.427920172E3);
+	test_region2_point(700., 0.0035, 0.923015898E2, 0.333568375E4, 0.301262819E4, 0.101749996E2, 0.208141274E1, 0.644289068E3);
+	test_region2_point(700., 30., 0.542946619E-02, 0.263149474E+4, 0.246861076E+4, 0.517540298E+1, 0.103505092E+2, 0.480386523E+3);
 }
 
 /*------------------------------------------------------------------------------
@@ -124,15 +124,15 @@ void test_region3_point(double T,double rho, double p,double h,double u, double 
 void testregion3(void){
 	fprintf(stderr,"REGION 3 TESTS\n");
 
-	test_region3_point(650.00000000, 500.0000, 0.255837018E2,
+	test_region3_point(650., 500., 0.255837018E2,
 			           0.186343019E4, 0.181226279E4, 0.405427273E1,
 			           0.138935717E2, 0.502005554E3);
 
-	test_region3_point(650.0000000, 200.00000000, 0.222930643E2,
+	test_region3_point(650., 200., 0.222930643E2,
 			           0.237512401E4, 0.226365868E4, 0.485438792E1,
 			           0.446579342E2, 0.383444594E3);
 
-	test_region3_point(750, 500, 0.783095639E2, 0.225868845E4,
+	test_region3_point(750., 500., 0.783095639E2, 0.225868845E4,
 			           0.210206932E4, 0.446971906E1, 0.634165359E1,
 			           0.760696041E3);
 }
@@ -142,7 +142,7 @@ void testregion3(void){
 */
 
 void test_region4_point(double T,double p){
-	SteamState S = freesteam_region4_set_Tx(T,0);
+	SteamState S = freesteam_region4_set_Tx(T,0.);
 	double p1 = freesteam_p(S);
 	CHECK_VAL(p1,p*1e6,RELTOL);
 	double T1 = freesteam_region4_Tsat_p(p1);
@@ -151,9 +151,9 @@ void test_region4_point(double T,double p){
 
 void testregion4(void){
 	fprintf(stderr,"REGION 4 TESTS\n");
-	test_region4_point(300,	0.353658941E-2);
-	test_region4_point(500,	0.263889776E1);
-	test_region4_point(600,	0.123443146E2);
+	test_region4_point(300.,	0.353658941E-2);
+	test_region4_point(500.,	0.263889776E1);
+	test_region4_point(600.,	0.123443146E2);
 }
 
 /*------------------------------------------------------------------------------
@@ -167,9 +167,9 @@ void test_region1_ph_point(double p,double h, double T){
 
 void testregion1ph(void){
 	fprintf(stderr,"REGION 1 (P,H) TESTS\n");
-	test_region1_ph_point(3,	500,	0.391798509e3);
-	test_region1_ph_point(80,	500,	0.378108626e3);
-	test_region1_ph_point(80,	1500,	0.611041229e3);
+	test_region1_ph_point(3.,	500.,	0.391798509e3);
+	test_region1_ph_point(80.,	500.,	0.378108626e3);
+	test_region1_ph_point(80.,	1500.,	0.611041229e3);
 }
 
 #if 0
@@ -180,9 +180,9 @@ void test_region1_ps_point(double p,double s, double T){
 
 void testregion1ps(void){
 	fprintf(stderr,"REGION 1 (P,S) TESTS\n");
-	test_region1_ps_point(3,	0.5,  0.307842258e3);
-	test_region1_ps_point(80,	0.5,  0.309979785e3);
-	test_region1_ps_point(80,	3,    0.565899909E3);
+	test_region1_ps_point(3.,	0.5.,  0.307842258e3);
+	test_region1_ps_point(80.,	0.5.,  0.309979785e3);
+	test_region1_ps_point(80.,	3.,    0.565899909E3);
 }
 #endif
 
@@ -198,17 +198,17 @@ void test_region2_ph_point(double p,double h, double T){
 
 void testregion2ph(void){
 	fprintf(stderr,"REGION 2 (P,H) TESTS\n");
-	test_region2_ph_point(0.001,3000,	0.534433241e3);
-	test_region2_ph_point(3,	3000,	0.575373370e3);
-	test_region2_ph_point(3,	4000,	0.101077577e4);
+	test_region2_ph_point(0.001,3000.,	0.534433241e3);
+	test_region2_ph_point(3.,	3000.,	0.575373370e3);
+	test_region2_ph_point(3.,	4000.,	0.101077577e4);
 
-	test_region2_ph_point(5,	3500,	0.801299102e3);
-	test_region2_ph_point(5,	4000,	0.101531583e4);
-	test_region2_ph_point(25,	3500,	0.875279054e3);
+	test_region2_ph_point(5.,	3500.,	0.801299102e3);
+	test_region2_ph_point(5.,	4000.,	0.101531583e4);
+	test_region2_ph_point(25.,	3500.,	0.875279054e3);
 
-	test_region2_ph_point(40,	2700,	0.743056411e3);
-	test_region2_ph_point(60, 	2700,	0.791137067e3);
-	test_region2_ph_point(60,	3200,	0.882756860e3);
+	test_region2_ph_point(40.,	2700.,	0.743056411e3);
+	test_region2_ph_point(60., 	2700.,	0.791137067e3);
+	test_region2_ph_point(60.,	3200.,	0.882756860e3);
 }
 
 /*------------------------------------------------------------------------------
@@ -244,9 +244,9 @@ void test_region3_psath_point(double h,double p){
 
 void testregion3psath(void){
 	fprintf(stderr,"REGION 3 Psat(H) TESTS\n");
-	test_region3_psath_point(1700, 1.724175718e1);
-	test_region3_psath_point(2000, 2.193442957e1);
-	test_region3_psath_point(2400, 2.018090839e1);
+	test_region3_psath_point(1700., 1.724175718e1);
+	test_region3_psath_point(2000., 2.193442957e1);
+	test_region3_psath_point(2400., 2.018090839e1);
 }
 
 /*------------------------------------------------------------------------------
@@ -282,7 +282,7 @@ void testph(void){
 	const int np = sizeof(pp)/sizeof(double);
 	const double hh[] = {10, 20, 50, 100, 300, 400, 450, 500, 1000, 1500, 2000, 2500, 3000, 5000};
 	const int nh = sizeof(hh)/sizeof(double);
-	double *p, *h;
+	const double *p, *h;
 
 	fprintf(stderr,"FULL (P,H) TESTS\n");
 	for(p=pp; p<pp+np; ++p){
