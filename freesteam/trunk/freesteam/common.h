@@ -46,7 +46,7 @@
 
 #define IAPWS97_R 461.526 /* J/kgK */
 
-#define IAPWS97_WARN_APPROX
+//#define IAPWS97_WARN_APPROX
 
 #ifndef __GNUC__
 # define __func__ "<function>"
@@ -54,7 +54,8 @@
 
 #include <stdio.h>
 
-#define IAPWS97_APPROXIMATE \
+#ifdef IAPWS97_WARN_APPROX
+# define IAPWS97_APPROXIMATE \
 	static char _warn_approx=0; \
 	if(!_warn_approx){ \
 		_warn_approx = 1; \
@@ -63,6 +64,9 @@
 			,__func__,__FILE__,__LINE__ \
 		); \
 	}
+#else
+# define IAPWS97_APPROXIMATE
+#endif
 
 #define SQ(X) ((X)*(X))
 

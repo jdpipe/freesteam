@@ -133,6 +133,7 @@ SteamState freesteam_set_ph(double p, double h){
 	double rhog = freesteam_region4_rhog_T(Tsat);
 	double hf = freesteam_region3_h_rhoT(rhof,Tsat);
 	double hg = freesteam_region3_h_rhoT(rhog,Tsat);
+	fprintf(stderr,"T = %f, rhof = %f, rhog = %f (vf = %f, vg = %f), hf = %f, hg = %f\n", Tsat, rhof, rhog, 1./rhof, 1./rhog, hf, hg);
 	S.R4.x = (h - hf)/(hg - hf);
 	FREESTEAM_DEBUG("(high-pressure)",S);
 	return S;
