@@ -47,6 +47,26 @@ SteamState freesteam_region4_set_Tx(double T, double x){
 	return S;
 }
 
+int freesteam_fprint(FILE *f, SteamState S){
+	int n = 0;
+	n += fprintf(f, "region %d: ", S.region);
+	switch(S.region){
+		case 1:
+			n += fprintf(f, "p = %f MPa, T = %f K\n", S.R1.p/1e6, S.R1.T);
+			break;
+		case 2:
+			n += fprintf(f, "p = %f MPa, T = %f K\n", S.R2.p/1e6, S.R2.T);
+			break;
+		case 3:
+			n += fprintf(f, "rho = %f kg/m³, T = %f K\n", S.R3.rho, S.R1.T);
+			break;
+		case 4:
+			n += fprintf(f, "T = %f, x = %f\n", S.R4.T, S.R4.x);
+			break;
+	}
+	return n;
+}	
+
 /* 'getter' functions for SteamState */
 
 int freesteam_region(SteamState S){
@@ -200,3 +220,4 @@ double freesteam_w(SteamState S){
 			exit(1);
 	}
 }
+

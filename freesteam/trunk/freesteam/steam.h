@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #ifndef FREESTEAM_STEAM_H
 #define FREESTEAM_STEAM_H
+#include <stdio.h>
 
 typedef struct SteamState_R1_struct{
 	double p, T;
@@ -51,6 +52,16 @@ SteamState freesteam_region1_set_pT(double p, double T);
 SteamState freesteam_region2_set_pT(double p, double T);
 SteamState freesteam_region3_set_rhoT(double rho, double T);
 SteamState freesteam_region4_set_Tx(double T, double x);
+
+int freesteam_fprint(FILE *f, SteamState S);
+
+#if 0
+# define FREESTEAM_DEBUG(NAME,STATE)\
+	fprintf(stderr,"%s (%s:%d): %s ",__func__,__FILE__,__LINE__,NAME);\
+	freesteam_fprint(stderr,S);
+#else
+# define FREESTEAM_DEBUG(NAME,STATE)
+#endif
 
 double freesteam_p(SteamState S);
 double freesteam_T(SteamState S);

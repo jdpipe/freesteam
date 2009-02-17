@@ -41,7 +41,7 @@ int freesteam_region_ph(double p, double h){
 SteamState freesteam_set_ph(double p, double h){
 	SteamState S;
 
-	fprintf(stderr,"freesteam_set_ph(p = %f, h = %f)\n",p,h);
+	//fprintf(stderr,"freesteam_set_ph(p = %f, h = %f)\n",p,h);
 
 	/* this function is structurally the same as region_ph but we store
 	the useful intermediate calculation results. */
@@ -62,13 +62,11 @@ SteamState freesteam_set_ph(double p, double h){
 		fprintf(stderr,"WARNING: freesteam_region_ph: h < hmin\n");
 	}
 
-	fprintf(stderr,"REGION1_TMAX = %f\n",REGION1_TMAX);
-
 	double p13 = 0;
 	p13 = freesteam_region4_psat_T(REGION1_TMAX);
 
-	fprintf(stderr,"p13 = %lf MPa\n",p13/1.e6);
-	fprintf(stderr,"check: %f\n",freesteam_region4_psat_T(REGION1_TMAX));
+	//fprintf(stderr,"p13 = %lf MPa\n",p13/1.e6);
+	//fprintf(stderr,"check: %f\n",freesteam_region4_psat_T(REGION1_TMAX));
 
 	if(p <= p13){
 		double Tsat = freesteam_region4_Tsat_p(p);
@@ -77,7 +75,7 @@ SteamState freesteam_set_ph(double p, double h){
 			S.region = 1;
 			S.R1.p = p;
 			S.R1.T = freesteam_region1_T_ph(p, h);
-			fprintf(stderr,"Region 1, T = %f\n",S.R1.T);
+			FREESTEAM_DEBUG("(h < hf)",S);
 			return S;
 		}
 		double hg = freesteam_region2_h_pT(p,Tsat);
@@ -85,26 +83,24 @@ SteamState freesteam_set_ph(double p, double h){
 			S.region = 2;
 			S.R2.p = p;
 			S.R2.T = freesteam_region2_T_ph(p, h);
-			fprintf(stderr,"Region 2, T = %f\n",S.R2.T);
+			FREESTEAM_DEBUG("(h > hg)",S);
 			return S;
 		}
 		/* this is the low-pressure portion of region 4 */
 		S.region = 4;
 		S.R4.T = freesteam_region4_Tsat_p(p);
 		/* TODO iteratively improve estimate of T */
-		S.R4.x = (h - hg)/(hf - hg);
-		fprintf(stderr,"Region 4, T = %f, x = %f\n",S.R4.T, S.R4.x);
+		S.R4.x = (h - hf)/(hg - hf);
+		FREESTEAM_DEBUG("(hf < h < hg)",S);
 		return S;
 	}
 
-	fprintf(stderr,"HIGH PRESSURE REGIONS\n");
-
-	
 	double h13 = freesteam_region1_h_pT(p,REGION1_TMAX);
 	if(h <= h13){
 		S.region = 1;
 		S.R1.p = p;
 		S.R1.T = freesteam_region1_T_ph(p, h);
+		FREESTEAM_DEBUG("(h <= h(p,T1max)",S);
 		return S;
 	}
 
@@ -114,6 +110,7 @@ SteamState freesteam_set_ph(double p, double h){
 		S.region = 2;
 		S.R2.p = p;
 		S.R2.T = freesteam_region2_T_ph(p, h);
+		FREESTEAM_DEBUG("(h > h23(p,Tb23(p))",S);
 		return S;
 	}
 
@@ -122,6 +119,7 @@ SteamState freesteam_set_ph(double p, double h){
 		S.region = 3;
 		S.R3.rho = 1./freesteam_region3_v_ph(p, h);
 		S.R3.T = freesteam_region3_T_ph(p, h);
+		FREESTEAM_DEBUG("(p > psat(h))",S);
 		return S;
 	}
 
@@ -135,6 +133,7 @@ SteamState freesteam_set_ph(double p, double h){
 	double hf = freesteam_region3_h_rhoT(rhof,Tsat);
 	double hg = freesteam_region3_h_rhoT(rhog,Tsat);
 	S.R4.x = (h - hf)/(hg - hf);
+	FREESTEAM_DEBUG("(high-pressure)",S);
 	return S;
 }
 

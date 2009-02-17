@@ -2,24 +2,39 @@
 #include "steam_ph.h"
 #include "region4.h"
 #include "backwards.h"
+#include "b23.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
 int errorflag = 0;
-int verbose = 0;
+double maxrelerr = 0;
+int verbose = 1;
 
 #define CHECK_VAL(EXPR, VAL, RELTOL){ \
 	double calc = (EXPR); \
 	double error = calc - (VAL);\
-	if(fabs(error) > fabs(VAL*RELTOL)){\
+	double relerr = error / (VAL);\
+	if(fabs(relerr)>maxrelerr)maxrelerr=fabs(relerr);\
+	if(fabs(relerr) > RELTOL){\
 		fprintf(stderr,"ERROR (%s:%d): %s = %e, should be %e, error %10e %% exceeds tol %10e %%\n",\
-			__FILE__,__LINE__,#EXPR, calc, (VAL), error/VAL*100., RELTOL*100.\
+			__FILE__,__LINE__,#EXPR, calc, (VAL), relerr*100., RELTOL*100.\
 		);\
 		errorflag = 1; \
 	 }else if(verbose){ \
-		fprintf(stderr,"OK: %s = %f with %e %% error (test value = %f).\n", #EXPR, calc, error/(VAL)/100,(VAL)); \
+		fprintf(stderr,"OK: %s = %f with %e %% error (test value = %f).\n", #EXPR, calc, error/(VAL)*100,(VAL)); \
+	} \
+}
+
+#define CHECK_INT(EXPR, VAL){ \
+	int calc = (EXPR); \
+	if(calc != (VAL)){\
+		fprintf(stderr,"ERROR (%s:%d): %s = %d, should be %d!\n",\
+			__FILE__,__LINE__,#EXPR, calc, (VAL));\
+		errorflag = 1; \
+	 }else if(verbose){ \
+		fprintf(stderr,"OK: %s = %d\n", #EXPR, (VAL)); \
 	} \
 }
 
@@ -235,11 +250,55 @@ void testregion3psath(void){
 }
 
 /*------------------------------------------------------------------------------
+  REGION 2-3 BOUNDARY
+*/
+
+void testb23(){
+	double T = 623.15;
+	double p = 0.165291643e8;
+	fprintf(stderr,"REGION 2-3 BOUNDARY TESTS\n");
+	double p1 = freesteam_b23_p_T(T);
+	CHECK_VAL(p1,p,RELTOL);
+	double T1 = freesteam_b23_T_p(p);
+	CHECK_VAL(T1,T,RELTOL);
+}
+
+/*------------------------------------------------------------------------------
+  FULL (P,H) ROUTINES
+*/
+
+#define PHRELTOL 0.4e-2
+
+void test_steam_ph(double p,double h){
+	SteamState S = freesteam_set_ph(p*1e6,h*1e3);
+	fprintf(stderr,"p = %f, h = %f: region = %d\n",p, h, S.region);
+	CHECK_VAL(freesteam_p(S),p*1e6,RELTOL);
+	CHECK_VAL(freesteam_h(S),h*1e3,PHRELTOL);
+
+};
+
+void testph(void){
+	const double pp[] = {0.001, 0.01, 0.1, 1, 10/*, 20, 22, 22.064, 23, 30, 50, 100*/};
+	const int np = sizeof(pp)/sizeof(double);
+	const double hh[] = {10, 20, 50, 100, 300, 400, 450, 500, 1000, 1500, 2000, 2500, 3000, 5000};
+	const int nh = sizeof(hh)/sizeof(double);
+	double *p, *h;
+
+	fprintf(stderr,"FULL (P,H) TESTS\n");
+	for(p=pp; p<pp+np; ++p){
+		for(h=hh; h<hh+nh; ++h){
+			test_steam_ph(*p,*h);
+		}
+	}
+}
+
+/*------------------------------------------------------------------------------
   MAIN ROUTINE
 */
 
 int main(void){
 	errorflag = 0;
+#if 0
 	testregion1();
 	testregion2();
 	testregion3();
@@ -248,6 +307,9 @@ int main(void){
 	testregion2ph();
 	testregion3ph();
 	testregion3psath();
+	testb23();
+#endif
+	testph();
 
 #if 0
 	SteamState S;
@@ -260,9 +322,9 @@ int main(void){
 	fprintf(stderr,"s = %f\n",freesteam_s(S));
 #endif
 	if(!errorflag){
-		fprintf(stderr,"SUCCESS!\n");
+		fprintf(stderr,"SUCCESS! Max rel err = %e %%\n",maxrelerr*100);
 	}else{
-		fprintf(stderr,"ERRORS ENCOUNTERED. Return code %d.\n",errorflag);
+		fprintf(stderr,"ERRORS ENCOUNTERED. Max rel err = %e %% Return code %d.\n",maxrelerr*100, errorflag);
 	}
 	return errorflag;
 }
