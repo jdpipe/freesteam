@@ -74,6 +74,7 @@ double freesteam_region2_s_pT(double p, double T){
 }
 
 double freesteam_region2_h_pT(double p, double T){
+	fprintf(stderr,"%s: p = %f, T = %f\n",__func__,p,T);
 	DEFINE_PITAU(p,T);
 	return R * T * (tau * gamtau(pi,tau));
 }

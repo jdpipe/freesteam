@@ -282,7 +282,7 @@ void test_steam_ph(double p,double h){
 void testph(void){
 	const double pp[] = {/*0.001, 0.01, 0.1, 1, 10, */20/*, 22, 22.064, 23, 30, 50, 100*/};
 	const int np = sizeof(pp)/sizeof(double);
-	const double hh[] = {/*100, 300, 400, 450, 500, 1000, 1500,*/ 2000, 2500, 3000};
+	const double hh[] = {/*100, 300, 400, 450, 500, 1000, 1500, 2000,*/ 2500/*, 3000*/};
 	const int nh = sizeof(hh)/sizeof(double);
 	const double *p, *h;
 

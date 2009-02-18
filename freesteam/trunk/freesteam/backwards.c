@@ -242,15 +242,18 @@ double freesteam_region2_T_ph(double p, double h){
 	unsigned i, n;
 	double sum = 0;
 	if(p < REGION2AB_P){
+		fprintf(stderr,"region 2a\n");
 		pi1 = pi; eta1 = eta - 2.1;
 		d = REGION2A_TPH_DATA;
 		n = REGION2A_TPH_MAX;
 	}else{
 		if(REGION2_B2BC_PH(p,h) < 0.){
+			fprintf(stderr,"region 2b\n");
 			pi1 = pi - 2.; eta1 = eta - 2.6;
 			d = REGION2B_TPH_DATA;
 			n = REGION2B_TPH_MAX;
 		}else{
+			fprintf(stderr,"region 2c\n");
 			pi1 = pi + 25.; eta1 = eta - 1.8;
 			d = REGION2C_TPH_DATA;
 			n = REGION2C_TPH_MAX;
