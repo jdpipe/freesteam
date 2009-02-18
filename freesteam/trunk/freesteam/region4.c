@@ -191,7 +191,7 @@ double freesteam_region4_h_Tx(double T, double x){
 		double psat = freesteam_region4_psat_T(T);
 		hf = freesteam_region1_h_pT(psat,T);
 		hg = freesteam_region2_h_pT(psat,T);
-		fprintf(stderr,"%s: T = %f K, psat = %f MPa, hf = %f kJ/kg, hg = %f kJ/kg\n",__func__,T,psat/1e6,hf/1e3,hg);
+		//fprintf(stderr,"%s: T = %f K, psat = %f MPa, hf = %f kJ/kg, hg = %f kJ/kg\n",__func__,T,psat/1e6,hf/1e3,hg);
 	}else{
 		double rhof, rhog;
 		rhof = freesteam_region4_rhof_T(T);
