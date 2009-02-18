@@ -10,7 +10,7 @@
 
 int errorflag = 0;
 double maxrelerr = 0;
-int verbose = 1;
+int verbose = 0;
 
 #define CHECK_VAL(EXPR, VAL, RELTOL){ \
 	double calc = (EXPR); \
@@ -267,22 +267,23 @@ void testb23(){
   FULL (P,H) ROUTINES
 */
 
-#define PHRELTOL 0.01e-2
+#define PHRELTOL 0.01e-3
 
 void test_steam_ph(double p,double h){
-	fprintf(stderr,"------------\n");
-	fprintf(stderr,"p = %f, h = %f\n",p, h);
+	//fprintf(stderr,"------------\n");
+	fprintf(stderr,"p = %f MPa, h = %f kJ/kg\n",p, h);
 	SteamState S = freesteam_set_ph(p*1e6,h*1e3);
-	fprintf(stderr,"--> region = %d\n", S.region);
+	if(S.region!=2)return;
+	//fprintf(stderr,"--> region = %d\n", S.region);
 	CHECK_VAL(freesteam_p(S),p*1e6,RELTOL);
 	CHECK_VAL(freesteam_h(S),h*1e3,PHRELTOL);
 
 };
 
 void testph(void){
-	const double pp[] = {/*0.001, 0.01, 0.1, 1, 10, */20/*, 22, 22.064, 23, 30, 50, 100*/};
+	const double pp[] = {0.001, 0.01, 0.1, 1, 10, 20, 22, 22.064, 23, 30, 50, 100};
 	const int np = sizeof(pp)/sizeof(double);
-	const double hh[] = {/*100, 300, 400, 450, 500, 1000, 1500, 2000,*/ 2500/*, 3000*/};
+	const double hh[] = {100, 300, 400, 450, 500, 1000, 1500, 2000, 2500, 3000};
 	const int nh = sizeof(hh)/sizeof(double);
 	const double *p, *h;
 
@@ -300,7 +301,6 @@ void testph(void){
 
 int main(void){
 	errorflag = 0;
-#if 0
 	testregion1();
 	testregion2();
 	testregion3();
@@ -310,7 +310,6 @@ int main(void){
 	testregion3ph();
 	testregion3psath();
 	testb23();
-#endif
 	testph();
 
 #if 0
@@ -323,6 +322,7 @@ int main(void){
 	fprintf(stderr,"u = %f\n",freesteam_u(S));
 	fprintf(stderr,"s = %f\n",freesteam_s(S));
 #endif
+
 	if(!errorflag){
 		fprintf(stderr,"SUCCESS! Max rel err = %e %%\n",maxrelerr*100);
 	}else{

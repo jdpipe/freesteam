@@ -58,7 +58,7 @@ FREESTEAM_DLL SteamState freesteam_region4_set_Tx(double T, double x);
 
 FREESTEAM_DLL int freesteam_fprint(FILE *f, SteamState S);
 
-#if 1
+#if 0
 # define FREESTEAM_DEBUG(NAME,STATE)\
 	fprintf(stderr,"%s (%s:%d): %s ",__func__,__FILE__,__LINE__,NAME);\
 	freesteam_fprint(stderr,S);

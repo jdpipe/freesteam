@@ -106,14 +106,15 @@ SteamState freesteam_set_ph(double p, double h){
 	}
 
 	double T23 = freesteam_b23_T_p(p);
-	double h23 = freesteam_region1_h_pT(p,T23);
+	//fprintf(stderr,"p = %f MPa --> T23(p) = %f K (%f °C)\n",p/1e6,T23,T23-273.15);
+	double h23 = freesteam_region2_h_pT(p,T23);
 	if(h >= h23){
 		S.region = 2;
 		S.R2.p = p;
 		S.R2.T = freesteam_region2_T_ph(p, h);
-		fprintf(stderr,"T23(p) = %f, h23(p,T23) = %f\n",T23,h23);
+		//fprintf(stderr,"T23(p) = %f, h23(p,T23) = %f\n",T23,h23);
 		FREESTEAM_DEBUG("(high pressure region 2, h > h2(p,Tb23(p))",S);
-		fprintf(stderr,"--> h = %f kJ/kg\n",freesteam_region2_h_pT(S.R2.p,S.R2.T)/1e3);
+		//fprintf(stderr,"--> h = %f kJ/kg\n",freesteam_region2_h_pT(S.R2.p,S.R2.T)/1e3);
 		return S;
 	}
 

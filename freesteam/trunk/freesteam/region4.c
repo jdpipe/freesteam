@@ -41,7 +41,7 @@ const double REGION4_N[11] = { 0, 0.11670521452767E+04, -0.72421316703206E+06
 
 double freesteam_region4_psat_T(double T){
 
-	fprintf(stderr,"freesteam_region4_psat_T(T = %f)\n", T );
+	//fprintf(stderr,"freesteam_region4_psat_T(T = %f)\n", T );
 
 	double ups = T/REGION4_TSTAR + REGION4_N[9] / (T/REGION4_TSTAR - REGION4_N[10]);
 	double A = SQ(ups) + REGION4_N[1] * ups + REGION4_N[2];
