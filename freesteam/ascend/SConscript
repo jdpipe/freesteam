@@ -1,0 +1,92 @@
+import os, os.path, platform
+import subprocess
+
+Import("env")
+
+asc_env = env.Copy()
+
+without_ascend_reason = "unknown reason"
+
+#-------------------------------
+# SCons 'builder' to install file and set permissions
+
+import SCons 	 
+from SCons.Script.SConscript import SConsEnvironment 	 
+SConsEnvironment.Chmod = SCons.Action.ActionFactory(os.chmod, 	 
+	lambda dest, mode: 'Chmod("%s", 0%o)' % (dest, mode)) 	 
+  	 
+def InstallPerm(env, dest, files, perm): 	 
+	obj = env.Install(dest, files) 	 
+	for i in obj: 	 
+		env.AddPostAction(i, env.Chmod(str(i), perm))
+	return dest
+  	 
+SConsEnvironment.InstallPerm = InstallPerm 	 
+
+#----------------------------------
+# get the location of the ASCEND files
+
+srcs = Split("""
+	ascendhooks.cpp
+""")
+
+config = asc_env.get('ASCEND_CONFIG');
+ascsrc = asc_env.get('ASCEND_SRCROOT');
+
+modeldir = []
+ok_to_build = False
+if ascsrc:
+	modeldir = None
+	asc_env.Append(LIBS=['ascend'])
+	asc_env.Append(LIBPATH=[ascsrc])
+	asc_env.Append(CPPPATH=[os.path.join(ascsrc,"base/generic")])
+	ok_to_build = True
+elif config:
+
+	try:
+		modeldir = subprocess.Popen(
+			[config,'--models']
+			,stdout=subprocess.PIPE
+		).communicate()[0].strip()
+
+	except OSError:
+		without_ascend_reason = "Unable to locate 'modeldir'"
+		ok_to_build = False
+		pass
+
+	print "GOT MODELDIR = %s" % modeldir
+
+	# the following JUST WON'T WORK on Windows.
+	cmd = ["python","/c/Program\\ Files/ASCEND/ascend-config","--cppflags","--libs"]
+	print "RUNNING ParseConfig on ",cmd
+	try:
+		asc_env.ParseConfig(cmd)
+		ok_to_build = True
+	except OSError, e:
+		without_ascend_reason="'ascend-config' script failed (%s)" % str(e)
+
+	print "DONE PARSECONFIG"
+	
+else:
+	without_ascend_reason = "No ascsrc, not config"
+	
+#-------------------------------
+# Build
+
+if ok_to_build:
+	asc_env.AppendUnique(LIBS=['freesteam'])
+	asc_env.AppendUnique(LIBPATH=['..'])
+	lib = asc_env.SharedLibrary("freesteam",srcs)
+
+
+	# Install
+	if modeldir:
+		print "MODEL LIBRARY:",modeldir
+		env.InstallPerm(modeldir,lib,0644);
+		env.InstallPerm(modeldir,'testfreesteam.a4c',0644);
+
+else:
+	print "Skipping... ASCEND hooks (%s)" % without_ascend_reason
+
+
+Return('modeldir')
