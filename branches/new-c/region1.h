@@ -30,6 +30,10 @@ FREESTEAM_DLL double freesteam_region1_cp_pT(double p, double T);
 FREESTEAM_DLL double freesteam_region1_cv_pT(double p, double T);
 FREESTEAM_DLL double freesteam_region1_w_pT(double p, double T);
 
+/* used in calculations of derivatives, see derivs.c */
+double freesteam_region1_alphav_pT(double p, double T);
+double freesteam_region1_kappaT_pT(double p, double T);
+
 #define REGION1_TMAX 623.15 /* K */
 
 #endif

@@ -74,6 +74,18 @@ double freesteam_region3_cv_rhoT(double rho, double T){
 	return R * (-SQ(tau) * phitautau(del,tau));
 }
 
+double freesteam_region3_alphap_rhoT(double rho, double T){
+	DEFINE_DELTAU(rho,T);
+	return 1./T * (1. - tau*phideltau(del,tau)/phidel(del,tau));
+}
+
+double freesteam_region3_betap_rhoT(double rho, double T){
+	DEFINE_DELTAU(rho,T);
+	return rho*(2. + del * phideldel(del,tau)/phidel(del,tau));
+}
+
+/*----------------------------------------------------------------------------*/
+
 typedef struct{
 	int I, J;
 	double n;
@@ -171,5 +183,4 @@ double phideltau(double del, double tau){
 	}
 	return sum;
 }
-
 
