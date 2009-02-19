@@ -53,7 +53,7 @@ static double TP2(char x, SteamState S);
 	Calculates the derivative 
 
 	 ⎰ ∂z ⎱
-     ⎱ ∂x ⎰y
+	 ⎱ ∂x ⎰y
 
 	@param S steam state, already calculated using steam_ph, etc.
 	@param x in above equation, character one of pTvuhsgaf.
@@ -107,7 +107,7 @@ double VT3(char x, SteamState S){
 		case 'a':
 		case 'f': return -p;
 		default:
-			fprintf(stderr,"%s (%s:%d): Invalid character x = '%c'\n", __func__,__FILE__,__LINE__,x);
+			fprintf(stderr,"%s (%s:%d): Invalid variable '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
 	}
 }
@@ -124,7 +124,7 @@ double TV3(char x, SteamState S){
 		case 'a':
 		case 'f': return -s;
 		default:
-			fprintf(stderr,"%s (%s:%d): Invalid character x = '%c'\n", __func__,__FILE__,__LINE__,x);
+			fprintf(stderr,"%s (%s:%d): Invalid variable '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
 	}
 }
@@ -252,5 +252,5 @@ double TP2(char x, SteamState S){
 #undef s
 #undef alphav
 #undef kappaT
-
+p
 
