@@ -99,6 +99,17 @@ double freesteam_region2_w_pT(double p, double T){
 	);
 }
 
+double freesteam_region2_alphav_pT(double p, double T){
+	DEFINE_PITAU(p,T);
+	double pigamrpi1 = 1. + pi*gamrpi(pi,tau);
+	return 1./T * (pigamrpi1 - tau*pi*gamrpitau(pi,tau))/(pigamrpi1);
+}
+
+double freesteam_region2_kappaT_pT(double p, double T){
+	DEFINE_PITAU(p,T);
+	return 1./p * (1.-SQ(pi)*gamrpipi(pi,tau)) / (1+pi*gamrpi(pi,tau));
+}
+
 /*------------------------------------------------------------------------------
   REGION 2 IDEAL PART - GAM0(PI,TAU)
 */

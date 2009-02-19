@@ -78,6 +78,15 @@ double freesteam_region1_w_pT(double p, double T){
 	);
 }
 
+double freesteam_region1_alphav_pT(double p, double T){
+	DEFINE_PITAU(P,T);
+	return 1./T * (1. - tau*gampitau(pi,tau)/gampi(pi,tau));
+}
+
+double freesteam_region1_kappaT_pT(double p, double T){
+	DEFINE_PITAU(P,T);
+	return -1./p * pi*gampipi(pi,tau)/gampi(pi,tau);
+}
 
 //----------------------------------------------------------------
 // REGION 1 G(p,T) EQUATIONS
