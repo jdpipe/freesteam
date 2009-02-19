@@ -1,0 +1,9 @@
+CHANGELOG
+
+0.1
+First public release
+
+0.2
+Added support for solver routines to specify state in terms of (p,u), (p,s), (p,v), (T,u), (T,s), (T,v)
+Added more tests
+Added IAPWS-95 routines and comparison test for IF-97 vs 95.
