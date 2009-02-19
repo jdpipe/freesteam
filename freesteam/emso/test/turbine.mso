@@ -1,0 +1,58 @@
+#* 
+    freesteam stream integration for use in steam system calculations
+    
+    Based on steam.mso by Rafael de Pelegrini Soares,
+
+    Copyright 2002-2005 Rafael de Pelegrini Soares.
+    Modified by John Pye 2005 http://freesteam.sf.net
+    
+    This copyright statement must not be deleted and must be
+    included in any modification or adaptation of this Model.
+*#
+
+using "steamequipment";
+
+#* 
+    Ideal (isentropic) turbine
+*#
+Model Turbine_Ideal as SteamEquipment_ps # DF = 10 -5 +1 -3 = 3 
+
+    VARIABLES
+    P  as Power(Brief="Turbine Power");
+	
+    EQUATIONS # DF = -3
+    "Mass Balance"
+    In.mdot = Out.mdot;
+    
+    "Turbine power"
+    P = In.mdot * (In.h - Out.h);
+    
+    "Isentropic constraint"
+    Out.s = In.s;
+end
+
+
+#* 
+    Turbine (non-isentropic, with efficiency specified)
+*#
+Model Turbine as SteamEquipment_ph # DF = 8 + 2 - 3 = 7; need to specific input (3) plus eta,  plus 
+
+    VARIABLES
+    eta as Efficiency(Brief="Tubine efficiency"); # DF = 1
+    P as Power; # DF = 1
+	h_es as SpecificEnthalpy;
+    
+    EQUATIONS #DF = -3
+    "Mass Balance"
+    In.mdot = Out.mdot;
+    
+    "Power"
+    P = In.mdot * (In.h - Out.h);
+    
+    "Isentropic output enthalpy"
+    h_es = freesteam.h_ps(Out.p, In.s);
+    
+    "Efficiency"
+    (Out.h - In.h) = eta * (h_es - In.h);
+
+end

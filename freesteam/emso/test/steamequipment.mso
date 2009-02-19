@@ -1,0 +1,49 @@
+#* 
+    freesteam stream integration for use in steam system calculations
+    
+    Based on steam.mso by Rafael de Pelegrini Soares,
+
+    Copyright 2002-2005 Rafael de Pelegrini Soares.
+    Modified by John Pye 2005 http://freesteam.sf.net
+    
+    This copyright statement must not be deleted and must be
+    included in any modification or adaptation of this Model.
+*#
+
+using "newtypes";
+using "streams";
+
+#** 
+    Basic steam equipment item with one inlet and outlet stream.
+*#
+Model SteamEquipment # DF = 10
+
+    VARIABLES
+	in  In  as Stream;
+	out Out as Stream;   
+	
+end
+
+Model SteamEquipment_ph # DF = 8
+
+    VARIABLES
+	in  In  as Stream;
+	out Out as Stream_ph;   
+
+end
+
+Model SteamEquipment_ps # DF = 8
+
+    VARIABLES
+	in  In  as Stream;
+	out Out as Stream_ps;   
+
+end
+
+Model SteamEquipment_Ts # DF = 8
+
+    VARIABLES
+	in  In  as Stream;
+	out Out as Stream_Ts;   
+
+end

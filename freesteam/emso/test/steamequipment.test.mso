@@ -1,0 +1,35 @@
+#*
+	Test of SteamEquipment Model
+	
+	Really just tests how the SteamEquipment can be connected together with other streams
+*#
+
+using "steamequipment";
+using "newtypes";
+using "streams";
+
+FlowSheet SteamEquipment_Test # 0
+
+	PARAMETERS
+	freesteam as CalcObject(File = "emsofreesteam");
+	
+	DEVICES 
+	S1 as Stream_pT; # 5
+	S2 as Stream; # 5
+	EQ as SteamEquipment; # 5
+	
+	CONNECTIONS # -10
+	S1 to EQ.In;
+	EQ.Out to S2;
+	
+	SPECIFY # -5
+	S1.p = 10 * "bar";
+	S1.T = 300 * "K";
+	S1.mdot = 5 * "kg/s";
+
+	OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+	LASolver = "dense";
+
+end

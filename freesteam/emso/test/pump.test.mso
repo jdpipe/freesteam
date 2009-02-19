@@ -1,0 +1,41 @@
+#* 
+	freesteam stream integration for use in steam system calculations
+	
+	Based on steam.mso by Rafael de Pelegrini Soares,
+
+	Copyright 2002-2005 Rafael de Pelegrini Soares.
+	Modified by John Pye 2005 http://freesteam.sf.net
+	
+	This copyright statement must not be deleted and must be
+	included in any modification or adaptation of this Model.
+*#
+
+using "streams";
+using "turbine";
+
+FlowSheet TestPump
+	
+	PARAMETERS
+	freesteam as CalcObject(File="emsofreesteam");
+	
+	DEVICES
+	S1 as Stream_waterT;
+	PU as Pump;
+	
+	CONNECTIONS
+	S1 to PU.In;
+	
+	SPECIFY
+	"flow rate"
+	S1.mdot = 20000 * "kg/h";
+	
+	"temperature"
+	S1.T = 300 * "K";
+	
+	"efficiency"
+	PU.eta = 0.9;
+	
+	OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+end
