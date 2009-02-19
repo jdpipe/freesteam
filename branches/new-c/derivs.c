@@ -153,7 +153,7 @@ double TV3(char x, SteamState S){
 /**
 	TODO convert char to enum for better compiler checking capability
 */
-double PT1(char x, SteamState S){
+double TP1(char x, SteamState S){
 	switch(x){
 		case 'p': return 0;
 		case 'T': return 1;
@@ -170,7 +170,7 @@ double PT1(char x, SteamState S){
 	}
 }
 
-double TP1(char x, SteamState S){
+double PT1(char x, SteamState S){
 	switch(x){
 		case 'p': return 1;
 		case 'T': return 0;
@@ -211,7 +211,7 @@ double TP1(char x, SteamState S){
 /**
 	TODO convert char to enum for better compiler checking capability
 */
-double PT2(char x, SteamState S){
+double TP2(char x, SteamState S){
 	switch(x){
 		case 'p': return 0;
 		case 'T': return 1;
@@ -228,7 +228,7 @@ double PT2(char x, SteamState S){
 	}
 }
 
-double TP2(char x, SteamState S){
+double PT2(char x, SteamState S){
 	switch(x){
 		case 'p': return 1;
 		case 'T': return 0;

@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "region4.h"
 #include "backwards.h"
 #include "b23.h"
+#include "derivs.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -360,12 +361,55 @@ void testregion4props(void){
 }
 
 /*------------------------------------------------------------------------------
+  DERIVATIVE ROUTINES
+*/
+
+void test_ph_derivs(double p, double h){
+	SteamState S;
+	S = freesteam_set_ph(p,h);
+	double dp = p * 1.0001;
+	SteamState Sdp;
+	fprintf(stderr,"Region = %d:",S.region);
+	switch(S.region){
+		case 1: Sdp = freesteam_region1_set_pT(p,freesteam_region1_T_ph(p+dp,h)); break;
+		case 2: Sdp = freesteam_region2_set_pT(p,freesteam_region2_T_ph(p+dp,h)); break;
+		case 3: Sdp = freesteam_region3_set_rhoT(1./freesteam_region3_v_ph(p+dp,h),freesteam_region3_T_ph(p+dp,h)); break;
+		case 4: 
+			fprintf(stderr,"freesteam_region4_ph not implemented.\n");
+			return;
+	}
+	double dvdp_h_fdiff = (freesteam_v(Sdp) - freesteam_v(S))/dp;
+	
+	double dvdp_h = freesteam_deriv(S,'v','p','h');
+
+	CHECK_VAL(dvdp_h,dvdp_h_fdiff,1e-5);
+}
+
+void testderivs(void){
+	const double pp[] = {0.001, 0.0035, 0.01, 0.1, 1, 2, 5, 10, 20, 22, 22.06, 22.064, 22.07, 23, 25, 30, 40, 50, 80, 90, 100};
+	const int np = sizeof(pp)/sizeof(double);
+	const double hh[] = {100, 300, 400, 450, 500, 800, 1000, 1500, 2000, 2107, 2108, 2109, 2500, 2600, 2650, 2700, 2800, 2900, 3000};
+	const int nh = sizeof(hh)/sizeof(double);
+	const double *p, *h;
+	
+	fprintf(stderr,"DERIVATIVE ROUTINE TESTS\n");
+	for(p=pp; p<pp+np; ++p){
+		for(h=hh; h<hh+nh; ++h){
+			test_ph_derivs(*p*1e6,*h*1e3);
+		}
+	}
+
+	double freesteam_deriv(SteamState S, char x, char y, char z);
+}
+
+/*------------------------------------------------------------------------------
   MAIN ROUTINE
 */
 
 int main(void){
 	errorflag = 0;
 
+#if 0
 	testregion1();
 	testregion2();
 	testregion3();
@@ -394,6 +438,9 @@ int main(void){
 	// COMMENT OUT TO PERFORM THESE TESTS:
 	//testph();
 	//testregion4props();
+#endif
+
+	testderivs();
 
 #if 0
 	SteamState S;
