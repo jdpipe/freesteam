@@ -1,0 +1,10 @@
+*.d
+*.test
+test.status.fail
+test.status
+gmon.out
+*.stackdump
+*.exe
+*.asty
+*.d.????
+*.ok
