@@ -29,4 +29,5 @@ Note No. 3 Thermodynamic Derivatives from IAPWS Formulations". (2008).
 
 double freesteam_deriv(SteamState S, char x, char y, char z);
 
+#endif
 

@@ -19,6 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FREESTEAM_BUILDING_LIB
 #include "derivs.h"
 
+#include "region1.h"
+#include "region2.h"
+#include "region3.h"
+
 #include <stdlib.h>
 
 /* forward decls */
@@ -36,9 +40,6 @@ static double TP1(char x, SteamState S);
 
 static double PT2(char x, SteamState S);
 static double TP2(char x, SteamState S);
-
-static double freesteam_region3_alphap_rhoT(double rho, double T);
-static double freesteam_region3_betap_rhoT(double rho, double T);
 
 /* macros to help with propert evals */
 
@@ -69,6 +70,12 @@ double freesteam_deriv(SteamState S, char z, char x, char y){
 		case 1:	return ZXY(PT1,TP1,S);
 		case 2: return ZXY(PT2,TP2,S);
 		case 3: return ZXY(VT3,TV3,S);
+		case 4:
+		default:
+			fprintf(stderr,"ERROR: %s (%s:%d) Invalid or not-implemented region '%d'\n"
+				,__func__,__FILE__,__LINE__,S.region
+			);
+			exit(1);
 	}
 }
 
@@ -82,8 +89,8 @@ double freesteam_deriv(SteamState S, char z, char x, char y){
 #define cv freesteam_region3_cv_rhoT(rho,T)
 #define v (1./rho)
 #define s freesteam_region3_s_rhoT(rho,T)
-#define alphap freesteam_region3_alphap_pT(rho,T)
-#define betap freesteam_region3_betap_pT(rho,T)
+#define alphap freesteam_region3_alphap_rhoT(rho,T)
+#define betap freesteam_region3_betap_rhoT(rho,T)
 
 /**
 	TODO convert char to enum for better compiler checking capability
@@ -130,25 +137,6 @@ double TV3(char x, SteamState S){
 #undef s
 #undef alphap
 #undef betap
-
-
-/* FIXME copied from region3.c, not a good way of doing things */
-#define REGION3_ARHOT_TSTAR 647.096 /* K */
-#define REGION3_ARHOT_RHOSTAR 322. /* K */
-#define DEFINE_DELTAU(RHO,T) \
-	double del = rho / REGION3_ARHOT_RHOSTAR; \
-	double tau = REGION3_ARHOT_TSTAR / T
-
-double freesteam_region3_alphap_rhoT(double rho, double T){
-	DEFINE_DELTAU(RHO,T);
-	return 1./T * (1. - tau*phideltau(del,tau)/phidel(del,tau));
-}
-
-double freesteam_region3_betap_pT(double p, double T);
-	DEFINE_DELTAU(RHO,T);
-	return rho*(2. + del * phideldel(del,tau)/phidel(del,tau));
-}
-
 
 /*------------------------------------------------------------------------------
   REGION 1 DERIVATIVES
@@ -204,8 +192,8 @@ double TP1(char x, SteamState S){
 #undef cp
 #undef v
 #undef s
-#undef alphap
-#undef betap
+#undef alphav
+#undef kappaT
 
 
 /*------------------------------------------------------------------------------
@@ -262,11 +250,7 @@ double TP2(char x, SteamState S){
 #undef cp
 #undef v
 #undef s
-#undef alphap
-#undef betap
-
-
-
-
+#undef alphav
+#undef kappaT
 
 

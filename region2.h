@@ -32,5 +32,9 @@ FREESTEAM_DLL double freesteam_region2_cp_pT(double p, double T);
 FREESTEAM_DLL double freesteam_region2_cv_pT(double p, double T);
 FREESTEAM_DLL double freesteam_region2_w_pT(double p, double T);
 
+/* used in calculations of derivatives, see derivs.c */
+double freesteam_region2_alphav_pT(double p, double T);
+double freesteam_region2_kappaT_pT(double p, double T);
+
 #endif
 
