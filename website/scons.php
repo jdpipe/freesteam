@@ -47,13 +47,13 @@ Assuming you are using <a href="http://www.mingw.org">MinGW</a> with the MSYS co
 
 <h2>ASCEND bindings</h2>
 
-<p>SCons will also attempt to detect <a href="https://pse.cheme.cmu.edu/wiki/view/Ascend/WebHome">ASCEND</a> on your system. This is a mathematical modelling and process simulation tool. You'll need a very new version of ASCEND here: at least 0.9.5.95. ASCEND support is still very experimental, and the interface is likely to change still.</p>
+<p>SCons will also attempt to detect <a href="http://ascend.cheme.cmu.edu/">ASCEND</a> on your system. This is a mathematical modelling and process simulation tool. You'll need a very new version of ASCEND here: at least 0.9.5.95. ASCEND support is still very experimental, and the interface is likely to change still.</p>
 
 <p>If SCons does not correctly detect ASCEND during the build, you may find it helpful to use the <tt>ASCEND_SRCROOT</tt> option for SCons, and invoke scons with the <tt>ascend</tt> target as for example <tt>cd ~/src/freesteam && scons ASCEND_SRCROOT=~/src/ascend ascend</tt>.
 
 <h2>EMSO library</h2>
 
-<p>The SCons build process above allows for detection of <a href="http://www.vrtech.com.br/rps/emso.html">EMSO</a> on your system, and will build 'hook libraries' to allow you to use freesteam functionality in your EMSO models. Note that this use of freesteam is not currently permitted under the license arrangement. Therefore your EMSO hook library DLLs are not re-distributable and can not be used for commercial purposes. I intend to permit their use for academic use, or for commercial use with a fee, but this has not yet been finalised (neither has the EMSO license, so that's OK, right?)</p>
+<p>The SCons build process above allows for detection of <a href="http://www.enq.ufrgs.br/trac/alsoc/wiki/EMSO">EMSO</a> on your system, and will build 'hook libraries' to allow you to use freesteam functionality in your EMSO models. Note that this use of freesteam is not currently permitted under the license arrangement. Therefore your EMSO hook library DLLs are not re-distributable and can not be used for commercial purposes. I intend to permit their use for academic use, or for commercial use with a fee, but this has not yet been finalised (neither has the EMSO license, so that's OK, right?)</p>
 
 <p>There is a reasonable number of sample models in the <code>emso/test</code> directory in the source tree that should allow you to test your EMSO hook library and work out what functionality is provided. There is no documentation for this yet. Note that you may need to modify the EMSO 'dll directory' settings using the EMSO GUI.</p>
 

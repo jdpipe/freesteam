@@ -3,7 +3,7 @@
 $latestversion ="0.8.1";
 $releasedate = "15 Oct 2007";
 
-$viewsvn_base = "http://freesteam.svn.sourceforge.net/viewvc/freesteam/freesteam/trunk/";
+$viewsvn_base = "http://freesteam.svn.sourceforge.net/viewvc/freesteam/trunk/";
 
 $download_page = "http://sourceforge.net/project/platformdownload.php?group_id=120898";
 
@@ -42,11 +42,11 @@ function show_nav($this_page=NULL,$current_page=NULL){
 		,new Link("How to compile", "scons.php", "Instructions for building the software from source")
 		,new Link("Support", "https://lists.sourceforge.net/lists/listinfo/freesteam-users", "Get support for Freesteam (mailing list)")
 		,new Link("Changelog", "${viewsvn_base}CHANGELOG.txt?only_with_tag=HEAD&amp;view=markup", "via ViewVC on SourceForge")
-		,new Link("Report bugs", "http://ascendbugs.cheme.cmu.edu/", "Mantis bug tracker at cmu.edu")
+		,new Link("Report bugs", "http://ascendbugs.cheme.cmu.edu/set_project.php?project_id=3", "Mantis bug tracker at cmu.edu")
 		,new Link("Browse SVN", $viewsvn_base, "ViewVC at SourceForge")
 		,new Link("Code docs", "docs/", "Code docs generated with Doxygen")
 		,new Link("Property diagrams", "properties/")
-		,new Link("BuildBot","http://buildbot.cruncher2.dyndns.org/")
+		#,new Link("BuildBot","http://buildbot.cruncher2.dyndns.org/")
 		,new Link("SourceForge",	"http://sourceforge.net/projects/freesteam/", "Project page")
 	);
 
