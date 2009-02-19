@@ -252,5 +252,4 @@ double TP2(char x, SteamState S){
 #undef s
 #undef alphav
 #undef kappaT
-p
 
