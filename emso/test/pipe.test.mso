@@ -1,0 +1,395 @@
+
+using "pipe";
+using "streams";
+
+#*
+	Pipe base test. The pipe base model doesn't have
+	any rules about the pressure drop. So try asserting an arbitrary
+	pressure drop and see how it goes
+
+	THIS WORKS
+*#
+FlowSheet PipeBaseTest
+	
+	DEVICES
+	PI as PipeBase;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to PI.In;
+	
+	SPECIFY
+	S1.p = 1.5 * "bar";
+	S1.T = (25 + 273.15 ) * "K";
+	S1.mdot = 1 * "kg/s";
+
+	PI.Qdot = 0 *"W"; 
+	PI.Dp = - 0.1 * "bar";
+	
+	PI.D = 0.025 * "m";
+	PI.L = 15 * "m";
+	PI.eps = 46e-6 * "m";
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="all";
+end
+
+#*
+	PipeFixedF model has 'f' as a PARAMETER of the model
+	
+	THIS WORKS
+
+	but isn't much use since 'f' needs to be a VARIABLE
+*#
+FlowSheet PipeFixedFTest
+		
+	DEVICES
+	PI as PipeFixedF;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to PI.In;
+	
+	SPECIFY
+	S1.p = 1.5 * "bar";
+	S1.T = (25 + 273.15 ) * "K";
+	S1.mdot = 1 * "kg/s";
+	
+	PI.Qdot = 0 *"W"; 
+	
+	PI.D = 0.025 * "m";
+	PI.L = 15 * "m";
+	PI.eps = 46e-6 * "m";
+	
+	SET
+	PI.f = 0.02;
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="all";
+end
+
+
+FlowSheet PipeFixedFTestTransient
+		
+	DEVICES
+	PI as PipeFixedF;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to PI.In;
+	
+	SPECIFY
+	S1.p = 10 * "bar";
+	S1.T = (25 + 273.15 ) * "K";
+	S1.mdot = 1 * "kg/s";
+	
+	PI.Qdot = 0 *"W"; 
+	
+	PI.D = 0.025 * "m";
+	PI.L = 15 * "m";
+	PI.eps = 46e-6 * "m";
+	
+	SET
+	PI.f = 0.02;
+	
+	INITIAL
+	PI.Out.p = 1 * "bar";
+	PI.H = 500 * "kJ";
+	
+	OPTIONS
+	time = [0 : 0.3 :20];
+	outputLevel="all";
+	differentiation="numeric";
+end
+
+#*
+	Chain of fixed-f pipes
+*#
+FlowSheet PipeFixedFChainTest
+		
+	DEVICES
+	S1 as Stream_pT;
+	PI1 as PipeFixedF;
+	PI2 as PipeFixedF;
+	
+	CONNECTIONS
+	S1 to PI1.In;
+	PI1.Out to PI2.In;
+	
+	SPECIFY
+	S1.p = 1.5 * "bar";
+	S1.T = (25 + 273.15 ) * "K";
+	S1.mdot = 1 * "kg/s";
+	
+	PI1.Qdot = 0 *"W"; 
+	PI1.D = 0.025 * "m";
+	PI1.L = 15 * "m";
+	PI1.eps = 46e-6 * "m";
+	
+	PI2.Qdot = 0 *"W"; 
+	PI2.D = 0.025 * "m";
+	PI2.L = 15 * "m";
+	PI2.eps = 46e-6 * "m";
+	
+	SET
+	PI1.f = 0.02;
+	PI2.f = 0.02;
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="all";
+end
+
+#*
+	Test a simple pipe segment
+	Fully specify inlet state
+	and pipe details
+	Then see what comes out
+	
+	DOESN'T WORK
+*#
+FlowSheet PipeColebrookTest
+
+	DEVICES
+	PI as PipeColebrook;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to PI.In;
+	
+	SPECIFY
+	S1.p = 1.5 * "bar";
+	S1.T = (25 + 273.15) * "K";
+	S1.mdot = 1 * "kg/s";
+	
+	PI.D = 0.025 * "m";
+	PI.L = 15 * "m";
+	PI.eps = 46e-6 * "m";
+	PI.Qdot = 0 *"W";
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="all";
+end
+
+#*
+FlowSheet PipeColebrookTest2
+
+	DEVICES
+	PI as PipeColebrookSelfContained;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to PI.In;
+	
+	SPECIFY
+	S1.p = 1.5 * "bar";
+	S1.T = (25 + 273.15) * "K";
+	S1.mdot = 1 * "kg/s";
+	
+	PI.D = 0.025 * "m";
+	PI.L = 15 * "m";
+	PI.eps = 46e-6 * "m";
+	PI.Qdot = 0 *"W";
+	
+	PI.Out.p = 1 * "bar";
+	PI.Out.h = 500 * "kJ/kg";
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="all";
+end
+*#
+
+
+
+#*
+	Three pipes in a row
+
+	DOESN'T WORK
+*#
+FlowSheet PipeColebrookChainTest1
+
+	DEVICES
+	S1 as Stream_pT;
+	PI1 as PipeColebrook;
+	PI2 as PipeColebrook;
+	PI3 as PipeColebrook;
+	
+	CONNECTIONS
+	S1 to PI1.In;
+	PI1.Out to PI2.In;
+	PI2.Out to PI3.In;
+	
+	SPECIFY
+	S1.p = 1.5 * "bar";
+	S1.T = (25 + 273.15) * "K";
+	S1.mdot = 1 * "kg/s";
+	
+	PI1.D = 0.025 * "m";
+	PI1.L = 15 * "m";
+	PI1.eps = 46e-6 * "m";
+	PI1.Qdot = 0 * "W";
+	PI2.D = 0.025 * "m";
+	PI2.L = 15 * "m";
+	PI2.Qdot = 0 * "W";
+	PI2.eps = 46e-6 * "m";
+	PI3.D = 0.025 * "m";
+	PI3.L = 15 * "m";
+	PI3.eps = 46e-6 * "m";
+	PI3.Qdot = 0 * "W";
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="all";
+end
+
+
+#*
+	10 pipes in a row
+
+	DOESN'T WORK
+*#
+FlowSheet PipeColebrookChainTest2
+
+	DEVICES
+	S1 as Stream_pT;
+	PI1 as PipeColebrook;
+	PI2 as PipeColebrook;
+	PI3 as PipeColebrook;
+	PI4 as PipeColebrook;
+	PI5 as PipeColebrook;
+	PI6 as PipeColebrook;
+	PI7 as PipeColebrook;
+	PI8 as PipeColebrook;
+	PI9 as PipeColebrook;
+	PI10 as PipeColebrook;
+	
+	CONNECTIONS
+	S1 to PI1.In;
+	PI1.Out to PI2.In;
+	PI2.Out to PI3.In;
+	PI3.Out to PI4.In;
+	PI4.Out to PI5.In;
+	PI5.Out to PI6.In;
+	PI6.Out to PI7.In;
+	PI7.Out to PI8.In;
+	PI8.Out to PI9.In;
+	PI9.Out to PI10.In;
+	
+	SPECIFY
+	S1.p = 20 * "bar";
+	S1.T = (25 + 273.15) * "K";
+	S1.mdot = 1 * "kg/s";
+	
+	PI1.D = 0.025 * "m";
+	PI1.L = 15 * "m";
+	PI1.eps = 46e-6 * "m";
+	PI1.Qdot = 0 * "W";
+	PI2.D = 0.025 * "m";
+	PI2.L = 15 * "m";
+	PI2.Qdot = 0 * "W";
+	PI2.eps = 46e-6 * "m";
+	PI3.D = 0.025 * "m";
+	PI3.L = 15 * "m";
+	PI3.eps = 46e-6 * "m";
+	PI3.Qdot = 0 * "W";
+	PI4.D = 0.025 * "m";
+	PI4.L = 15 * "m";
+	PI4.eps = 46e-6 * "m";
+	PI4.Qdot = 0 * "W";
+	PI5.D = 0.025 * "m";
+	PI5.L = 15 * "m";
+	PI5.eps = 46e-6 * "m";
+	PI5.Qdot = 0 * "W";
+	PI6.D = 0.025 * "m";
+	PI6.L = 15 * "m";
+	PI6.eps = 46e-6 * "m";
+	PI6.Qdot = 0 * "W";
+	PI7.D = 0.025 * "m";
+	PI7.L = 15 * "m";
+	PI7.eps = 46e-6 * "m";
+	PI7.Qdot = 0 * "W";
+	PI8.D = 0.025 * "m";
+	PI8.L = 15 * "m";
+	PI8.eps = 46e-6 * "m";
+	PI8.Qdot = 0 * "W";
+	PI9.D = 0.025 * "m";
+	PI9.L = 15 * "m";
+	PI9.eps = 46e-6 * "m";
+	PI9.Qdot = 0 * "W";
+	PI10.D = 0.025 * "m";
+	PI10.L = 15 * "m";
+	PI10.eps = 46e-6 * "m";
+	PI10.Qdot = 0 * "W";
+	
+	OPTIONS
+	mode="steady";
+	outputLevel="all";
+end
+
+
+
+#*
+	First attempt at arrayised pipe 'chain'
+
+	DOESN'T WORK
+*#
+FlowSheet PipeColebrookArrayTest1
+	
+	PARAMETERS
+	n as Integer;
+	
+	DEVICES
+	S1 as Stream_pT;
+	segments(n) as PipeColebrook;
+	
+	CONNECTIONS
+	S1 to segments(1).In;
+	segments(1:n-1).Out to segments(2:n).In;
+	
+	SPECIFY
+	segments([1:n]).D = 0.025 * "m";
+	segments([1:n]).L = 15 * "m";
+	segments([1:n]).eps = 46e-6 * "m";
+	segments([1:n]).Qdot = 0 * "W";
+
+	S1.p = 1.5 * "bar";
+	S1.T = (25 + 273.15) * "K";
+	S1.mdot = 1 * "kg/s";
+	
+
+	SET n=3;
+end
+
+	
+
+#*
+	Chained pipe using EMSO array feature
+
+	DOESN'T WORK
+*#
+FlowSheet PipeColebrookArrayTest2
+	
+	DEVICES
+	S1 as Stream_pT;
+	PI as PipeColbrookChainUniformHeat;
+	
+	CONNECTIONS
+	S1 to PI.In;
+
+	SPECIFY
+	S1.p = 1.5 * "bar";
+	S1.T = (25 + 273.15) * "K";
+	S1.mdot = 1 * "kg/s";
+	
+	PI.D = 0.025 * "m";
+	PI.L = 15 * "m";
+	PI.eps = 46e-6 * "m";
+	PI.Qdot = 0 * "W";
+	
+	SET
+	PI.n = 5;
+end
