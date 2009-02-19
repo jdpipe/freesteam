@@ -11,14 +11,17 @@ opts.Add(BoolOption(
 # Building with MinGW
 
 import os
-tools = ['swig']
+tools = ['swig','ascend']
 if os.environ.has_key('OSTYPE') and os.environ['OSTYPE']=='msys':
 	env = Environment(ENV=os.environ
 		, toolpath = ['scons']
 		, tools = ['mingw']+tools
 	)
 else:
-	env = Environment()
+	env = Environment(
+		toolpath=['scons']
+		,tools=['default']+tools
+	)
 
 opts.Update(env)
 
@@ -38,9 +41,14 @@ lib_env = env.Clone()
 lib_env.Append(
 	LIBS = ['m']
 )
-lib_env.SharedLibrary("freesteam",srcs)
+
+lib = lib_env.SharedLibrary("freesteam",srcs)
+
+env['libfreesteam'] = lib
 
 env.SConscript(["python/SConscript"],'env')
+
+env.SConscript(["ascend/SConscript"],'env')
 
 prog_env = env.Clone()
 prog_env.Append(

@@ -17,23 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef FREESTEAM_REGION4_H
-#define FREESTEAM_REGION4_H
+#ifndef FREESTEAM_STEAMPT_H
+#define FREESTEAM_STEAMPT_H
 
 #include "common.h"
+#include "steam.h"
 
-FREESTEAM_DLL double freesteam_region4_psat_T(double T);
-FREESTEAM_DLL double freesteam_region4_Tsat_p(double p);
-
-FREESTEAM_DLL double freesteam_region4_rhof_T(double T);
-FREESTEAM_DLL double freesteam_region4_rhog_T(double T);
-
-FREESTEAM_DLL double freesteam_region4_v_Tx(double T, double x);
-FREESTEAM_DLL double freesteam_region4_u_Tx(double T, double x);
-FREESTEAM_DLL double freesteam_region4_h_Tx(double T, double x);
-FREESTEAM_DLL double freesteam_region4_s_Tx(double T, double x);
-FREESTEAM_DLL double freesteam_region4_cp_Tx(double T, double x);
-FREESTEAM_DLL double freesteam_region4_cv_Tx(double T, double x);
+FREESTEAM_DLL SteamState freesteam_set_pT(double p, double T);
 
 #endif
 

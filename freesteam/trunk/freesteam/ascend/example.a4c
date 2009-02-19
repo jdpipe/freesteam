@@ -1,4 +1,4 @@
-/*
+(*
 freesteam - IAPWS-IF97 steam tables library
 Copyright (C) 2004-2009  John Pye
 
@@ -15,25 +15,29 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+*)
 
-#ifndef FREESTEAM_REGION4_H
-#define FREESTEAM_REGION4_H
+(* This is a simple example showing how freesteam can be embedded in
+ASCEND for the calculation of steam properties in larger models. *)
 
-#include "common.h"
+IMPORT "freesteam";
+REQUIRE "atoms.a4l";
+REQUIRE "johnpye/thermo_types.a4c";
 
-FREESTEAM_DLL double freesteam_region4_psat_T(double T);
-FREESTEAM_DLL double freesteam_region4_Tsat_p(double p);
+MODEL example;
+	T IS_A temperature;
+	p IS_A pressure;
+	h IS_A specific_energy;
+	steam: freesteam_T_ph(
+		p,h : INPUT;
+		T : OUTPUT
+	);
+METHODS
+METHOD on_load;
+	FIX p, h;
+	p := 1 {bar};
+	h := 200 {kJ/kg};
+END on_load;
+END example;
 
-FREESTEAM_DLL double freesteam_region4_rhof_T(double T);
-FREESTEAM_DLL double freesteam_region4_rhog_T(double T);
-
-FREESTEAM_DLL double freesteam_region4_v_Tx(double T, double x);
-FREESTEAM_DLL double freesteam_region4_u_Tx(double T, double x);
-FREESTEAM_DLL double freesteam_region4_h_Tx(double T, double x);
-FREESTEAM_DLL double freesteam_region4_s_Tx(double T, double x);
-FREESTEAM_DLL double freesteam_region4_cp_Tx(double T, double x);
-FREESTEAM_DLL double freesteam_region4_cv_Tx(double T, double x);
-
-#endif
-
+	

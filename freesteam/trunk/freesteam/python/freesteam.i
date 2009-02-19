@@ -1,3 +1,21 @@
+/*
+freesteam - IAPWS-IF97 steam tables library
+Copyright (C) 2004-2009  John Pye
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
 %define DOCSTRING
 "The freesteam module provides the ability to calculate
 properties of water and steam from the IAPWS-IF97 steam
@@ -5,7 +23,7 @@ property correlations, published by the Internation
 Association for the Properties of Water & Steam (IAPWS).
 
 Freesteam is based on the IAPWS-IF97 releases, but is not
-official endorsed by IAPWS. Freesteam is written by
+officialy endorsed by IAPWS. Freesteam is written by
 John Pye. Freesteam is released under the GPL license. 
 You may not use it in commercially-released software."
 %enddef
@@ -17,6 +35,7 @@ You may not use it in commercially-released software."
 %rename(steam_ph) freesteam_set_ph;
 %rename(region1_pT) freesteam_region1_set_pT;
 %rename(region2_pT) freesteam_region2_set_pT;
+
 %rename(region3_rhoT) freesteam_region3_set_rhoT;
 %rename(region4_Tx) freesteam_region4_set_Tx;
 
@@ -26,6 +45,11 @@ You may not use it in commercially-released software."
 %rename(RHOCRIT) IAPWS97_RHOCRIT;
 %rename(PMAX) IAPWS97_PMAX;
 %rename(R) IAPWS97_R;
+
+%rename(psat_T) freesteam_region4_psat_T;
+%rename(Tsat_p) freesteam_region4_Tsat_p;
+%rename(rhof_T) freesteam_region4_rhof_T;
+%rename(rhog_T) freesteam_region4_rhog_T;
 
 %ignore SteamState;
 %ignore freesteam_T;
@@ -53,6 +77,12 @@ You may not use it in commercially-released software."
 #include "region4.h"
 %}
 
+/* TODO clean up region4.h so we can just include it here */
+double freesteam_region4_psat_T(double T);
+double freesteam_region4_Tsat_p(double p);
+double freesteam_region4_rhof_T(double T);
+double freesteam_region4_rhog_T(double T);
+
 %include "steam.h";
 %include "steam_ph.h";
 
@@ -74,7 +104,6 @@ You may not use it in commercially-released software."
 	const double p;
 	const double T;
 	const double h;
-	const double u;
 	const double v;
 	const double s;
 	const double cp;
