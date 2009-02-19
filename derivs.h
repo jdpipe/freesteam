@@ -16,19 +16,17 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-
-#ifndef FREESTEAM_REGION3_H
-#define FREESTEAM_REGION3_H
+#ifndef FREESTEAM_DERIVS_H
+#define FREESTEAM_DERIVS_H
 
 #include "common.h"
+#include "steam.h"
 
-FREESTEAM_DLL double freesteam_region3_p_rhoT(double rho, double T);
-FREESTEAM_DLL double freesteam_region3_u_rhoT(double rho, double T);
-FREESTEAM_DLL double freesteam_region3_s_rhoT(double rho, double T);
-FREESTEAM_DLL double freesteam_region3_h_rhoT(double rho, double T);
-FREESTEAM_DLL double freesteam_region3_cp_rhoT(double rho, double T);
-FREESTEAM_DLL double freesteam_region3_cv_rhoT(double rho, double T);
+/*
+These functions are drawn from the IAPWS Guidelines document "Revised Advisory
+Note No. 3 Thermodynamic Derivatives from IAPWS Formulations". (2008).
+*/
 
-#endif
+double freesteam_deriv(SteamState S, char x, char y, char z);
 
 
