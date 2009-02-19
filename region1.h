@@ -1,7 +1,6 @@
 /*
-
 freesteam - IAPWS-IF97 steam tables library
-Copyright (C) 2004-2005  John Pye
+Copyright (C) 2004-2009  John Pye
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,51 +15,22 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
 */
 
-#ifndef REGION1_H
-#define REGION1_H
+#ifndef FREESTEAM_REGION1_H
+#define FREESTEAM_REGION1_H
 
-#include "state.h"
-#include "region4.h"
-#include "units.h"
+#include "common.h"
 
-class Region1:public SteamState {
+FREESTEAM_DLL double freesteam_region1_u_pT(double p, double T);
+FREESTEAM_DLL double freesteam_region1_v_pT(double p, double T);
+FREESTEAM_DLL double freesteam_region1_s_pT(double p, double T);
+FREESTEAM_DLL double freesteam_region1_h_pT(double p, double T);
+FREESTEAM_DLL double freesteam_region1_cp_pT(double p, double T);
+FREESTEAM_DLL double freesteam_region1_cv_pT(double p, double T);
+FREESTEAM_DLL double freesteam_region1_w_pT(double p, double T);
 
-	protected:
-		friend class SteamCalculator;
-		friend class Region4;
-
-		virtual SpecificVolume specvol(const SteamCalculator &c) const;
-		virtual SpecificEnergy specienergy(const SteamCalculator &c) const;
-		virtual SpecificEntropy specentropy(const SteamCalculator &c) const;
-		virtual SpecificEnergy specenthalpy(const SteamCalculator &c) const;
-		virtual SpecHeatCap speccp(const SteamCalculator &c) const;
-		virtual SpecHeatCap speccv(const SteamCalculator &c) const;
-
-		virtual Temperature temp(const SteamCalculator &c) const;
-		virtual Pressure pres(const SteamCalculator &c) const;
-		virtual Density dens(const SteamCalculator &c) const;
-
-		static SteamState *Instance();
-		int getRegion() const;
-		virtual void set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x);
-
-	private:
-		Region1();
-		static Region1 *_instance;
-
-		Num gam(const SteamCalculator &c) const;
-		Num gampi(const SteamCalculator &c) const;
-		Num gampipi(const SteamCalculator &c) const;
-		Num gamtau(const SteamCalculator &c) const;
-		Num gamtautau(const SteamCalculator &c) const;
-		Num gampitau(const SteamCalculator &c) const;
-
-		Num pitau_iaps85(const SteamCalculator &c) const;
-		Num delpi_iaps85(const SteamCalculator &c) const;
-
-};
+#define REGION1_TMAX 623.15 /* K */
 
 #endif
+

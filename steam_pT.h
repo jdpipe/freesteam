@@ -17,20 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef FREESTEAM_REGION2_H
-#define FREESTEAM_REGION2_H
+#ifndef FREESTEAM_STEAMPT_H
+#define FREESTEAM_STEAMPT_H
 
 #include "common.h"
+#include "steam.h"
 
-#define REGION2_TMAX 1073.15
-
-FREESTEAM_DLL double freesteam_region2_v_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_u_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_s_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_h_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_cp_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_cv_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_w_pT(double p, double T);
+FREESTEAM_DLL SteamState freesteam_set_pT(double p, double T);
 
 #endif
 

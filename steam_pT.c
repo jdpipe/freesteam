@@ -16,21 +16,36 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+#define FREESTEAM_BUILDING_LIB
+#include "steam_pT.h"
+#include "region1.h"
+#include <stdlib.h>
 
-#ifndef FREESTEAM_REGION2_H
-#define FREESTEAM_REGION2_H
-
-#include "common.h"
-
-#define REGION2_TMAX 1073.15
-
-FREESTEAM_DLL double freesteam_region2_v_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_u_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_s_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_h_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_cp_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_cv_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_w_pT(double p, double T);
-
-#endif
+/**
+	This function will never return region 4, because it's not possible
+	to sit on the knife of saturation. If you need to set saturated states,
+	you should use another function such as freesteam_region1_set_Tx.
+*/
+SteamState freesteam_set_pT(double p, double T){
+	SteamState S;
+	if(T < REGION1_TMAX){
+		if(p > freesteam_region4_psat_T(T)){
+			S.region = 1;
+			S.R1.T = T;
+			S.R1.p = p;
+			return S;
+		}else{
+			S.region = 2;
+			S.R2.T = T;
+			S.R2.p = p;
+			return S;
+		}
+	}else{
+		S.region = 3;
+		S.R3.T = T;
+		/* FIXME need to iterate to find rho */
+		fprintf(stderr,"Not implemented...\n");
+		abort();
+	}
+}		
 

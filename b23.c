@@ -1,6 +1,6 @@
 /*
 freesteam - IAPWS-IF97 steam tables library
-Copyright (C) 2004-2009  John Pye
+Copyright (C) 2004-2005  John Pye
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,20 +17,25 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef FREESTEAM_REGION2_H
-#define FREESTEAM_REGION2_H
+#define FREESTEAM_BUILDING_LIB
+#include "b23.h"
 
-#include "common.h"
+#include <math.h>
 
-#define REGION2_TMAX 1073.15
+const double B23_N[6] = { 0, 0.34805185628969E+03, -0.11671859879975E+01
+	, 0.10192970039326E-02, 0.57254459862746E+03, 0.13918839778870E+02
+};
 
-FREESTEAM_DLL double freesteam_region2_v_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_u_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_s_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_h_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_cp_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_cv_pT(double p, double T);
-FREESTEAM_DLL double freesteam_region2_w_pT(double p, double T);
+const double B23_PSTAR = 1e6;
 
-#endif
+double freesteam_b23_p_T(double T){
+#define theta T
+	return (B23_N[1] + B23_N[2] * theta + B23_N[3] * SQ(theta)) * B23_PSTAR;
+#undef theta
+}
+
+double freesteam_b23_T_p(double p){
+	double pi = p / B23_PSTAR;
+	return B23_N[4] + sqrt((pi - B23_N[5])/B23_N[3]) /* * 1{K} */;
+}
 

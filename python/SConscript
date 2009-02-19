@@ -1,98 +1,37 @@
+#!/usr/bin/env python
 Import('env')
 
 python_env = env.Clone()
 
-import distutils.sysconfig, platform, os, sys
+python_env.Append(
+	CPPPATH=['#']
+	,LIBPATH=['#']
+)
 
-python_env.Append(CPPPATH=['#'])
-python_env.Append(LIBPATH=['#'])
+import distutils.sysconfig, platform, os, sys
 
 #------------------------------------------------------
 # SWIG scanner
-
-if python_env.get('HAVE_SWIG'):
-	import SCons.Script
-
-	SWIGScanner = SCons.Scanner.ClassicCPP(
-		"SWIGScan"
-		, ".i"
-		, "CPPPATH"
-		, '^[ \t]*[%,#][ \t]*(?:include|import)[ \t]*(<|")([^>"]+)(>|")'
-	)
-
-	python_env.Append(SCANNERS=[SWIGScanner])
-
-#------------------------------------------------------
-# PYTHON INTERFACE
-#
-# try 'scons install' then 'ipython' with 'from freesteam import *'
 
 if platform.system()=="Windows":
 	python_lib = "python%s%s"%(sys.version_info[0],sys.version_info[1])
 else:
 	python_lib = "python%s.%s"%(sys.version_info[0],sys.version_info[1])
 
-if python_env.get('HAVE_SWIG') and python_env.get('HAVE_PYTHON'):
+python_env.Append(
+	CPPPATH = [distutils.sysconfig.get_python_inc()]
+	,LIBPATH = [distutils.sysconfig.PREFIX+"/libs"]
+	, LIBS = ['freesteam',python_lib]
+)
 
-	python_env.Append(CPPPATH = [distutils.sysconfig.get_python_inc()])
-	python_env.Append(LIBPATH = [distutils.sysconfig.PREFIX+"/libs"])
-	
-	swigobj = python_env.SharedObject('freesteam.i'
-		, SWIGFLAGS=['-python','-c++']
-	)
+swigobj = python_env.SharedObject('freesteam.i'
+	, SWIGFLAGS=['-python']
+)
 
-	#python_env.SideEffect(['freesteam.py','freesteam_wrap.h'],'freesteam$SWIGCXXFILESUFFIX')
-	#python_env.Depends('freesteam.py',['freesteam.i'])
+if platform.system()=="Windows":
+	python_env['SHLIBSUFFIX']=".pyd"
 
-	#python_env.Clean(swigobj,['freesteam_wrap$SWIGCXXFILESUFFIX','freesteam_wrap.h','freesteam.py'])
+swiglib = python_env.SharedLibrary("freesteam",swigobj
+	, SHLIBPREFIX = '_'
+)
 
-	_libs = ['freesteam',python_lib]
-
-	if platform.system()=="Windows":
-		python_env['SHLIBSUFFIX']=".pyd"
-
-	swiglib = python_env.SharedLibrary("freesteam",swigobj
-		, LIBS = _libs
-		, SHLIBPREFIX = '_'
-	)
-
-	env.Alias('python',swiglib) 
-
-#------------------------------------------------------
-# Recipe for 'CHMOD' ACTION 	 
-  	 
-import SCons 	 
-from SCons.Script.SConscript import SConsEnvironment 	 
-SConsEnvironment.Chmod = SCons.Action.ActionFactory(os.chmod, 	 
-	lambda dest, mode: 'Chmod("%s", 0%o)' % (dest, mode)) 	 
-  	 
-def InstallPerm(env, dest, files, perm): 	 
-	obj = env.Install(dest, files) 	 
-	for i in obj: 	 
-		env.AddPostAction(i, env.Chmod(str(i), perm))
-	return dest
-
-def InstallPermAs(env, dest, filen, perm): 	 
-	obj = env.InstallAs(dest, filen) 	 
-	for i in obj: 	 
-		env.AddPostAction(i, env.Chmod(str(i), perm))
-	return dest
-  	 
-SConsEnvironment.InstallPerm = InstallPerm
-
-# define wrappers 	 
-SConsEnvironment.InstallProgram = lambda env, dest, files: InstallPerm(env, dest, files, 0755) 	 
-SConsEnvironment.InstallHeader = lambda env, dest, files: InstallPerm(env, dest, files, 0644) 	 
-SConsEnvironment.InstallLibrary = lambda env, dest, files: InstallPerm(env, dest, files, 0644) 	 
-SConsEnvironment.InstallLibraryAs = lambda env, dest, files: InstallPermAs(env, dest, files, 0644) 	 
-
-#-------------------------------------------------------
-# INSTALLATION
-
-libdir = "$INSTALL_ROOT"+distutils.sysconfig.get_python_lib(plat_specific=True)
-
-install_python = [ env.InstallLibrary(libdir,['_freesteam$SHLIBSUFFIX']) ]
-install_python += [ env.InstallHeader(libdir,['freesteam.py']) ]
-install_python += [ env.InstallHeader("$INSTALL_ROOT$INCDIR/freesteam",['freesteam.i']) ]
-
-Return('install_python')
