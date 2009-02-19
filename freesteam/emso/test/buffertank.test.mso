@@ -1,0 +1,142 @@
+#*
+	Tests for simple buffer tank model.
+*#
+
+using "buffertank";
+using "exitloss";
+
+#*
+	A single buffer tank with 25C water flowing in.
+	Initial state of the water in the tank is saturated.
+*#
+FlowSheet BufferTankTest
+	
+	DEVICES
+	TA as BufferTank;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to TA.In;
+	
+	SET
+	TA.V = 1 * "m^3";
+	
+	SPECIFY
+	S1.p = 1 * "bar";
+	S1.T = (25+273.15) * "K";
+	S1.mdot = 10 * "kg/s";
+	
+	INITIAL
+	TA.v = 1/997 * "m^3/kg";
+	TA.u = 600 * "kJ/kg";
+	
+	OPTIONS
+	differentiation="numeric";
+	outputLevel="high";
+	time = [0 : 2 : 500 ] * "s";
+	
+end
+
+#*
+	A cascade of 4 buffer tanks, each 1 m3.
+	Inlet to first tank is 10 kg/s; this flow passes through all tanks according to
+	fixed volume constraint.
+*#
+FlowSheet BufferTankTest2
+	
+	PARAMETERS
+	u_init as SpecificInternalEnergy;
+	
+	DEVICES
+	TA1 as BufferTank;
+	TA2 as BufferTank;
+	TA3 as BufferTank;
+	TA4 as BufferTank;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to TA1.In;
+	TA1.Out to TA2.In;
+	TA2.Out to TA3.In;
+	TA3.Out to TA4.In;
+	
+	SET
+	u_init = 104.8 * "kJ/kg";
+	
+	TA1.V = 1 * "m^3";
+	TA2.V = 1 * "m^3";
+	TA3.V = 1 * "m^3";
+	TA4.V = 1 * "m^3";
+	
+	SPECIFY
+	S1.p = 1 * "bar";
+	S1.T = (75+273.15) * "K";
+	S1.mdot = 10 * "kg/s";
+	
+	INITIAL
+	TA1.m = 997 *"kg";
+	TA2.m = 997 *"kg";
+	TA3.m = 997 *"kg";
+	TA4.m = 997 *"kg";
+
+	TA1.u = u_init;
+	TA2.u = u_init;
+	TA3.u = u_init;
+	TA4.u = u_init;
+	
+	OPTIONS
+	differentiation="numeric";
+	outputLevel="low";
+	time = [0 : 0.1 : 500] * "s";
+	
+end
+
+
+#*
+	A cascade of n buffer tanks, each 1 m3.
+	Inlet to first tank is 10 kg/s; this flow passes through all tanks according to
+	fixed volume constraint.
+*#
+FlowSheet BufferTankTest3
+	
+	PARAMETERS
+	u_init as SpecificInternalEnergy;
+	n as Integer(Lower=1);
+	V_total as Volume;
+	rho_init as Density;
+	
+	DEVICES
+	TA(n) as BufferTank;
+	S1 as Stream_pT;
+	
+	CONNECTIONS
+	S1 to TA(1).In;
+	TA([1:n-1]).Out to TA([2:n]).In;
+	
+	SET
+	n = 10;
+	V_total = 10 * "m^3";
+	rho_init = 997 *"kg/m^3";
+	
+	u_init = 104.8 * "kJ/kg";
+	
+	TA.V = V_total / n;
+	
+	SPECIFY
+	S1.p = 1 * "bar";
+	S1.T = (75+273.15) * "K";
+	S1.mdot = 10 * "kg/s";
+	
+	INITIAL
+	INITIAL
+	for i in [1:n]
+		TA(i).m = rho_init * TA(i).V / n;
+		TA(i).u = u_init;
+	end
+	
+	OPTIONS
+	differentiation="numeric";
+	outputLevel="low";
+	time = [0 : 0.1 : 500] * "s";
+	
+end
