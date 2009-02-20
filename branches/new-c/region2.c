@@ -103,14 +103,14 @@ double freesteam_region2_alphav_pT(double p, double T){
 	DEFINE_PITAU(p,T);
 	double pigamrpi = pi*gamrpi(pi,tau);
 	double alphav = 1./T * (1. + pigamrpi - tau*pi*gamrpitau(pi,tau))/(1. + pigamrpi);
-	fprintf(stderr,"α_v = %g\n",alphav);
+	/*fprintf(stderr,"α_v = %g\n",alphav);*/
 	return alphav;
 }
 
 double freesteam_region2_kappaT_pT(double p, double T){
 	DEFINE_PITAU(p,T);
 	double kappaT = 1./p * (1.-SQ(pi)*gamrpipi(pi,tau)) / (1.+pi*gamrpi(pi,tau));
-	fprintf(stderr,"κ_T = %g\n",kappaT);
+	/*fprintf(stderr,"κ_T = %g\n",kappaT);*/
 	return kappaT;
 }
 

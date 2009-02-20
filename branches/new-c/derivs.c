@@ -67,9 +67,8 @@ static PartialDerivFn VT3, TV3, PT1, TP1, PT2, TP2;
 double freesteam_deriv(SteamState S, char z, char x, char y){
 	PartialDerivFn *AB, *BA;
 
-	fprintf(stderr,"CALCULATING (∂%c/∂%c)%c... ",z,x,y);
-
-	freesteam_fprint(stderr,S);
+	//fprintf(stderr,"CALCULATING (∂%c/∂%c)%c... ",z,x,y);
+	//freesteam_fprint(stderr,S);
 	switch(S.region){
 		case 1:	AB = PT1; BA = TP1; break;
 		case 2: AB = PT2, BA = TP2; break;
@@ -87,7 +86,9 @@ double freesteam_deriv(SteamState S, char z, char x, char y){
 	double XBA = (*BA)(x,S);
 	double YAB = (*AB)(y,S);
 	double YBA = (*BA)(y,S);
-	return ((ZAB*YBA-ZBA*YAB)/(XAB*YBA-XBA*YAB));
+	double deriv = ((ZAB*YBA-ZBA*YAB)/(XAB*YBA-XBA*YAB));
+	//fprintf(stderr,"Calculated (∂%c/∂%c)%c = %g\n",z,x,y,deriv);
+	return deriv;
 }
 
 /*------------------------------------------------------------------------------
@@ -190,9 +191,11 @@ double TP1(char x, SteamState S){
 		default:
 			fprintf(stderr,"%s (%s:%d): Invalid character x = '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
-	fprintf(stderr,"(∂%c/∂T)p = %g\n",x,res);
-	return res;
 	}
+#if 0
+	fprintf(stderr,"(∂%c/∂T)p = %g\n",x,res);
+#endif
+	return res;
 }
 
 double PT1(char x, SteamState S){
@@ -211,7 +214,9 @@ double PT1(char x, SteamState S){
 			fprintf(stderr,"%s (%s:%d): Invalid character x = '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
 	}
+#if 0
 	fprintf(stderr,"(∂%c/∂p)T = %g\n",x,res);
+#endif
 	return res;
 }
 
@@ -255,10 +260,12 @@ double TP2(char x, SteamState S){
 			fprintf(stderr,"%s (%s:%d): Invalid character x = '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
 	}
+#if 0
 	fprintf(stderr,"(∂%c/∂T)p = %g\n",x,res);
 	if(x=='v'){
 		fprintf(stderr,"(∂ρ/∂T)p = %g\n",-1/SQ(v)*res);
 	}
+#endif
 	return res;
 }
 
@@ -278,10 +285,12 @@ double PT2(char x, SteamState S){
 			fprintf(stderr,"%s (%s:%d): Invalid character x = '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
 	}
+#if 0
 	fprintf(stderr,"(∂%c/∂p)T = %g\n",x,res);
 	if(x=='v'){
 		fprintf(stderr,"(∂ρ/∂p)T = %g\n",-1/SQ(v)*res);
 	}
+#endif
 	return res;
 }
 
