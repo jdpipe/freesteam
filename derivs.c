@@ -32,18 +32,17 @@ The following functions basically look up the contents of Table 1 and Table 2
 from the IAPWS Guideline.
 */
 
-static double VT3(char x, SteamState S);
-static double TV3(char x, SteamState S);
+typedef double PartialDerivFn(char,SteamState);
 
-static double PT1(char x, SteamState S);
-static double TP1(char x, SteamState S);
+/*
+The following are the functions
 
-static double PT2(char x, SteamState S);
-static double TP2(char x, SteamState S);
+	 ⎰ ∂x ⎱   ___\   VTn
+	 ⎱ ∂v ⎰T     /
 
-/* macros to help with propert evals */
-
-#define ZXY(VT,TV,S) ((VT(z,S)*TV(y,S)-TV(z,S)*VT(y,S))/(VT(x,S)*TV(y,S)-TV(x,S)*VT(y,S)))
+etc., for each of the different regions (n).
+*/
+static PartialDerivFn VT3, TV3, PT1, TP1, PT2, TP2;
 
 /*------------------------------------------------------------------------------
   EXPORTED FUNCTION(S)
@@ -56,7 +55,7 @@ static double TP2(char x, SteamState S);
 	 ⎱ ∂x ⎰y
 
 	@param S steam state, already calculated using steam_ph, etc.
-	@param x in above equation, character one of pTvuhsgaf.
+	@param x in above equation, character one of 'pTvuhsgaf'.
 	@param y in above equation, character one of pTvuhsgaf.
 	@param z in above equation, character one of pTvuhsgaf.
 	Note that Helmholtz free energy can be signified by either 'a' or 'f'.
@@ -66,10 +65,15 @@ static double TP2(char x, SteamState S);
 	@return the numerical value of the derivative (∂z/∂x)y.
 */
 double freesteam_deriv(SteamState S, char z, char x, char y){
+	PartialDerivFn *AB, *BA;
+
+	fprintf(stderr,"CALCULATING (∂%c/∂%c)%c... ",z,x,y);
+
+	freesteam_fprint(stderr,S);
 	switch(S.region){
-		case 1:	return ZXY(PT1,TP1,S);
-		case 2: return ZXY(PT2,TP2,S);
-		case 3: return ZXY(VT3,TV3,S);
+		case 1:	AB = PT1; BA = TP1; break;
+		case 2: AB = PT2, BA = TP2; break;
+		case 3: AB = VT3; BA = TV3; break;
 		case 4:
 		default:
 			fprintf(stderr,"ERROR: %s (%s:%d) Invalid or not-implemented region '%d'\n"
@@ -77,12 +81,24 @@ double freesteam_deriv(SteamState S, char z, char x, char y){
 			);
 			exit(1);
 	}
+	double ZAB = (*AB)(z,S);
+	double ZBA = (*BA)(z,S);
+	double XAB = (*AB)(x,S);
+	double XBA = (*BA)(x,S);
+	double YAB = (*AB)(y,S);
+	double YBA = (*BA)(y,S);
+	return ((ZAB*YBA-ZBA*YAB)/(XAB*YBA-XBA*YAB));
 }
 
 /*------------------------------------------------------------------------------
   REGION 3 DERIVATIVES
 */
 
+/*
+FIXME the following macros avoid calculating unneeded results eg within VT3 
+but at the level of freesteam_deriv, there is wasted effort, because eg 'p' 
+will be calculated several times in different calls to VT3.
+*/
 #define rho S.R3.rho
 #define T S.R3.T
 #define p freesteam_region3_p_rhoT(rho,T)
@@ -96,37 +112,43 @@ double freesteam_deriv(SteamState S, char z, char x, char y){
 	TODO convert char to enum for better compiler checking capability
 */
 double VT3(char x, SteamState S){
+	double res;
 	switch(x){
-		case 'p': return -p*betap;
-		case 'T': return 0;
-		case 'v': return 1;
-		case 'u': return p*(T*alphap-1.);
-		case 'h': return p*(T*alphap-v*betap);
-		case 's': return p*alphap;
-		case 'g': return -p*v*betap;
+		case 'p': res = -p*betap; break;
+		case 'T': res = 0; break;
+		case 'v': res = 1; break;
+		case 'u': res = p*(T*alphap-1.); break;
+		case 'h': res = p*(T*alphap-v*betap); break;
+		case 's': res = p*alphap; break;
+		case 'g': res = -p*v*betap; break;
 		case 'a':
-		case 'f': return -p;
+		case 'f': res = -p; break;
 		default:
 			fprintf(stderr,"%s (%s:%d): Invalid variable '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
 	}
+	fprintf(stderr,"(∂%c/∂v)T = %f\n",x,res);
+	return res;
 }
 
 double TV3(char x, SteamState S){
+	double res;
 	switch(x){
-		case 'p': return p*alphap;
-		case 'T': return 1;
-		case 'v': return 0;
-		case 'u': return cv;
-		case 'h': return cv + p*v*alphap;
-		case 's': return cv/alphap;
-		case 'g': return p*v*alphap - s;
+		case 'p': res = p*alphap; break;
+		case 'T': res = 1; break;
+		case 'v': res = 0; break;
+		case 'u': res = cv; break;
+		case 'h': res = cv + p*v*alphap; break;
+		case 's': res = cv/alphap; break;
+		case 'g': res = p*v*alphap - s; break;
 		case 'a':
-		case 'f': return -s;
+		case 'f': res = -s; break;
 		default:
 			fprintf(stderr,"%s (%s:%d): Invalid variable '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
 	}
+	fprintf(stderr,"(∂%c/∂T)v = %f\n",x,res);
+	return res;
 }
 
 #undef rho
@@ -154,37 +176,43 @@ double TV3(char x, SteamState S){
 	TODO convert char to enum for better compiler checking capability
 */
 double TP1(char x, SteamState S){
+	double res;
 	switch(x){
-		case 'p': return 0;
-		case 'T': return 1;
-		case 'v': return v*alphav;
-		case 'u': return cp-p*v*alphav;
-		case 'h': return cp;
-		case 's': return cp/T;
-		case 'g': return -s;
+		case 'p': res = 0; break;
+		case 'T': res = 1; break;
+		case 'v': res = v*alphav; break;
+		case 'u': res = cp-p*v*alphav; break;
+		case 'h': res = cp; break;
+		case 's': res = cp/T; break;
+		case 'g': res = -s; break;
 		case 'a':
-		case 'f': return -p*v*alphav-s;
+		case 'f': res = -p*v*alphav-s; break;
 		default:
 			fprintf(stderr,"%s (%s:%d): Invalid character x = '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
+	fprintf(stderr,"(∂%c/∂T)p = %g\n",x,res);
+	return res;
 	}
 }
 
 double PT1(char x, SteamState S){
+	double res;
 	switch(x){
-		case 'p': return 1;
-		case 'T': return 0;
-		case 'v': return -v*kappaT;
-		case 'u': return v*(p*kappaT-T*alphav);
-		case 'h': return v*(1.-T*alphav);
-		case 's': return -v*alphav;
-		case 'g': return v;
+		case 'p': res = 1; break;
+		case 'T': res = 0; break;
+		case 'v': res = -v*kappaT; break;
+		case 'u': res = v*(p*kappaT-T*alphav); break;
+		case 'h': res = v*(1.-T*alphav); break;
+		case 's': res = -v*alphav; break;
+		case 'g': res = v; break;
 		case 'a':
-		case 'f': return p*v*kappaT;
+		case 'f': res = p*v*kappaT; break;
 		default:
 			fprintf(stderr,"%s (%s:%d): Invalid character x = '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
 	}
+	fprintf(stderr,"(∂%c/∂p)T = %g\n",x,res);
+	return res;
 }
 
 #undef p
@@ -212,37 +240,43 @@ double PT1(char x, SteamState S){
 	TODO convert char to enum for better compiler checking capability
 */
 double TP2(char x, SteamState S){
+	double res;
 	switch(x){
-		case 'p': return 0;
-		case 'T': return 1;
-		case 'v': return v*alphav;
-		case 'u': return cp-p*v*alphav;
-		case 'h': return cp;
-		case 's': return cp/T;
-		case 'g': return -s;
+		case 'p': res = 0; break;
+		case 'T': res = 1; break;
+		case 'v': res = v*alphav; break;
+		case 'u': res = cp-p*v*alphav; break;
+		case 'h': res = cp; break;
+		case 's': res = cp/T; break;
+		case 'g': res = -s; break;
 		case 'a':
-		case 'f': return -p*v*alphav-s;
+		case 'f': res = -p*v*alphav-s; break;
 		default:
 			fprintf(stderr,"%s (%s:%d): Invalid character x = '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
 	}
+	fprintf(stderr,"(∂%c/∂T)p = %g\n",x,res);
+	return res;
 }
 
 double PT2(char x, SteamState S){
+	double res;
 	switch(x){
-		case 'p': return 1;
-		case 'T': return 0;
-		case 'v': return -v*kappaT;
-		case 'u': return v*(p*kappaT-T*alphav);
-		case 'h': return v*(1.-T*alphav);
-		case 's': return -v*alphav;
-		case 'g': return v;
+		case 'p': res = 1; break;
+		case 'T': res = 0; break;
+		case 'v': res = -v*kappaT; break;
+		case 'u': res = v*(p*kappaT-T*alphav); break;
+		case 'h': res = v*(1.-T*alphav); break;
+		case 's': res = -v*alphav; break;
+		case 'g': res = v; break;
 		case 'a':
-		case 'f': return p*v*kappaT;
+		case 'f': res = p*v*kappaT; break;
 		default:
 			fprintf(stderr,"%s (%s:%d): Invalid character x = '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
 	}
+	fprintf(stderr,"(∂%c/∂p)T = %g\n",x,res);
+	return res;
 }
 
 #undef p
