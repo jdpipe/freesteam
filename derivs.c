@@ -256,6 +256,9 @@ double TP2(char x, SteamState S){
 			exit(1);
 	}
 	fprintf(stderr,"(∂%c/∂T)p = %g\n",x,res);
+	if(x=='v'){
+		fprintf(stderr,"(∂ρ/∂T)p = %g\n",-1/SQ(v)*res);
+	}
 	return res;
 }
 
@@ -276,6 +279,9 @@ double PT2(char x, SteamState S){
 			exit(1);
 	}
 	fprintf(stderr,"(∂%c/∂p)T = %g\n",x,res);
+	if(x=='v'){
+		fprintf(stderr,"(∂ρ/∂p)T = %g\n",-1/SQ(v)*res);
+	}
 	return res;
 }
 
