@@ -26,6 +26,7 @@ def generate(env):
 			)
 			cmd = [sys.executable,Path]
 			libext = ".dll"
+			libpref = ""
 			
 		else:
 			cmd = ['ascend-config','--libs','--cppflags','--libs']
@@ -39,19 +40,21 @@ def generate(env):
 			)
 			cmd = ['ascend-config']
 			libext = ".so"
+			libpref = "lib"
 		
-		try:
-			proc = subprocess.Popen(cmd+['--extlib-prefix'],stdout=subprocess.PIPE)
-			out = proc.communicate()[0].strip()
+		proc = subprocess.Popen(cmd+['--extlib-prefix'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+		out = proc.communicate()[0].strip()
+		if proc.returncode is 0:
 			env.Append(ASCEND_EXTLIB_PREFIX=out)
-			proc = subprocess.Popen(cmd+['--extlib-suffix'],stdout=subprocess.PIPE)
-			out = proc.communicate()[0].strip()
+		else:
+			# old ASCEND will not provide '--extlib-prefix' so make some assumptions...
+			env.Append(ASCEND_EXTLIB_PREFIX=libpref)
+		proc = subprocess.Popen(cmd+['--extlib-suffix'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+		out = proc.communicate()[0].strip()
+		if proc.returncode is 0:
 			env.Append(ASCEND_EXTLIB_SUFFIX=out)
-		except Exception,e:
-			print "Possibly outdated ASCEND (%s)" % str(e)
-
-#		env['ASCEND_EXTLIB_PREFIX']=""
-#		env['ASCEND_EXTLIB_SUFFIX']="_ascend%s"%libext
+		else:
+			env.Append(ASCEND_EXTLIB_SUFFIX="_ascend%s"%libext)
 			
 		env.Append(HAVE_ASCEND=True)
 
