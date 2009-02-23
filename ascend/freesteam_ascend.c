@@ -28,12 +28,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	Inputs: p, h
 	@return 0 on success 
 */
-int T_ph_calc(struct BBoxInterp *slv_interp,
+int T_ph_calc(struct BBoxInterp *bbox,
 		int ninputs, int noutputs,
 		double *inputs, double *outputs,
 		double *jacobian
 ){
-	(void)slv_interp; (void)jacobian; // not used
+	(void)bbox; (void)jacobian; // not used
 	(void)ninputs; (void)noutputs; // not used currently
 
 #if 0
@@ -52,18 +52,33 @@ int T_ph_calc(struct BBoxInterp *slv_interp,
 
 	SteamState S;
 	S = freesteam_set_ph(p,h);
-	double T = freesteam_T(S);
+	double T, dTdh_p, dTdp_h;
 
-	ERROR_REPORTER_HERE(ASC_USER_NOTE,
-		"Got result T = %f K"
-		,T
-	);
+	switch(bbox->task){
+	case bb_func_eval:
+		T = freesteam_T(S);
 
-	outputs[0] = T;
+		ERROR_REPORTER_HERE(ASC_USER_NOTE,
+			"Got result T = %f K"
+			,T
+		);
 
-	/* TODO add error checks here, surely? */
-
-	return 0;
+		outputs[0] = T;
+		/* TODO add error checks here, surely? */
+		return 0;
+	case bb_deriv_eval:
+		dTdp_h = freesteam_deriv(S,'T','p','h');
+		dTdh_p = freesteam_deriv(S,'T','h','p');
+		ERROR_REPORTER_HERE(ASC_USER_NOTE,
+			"Got result (∂T/∂p)h = %g, (∂T/∂h)p = %g K/Pa",dTdp_h,dTdh_p
+		);
+		jacobian[0] = dTdp_h;
+		jacobian[1] = dTdh_p;
+		return 0;
+	default:
+		ERROR_REPORTER_HERE(ASC_PROG_ERR,"Invalid call, unknown bbox->task");
+		return 1;
+	}
 }
 
 FREESTEAM_EXPORT int freesteam_register(){
@@ -74,7 +89,7 @@ FREESTEAM_EXPORT int freesteam_register(){
 		result += CreateUserFunctionBlackBox("freesteam_T_ph"
 			, NULL /* alloc */
 			, T_ph_calc /* value */
-			, NULL /* deriv */
+			, T_ph_calc /* deriv */
 			, NULL /* deriv2 */
 			, NULL /* free */
 			, 2,1 /* inputs, outputs */

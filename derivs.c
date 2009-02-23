@@ -260,7 +260,7 @@ double TP2(char x, SteamState S){
 			fprintf(stderr,"%s (%s:%d): Invalid character x = '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
 	}
-#if 0
+#if 1
 	fprintf(stderr,"(∂%c/∂T)p = %g\n",x,res);
 	if(x=='v'){
 		fprintf(stderr,"(∂ρ/∂T)p = %g\n",-1/SQ(v)*res);
@@ -285,7 +285,7 @@ double PT2(char x, SteamState S){
 			fprintf(stderr,"%s (%s:%d): Invalid character x = '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
 	}
-#if 0
+#if 1
 	fprintf(stderr,"(∂%c/∂p)T = %g\n",x,res);
 	if(x=='v'){
 		fprintf(stderr,"(∂ρ/∂p)T = %g\n",-1/SQ(v)*res);
