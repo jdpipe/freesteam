@@ -27,7 +27,7 @@ These functions are drawn from the IAPWS Guidelines document "Revised Advisory
 Note No. 3 Thermodynamic Derivatives from IAPWS Formulations". (2008).
 */
 
-double freesteam_deriv(SteamState S, char x, char y, char z);
+FREESTEAM_DLL double freesteam_deriv(SteamState S, char x, char y, char z);
 
 #endif
 
