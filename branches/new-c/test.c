@@ -367,7 +367,7 @@ void testregion4props(void){
 void test_ph_derivs(double p, double h){
 	SteamState S;
 	S = freesteam_set_ph(p,h);
-	if(S.region!=2)return;
+	if(S.region!=1)return;
 	double dp = p * .0001;
 	SteamState Sdp;
 	switch(S.region){
