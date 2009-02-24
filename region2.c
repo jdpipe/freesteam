@@ -99,6 +99,16 @@ double freesteam_region2_w_pT(double p, double T){
 	);
 }
 
+double freesteam_region2_g_pT(double p, double T){
+	DEFINE_PITAU(p,T);
+	return R * T * gam(pi,tau);
+}	
+
+double freesteam_region2_a_pT(double p, double T){
+	DEFINE_PITAU(p,T);
+	return R * T * (gam(pi,tau) - gampi(pi,tau) * pi);
+}
+
 double freesteam_region2_alphav_pT(double p, double T){
 	DEFINE_PITAU(p,T);
 	double pigamrpi = pi*gamrpi(pi,tau);

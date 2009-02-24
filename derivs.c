@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "region1.h"
 #include "region2.h"
 #include "region3.h"
+#include "region4.h"
 
 #include <stdlib.h>
 
@@ -37,12 +38,12 @@ typedef double PartialDerivFn(char,SteamState);
 /*
 The following are the functions
 
-	 ⎰ ∂x ⎱   ___\   VTn
+	 ⎰ ∂z ⎱   ___\   VTn
 	 ⎱ ∂v ⎰T     /
 
 etc., for each of the different regions (n).
 */
-static PartialDerivFn VT3, TV3, PT1, TP1, PT2, TP2;
+static PartialDerivFn VT3, TV3, PT1, TP1, PT2, TP2, TX4, XT4;
 
 /*------------------------------------------------------------------------------
   EXPORTED FUNCTION(S)
@@ -73,7 +74,7 @@ double freesteam_deriv(SteamState S, char z, char x, char y){
 		case 1:	AB = PT1; BA = TP1; break;
 		case 2: AB = PT2, BA = TP2; break;
 		case 3: AB = VT3; BA = TV3; break;
-		case 4:
+		case 4: AB = TX4; BA = XT4; break;
 		default:
 			fprintf(stderr,"ERROR: %s (%s:%d) Invalid or not-implemented region '%d'\n"
 				,__func__,__FILE__,__LINE__,S.region
@@ -301,4 +302,91 @@ double PT2(char x, SteamState S){
 #undef s
 #undef alphav
 #undef kappaT
+
+/*------------------------------------------------------------------------------
+  REGION 4 DERIVATIVES
+
+In region 4, we use (T,x) as coordinates, so we can express general derivatives
+in terms of (∂z/∂T)x and (∂z/∂x)T.
+*/
+
+/*
+	⎰ ∂z ⎱   =  ⎰∂z_f⎱ (1 - x) + ⎰∂z_f⎱ x
+	⎱ ∂T ⎰x     ⎱ ∂T ⎰           ⎱ ∂T ⎰
+*/
+double TX4(char z, SteamState S){
+	double res;
+#define T S.R4.T
+	switch(z){
+		case 'p': res = freesteam_region4_dpsatdT_T(T); break;
+		case 'T': res = 1; break;
+	}
+
+	double dzfdT, dzgdT;
+	if(T < REGION1_TMAX){
+		double psat = freesteam_region4_psat_T(T);
+		SteamState Sf = freesteam_region1_set_pT(psat,T);
+		SteamState Sg = freesteam_region2_set_pT(psat,T);
+		double dpsatdT = freesteam_region4_dpsatdT_T(T);
+		dzfdT = PT1(z,Sf)*dpsatdT + TP1(z,Sf);
+		dzgdT = PT2(z,Sg)*dpsatdT + TP2(z,Sg);
+	}else{
+		double rhof = freesteam_region4_rhof_T(T);
+		double rhog = freesteam_region4_rhog_T(T);
+		SteamState Sf = freesteam_region3_set_rhoT(rhof,T);
+		SteamState Sg = freesteam_region3_set_rhoT(rhog,T);
+		double dvfdT = -1./SQ(rhof) * freesteam_region4_drhofdT_T(T);
+		double dvgdT = -1./SQ(rhog) * freesteam_region4_drhogdT_T(T);
+		dzfdT = VT3(z,Sf)*dvfdT + TV3(z,Sf);
+		dzgdT = VT3(z,Sg)*dvgdT + TV3(z,Sg);
+	}
+#define x S.R4.x
+	return dzfdT*(1-x) + dzgdT*x;
+#undef T
+#undef x
+}
+
+#define ZFG(Z,P,T) \
+	zf = freesteam_region1_##Z##_pT(P,T);\
+	zg = freesteam_region2_##Z##_pT(P,T);
+
+/*
+	These derivatives are simply the gradient within the two-phase region,
+	and is very simply calculated as
+
+	⎰ ∂z ⎱   =  z_g - z_f  where z in {v,u,h,z,s,g,a}.
+	⎱ ∂x ⎰T
+
+	or, otherwise,
+
+	⎰ ∂T ⎱  , ⎰ ∂p ⎱    = 0
+	⎱ ∂x ⎰T   ⎱ ∂x ⎰T
+
+*/	
+double XT4(char z, SteamState S){
+	switch(z){
+		case 'p': return 0;
+		case 'T': return 0;
+	}
+#define T S.R4.T
+#define x S.R4.x
+	double p = freesteam_region4_psat_T(T);
+	double zf, zg;
+	switch(z){
+		case 'v': ZFG(v,p,T); break;
+		case 'u': ZFG(u,p,T); break;
+		case 'h': ZFG(h,p,T); break;
+		case 's': ZFG(s,p,T); break;
+		case 'g': ZFG(g,p,T); break;
+		case 'a': case 'f': ZFG(a,p,T); break;
+		default:
+			fprintf(stderr,"%s (%s:%d): Invalid character x = '%c'\n", __func__,__FILE__,__LINE__,z);
+			exit(1);
+	}
+	return zg - zf;
+}
+#undef T
+#undef x
+#undef ZFG
+
 

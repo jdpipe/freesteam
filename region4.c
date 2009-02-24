@@ -20,11 +20,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FREESTEAM_BUILDING_LIB
 #include "region4.h"
 
-#include <math.h>
-
 #include "region1.h"
 #include "region3.h"
 #include "region2.h"
+
+#include <math.h>
+#include <stdlib.h>
 
 const double REGION4_N[11] = { 0, 0.11670521452767E+04, -0.72421316703206E+06
 	, -0.17073846940092E+02, 0.12020824702470E+05, -0.32325550322333E+07
@@ -250,4 +251,21 @@ double freesteam_region4_cv_Tx(double T, double x){
 	return cvf + x*(cvg - cvf);
 }
 
+/*------------------------------------------------------------------------------
+*/
+
+double freesteam_region4_dpsatdT_T(double T){
+	fprintf(stderr,"ERROR: %s not implemented\n",__func__);
+	exit(1);
+}
+
+double freesteam_region4_drhofdT_T(double T){
+	fprintf(stderr,"ERROR: %s not implemented\n",__func__);
+	exit(1);
+}
+
+double freesteam_region4_drhogdT_T(double T){
+	fprintf(stderr,"ERROR: %s not implemented\n",__func__);
+	exit(1);
+}
 

@@ -35,5 +35,10 @@ FREESTEAM_DLL double freesteam_region4_s_Tx(double T, double x);
 FREESTEAM_DLL double freesteam_region4_cp_Tx(double T, double x);
 FREESTEAM_DLL double freesteam_region4_cv_Tx(double T, double x);
 
+FREESTEAM_DLL double freesteam_region4_dpsatdT_T(double T);
+FREESTEAM_DLL double freesteam_region4_drhofdT_T(double T);
+FREESTEAM_DLL double freesteam_region4_drhogdT_T(double T);
+
+
 #endif
 
