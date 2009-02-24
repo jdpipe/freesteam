@@ -89,7 +89,7 @@ FREESTEAM_EXPORT int freesteam_register(){
 		result += CreateUserFunctionBlackBox("freesteam_T_ph"
 			, NULL /* alloc */
 			, T_ph_calc /* value */
-			, T_ph_calc /* deriv */
+			, /*T_ph_calc*/ NULL /* deriv */
 			, NULL /* deriv2 */
 			, NULL /* free */
 			, 2,1 /* inputs, outputs */

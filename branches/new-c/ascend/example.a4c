@@ -34,9 +34,9 @@ MODEL example;
 	);
 METHODS
 METHOD on_load;
-	FIX p, h;
+	FIX p, T;
 	p := 1 {bar};
-	h := 200 {kJ/kg};
+	h := 2500 {kJ/kg};
 END on_load;
 END example;
 
