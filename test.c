@@ -378,19 +378,23 @@ void test_ph_derivs(double p, double h){
 		case 2: Sdp = freesteam_region2_set_pT(p+dp,freesteam_region2_T_ph(p+dp,h)); break;
 		case 3: Sdp = freesteam_region3_set_rhoT(1./freesteam_region3_v_ph(p+dp,h),freesteam_region3_T_ph(p+dp,h)); break;
 		case 4: 
-			fprintf(stderr,"freesteam_region4_ph not implemented.\n");
-			return;
+			{
+				double T1 = freesteam_region4_Tsat_p(p+dp);
+				double hf = freesteam_region4_h_Tx(T1,0.);
+				double hg = freesteam_region4_h_Tx(T1,1.);
+				double x1 = (h - hf)/(hg - hg);
+				Sdp = freesteam_region4_set_Tx(T1,x1);
+			}
+			break;
 	}
-
 	//fprintf(stderr,"S(p+dp = %g, h = %g) = ",p+dp,h);
 	//freesteam_fprint(stderr,Sdp);
 
 	double dvdp_h_fdiff = (freesteam_v(Sdp) - freesteam_v(S))/dp;
-	
 	double dvdp_h = freesteam_deriv(S,'v','p','h');
-
 	CHECK_VAL(dvdp_h,dvdp_h_fdiff,1e-3);
 #endif
+
 	double dh = h * .0001;
 	SteamState Sdh;
 	switch(S.region){
@@ -398,8 +402,12 @@ void test_ph_derivs(double p, double h){
 		case 2: Sdh = freesteam_region2_set_pT(p,freesteam_region2_T_ph(p,h+dh)); break;
 		case 3: Sdh = freesteam_region3_set_rhoT(1./freesteam_region3_v_ph(p,h+dh),freesteam_region3_T_ph(p,h+dh)); break;
 		case 4: 
-			fprintf(stderr,"freesteam_region4_ph not implemented.\n");
-			return;
+			{
+				double hf = freesteam_region4_h_Tx(S.R4.T,0.);
+				double hg = freesteam_region4_h_Tx(S.R4.T,1.);
+				double x1 = ((h+dh) - hf)/(hg - hg);
+				Sdh = freesteam_region4_set_Tx(S.R4.T,x1);
+			}
 	}
 
 	//fprintf(stderr,"S(p+dp = %g, h = %g) = ",p+dp,h);
