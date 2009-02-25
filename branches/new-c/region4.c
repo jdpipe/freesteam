@@ -271,15 +271,3 @@ double freesteam_region4_dpsatdT_T(double T){
 	return dpdbeta * dbetadtheta * dthetadT;
 }
 
-double freesteam_region4_drhofdT_T(double T){
-	(void)T;
-	fprintf(stderr,"ERROR: %s not implemented\n",__func__);
-	exit(1);
-}
-
-double freesteam_region4_drhogdT_T(double T){
-	(void)T;
-	fprintf(stderr,"ERROR: %s not implemented\n",__func__);
-	exit(1);
-}
-

@@ -47,9 +47,13 @@ You may not use it in commercially-released software."
 %rename(R) IAPWS97_R;
 
 %rename(psat_T) freesteam_region4_psat_T;
+%rename(dpsatdT_T) freesteam_region4_dpsatdT_T;
 %rename(Tsat_p) freesteam_region4_Tsat_p;
 %rename(rhof_T) freesteam_region4_rhof_T;
 %rename(rhog_T) freesteam_region4_rhog_T;
+%rename(drhofdT_T) freesteam_drhofdT_T;
+%rename(drhogdT_T) freesteam_drhogdT_T;
+%rename(dpsatdT_T) freesteam_region4_dpsatdT_T;
 
 %ignore SteamState;
 %ignore freesteam_T;
@@ -75,6 +79,7 @@ You may not use it in commercially-released software."
 #include "region2.h"
 #include "region3.h"
 #include "region4.h"
+#include "derivs.h"
 %}
 
 /* TODO clean up region4.h so we can just include it here */
@@ -82,9 +87,11 @@ double freesteam_region4_psat_T(double T);
 double freesteam_region4_Tsat_p(double p);
 double freesteam_region4_rhof_T(double T);
 double freesteam_region4_rhog_T(double T);
+double freesteam_region4_dpsatdT_T(double T);
 
 %include "steam.h";
 %include "steam_ph.h";
+%include "derivs.h";
 
 %extend SteamState{
 	SteamState(){
@@ -147,6 +154,5 @@ double SteamState_cv_get(SteamState *S){
 double SteamState_w_get(SteamState *S){
 	return freesteam_w(*S);
 }
-
 
 %}
