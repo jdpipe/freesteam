@@ -335,8 +335,8 @@ double TX4(char z, SteamState S){
 		double rhog = freesteam_region4_rhog_T(T);
 		SteamState Sf = freesteam_region3_set_rhoT(rhof,T);
 		SteamState Sg = freesteam_region3_set_rhoT(rhog,T);
-		double dvfdT = -1./SQ(rhof) * freesteam_region4_drhofdT_T(T);
-		double dvgdT = -1./SQ(rhog) * freesteam_region4_drhogdT_T(T);
+		double dvfdT = -1./SQ(rhof) * freesteam_drhofdT_T(T);
+		double dvgdT = -1./SQ(rhog) * freesteam_drhogdT_T(T);
 		dzfdT = VT3(z,Sf)*dvfdT + TV3(z,Sf);
 		dzgdT = VT3(z,Sg)*dvgdT + TV3(z,Sg);
 	}
@@ -389,4 +389,35 @@ double XT4(char z, SteamState S){
 #undef x
 #undef ZFG
 
+/*------------------------------------------------------------------------------
+  DERIVATIVES OF rhof and rhog with temperature
+*/
+
+double freesteam_drhofdT_T(double T){
+	double dpsatdT = freesteam_region4_dpsatdT_T(T);
+	double rhof = freesteam_region4_rhof_T(T);
+	if(T > REGION1_TMAX){
+		SteamState Sf = freesteam_region3_set_rhoT(rhof,T);
+		double dpdT = TV3('p',Sf);
+		double dpdrho = -SQ(rhof) * VT3('p',Sf);
+		return (dpsatdT - dpdT)/dpdrho;
+	}else{
+		fprintf(stderr,"ERROR: %s not implemented for T <= REGION1_TMAX\n",__func__);
+		exit(1);
+	}
+}
+
+double freesteam_drhogdT_T(double T){
+	double dpsatdT = freesteam_region4_dpsatdT_T(T);
+	double rhog = freesteam_region4_rhog_T(T);
+	if(T > REGION1_TMAX){
+		SteamState Sg = freesteam_region3_set_rhoT(rhog,T);
+		double dpdT = TV3('p',Sg);
+		double dpdrho = -SQ(rhog) * VT3('p',Sg);
+		return (dpsatdT - dpdT)/dpdrho;
+	}else{
+		fprintf(stderr,"ERROR: %s not implemented for T <= REGION1_TMAX\n",__func__);
+		exit(1);
+	}
+}
 
