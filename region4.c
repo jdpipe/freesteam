@@ -255,16 +255,30 @@ double freesteam_region4_cv_Tx(double T, double x){
 */
 
 double freesteam_region4_dpsatdT_T(double T){
-	fprintf(stderr,"ERROR: %s not implemented\n",__func__);
-	exit(1);
+	/* calculated this derivative using implicit differentiation of the
+	quadratic expression, then derivatives of beta and script-theta */
+	double beta = pow(freesteam_region4_psat_T(T)/REGION4_PSTAR, 0.25);
+#define N REGION4_N
+	double theta = T/REGION4_TSTAR + N[9] / (T/REGION4_TSTAR - N[10]);
+	double XBETA = 2*beta*SQ(theta) + 2.*N[1]*beta*theta + 2*N[2]*beta + N[3]*SQ(theta) + N[4]*theta + N[5];
+	double XTHETA = 2*theta*SQ(beta) + 2*N[1]*beta*theta + 2*N[3]*theta + N[4]*beta + 2.*N[6]*theta + N[7]; 
+
+	double dthetadT = (1 - N[9] / (T/REGION4_TSTAR - N[10]))/REGION4_TSTAR;
+	double dbetadtheta = -XTHETA/XBETA;
+	double dpdbeta = 4*SQ(beta)*beta*REGION4_PSTAR;
+#undef N
+
+	return dpdbeta * dbetadtheta * dthetadT;
 }
 
 double freesteam_region4_drhofdT_T(double T){
+	(void)T;
 	fprintf(stderr,"ERROR: %s not implemented\n",__func__);
 	exit(1);
 }
 
 double freesteam_region4_drhogdT_T(double T){
+	(void)T;
 	fprintf(stderr,"ERROR: %s not implemented\n",__func__);
 	exit(1);
 }
