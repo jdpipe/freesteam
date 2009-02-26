@@ -395,29 +395,34 @@ double XT4(char z, SteamState S){
 
 double freesteam_drhofdT_T(double T){
 	double dpsatdT = freesteam_region4_dpsatdT_T(T);
-	double rhof = freesteam_region4_rhof_T(T);
-	if(T > REGION1_TMAX){
+	if(T < REGION1_TMAX){
+		double psat = freesteam_region4_psat_T(T);
+		SteamState Sf = freesteam_region1_set_pT(psat,T);
+		double vf = freesteam_v(Sf);
+		return -1./SQ(vf) * (PT1('v',Sf) * dpsatdT + TP1('v',Sf));
+	}else{
+		/* FIXME: add iterative refinement of value of rhof */
+		double rhof = freesteam_region4_rhof_T(T);
 		SteamState Sf = freesteam_region3_set_rhoT(rhof,T);
 		double dpdT = TV3('p',Sf);
 		double dpdrho = -SQ(rhof) * VT3('p',Sf);
 		return (dpsatdT - dpdT)/dpdrho;
-	}else{
-		fprintf(stderr,"ERROR: %s not implemented for T <= REGION1_TMAX\n",__func__);
-		exit(1);
 	}
 }
 
 double freesteam_drhogdT_T(double T){
 	double dpsatdT = freesteam_region4_dpsatdT_T(T);
 	double rhog = freesteam_region4_rhog_T(T);
-	if(T > REGION1_TMAX){
+	if(T < REGION1_TMAX){
+		double psat = freesteam_region4_psat_T(T);
+		SteamState Sg = freesteam_region2_set_pT(psat,T);
+		double vf = freesteam_v(Sg);
+		return -1./SQ(vf) * (PT2('v',Sg) * dpsatdT + TP2('v',Sg));
+	}else{
 		SteamState Sg = freesteam_region3_set_rhoT(rhog,T);
 		double dpdT = TV3('p',Sg);
 		double dpdrho = -SQ(rhog) * VT3('p',Sg);
 		return (dpsatdT - dpdT)/dpdrho;
-	}else{
-		fprintf(stderr,"ERROR: %s not implemented for T <= REGION1_TMAX\n",__func__);
-		exit(1);
 	}
 }
 

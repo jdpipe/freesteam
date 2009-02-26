@@ -16,7 +16,7 @@ plot(T,rhof,'b-')
 plot(T,rhog,'r-')
 
 figure()
-T = [624 + (freesteam.TCRIT - 624)*x/n for x in range(n+1)]
+T = [273.15 + (freesteam.TCRIT - 273.15)*x/n for x in range(n+1)]
 rhof = [freesteam.drhofdT_T(t) for t in T]
 rhog = [freesteam.drhogdT_T(t) for t in T]
 plot(T,rhof,'b-')
