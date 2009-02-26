@@ -406,7 +406,7 @@ double freesteam_drhofdT_T(double T){
 		SteamState Sf = freesteam_region3_set_rhoT(rhof,T);
 		double dpdT = TV3('p',Sf);
 		double dpdrho = -1./SQ(rhof) * VT3('p',Sf);
-		return (dpsatdT + dpdT)/dpdrho;
+		return (dpsatdT - dpdT)/dpdrho;
 	}
 }
 
@@ -422,7 +422,7 @@ double freesteam_drhogdT_T(double T){
 		SteamState Sg = freesteam_region3_set_rhoT(rhog,T);
 		double dpdT = TV3('p',Sg);
 		double dpdrho = -1./SQ(rhog) * VT3('p',Sg);
-		return (dpsatdT + dpdT)/dpdrho;
+		return (dpsatdT - dpdT)/dpdrho;
 	}
 }
 
