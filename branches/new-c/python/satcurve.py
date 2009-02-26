@@ -21,6 +21,7 @@ rhof = [freesteam.drhofdT_T(t) for t in T]
 rhog = [freesteam.drhogdT_T(t) for t in T]
 plot(T,rhof,'b-')
 plot(T,rhog,'r-')
+axis([273.15,freesteam.TCRIT,-20,+20])
 
 show()
 
