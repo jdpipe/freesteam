@@ -260,8 +260,8 @@ double freesteam_region4_dpsatdT_T(double T){
 	double beta = pow(freesteam_region4_psat_T(T)/REGION4_PSTAR, 0.25);
 #define N REGION4_N
 	double theta = T/REGION4_TSTAR + N[9] / (T/REGION4_TSTAR - N[10]);
-	double XBETA = 2*beta*SQ(theta) + 2.*N[1]*beta*theta + 2*N[2]*beta + N[3]*SQ(theta) + N[4]*theta + N[5];
-	double XTHETA = 2*theta*SQ(beta) + 2*N[1]*beta*theta + 2*N[3]*theta + N[4]*beta + 2.*N[6]*theta + N[7]; 
+	double XBETA = (2.*beta + N[3])*SQ(theta) + (2.*beta*N[1] + N[4])*theta + 2.*N[2]*beta + N[5];
+	double XTHETA = (2.*theta + N[1])*SQ(beta) + (2.*N[3]*theta + N[4])*beta + 2.*N[6]*theta + N[7]; 
 
 	double dthetadT = (1 - N[9] / (T/REGION4_TSTAR - N[10]))/REGION4_TSTAR;
 	double dbetadtheta = -XTHETA/XBETA;
