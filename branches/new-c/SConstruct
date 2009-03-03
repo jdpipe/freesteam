@@ -149,7 +149,7 @@ if env.get('GCOV'):
 # the freesteam DLL/SO.
 
 srcs = ["region1.c", "region2.c", "region3.c", "region4.c", "steam_ph.c"
-	,"steam.c", "backwards.c","b23.c", "common.c", "derivs.c"
+	,"steam.c", "backwards.c","b23.c", "common.c", "derivs.c", "zeroin.c"
 ]
 
 # Create a sub-environment with linking to libm for mathematics routines
