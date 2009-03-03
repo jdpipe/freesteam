@@ -76,8 +76,8 @@ double freesteam_deriv(SteamState S, char z, char x, char y){
 		case 3: AB = VT3; BA = TV3; break;
 		case 4: AB = TX4; BA = XT4; break;
 		default:
-			fprintf(stderr,"ERROR: %s (%s:%d) Invalid or not-implemented region '%d'\n"
-				,__func__,__FILE__,__LINE__,S.region
+			fprintf(stderr,"ERROR: %s (%s:%d) Invalid or not-implemented region '%d' while evalulating (∂%c/∂%c)%c\n"
+				,__func__,__FILE__,__LINE__,S.region,z,x,y
 			);
 			exit(1);
 	}
