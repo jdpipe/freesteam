@@ -20,43 +20,40 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "zeroin.h"
 
 #include <math.h>
+#include <stdio.h>
 
 #ifndef DBL_EPSILON
 	#define DBL_EPSILON 2e-16
 #endif
 
-void zeroin_solve(ZeroIn *Z){
+char zeroin_solve(ZeroInSubjectFunction *func, void *user_data, double lowerbound, double upperbound, double tol, double *solution, double *error){
 
-    double a, b, c;		///<  Abscissae, descr. see above.
-    double fa;		///<  f(a)
-    double fb;		///<  f(b)
-    double fc;		///<  f(c)
-	void *user_data = Z->user_data;
-	ZeroInSubjectFunction *func	= Z->func;
+    double a, b, c;	///<  Abscissae, descr. see above.
+    double fa;      ///<  f(a)
+    double fb;      ///<  f(b)
+    double fc;      ///<  f(c)
 
-	Z->issolved = 0;
-
-    a = Z->lowerbound;
-    b = Z->upperbound;
+    a = lowerbound;
+    b = upperbound;
     fa = (*func)(a,user_data);
-    fb = (*func)(b,user_data);
+	    fb = (*func)(b,user_data);
     c = a;
     fc = fa;
 
 	if(fa == 0.){
-		Z->error = 0.; // used by getError
-		Z->solution = a;
-		Z->issolved = 1; // perfect solution
-		return;
+		*error = 0.; // used by getError
+		*solution = a;
+		//fprintf(stderr,"perfect solution\n");
+		return 0;
 	}
 
     //  Main iteration loop
 
     for (;;) {
 	    double prev_step = b - a;    ///<  Distance from the last but one to the last approximation
-	    double tol_act;                ///<  Actual tolerance
+	    double tol_act;              ///<  Actual tolerance
 	    double p;                    ///<  Interpolation step is calculated in the form p/q; division
-	    double q;                      ///<  operations is delayed until the last moment
+	    double q;                    ///<  operations is delayed until the last moment
 	    double new_step;             ///<  Step at this iteration
 
 	    if (fabs(fc) < fabs(fb)) {
@@ -69,16 +66,16 @@ void zeroin_solve(ZeroIn *Z){
 	    }
 
 	    // DBL_EPSILON is defined in math.h
-	    tol_act = 2.0* DBL_EPSILON * fabs(b) + Z->tol / 2.0;
+	    tol_act = 2.0* DBL_EPSILON * fabs(b) + tol / 2.0;
 
 	    new_step = (c - b) / 2.0;
+		//fprintf(stderr,"step = %g\n",new_step);
 
 	    if (fabs(new_step) <= tol_act || fb == 0.) {
-		    Z->issolved = 1;       //  Acceptable approx. is found
-			Z->error = fb;
-			Z->solution = b;
-		    //cerr << "Best solution is b, f(b=" << b << ")=" << fb <<",f(a="<<a<<")="<< fa <<endl;
-		    return;
+			*error = fb;
+			*solution = b;
+		    //fprintf(stderr,"best solution is b: f(b=%g) = %g, f(a=%g) = %g\n",b,fb,a,fb);
+		    return 0;
 	    }
 	    //  Decide if the interpolation can be tried
 
