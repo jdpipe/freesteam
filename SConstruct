@@ -39,6 +39,12 @@ opts.Add(BoolOption(
 	,False
 ))
 
+opts.Add(BoolOption(
+	'DEBUG'
+	,"Build with debug data for use with GDB."
+	,False
+))
+
 opts.Add(PathOption(
 	'INSTALL_PREFIX'
 	,"Base directory for install, see also INSTALL_LIB and INSTALL_INCLUDE"
@@ -135,7 +141,7 @@ opts.Update(env)
 
 # Flags to give some more warning output from the GCC compiler
 
-env.Append(CFLAGS=['-Wall','-W','-Wconversion'])
+env.Append(CFLAGS=['-pedantic','-Wall','-W','-Wconversion','-Wimplicit'])
 
 # Flags for coverage testing (will apply to all code built in 'env')
 
@@ -143,6 +149,11 @@ if env.get('GCOV'):
 	env.Append(
 		CFLAGS=['-fprofile-arcs','-ftest-coverage']
 		,LIBS=['gcov']
+	)
+
+if env.get('DEBUG'):
+	env.Append(
+		CFLAGS=['-g']
 	)
 
 # Here is the list of all of the source files that will go into

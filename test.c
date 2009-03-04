@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "backwards.h"
 #include "b23.h"
 #include "derivs.h"
+#include "zeroin.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -139,6 +140,7 @@ void test_region3_point(double T,double rho, double p,double h,double u, double 
 	CHECK_VAL(freesteam_u(S),u*1e3,RELTOL);
 	CHECK_VAL(freesteam_s(S),s*1e3,RELTOL);
 	CHECK_VAL(freesteam_cp(S),cp*1e3,RELTOL);
+	/* CHECK_VAL(freesteam_w(S),w,RELTOL); */
 }
 
 void testregion3(void){
@@ -440,13 +442,36 @@ void testderivs(void){
 }
 
 /*------------------------------------------------------------------------------
+  ZEROIN TEST
+*/
+
+typedef struct{
+	double a,b,c;
+} TestQuadratic;
+
+double test_zeroin_subject(double x, void *user_data){
+#define Q ((TestQuadratic *)user_data)
+	double res = Q->a*x*x + Q->b*x + Q->c;
+	//fprintf(stderr,"f(x = %f) = %f x² + %f x + %f = %f\n",x,Q->a,Q->b, Q->c,res);
+	return res;
+#undef Q
+}
+
+void testzeroin(void){
+	TestQuadratic Q1 = {1, 0, -4};
+	fprintf(stderr,"BRENT SOLVER TESTS\n");
+	double sol = 0, err = 0;
+	zeroin_solve(&test_zeroin_subject,&Q1, -10, 4.566, 1e-10, &sol, &err);
+	CHECK_VAL(sol,2.,1e-10);
+}
+
+/*------------------------------------------------------------------------------
   MAIN ROUTINE
 */
 
 int main(void){
 	errorflag = 0;
 
-#if 0
 	testregion1();
 	testregion2();
 	testregion3();
@@ -475,9 +500,10 @@ int main(void){
 	// COMMENT OUT TO PERFORM THESE TESTS:
 	//testph();
 	//testregion4props();
-#endif
 
-	testderivs();
+	//testderivs();
+	
+	testzeroin();
 
 #if 0
 	SteamState S;

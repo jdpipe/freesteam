@@ -29,6 +29,8 @@ FREESTEAM_DLL double freesteam_region3_h_rhoT(double rho, double T);
 FREESTEAM_DLL double freesteam_region3_cp_rhoT(double rho, double T);
 FREESTEAM_DLL double freesteam_region3_cv_rhoT(double rho, double T);
 
+/* FIXME implement freesteam_region3_w_rhoT */
+
 /* used in calculations of derivatives, see derivs.c */
 double freesteam_region3_alphap_rhoT(double rho, double T);
 double freesteam_region3_betap_rhoT(double rho, double T);
