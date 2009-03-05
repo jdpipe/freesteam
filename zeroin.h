@@ -20,6 +20,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef FREESTEAM_ZEROIN_H
 #define FREESTEAM_ZEROIN_H
 
+/**
+	Any function that you want to solve using the 'zeroin_solve' function 
+	needs to conform to this function prototype. Any parameters required
+	internally by the function can be passed in to the function as a pointer
+	to a struct, array, etc, via the void 'user_data' pointer. Your subject
+	function can then cast the pointer to its correct type, and access the
+	necesssary parameter data, for example:
+
+	-- in your main code
+	typedef struct{double param1, param2} MyData;
+	MyData D = {100., 3.141};
+	double myfunc(double x, void *user_data){
+		MyData *D1 = (MyData *)user_data;
+		return x * D1->param1 + D1->param2;
+	}
+	zeroin_solve(&myfunc, &D, ...);
+*/
 typedef double ZeroInSubjectFunction(double, void *user_data);
 
 /**
@@ -30,7 +47,7 @@ typedef double ZeroInSubjectFunction(double, void *user_data);
 	used in earlier freesteam versions, and now converted back to pure C again.
 	@see brent.shar at http://www.netlib.org/c/
 
-	@param func the function being solved
+	@param func the function being solved, must be a ZeroInSubjectFunction.
 	@param lowerbound the lower bound of the range in which a root is sought
 	@param upperbound the upper bound of the range in which a root is sought
 	@param tol maximum permissible magnitude of the function at the solved root location
