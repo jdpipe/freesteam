@@ -142,6 +142,23 @@ double freesteam_v(SteamState S){
 	}
 }
 
+double freesteam_rho(SteamState S){
+	switch(S.region){
+		case 1:
+			return 1./freesteam_region1_v_pT(S.R1.p,S.R1.T);
+		case 2:
+			return 1./freesteam_region2_v_pT(S.R2.p,S.R2.T);
+		case 3:
+			return S.R3.rho;
+		case 4:
+			return 1./freesteam_region4_v_Tx(S.R4.T, S.R4.x);
+		default:
+			fprintf(stderr,"ERROR: invalid region in freesteam_rho\n");
+			exit(1);
+	}
+}
+
+
 double freesteam_u(SteamState S){
 	switch(S.region){
 		case 1:
