@@ -141,7 +141,7 @@ opts.Update(env)
 
 # Flags to give some more warning output from the GCC compiler
 
-env.Append(CFLAGS=['-pedantic','-Wall','-W','-Wconversion','-Wimplicit'])
+env.Append(CFLAGS=['-Wall','-W','-Wconversion','-Wimplicit'])
 
 # Flags for coverage testing (will apply to all code built in 'env')
 
@@ -161,6 +161,7 @@ if env.get('DEBUG'):
 
 srcs = ["region1.c", "region2.c", "region3.c", "region4.c", "steam_ph.c"
 	,"steam.c", "backwards.c","b23.c", "common.c", "derivs.c", "zeroin.c"
+	,"steam_ps.c"
 ]
 
 # Create a sub-environment with linking to libm for mathematics routines
