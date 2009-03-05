@@ -1,195 +1,219 @@
+/*
+freesteam - IAPWS-IF97 steam tables library
+Copyright (C) 2004-2009  John Pye
 
-int solver2_region3(char X, char Y, double x, double y, SteamState *S){
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-	try{
-		// Iterate on rho, T
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-		// Just like region 1, except for it's T,x
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+#define FREESTEAM_BUILDING_LIB
+#include "solver2.h"
 
-		//cerr << endl << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">::solveRegion3:";
+#include "region1.h"
+#include "region2.h"
+#include "region3.h"
 
-		SteamCalculator guess = firstguess;
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-		//cerr << endl << "Solver2::solveRegion4: firstguess copied to guess OK";
+SteamState solver2_region3(char X, char Y, double x, double y, SteamState guess, int *status){
 
-		if(firstguess.whichRegion()!=3){
-			throw std::runtime_error("Solver2::solveRegion3: First guess is not region3");
+	int maxiter = 20;
+
+	SteamState S = guess;
+	if(guess.region!=3){
+		*status = 1;
+		fprintf(stderr,"%s: first guess is not region 3!\n",__func__);
+		return S;
+	}
+
+	SteamState petT, petrho;
+	double T,dT;
+	double rho,drho;
+	double f,Df, DfT, Dfrho; /* first prop */
+	double s,Ds,DsT, Dsrho; /* second prop and derivs */
+	double p;
+
+	// cerr << endl << "Solver2::solveRegion3: Starting iterations";
+
+	int niter=0;
+	while(1){
+		T = freesteam_T(S);
+		rho = 1./freesteam_v(S);
+		p = freesteam_p(S);
+
+		f = freesteam_prop(X,S);
+		s = freesteam_prop(Y,S);
+
+		Df = x - f;
+		Ds = y - s;
+		
+#if 0
+	/* FIXME need to implement convergence test somehow */
+
+		// In this template it's hard to know the units of the convergence test, so make it as a new, separate, template:
+		if(
+			ConvergenceTest<FirstProp,FirstPropAlt>::test(Df,p,T)
+			&& ConvergenceTest<SecondProp,SecondPropAlt>::test(Ds,p,T)
+		){
+			// cerr << endl << "     ... SOLUTION OK (" << niter << " iterations)" << endl;
+			return guess;
+		}
+#endif
+
+		dT = T * 0.001;
+
+		if(T + dT > REGION2_TMAX){
+			dT = -dT;
 		}
 
-		SteamCalculator petT, petrho;
-		double T,dT;
-		double rho,drho;
-		double f,Df, DfT, Dfrho; /* first prop */
-		double s,Ds,DsT, Dsrho;
-		double p;
+		petT = freesteam_region3_set_rhoT(rho,T+dT);
+		if(petT.region!=3){
+			fprintf(stderr,"%s (%s:%d): region is not 3 as expected\n",__func__,__FILE__,__LINE__);
+			exit(1);
+		}
 
-		// cerr << endl << "Solver2::solveRegion3: Starting iterations";
+		// ensure we don't go over rho limits
+		drho = rho * 0.001;
+		if(rho + drho > 50.0){
+			drho = -drho;
+		}
 
+		petrho = freesteam_region3_set_rhoT(rho+drho, T);
+		if(petrho.region!=3){
+			fprintf(stderr,"%s (%s:%d): region is not 3 as expected\n",__func__,__FILE__,__LINE__);
+			exit(1);
+		}
 
-		int niter=0;
-		while(1){
+		DfT = freesteam_prop(X,petT) - f;
+		DsT = freesteam_prop(Y,petT) - s;
 
-			T = guess.temp();
-			rho = guess.dens();
-			p = guess.pres();
+		Dfrho = freesteam_prop(X,petrho) - f;
+		Dsrho = freesteam_prop(Y,petrho) - s;
 
-			//cerr << endl << "Iter " << niter << ": T = " << T << ", rho = " << rho;
+		ASSERT(DfT * Dsrho != DsT * Dfrho);
 
-			f = SteamProperty<FirstProp,FirstPropAlt>::get(guess);
-			s = SteamProperty<SecondProp,SecondPropAlt>::get(guess);
+		// Solve new peturbations
+		dT = dT * (Df*Dsrho - Ds*Dfrho) / (DfT*Dsrho - DsT*Dfrho);
+		drho = drho * (DfT*Ds - DsT*Df) / (DfT*Dsrho - DsT*Dfrho);
 
-			//cerr << ": " << SteamProperty<FirstProp,FirstPropAlt>::name() << " = " << f;
-			//cerr << ", " << SteamProperty<SecondProp,SecondPropAlt>::name() << " = " << s;
+		ASSERT(!isnan(dT));
+		ASSERT(!isnan(drho));
 
-			Df = f1 - f;
-			Ds = s1 - s;
+		// Regulate maximum change in temperature
 
-			// In this template it's hard to know the units of the convergence test, so make it as a new, separate, template:
-			if(
-				ConvergenceTest<FirstProp,FirstPropAlt>::test(Df,p,T)
-				&& ConvergenceTest<SecondProp,SecondPropAlt>::test(Ds,p,T)
-			){
-				// cerr << endl << "     ... SOLUTION OK (" << niter << " iterations)" << endl;
-				return guess;
+		double dTMax = 0.1 * T;
+		double dTAbs = fabs(dT);
+		if(dTAbs > dTMax){
+			//cerr << endl << "      ... limiting dT, too great";
+			dT = dT * dTMax/dTAbs;
+		}
+
+		// Regulate max change in pressure
+
+		double drhoMax = 0.4 * rho;
+		double drhoAbs = fabs(drho);
+		if(drhoAbs > drhoMax){
+			//cerr << endl << "      ... limiting drho, too great";
+			drho = drho * drhoMax/drhoAbs;
+		}
+
+		//cerr << endl << "     ... calculated dT = " << dT << ", drho = " << drho;
+		T = T + dT;
+		rho = rho + drho;
+
+		if(T > REGION2_TMAX){
+			// Strangely, this test never seems to be used...
+			//cerr << endl << "     .... Applying T_MAX limit";
+			T = REGION2_TMAX;
+		}
+
+		if(T < REGION1_TMAX){
+			//cerr << endl << "     .... Applying T_REG1_REG3 limit";
+			T = REGION1_TMAX;
+		}
+
+		/* FIXME: do we really need this bit? */
+#if 0 
+		double rho_b134;
+		SteamState S;
+		S.setSatWater_T(T_REG1_REG3);
+		rho_b134 = S.dens();
+		if(rho < rho_b134 && T < T_CRIT){
+			if(rho < RHO_CRIT){
+				double rho_g = Boundaries::getSatDensSteam_T(T);
+				if(rho > rho_g){
+					//cerr << endl << "     ... Applying rho_g limit";
+					rho = rho_g;
+				}
+			}else if(rho > RHO_CRIT){
+				double rho_f = Boundaries::getSatDensWater_T(T);
+				if(rho <  rho_f){
+					//cerr << endl << "     ... Applying rho_f limit";
+					rho = rho_f;
+				}
 			}
 
-			dT = T * 0.001;
+		}
 
-			if(T + dT > T_MAX){
-				dT = -dT;
-			}
+		B23Curve<Density,Pressure> B23;
+		double rho_b23 = B23.solve(T);
+		if(rho < rho_b23){
+			rho = rho_b23;
+		}
 
-			petT.setRegion3_rhoT(rho, T + dT);
-			ASSERT(petT.whichRegion()==3);
+		S.setRegion3_rhoT(rho,T);
+		int pmaxiter = 0;
+		if(S.pres() > P_MAX){
+			do{
+				//cerr << endl << "    ... found p = " << S.pres() / MPa << " MPa";
 
-			// ensure we don't go over rho limits
-			drho = rho * 0.001;
-			if(rho + drho > 50.0 * kg_m3){
-				drho = -drho;
-			}
-
-			petrho.setRegion3_rhoT(rho + drho, T);
-			ASSERT(petrho.whichRegion()==3);
-
-			DfT = SteamProperty<FirstProp,FirstPropAlt>::get(petT) - f;
-			DsT = SteamProperty<SecondProp,SecondPropAlt>::get(petT) - s;
-
-			Dfrho = SteamProperty<FirstProp,FirstPropAlt>::get(petrho) - f;
-			Dsrho = SteamProperty<SecondProp,SecondPropAlt>::get(petrho) - s;
-
-			ASSERT(DfT * Dsrho != DsT * Dfrho);
-
-			// Solve new peturbations
-			dT = dT * (Df*Dsrho - Ds*Dfrho) / (DfT*Dsrho - DsT*Dfrho);
-			drho = drho * (DfT*Ds - DsT*Df) / (DfT*Dsrho - DsT*Dfrho);
-
-			ASSERT(!isnan(dT));
-			ASSERT(!isnan(drho));
-
-			// Regulate maximum change in temperature
-
-			double dTMax = 0.1 * T;
-			double dTAbs = fabs(dT);
-			if(dTAbs > dTMax){
-				//cerr << endl << "      ... limiting dT, too great";
-				dT = dT * dTMax/dTAbs;
-			}
-
-			// Regulate max change in pressure
-
-			double drhoMax = 0.4 * rho;
-			double drhoAbs = fabs(drho);
-			if(drhoAbs > drhoMax){
-				//cerr << endl << "      ... limiting drho, too great";
-				drho = drho * drhoMax/drhoAbs;
-			}
-
-			//cerr << endl << "     ... calculated dT = " << dT << ", drho = " << drho;
-			T = T + dT;
-			rho = rho + drho;
-
-			if(T > T_MAX){
-				// Strange, this test never seems to be used...
-
-				//cerr << endl << "     .... Applying T_MAX limit";
-				T = T_MAX;
-			}
-
-			if(T < T_REG1_REG3){
-				//cerr << endl << "     .... Applying T_REG1_REG3 limit";
-				T = T_REG1_REG3;
-			}
-
-			double rho_b134;
-			SteamCalculator S;
-			S.setSatWater_T(T_REG1_REG3);
-			rho_b134 = S.dens();
-			if(rho < rho_b134 && T < T_CRIT){
-				if(rho < RHO_CRIT){
-					double rho_g = Boundaries::getSatDensSteam_T(T);
-					if(rho > rho_g){
-						//cerr << endl << "     ... Applying rho_g limit";
-						rho = rho_g;
-					}
-				}else if(rho > RHO_CRIT){
-					double rho_f = Boundaries::getSatDensWater_T(T);
-					if(rho <  rho_f){
-						//cerr << endl << "     ... Applying rho_f limit";
-						rho = rho_f;
-					}
+				drho *= 0.5001;
+				//dT *= 0.5001;
+				rho -= drho;
+				//T -= dT;
+				S.setRegion3_rhoT(rho,T);
+				//cerr << endl << "     ... Applying P_MAX limit at T = " << T << ": rho = " << rho;
+				if(++pmaxiter > 20){
+					throw std::runtime_error("Solver2::solveRegion3: Failed to find rho of P_MAX");
 				}
 
-			}
-
-			B23Curve<Density,Pressure> B23;
-			double rho_b23 = B23.solve(T);
-			if(rho < rho_b23){
-				rho = rho_b23;
-			}
-
-			S.setRegion3_rhoT(rho,T);
-			int pmaxiter = 0;
-			if(S.pres() > P_MAX){
-				do{
-					//cerr << endl << "    ... found p = " << S.pres() / MPa << " MPa";
-
-					drho *= 0.5001;
-					//dT *= 0.5001;
-					rho -= drho;
-					//T -= dT;
-					S.setRegion3_rhoT(rho,T);
-					//cerr << endl << "     ... Applying P_MAX limit at T = " << T << ": rho = " << rho;
-					if(++pmaxiter > 20){
-						throw std::runtime_error("Solver2::solveRegion3: Failed to find rho of P_MAX");
-					}
-
-				}while(S.pres() > P_MAX);
-				//cerr << endl << "     ... pressure capped to " << S.pres();
-			}
-
-			guess.setRegion3_rhoT(rho,T);
-
-			niter++;
-
-			if(niter > maxiter){
-				throw std::runtime_error("Solver2::solveRegion3: Exceeded maximum iterations");
-			}
+			}while(S.pres() > P_MAX);
+			//cerr << endl << "     ... pressure capped to " << S.pres();
 		}
+#endif
 
-	}catch(std::exception &E){
-		std::stringstream s;
-		s << "Solver2<" << SteamProperty<FirstProp,FirstPropAlt>::name() << "," << SteamProperty<SecondProp,SecondPropAlt>::name() << ">:solveRegion3: " << E.what();
-		throw std::runtime_error(s.str());
+		S = freesteam_region3_set_rhoT(rho,T);
+
+		niter++;
+
+		if(niter > maxiter){
+			*status = 2;
+			fprintf(stderr,"%s (%s:%d): exceeded maximum iterations\n",__func__,__FILE__,__LINE__);
+			return S;
+		}
 	}
 }
 
+#if 0
 int solver2_region4(char X, char Y, double x, double y, SteamState *S){
 	try{
 		// Just like region 1, except for it's T,x
 
 		//cerr << endl << "Solver2::solveRegion4: ";
 
-		SteamCalculator guess = firstguess;
+		SteamState guess = firstguess;
 
 		//cerr << endl << "Solver2::solveRegion4: firstguess copied to guess OK";
 
@@ -197,7 +221,7 @@ int solver2_region4(char X, char Y, double x, double y, SteamState *S){
 			throw std::runtime_error("Solver2::solveRegion4: First guess is not region 4");
 		}
 
-		SteamCalculator petT, petx;
+		SteamState petT, petx;
 		double T,dT;
 		Num x,dx;
 		double f,Df, DfT, Dfx;
@@ -337,13 +361,13 @@ int solver2_region4(char X, char Y, double x, double y, SteamState *S){
 
 int solver2_region1(char X, char Y, double x, double y, SteamState *S);
 
-	SteamCalculator guess = firstguess;
+	SteamState guess = firstguess;
 
 	if(firstguess.whichRegion()!=1){
 		throw std::runtime_error("Solver2::solveRegion1: First guess is not region 1");
 	}
 
-	SteamCalculator petT, petp;
+	SteamState petT, petp;
 	double T,dT;
 	double p,dp;
 	double f,Df, DfT, Dfp;
@@ -474,13 +498,13 @@ int solver2_region2(char X, char Y, double x, double y, SteamState *S);
 		}
 	#endif
 
-	SteamCalculator guess = firstguess;
+	SteamState guess = firstguess;
 
 	if(firstguess.whichRegion()!=2){
 		throw std::runtime_error("Solver2::solveRegion2: First guess is not region 2");
 	}
 
-	SteamCalculator petT, petp;
+	SteamState petT, petp;
 	double T,dT;
 	double p,dp;
 	double f,Df, DfT, Dfp;
@@ -610,4 +634,5 @@ int solver2_region2(char X, char Y, double x, double y, SteamState *S);
 	}
 
 }
+#endif
 

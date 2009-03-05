@@ -17,6 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#ifndef FREESTEAM_SOLVER2_H
+#define FREESTEAM_SOLVER2_H
+
+#include "common.h"
+#include "steam.h"
+
 /*
 	two-way solver interface, for unusual property pairs that are not
 	implemented in official IAPWS releases.
@@ -33,8 +39,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	these need to be hand-coded at this stage.
 */
 
-int freesteam_solver2_region1(char X, char Y, double x, double y, SteamState *S);
-int freesteam_solver2_region2(char X, char Y, double x, double y, SteamState *S);
-int freesteam_solver2_region3(char X, char Y, double x, double y, SteamState *S);
-int freesteam_solver2_region4(char X, char Y, double x, double y, SteamState *S);
+/**
+	Two-variable Newton solver for Region 3, using finite difference
+	approximations for derivatives. The names of the provided variables are
+	given as X and Y (eg 'T' and 's') then the require state values are given
+	as x and y (eg 300 and 5500). The solver will attempt to find a state
+	that satisfies the provided input, and return it as output.
 
+	On return, the variable status will be set to 0 on success, or an error code
+	if something has gone wrong, eg failed to converge.
+
+	A first guess must be provided via the 'guess' parameter.
+
+	FIXME provide 'default' guess functions.
+*/
+SteamState freesteam_solver2_region3(char X, char Y, double x, double y, SteamState guess, int *status);
+
+SteamState freesteam_solver2_region1(char X, char Y, double x, double y, SteamState guess, int *status);
+SteamState freesteam_solver2_region2(char X, char Y, double x, double y, SteamState guess, int *status);
+SteamState freesteam_solver2_region4(char X, char Y, double x, double y, SteamState guess, int *status);
+
+#endif
