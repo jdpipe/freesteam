@@ -96,6 +96,7 @@ SteamState solver2_region3(char X, char Y, double x, double y, SteamState guess,
 			exit(1);
 		}
 
+		
 		DfT = freesteam_prop(X,petT) - f;
 		DsT = freesteam_prop(Y,petT) - s;
 

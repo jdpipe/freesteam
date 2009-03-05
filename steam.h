@@ -66,8 +66,11 @@ FREESTEAM_DLL int freesteam_fprint(FILE *f, SteamState S);
 # define FREESTEAM_DEBUG(NAME,STATE)
 #endif
 
+typedef double SteamPropertyFunction(SteamState S);
+
 FREESTEAM_DLL double freesteam_p(SteamState S);
 FREESTEAM_DLL double freesteam_T(SteamState S);
+FREESTEAM_DLL double freesteam_rho(SteamState S);
 FREESTEAM_DLL double freesteam_v(SteamState S);
 FREESTEAM_DLL double freesteam_u(SteamState S);
 FREESTEAM_DLL double freesteam_h(SteamState S);
