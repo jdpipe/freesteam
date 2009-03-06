@@ -26,9 +26,88 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
-SteamState solver2_region3(char X, char Y, double x, double y, SteamState guess, int *status){
+/*------------------------------------------------------------------------------
+  LOOKUP FOR APPROPRIATE PROPERTY EVALUATION FUNCTION
+*/
 
+typedef double PropertyFunction(double, double);
+
+static PropertyFunction *solver2_region3_propfn(char A){
+	switch(A){
+		case 'p': return &freesteam_region3_p_rhoT;
+		case 'u': return &freesteam_region3_u_rhoT;
+		case 's': return &freesteam_region3_s_rhoT;
+		case 'h': return &freesteam_region3_h_rhoT;
+		case 'v': return &freesteam_region3_h_rhoT;
+		default: return 0;
+	}
+}
+
+/*------------------------------------------------------------------------------
+  CONVERGENCE TESTS
+*/
+
+const double errorP = 1e-6;
+const double errorH = 1e-6;
+const double errorS = 1e-12;
+const double errorV = 1e-10;
+const double errorRHO = 0.0001;
+const double errorU = 1e-12;
+//const double errorCP = 0.0001;
+//const double errorCV = 0.0001;
+const double errorT = 1e-10;
+
+#define R IAPWS97_R
+
+typedef char ConvergenceTestFunction(double error, SteamState S);
+
+static ConvergenceTestFunction solver2_converged_T, solver2_converged_p, solver2_converged_u, solver2_converged_s, solver2_converged_h, solver2_converged_v;
+
+static ConvergenceTestFunction *solver2_convergence_test_fn(char A){
+	switch(A){
+		case 'T': return &solver2_converged_T;
+		case 'p': return &solver2_converged_p;
+		case 'u': return &solver2_converged_u;
+		case 's': return &solver2_converged_s;
+		case 'h': return &solver2_converged_h;
+		case 'v': return &solver2_converged_v;
+		default: return 0;
+	}
+}
+
+char solver2_converged_T(double error, SteamState S){
+	return (char)( fabs(error) < errorT * freesteam_T(S));
+}
+
+char solver2_converged_p(double error, SteamState S){
+	return (char)( fabs(error) < errorP * freesteam_p(S));
+}
+
+char solver2_converged_u(double error, SteamState S){
+	return (char)(fabs(error) < errorU * R * freesteam_T(S));
+}
+
+char solver2_converged_h(double error, SteamState S){
+	return (char)(fabs(error) < errorH * R * freesteam_T(S));
+}
+
+char solver2_converged_s(double error, SteamState S){
+	return (char)( fabs(error) < errorS * R);
+}
+
+char solver2_converged_v(double error, SteamState S){
+	return (char)( fabs(error) < errorV * R * freesteam_T(S) / freesteam_p(S) );
+}
+
+#undef R
+
+/*------------------------------------------------------------------------------
+  REGION 3
+*/
+
+SteamState solver2_region3(char A, char B, double atarget, double btarget, SteamState guess, int *status){
 	int maxiter = 20;
 
 	SteamState S = guess;
@@ -38,55 +117,58 @@ SteamState solver2_region3(char X, char Y, double x, double y, SteamState guess,
 		return S;
 	}
 
-	SteamState petT, petrho;
-	double T,dT;
-	double rho,drho;
-	double f,Df, DfT, Dfrho; /* first prop */
-	double s,Ds,DsT, Dsrho; /* second prop and derivs */
+	PropertyFunction *Afn, *Bfn;
+	Afn = solver2_region3_propfn(A);
+	Bfn = solver2_region3_propfn(B);
+	if(Afn == 0 || Bfn == 0){
+		*status = 3;
+		fprintf(stderr,"%s: invalid property pair for solving\n",__func__);
+		return S;
+	}
+
+	ConvergenceTestFunction *Atest, *Btest;
+	Atest = solver2_convergence_test_fn(A);
+	Btest = solver2_convergence_test_fn(B);
+
+	double dT;
+	double drho;
+	double a,aerr, DaT, Darho; /* first prop */
+	double b,berr,DbT, Dbrho; /* second prop and derivs */
 	double p;
 
 	// cerr << endl << "Solver2::solveRegion3: Starting iterations";
 
 	int niter=0;
 	while(1){
-		T = freesteam_T(S);
-		rho = 1./freesteam_v(S);
 		p = freesteam_p(S);
 
-		f = freesteam_prop(X,S);
-		s = freesteam_prop(Y,S);
+		a = (*Afn)(S.R3.rho,S.R3.T);
+		b = (*Bfn)(S.R3.rho,S.R3.T);
 
-		Df = x - f;
-		Ds = y - s;
-		
-#if 0
-	/* FIXME need to implement convergence test somehow */
+		aerr = atarget - a;
+		berr = btarget - b;
 
-		// In this template it's hard to know the units of the convergence test, so make it as a new, separate, template:
-		if(
-			ConvergenceTest<FirstProp,FirstPropAlt>::test(Df,p,T)
-			&& ConvergenceTest<SecondProp,SecondPropAlt>::test(Ds,p,T)
-		){
-			// cerr << endl << "     ... SOLUTION OK (" << niter << " iterations)" << endl;
+		/* convergence tests */		
+		if(Atest(aerr,S) && Btest(berr,S)){
+			*status = 0;
 			return guess;
 		}
-#endif
 
-		dT = T * 0.001;
-
-		if(T + dT > REGION2_TMAX){
+#if 0
+		dT = S.R3.T * 0.001;
+		if(S.R3.T + dT > REGION2_TMAX){
 			dT = -dT;
 		}
 
-		petT = freesteam_region3_set_rhoT(rho,T+dT);
+		SteamState petT = freesteam_region3_set_rhoT(rho,T+dT);
 		if(petT.region!=3){
 			fprintf(stderr,"%s (%s:%d): region is not 3 as expected\n",__func__,__FILE__,__LINE__);
 			exit(1);
 		}
 
 		// ensure we don't go over rho limits
-		drho = rho * 0.001;
-		if(rho + drho > 50.0){
+		drho = S.R3.rho * 0.001;
+		if(S.R3.rho + drho > 50.0){
 			drho = -drho;
 		}
 
@@ -95,26 +177,28 @@ SteamState solver2_region3(char X, char Y, double x, double y, SteamState guess,
 			fprintf(stderr,"%s (%s:%d): region is not 3 as expected\n",__func__,__FILE__,__LINE__);
 			exit(1);
 		}
-
 		
-		DfT = freesteam_prop(X,petT) - f;
-		DsT = freesteam_prop(Y,petT) - s;
+		DfT = (*Xfn)(rho,T+dT) - f;
+		DsT = (*Yfn)(rho,T+dT) - s;
 
-		Dfrho = freesteam_prop(X,petrho) - f;
-		Dsrho = freesteam_prop(Y,petrho) - s;
+		Dfrho = (*Xfn)(rho+drho,T) - f;
+		Dsrho = (*Yfn)(rho+drho,T) - s;
 
-		ASSERT(DfT * Dsrho != DsT * Dfrho);
+		assert(DfT * Dsrho != DsT * Dfrho);
 
 		// Solve new peturbations
 		dT = dT * (Df*Dsrho - Ds*Dfrho) / (DfT*Dsrho - DsT*Dfrho);
 		drho = drho * (DfT*Ds - DsT*Df) / (DfT*Dsrho - DsT*Dfrho);
+#else
+		/* FIXME use the partial derivative functions instead of numerical */
+#endif
 
-		ASSERT(!isnan(dT));
-		ASSERT(!isnan(drho));
+		assert(!isnan(dT));
+		assert(!isnan(drho));
 
 		// Regulate maximum change in temperature
 
-		double dTMax = 0.1 * T;
+		double dTMax = 0.1 * S.R3.T;
 		double dTAbs = fabs(dT);
 		if(dTAbs > dTMax){
 			//cerr << endl << "      ... limiting dT, too great";
@@ -123,7 +207,7 @@ SteamState solver2_region3(char X, char Y, double x, double y, SteamState guess,
 
 		// Regulate max change in pressure
 
-		double drhoMax = 0.4 * rho;
+		double drhoMax = 0.4 * S.R3.rho;
 		double drhoAbs = fabs(drho);
 		if(drhoAbs > drhoMax){
 			//cerr << endl << "      ... limiting drho, too great";
@@ -131,18 +215,18 @@ SteamState solver2_region3(char X, char Y, double x, double y, SteamState guess,
 		}
 
 		//cerr << endl << "     ... calculated dT = " << dT << ", drho = " << drho;
-		T = T + dT;
-		rho = rho + drho;
+		S.R3.T = S.R3.T + dT;
+		S.R3.rho = S.R3.rho + drho;
 
-		if(T > REGION2_TMAX){
+		if(S.R3.T > REGION2_TMAX){
 			// Strangely, this test never seems to be used...
 			//cerr << endl << "     .... Applying T_MAX limit";
-			T = REGION2_TMAX;
+			S.R3.T = REGION2_TMAX;
 		}
 
-		if(T < REGION1_TMAX){
+		if(S.R3.T < REGION1_TMAX){
 			//cerr << endl << "     .... Applying T_REG1_REG3 limit";
-			T = REGION1_TMAX;
+			S.R3.T = REGION1_TMAX;
 		}
 
 		/* FIXME: do we really need this bit? */
@@ -195,8 +279,6 @@ SteamState solver2_region3(char X, char Y, double x, double y, SteamState guess,
 		}
 #endif
 
-		S = freesteam_region3_set_rhoT(rho,T);
-
 		niter++;
 
 		if(niter > maxiter){
@@ -208,9 +290,9 @@ SteamState solver2_region3(char X, char Y, double x, double y, SteamState guess,
 }
 
 #if 0
-int solver2_region4(char X, char Y, double x, double y, SteamState *S){
+int solver2_region4(char X, char Y, double xtarget, double y, SteamState *S){
 	try{
-		// Just like region 1, except for it's T,x
+		// Just like region 1, except for it's T,xtarget
 
 		//cerr << endl << "Solver2::solveRegion4: ";
 
@@ -267,7 +349,7 @@ int solver2_region4(char X, char Y, double x, double y, SteamState *S){
 			Boundaries::isSat_Tx(T+dT,x, true);
 
 			petT.setRegion4_Tx(T + dT, x);
-			ASSERT(petT.whichRegion()==4);
+			assert(petT.whichRegion()==4);
 
 			// ensure we don't go over x limits
 			dx = 0.0001;
@@ -278,7 +360,7 @@ int solver2_region4(char X, char Y, double x, double y, SteamState *S){
 			Boundaries::isSat_Tx(T, x+dx, true);
 
 			petx.setRegion4_Tx(T, x + dx);
-			ASSERT(petx.whichRegion()==4);
+			assert(petx.whichRegion()==4);
 
 			DfT = SteamProperty<FirstProp,FirstPropAlt>::get(petT) - f;
 			DsT = SteamProperty<SecondProp,SecondPropAlt>::get(petT) - s;
@@ -286,23 +368,23 @@ int solver2_region4(char X, char Y, double x, double y, SteamState *S){
 			Dfx = SteamProperty<FirstProp,FirstPropAlt>::get(petx) - f;
 			Dsx = SteamProperty<SecondProp,SecondPropAlt>::get(petx) - s;
 
-			//ASSERT(!(DfT == 0.0 * FirstProp() && Dfx == 0.0 * FirstProp()));
-			//ASSERT(!(DsT == 0.0 * SecondProp() && Dsx == 0.0 * SecondProp()));
-			//ASSERT(!(DsT == 0.0 * SecondProp() && DfT == 0.0 * FirstProp()));
-			//ASSERT(!(Dsx == 0.0 * SecondProp() && Dfx == 0.0 * FirstProp()));
-			ASSERT(DfT * Dsx != DsT * Dfx);
+			//assert(!(DfT == 0.0 * FirstProp() && Dfx == 0.0 * FirstProp()));
+			//assert(!(DsT == 0.0 * SecondProp() && Dsx == 0.0 * SecondProp()));
+			//assert(!(DsT == 0.0 * SecondProp() && DfT == 0.0 * FirstProp()));
+			//assert(!(Dsx == 0.0 * SecondProp() && Dfx == 0.0 * FirstProp()));
+			assert(DfT * Dsx != DsT * Dfx);
 
-			//ASSERT(0.0 * FirstProp() * SecondProp() != DfT * Dsx - DsT *Dfx);
+			//assert(0.0 * FirstProp() * SecondProp() != DfT * Dsx - DsT *Dfx);
 
-			//ASSERT(!((DfT==0.0 * FirstProp() || Dsx==0.0 * SecondProp()) && (Dfx==0.0 * FirstProp() || DsT==0.0 * SecondProp())));
+			//assert(!((DfT==0.0 * FirstProp() || Dsx==0.0 * SecondProp()) && (Dfx==0.0 * FirstProp() || DsT==0.0 * SecondProp())));
 
 
 			// Solve new peturbations
 			dT = dT * (Df*Dsx - Ds*Dfx) / (DfT*Dsx - DsT*Dfx);
 			dx = dx * (DfT*Ds - DsT*Df) / (DfT*Dsx - DsT*Dfx);
 
-			ASSERT(!isnan(dT));
-			ASSERT(!isnan(dx));
+			assert(!isnan(dT));
+			assert(!isnan(dx));
 
 			// Regulate maximum change in temperature
 
@@ -409,7 +491,7 @@ int solver2_region1(char X, char Y, double x, double y, SteamState *S);
 		}
 
 		petT.set_pT(p,T + dT);
-		ASSERT(petT.whichRegion()==1);
+		assert(petT.whichRegion()==1);
 
 		// ensure we don't go over p limits
 		dp = p * 0.001;
@@ -418,7 +500,7 @@ int solver2_region1(char X, char Y, double x, double y, SteamState *S);
 		}
 
 		petp.set_pT(p + dp, T);
-		ASSERT(petp.whichRegion()==1);
+		assert(petp.whichRegion()==1);
 
 		DfT = SteamProperty<FirstProp,FirstPropAlt>::get(petT) - f;
 		DsT = SteamProperty<SecondProp,SecondPropAlt>::get(petT) - s;
@@ -476,8 +558,8 @@ int solver2_region1(char X, char Y, double x, double y, SteamState *S);
 			}
 		}
 
-		ASSERT(guess.whichRegion()==1);
-		ASSERT(Boundaries::isRegion1_pT(p,T));
+		assert(guess.whichRegion()==1);
+		assert(Boundaries::isRegion1_pT(p,T));
 
 		guess.setRegion1_pT(p,T);
 
@@ -553,7 +635,7 @@ int solver2_region2(char X, char Y, double x, double y, SteamState *S);
 		}
 
 		petT.set_pT(p,T+ dT);
-		ASSERT(petT.whichRegion()==2);
+		assert(petT.whichRegion()==2);
 
 		// Peturb p but keep above P_TRIPLE
 		dp = -p * 0.001;
@@ -561,7 +643,7 @@ int solver2_region2(char X, char Y, double x, double y, SteamState *S);
 			dp = -dp;
 		}
 		petp.set_pT(p + dp, T);
-		ASSERT(petp.whichRegion()==2);
+		assert(petp.whichRegion()==2);
 
 		DfT = SteamProperty<FirstProp,FirstPropAlt>::get(petT) - f;
 		DsT = SteamProperty<SecondProp,SecondPropAlt>::get(petT) - s;
@@ -622,8 +704,8 @@ int solver2_region2(char X, char Y, double x, double y, SteamState *S);
 			}
 		}
 
-		ASSERT(guess.whichRegion()==2);
-		ASSERT(Boundaries::isRegion2_pT(p,T));
+		assert(guess.whichRegion()==2);
+		assert(Boundaries::isRegion2_pT(p,T));
 
 		guess.setRegion2_pT(p,T);
 
