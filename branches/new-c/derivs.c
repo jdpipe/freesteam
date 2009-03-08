@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "region4.h"
 
 #include <stdlib.h>
+#include <assert.h>
 
 /* forward decls */
 
@@ -32,8 +33,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 The following functions basically look up the contents of Table 1 and Table 2
 from the IAPWS Guideline.
 */
-
-typedef double PartialDerivFn(char,SteamState);
 
 /*
 The following are the functions
@@ -43,8 +42,17 @@ The following are the functions
 
 etc., for each of the different regions (n).
 */
-static PartialDerivFn VT3, TV3, PT1, TP1, PT2, TP2, TX4, XT4;
 
+#define TV3 freesteam_region3_dAdTv
+#define VT3 freesteam_region3_dAdvT
+#define PT1 freesteam_region1_dAdpT
+#define TP1 freesteam_region1_dAdTp
+#define PT2 freesteam_region2_dAdpT
+#define TP2 freesteam_region2_dAdTp
+#define TX4 freesteam_region4_dAdTx
+#define XT4 freesteam_region4_dAdxT
+
+PartialDerivFn PT1, TP1, PT2, TP2, TV3, VT3, TX4, XT4;
 /*------------------------------------------------------------------------------
   EXPORTED FUNCTION(S)
 */
@@ -113,7 +121,7 @@ will be calculated several times in different calls to VT3.
 /**
 	TODO convert char to enum for better compiler checking capability
 */
-double VT3(char x, SteamState S){
+double freesteam_region3_dAdvT(char x, SteamState S){
 	double res;
 	switch(x){
 		case 'p': res = -p*betap; break;
@@ -129,11 +137,11 @@ double VT3(char x, SteamState S){
 			fprintf(stderr,"%s (%s:%d): Invalid variable '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
 	}
-	fprintf(stderr,"(∂%c/∂v)T = %f\n",x,res);
+	//fprintf(stderr,"(∂%c/∂v)T = %f\n",x,res);
 	return res;
 }
 
-double TV3(char x, SteamState S){
+double freesteam_region3_dAdTv(char x, SteamState S){
 	double res;
 	switch(x){
 		case 'p': res = p*alphap; break;
@@ -149,7 +157,7 @@ double TV3(char x, SteamState S){
 			fprintf(stderr,"%s (%s:%d): Invalid variable '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
 	}
-	fprintf(stderr,"(∂%c/∂T)v = %f\n",x,res);
+	//fprintf(stderr,"(∂%c/∂T)v = %f\n",x,res);
 	return res;
 }
 
@@ -177,7 +185,7 @@ double TV3(char x, SteamState S){
 /**
 	TODO convert char to enum for better compiler checking capability
 */
-double TP1(char x, SteamState S){
+double freesteam_region1_dAdTp(char x, SteamState S){
 	double res;
 	switch(x){
 		case 'p': res = 0; break;
@@ -199,7 +207,7 @@ double TP1(char x, SteamState S){
 	return res;
 }
 
-double PT1(char x, SteamState S){
+double freesteam_region1_dAdpT(char x, SteamState S){
 	double res;
 	switch(x){
 		case 'p': res = 1; break;
@@ -245,7 +253,7 @@ double PT1(char x, SteamState S){
 /**
 	TODO convert char to enum for better compiler checking capability
 */
-double TP2(char x, SteamState S){
+double freesteam_region2_dAdTp(char x, SteamState S){
 	double res;
 	switch(x){
 		case 'p': res = 0; break;
@@ -261,7 +269,7 @@ double TP2(char x, SteamState S){
 			fprintf(stderr,"%s (%s:%d): Invalid character x = '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
 	}
-#if 1
+#if 0
 	fprintf(stderr,"(∂%c/∂T)p = %g\n",x,res);
 	if(x=='v'){
 		fprintf(stderr,"(∂ρ/∂T)p = %g\n",-1/SQ(v)*res);
@@ -270,7 +278,7 @@ double TP2(char x, SteamState S){
 	return res;
 }
 
-double PT2(char x, SteamState S){
+double freesteam_region2_dAdpT(char x, SteamState S){
 	double res;
 	switch(x){
 		case 'p': res = 1; break;
@@ -286,7 +294,7 @@ double PT2(char x, SteamState S){
 			fprintf(stderr,"%s (%s:%d): Invalid character x = '%c'\n", __func__,__FILE__,__LINE__,x);
 			exit(1);
 	}
-#if 1
+#if 0
 	fprintf(stderr,"(∂%c/∂p)T = %g\n",x,res);
 	if(x=='v'){
 		fprintf(stderr,"(∂ρ/∂p)T = %g\n",-1/SQ(v)*res);
@@ -314,7 +322,7 @@ in terms of (∂z/∂T)x and (∂z/∂x)T.
 	⎰ ∂z ⎱   =  ⎰∂z_f⎱ (1 - x) + ⎰∂z_f⎱ x
 	⎱ ∂T ⎰x     ⎱ ∂T ⎰           ⎱ ∂T ⎰
 */
-double TX4(char z, SteamState S){
+double freesteam_region4_dAdTx(char z, SteamState S){
 	double res;
 #define T S.R4.T
 	switch(z){
@@ -322,8 +330,12 @@ double TX4(char z, SteamState S){
 		case 'T': res = 1; break;
 	}
 
+	//fprintf(stderr,"%s: T = %g\n",__func__,T);
+	assert(!isnan(T));
+
 	double dzfdT, dzgdT;
 	if(T < REGION1_TMAX){
+		//fprintf(stderr,"%s: below REGION1_TMAX\n",__func__);
 		double psat = freesteam_region4_psat_T(T);
 		SteamState Sf = freesteam_region1_set_pT(psat,T);
 		SteamState Sg = freesteam_region2_set_pT(psat,T);
@@ -333,15 +345,23 @@ double TX4(char z, SteamState S){
 	}else{
 		double rhof = freesteam_region4_rhof_T(T);
 		double rhog = freesteam_region4_rhog_T(T);
+		assert(rhof!=0);
+		assert(rhog!=0);
 		SteamState Sf = freesteam_region3_set_rhoT(rhof,T);
 		SteamState Sg = freesteam_region3_set_rhoT(rhog,T);
 		double dvfdT = -1./SQ(rhof) * freesteam_drhofdT_T(T);
+		assert(!isnan(dvfdT));
 		double dvgdT = -1./SQ(rhog) * freesteam_drhogdT_T(T);
+		assert(!isnan(dvgdT));
 		dzfdT = VT3(z,Sf)*dvfdT + TV3(z,Sf);
 		dzgdT = VT3(z,Sg)*dvgdT + TV3(z,Sg);
 	}
+	assert(!isnan(dzfdT));
+	assert(!isnan(dzgdT));
 #define x S.R4.x
-	return dzfdT*(1-x) + dzgdT*x;
+	res = dzfdT*(1-x) + dzgdT*x;
+	//fprintf(stderr,"(∂%c/∂T)x = %g\n",z,res);
+	return res;
 #undef T
 #undef x
 }
@@ -363,7 +383,7 @@ double TX4(char z, SteamState S){
 	⎱ ∂x ⎰T   ⎱ ∂x ⎰T
 
 */	
-double XT4(char z, SteamState S){
+double freesteam_region4_dAdxT(char z, SteamState S){
 	switch(z){
 		case 'p': return 0;
 		case 'T': return 0;
@@ -383,6 +403,7 @@ double XT4(char z, SteamState S){
 			fprintf(stderr,"%s (%s:%d): Invalid character x = '%c'\n", __func__,__FILE__,__LINE__,z);
 			exit(1);
 	}
+	//fprintf(stderr,"(∂%c/∂x)T = %g\n",z,zg-zf);
 	return zg - zf;
 }
 #undef T

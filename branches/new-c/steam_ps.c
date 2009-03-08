@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "region4.h"
 #include "zeroin.h"
 #include "b23.h"
+#include "solver2.h"
 
 #include <stdlib.h>
 
@@ -122,12 +123,29 @@ SteamState freesteam_set_ps(double p, double s){
 			zeroin_solve(&ps_region2_fn, &D, lb, ub, tol, &sol, &err);
 			return freesteam_region2_set_pT(p,sol);
 		case 4:
-			lb = 0.;
-			ub = 1.;
-			tol = 1e-9; /* ??? */
-			zeroin_solve(&ps_region4_fn, &D, lb, ub, tol, &sol, &err);
-			return freesteam_region4_set_Tx(D.T,sol);
+			{
+				lb = 0.;
+				ub = 1.;
+				tol = 1e-9; /* ??? */
+				D.T = freesteam_region4_Tsat_p(p);
+				fprintf(stderr,"%s: (%s:%d): p = %g\n",__func__,__FILE__,__LINE__,D.p);
+				zeroin_solve(&ps_region4_fn, &D, lb, ub, tol, &sol, &err);
+				SteamState S = freesteam_region4_set_Tx(D.T,sol);
+				fprintf(stderr,"%s: (%s:%d): p = %g\n",__func__,__FILE__,__LINE__,D.p);
+				return S;
+			}
 		case 3:
+			{
+				int status;
+				double Tsat = freesteam_region4_Tsat_p(p);
+				SteamState guess = freesteam_region3_set_rhoT(freesteam_region4_rhof_T(Tsat),Tsat);
+				SteamState S = freesteam_solver2_region3('p','s', p, s, guess, &status);
+				if(status){
+					fprintf(stderr,"%s (%s:%d): Failed solve in region 3\n",__func__,__FILE__,__LINE__);
+					exit(1);
+				}
+				return S;
+			}
 		default:
 			/* ??? */
 			fprintf(stderr,"%s (%s:%d): Region '%d' not implemented\n",__func__,__FILE__,__LINE__,region);
