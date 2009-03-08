@@ -24,10 +24,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "b23.h"
 #include "derivs.h"
 #include "zeroin.h"
+#include "region3.h"
+#include "solver2.h"
+#include "steam_ps.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <assert.h>
 
 int errorflag = 0;
 double maxrelerr = 0;
@@ -372,8 +376,8 @@ void test_ph_derivs(double p, double h){
 	freesteam_fprint(stderr,S);
 
 #if 1
-	//if(S.region!=2)return;
-	double dp = p * .0001;
+	if(S.region!=3)return;
+	double dp = 1.;
 	SteamState Sdp;
 	switch(S.region){
 		case 1: Sdp = freesteam_region1_set_pT(p+dp,freesteam_region1_T_ph(p+dp,h)); break;
@@ -397,7 +401,7 @@ void test_ph_derivs(double p, double h){
 	CHECK_VAL(dvdp_h,dvdp_h_fdiff,1e-3);
 #endif
 
-	double dh = h * .0001;
+	double dh = 1.;
 	SteamState Sdh;
 	switch(S.region){
 		case 1: Sdh = freesteam_region1_set_pT(p,freesteam_region1_T_ph(p,h+dh)); break;
@@ -425,7 +429,7 @@ void test_ph_derivs(double p, double h){
 }
 
 void testderivs(void){
-	const double pp[] = {0.001, 0.0035, 0.01, 0.1, 1, 2, 5, 10, 20/*, 22, 22.06 , 22.064, 22.07, 23, 25, 30, 40, 50, 80, 90, 100*/};
+	const double pp[] = {0.001, 0.0035, 0.01, 0.1, 1, 2, 5, 10, 20, 22, 22.06 , 22.064, 22.07, 23, 25, 30, 40, 50, 80, 90, 100};
 	const int np = sizeof(pp)/sizeof(double);
 	const double hh[] = {100, 300, 400, 450, 500, 800, 1000/*, 1500, 2000, 2107, 2108, 2109, 2200 2500, 2600, 2650, 2700, 2800, 2900, 3000*/};
 	const int nh = sizeof(hh)/sizeof(double);
@@ -434,7 +438,7 @@ void testderivs(void){
 	fprintf(stderr,"DERIVATIVE ROUTINE TESTS\n");
 	for(p=pp; p<pp+np; ++p){
 		for(h=hh; h<hh+nh; ++h){
-			test_ph_derivs(*p*1e6,*h*4e3);
+			test_ph_derivs((*p)*1e6,(*h)*4e3);
 		}
 	}
 
@@ -463,6 +467,96 @@ void testzeroin(void){
 	double sol = 0, err = 0;
 	zeroin_solve(&test_zeroin_subject,&Q1, -10, 4.566, 1e-10, &sol, &err);
 	CHECK_VAL(sol,2.,1e-10);
+}
+
+/*------------------------------------------------------------------------------
+  SOLVER2 TESTS
+*/
+
+void testsolver2(void){
+	fprintf(stderr,"SOLVER2 TESTS\n");
+	SteamState S;
+
+	/* test in region 3 */
+	S = freesteam_region3_set_rhoT(IAPWS97_RHOCRIT, IAPWS97_TCRIT + 50.);
+	assert(S.region==3);
+	double p = freesteam_p(S);
+	double h = freesteam_h(S);
+	int status;
+	SteamState S2;
+	fprintf(stderr,"Solving for p = %g MPa, h = %g kJ/kgK (rho = %g, T = %g)\n",p/1e6, h/1e3,S.R3.rho, S.R3.T);
+	SteamState guess = freesteam_region3_set_rhoT(1./0.00317, 673.15);	
+	S2 = freesteam_solver2_region3('p','h',p,h,guess,&status);
+	assert(status==0);
+	CHECK_VAL(freesteam_p(S2),p, 1e-7);
+	CHECK_VAL(freesteam_h(S2),h, 1e-7);
+
+	/* test in region 4 */
+	S = freesteam_region4_set_Tx(440, 0.9);
+	p = freesteam_p(S);
+	h = freesteam_h(S);
+	fprintf(stderr,"Solving for p = %g MPa, h = %g kJ/kgK (region 4: T = %g, x = %g)\n",p/1e6, h/1e3,S.R4.T, S.R4.x);
+	guess = freesteam_region4_set_Tx(IAPWS97_TCRIT - 1.,0.5);
+	S2 = freesteam_solver2_region4('p','h',p,h,guess,&status);
+	assert(status==0);
+	CHECK_VAL(freesteam_p(S2),p, 1e-7);
+	CHECK_VAL(freesteam_h(S2),h, 1e-7);
+
+	/* test in region 2 */
+	S = freesteam_region2_set_pT(1e5, 273.15+180.);
+	p = freesteam_p(S);
+	h = freesteam_h(S);
+	fprintf(stderr,"Solving for p = %g MPa, h = %g kJ/kgK (region 2: p = %g, T = %g)\n",p/1e6, h/1e3,S.R2.p, S.R2.T);
+	guess = freesteam_region2_set_pT(200e5,273.15+500.);
+	S2 = freesteam_solver2_region2('p','h',p,h,guess,&status);
+	assert(status==0);
+	CHECK_VAL(freesteam_p(S2),p, 1e-7);
+	CHECK_VAL(freesteam_h(S2),h, 1e-7);
+
+	/* test in region 1 */
+	S = freesteam_region1_set_pT(1e5, 273.15+40.);
+	p = freesteam_p(S);
+	h = freesteam_h(S);
+	fprintf(stderr,"Solving for p = %g MPa, h = %g kJ/kgK (region 1: p = %g, T = %g)\n",p/1e6, h/1e3,S.R1.p, S.R1.T);
+	guess = freesteam_region1_set_pT(200e5,273.15+20.);
+	S2 = freesteam_solver2_region1('p','h',p,h,guess,&status);
+	assert(status==0);
+	CHECK_VAL(freesteam_p(S2),p, 1e-7);
+	CHECK_VAL(freesteam_h(S2),h, 1e-7);
+}
+
+/*------------------------------------------------------------------------------
+  FULL (P,S) ROUTINES
+*/
+
+/* #define PHRELTOL 6e-5 ---region 2 */
+#define PHRELTOL 1e-3 /* region 1 */
+
+void test_steam_ps(double p,double s){
+	//fprintf(stderr,"------------\n");
+	fprintf(stderr,"p = %f MPa, s = %f kJ/kgK\n",p, s);
+	SteamState S = freesteam_set_ps(p*1e6,s*1e3);
+	//if(S.region !=1)return;
+	fprintf(stderr,"--> region = %d\n", S.region);
+	if(S.region==4)fprintf(stderr,"--> p = %g\n", freesteam_region4_psat_T(S.R4.T));
+	CHECK_VAL(freesteam_p(S),p*1e6,PHRELTOL);
+	CHECK_VAL(freesteam_s(S),s*1e3,PHRELTOL);
+
+};
+
+void testps(void){
+	const double pp[] = {0.001, 0.0035, 0.01, 0.1, 1, 2, 5, 10, 20, 22, 22.06, 22.064, 22.07, 23, 25, 30, 40, 50, 80, 90, 100};
+	const int np = sizeof(pp)/sizeof(double);
+	const double ss[] = {3};
+	const int ns = sizeof(ss)/sizeof(double);
+	const double *p, *s;
+
+	fprintf(stderr,"FULL (P,S) TESTS\n");
+	for(p=pp; p<pp+np; ++p){
+		for(s=ss; s<ss+ns; ++s){
+			test_steam_ps(*p,*s);
+		}
+	}
 }
 
 /*------------------------------------------------------------------------------
@@ -499,13 +593,15 @@ int main(void){
 
 	// COMMENT OUT TO PERFORM THESE TESTS:
 	//testph();
+	testps();
 	//testregion4props();
 
 	//testderivs();
+	//testzeroin();
+	testsolver2();
 	
-	testzeroin();
-
 #if 0
+
 	SteamState S;
 	S = freesteam_set_ph(100e5,2000);
 	fprintf(stderr,"p = %f\n",freesteam_p(S));

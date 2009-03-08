@@ -170,6 +170,7 @@ lib_env = env.Clone()
 lib_env.Append(
 	LIBS = ['m']
 )
+lib_env.ParseConfig(['gsl-config','--cflags','--libs'])
 
 # Create the shared library
 

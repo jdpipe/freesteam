@@ -32,5 +32,18 @@ FREESTEAM_DLL double freesteam_deriv(SteamState S, char x, char y, char z);
 FREESTEAM_DLL double freesteam_drhofdT_T(double T);
 FREESTEAM_DLL double freesteam_drhogdT_T(double T);
 
+/* region-by-region derivative functions */
+typedef double PartialDerivFn(char,SteamState);
+FREESTEAM_DLL double freesteam_region3_dAdvT(char,SteamState);
+FREESTEAM_DLL double freesteam_region3_dAdTv(char,SteamState);
+FREESTEAM_DLL double freesteam_region1_dAdTp(char,SteamState);
+FREESTEAM_DLL double freesteam_region1_dAdpT(char,SteamState);
+FREESTEAM_DLL double freesteam_region2_dAdTp(char,SteamState);
+FREESTEAM_DLL double freesteam_region2_dAdpT(char,SteamState);
+FREESTEAM_DLL double freesteam_region4_dAdTx(char,SteamState);
+FREESTEAM_DLL double freesteam_region4_dAdxT(char,SteamState);
+
+
+
 #endif
 
