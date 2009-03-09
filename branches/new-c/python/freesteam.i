@@ -33,6 +33,8 @@ You may not use it in commercially-released software."
 %module(docstring=DOCSTRING) freesteam
 
 %rename(steam_ph) freesteam_set_ph;
+%rename(steam_ps) freesteam_set_ps;
+%rename(steam_pT) freesteam_set_pT;
 %rename(region1_pT) freesteam_region1_set_pT;
 %rename(region2_pT) freesteam_region2_set_pT;
 
@@ -75,11 +77,14 @@ You may not use it in commercially-released software."
 %{
 #include "steam.h"
 #include "steam_ph.h"
+#include "steam_ps.h"
+#include "steam_pT.h"
 #include "region1.h"
 #include "region2.h"
 #include "region3.h"
 #include "region4.h"
 #include "derivs.h"
+#include "solver2.h"
 %}
 
 /* TODO clean up region4.h so we can just include it here */
@@ -91,7 +96,15 @@ double freesteam_region4_dpsatdT_T(double T);
 
 %include "steam.h";
 %include "steam_ph.h";
+%include "steam_ps.h";
+%include "steam_pT.h";
 %include "derivs.h";
+
+/* FIXME convert solver2 routines to throw exception instead of return status */
+SteamState freesteam_solver2_region3(char X, char Y, double x, double y, SteamState guess, int *OUT);
+SteamState freesteam_solver2_region1(char X, char Y, double x, double y, SteamState guess, int *OUT);
+SteamState freesteam_solver2_region2(char X, char Y, double x, double y, SteamState guess, int *OUT);
+SteamState freesteam_solver2_region4(char X, char Y, double x, double y, SteamState guess, int *OUT);
 
 %extend SteamState{
 	SteamState(){

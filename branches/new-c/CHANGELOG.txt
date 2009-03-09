@@ -1,5 +1,16 @@
 CHANGELOG
 
+0.9.x
+XXXXX 2009
+-----
+
+- Complete rewrite in plain C
+- Two-way solver now makes use of GSL, instead of being standalone.
+- New APIs for C, Python and ASCEND
+- Extended the use of 'reverse' equations e.g. for (p,h)
+- Updated to new IAPWS-IF97 release documents.
+- Included code for generation of (p,h) etc diagrams.
+
 0.8.1
 Monday, 15 October 2007
 -----------------------
