@@ -29,14 +29,20 @@ You may not use it in commercially-released software."
 %enddef
 
 %feature("autodoc", "1");
-
 %module(docstring=DOCSTRING) freesteam
+
+%include "typemaps.i"
 
 %rename(steam_ph) freesteam_set_ph;
 %rename(steam_ps) freesteam_set_ps;
 %rename(steam_pT) freesteam_set_pT;
 %rename(region1_pT) freesteam_region1_set_pT;
 %rename(region2_pT) freesteam_region2_set_pT;
+
+%rename(solver2_region1) freesteam_solver2_region1;
+%rename(solver2_region2) freesteam_solver2_region2;
+%rename(solver2_region3) freesteam_solver2_region3;
+%rename(solver2_region4) freesteam_solver2_region4;
 
 %rename(region3_rhoT) freesteam_region3_set_rhoT;
 %rename(region4_Tx) freesteam_region4_set_Tx;
@@ -100,11 +106,31 @@ double freesteam_region4_dpsatdT_T(double T);
 %include "steam_pT.h";
 %include "derivs.h";
 
+/* Rewrite the solver2 functions to include */
+%pythoncode %{
+def set_transform(im,x):
+   a = new_mat44()
+   for i in range(4):
+       for j in range(4):
+           mat44_set(a,i,j,x[i][j])
+   _example.set_transform(im,a)
+   free_mat44(a)
+%}
+
+
 /* FIXME convert solver2 routines to throw exception instead of return status */
-SteamState freesteam_solver2_region3(char X, char Y, double x, double y, SteamState guess, int *OUT);
-SteamState freesteam_solver2_region1(char X, char Y, double x, double y, SteamState guess, int *OUT);
-SteamState freesteam_solver2_region2(char X, char Y, double x, double y, SteamState guess, int *OUT);
-SteamState freesteam_solver2_region4(char X, char Y, double x, double y, SteamState guess, int *OUT);
+SteamState freesteam_solver2_region3(char X, char Y, double x, double y, SteamState guess, int *OUTPUT);
+SteamState freesteam_solver2_region1(char X, char Y, double x, double y, SteamState guess, int *OUTPUT);
+SteamState freesteam_solver2_region2(char X, char Y, double x, double y, SteamState guess, int *OUTPUT);
+SteamState freesteam_solver2_region4(char X, char Y, double x, double y, SteamState guess, int *OUTPUT);
+
+%pythoncode %{
+def solver2_region3(X, Y, x, y, guess):
+	S, err = _freesteam.solver2_region3(X,Y,x,y,guess)
+	if(err):
+		raise ValueError("solver2_region3 returned error %d" % err);
+	return S
+%}
 
 %extend SteamState{
 	SteamState(){
@@ -129,6 +155,7 @@ SteamState freesteam_solver2_region4(char X, char Y, double x, double y, SteamSt
 	const double cp;
 	const double cv;	
 	const double w;
+	const double rho;
 };
 
 %{
@@ -150,6 +177,10 @@ double SteamState_u_get(SteamState *S){
 
 double SteamState_v_get(SteamState *S){
 	return freesteam_v(*S);
+}
+
+double SteamState_rho_get(SteamState *S){
+	return freesteam_rho(*S);
 }
 
 double SteamState_s_get(SteamState *S){

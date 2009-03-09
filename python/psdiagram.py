@@ -36,7 +36,7 @@ for p in pp:
 	#sys.exit(1)
 
 #quiver(x,y,u,v,alpha=0.6)
-axis([0,10,273.15,800])
+axis([0,10,273.15,1073.15])
 xlabel('s / [kJ/kgK]')
 ylabel('T / [K]')
 show()

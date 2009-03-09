@@ -27,5 +27,7 @@ FREESTEAM_DLL double freesteam_region3_T_ph(double p, double h);
 FREESTEAM_DLL double freesteam_region3_v_ph(double p, double h);
 FREESTEAM_DLL double freesteam_region3_psat_h(double h);
 
+double freesteam_region3_T_ps(double p, double h);
+
 #endif
 

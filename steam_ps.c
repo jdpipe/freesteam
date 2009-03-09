@@ -152,12 +152,12 @@ SteamState freesteam_set_ps(double p, double s){
 			{
 				int status;
 				double Tsat = freesteam_region4_Tsat_p(p);
-				SteamState guess = freesteam_region3_set_rhoT(freesteam_region4_rhof_T(Tsat),Tsat);
+				SteamState guess = freesteam_region3_set_rhoT(IAPWS97_RHOCRIT,700);
 				SteamState S = freesteam_solver2_region3('p','s', p, s, guess, &status);
-				/*if(status){
-					fprintf(stderr,"%s (%s:%d): Failed solve in region 3\n",__func__,__FILE__,__LINE__);
-					exit(1);
-				}*/
+				if(status){
+					fprintf(stderr,"%s (%s:%d): Failed solve in region 3 for (p = %g MPa, s = %g kJ/kgK\n",__func__,__FILE__,__LINE__,p/1e6,s/1e3);
+					//exit(1);
+				}
 				return S;
 			}
 		default:

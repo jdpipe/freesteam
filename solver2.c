@@ -161,18 +161,18 @@ SteamState freesteam_solver2_region3(char A, char B, double atarget, double btar
 	T = gsl_multiroot_fdfsolver_gnewton;
 	s = gsl_multiroot_fdfsolver_alloc(T, n);
 	gsl_multiroot_fdfsolver_set(s, &f, x);
-	region3_print_state(iter, s);
+	//region3_print_state(iter, s);
 
 	do{
 		iter++;
 		status = gsl_multiroot_fdfsolver_iterate(s);
-		region3_print_state(iter, s);
+		//region3_print_state(iter, s);
 		if(status){
 			/* check if solver is stuck */
 			break;
 		}
 		status = gsl_multiroot_test_residual(s->f, 1e-7);
-	} while(status == GSL_CONTINUE && iter < 20);
+	} while(status == GSL_CONTINUE && iter < 30);
 
 	SteamState S = freesteam_region3_set_rhoT(gsl_vector_get(s->x,0), gsl_vector_get(s->x,1));
 	gsl_multiroot_fdfsolver_free(s);

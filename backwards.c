@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	TODO add boundary curves?
 	TODO add more equations for (p,s) calculation?
 
-	Numerical for T(p,h) and v(p,h) correlations was extracted from
+	Numerical data for T(p,h) and v(p,h) correlations was extracted from
 	the Matlab version 2.6 of Xsteam by by Magnus Holmgren.
 */
 
@@ -77,7 +77,7 @@ const double REGION1_TPH_PSTAR = 1e6; /* Pa */
 	in IAPWS-IF97 Region 1. Source: IAPWS-IF97-Rev section 5.2.1.
 
 	@param p pressure in Pa
-	@param h enthalpy in J/kgK
+	@param h enthalpy in J/kg
 	@return temperature in K
 */
 double freesteam_region1_T_ph(double p, double h){
@@ -228,7 +228,7 @@ const double REGION2_PSTAR = 1.e6;
 	Source: IAPWS-IF97-Rev section 5.2.1.
 
 	@param p pressure in Pa
-	@param h enthalpy in J/kgK
+	@param h enthalpy in J/kg
 	@return temperature in K
 */
 double freesteam_region2_T_ph(double p, double h){
@@ -366,7 +366,7 @@ const double REGION3B_TPH_TSTAR = 860;
 	Formulation 1997 for the Thermodynamic Properties of Water and Steam', 2004.
 
 	@param p pressure in Pa
-	@param h enthalpy in J/kgK
+	@param h enthalpy in J/kg
 	@return temperature in K
 */
 double freesteam_region3_T_ph(double p, double h){
@@ -493,7 +493,7 @@ const double REGION3B_VPH_VSTAR = 0.0088;
 	Formulation 1997 for the Thermodynamic Properties of Water and Steam', 2004.
 
 	@param p pressure in Pa
-	@param h enthalpy in J/kgK
+	@param h enthalpy in J/kg
 	@return temperature in K
 */
 double freesteam_region3_v_ph(double p, double h){
@@ -566,4 +566,138 @@ double freesteam_region3_psat_h(double h){
 	}
 	return sum * REGION3_PSATH_PSTAR;
 }
+
+/*------------------------------------------------------------------------------
+  REGION 3 BACKWARDS EQUATION T(P,S)
+*/
+
+/**
+	Source: Revised_Release_Tv3ph_Tv3ps_Rev3.doc sect 3.4
+*/
+BackwardsData REGION3A_TPS_DATA[] = {
+	{-12,	28,	1500420082.63875}
+	,{-12,	32,	-159397258480.424}
+	,{-10,	4,	5.02181140217975E-04}
+	,{-10,	10,	-67.2057767855466}
+	,{-10,	12,	1450.58545404456}
+	,{-10,	14,	-8238.8953488889}
+	,{-8,	5,	-0.154852214233853}
+	,{-8,	7,	11.2305046746695}
+	,{-8,	8,	-29.7000213482822}
+	,{-8,	28,	43856513263.5495}
+	,{-6,	2,	1.37837838635464E-03}
+	,{-6,	6,	-2.97478527157462}
+	,{-6,	32,	9717779473494.13}
+	,{-5,	0,	-5.71527767052398E-05}
+	,{-5,	14,	28830.794977842}
+	,{-5,	32,	-74442828926270.3}
+	,{-4,	6,	12.8017324848921}
+	,{-4,	10,	-368.275545889071}
+	,{-4,	36,	6.64768904779177E+15}
+	,{-2,	1,	0.044935925195888}
+	,{-2,	4,	-4.22897836099655}
+	,{-1,	1,	-0.240614376434179}
+	,{-1,	6,	-4.74341365254924}
+	,{0,	0,	0.72409399912611}
+	,{0,	1,	0.923874349695897}
+	,{0,	4,	3.99043655281015}
+	,{1,	0,	3.84066651868009E-02}
+	,{2,	0,	-3.59344365571848E-03}
+	,{2,	3,	-0.735196448821653}
+	,{3,	2,	0.188367048396131}
+	,{8,	0,	1.41064266818704E-04}
+	,{8,	1,	-2.57418501496337E-03}
+	,{10,	2,	1.23220024851555E-03}
+};
+
+const unsigned REGION3A_TPS_MAX = sizeof(REGION3A_TPS_DATA)/sizeof(BackwardsData);
+
+/**
+	Source: Revised_Release_Tv3ph_Tv3ps_Rev3.doc sect 3.4
+*/
+BackwardsData REGION3B_TPS_DATA[] = {
+	{-12,	1,	0.52711170160166}
+	,{-12,	3,	-40.1317830052742}
+	,{-12,	4,	153.020073134484}
+	,{-12,	7,	-2247.99398218827}
+	,{-8,	0,	-0.193993484669048}
+	,{-8,	1,	-1.40467557893768}
+	,{-8,	3,	42.6799878114024}
+	,{-6,	0,	0.752810643416743}
+	,{-6,	2,	22.6657238616417}
+	,{-6,	4,	-622.873556909932}
+	,{-5,	0,	-0.660823667935396}
+	,{-5,	1,	0.841267087271658}
+	,{-5,	2,	-25.3717501764397}
+	,{-5,	4,	485.708963532948}
+	,{-5,	6,	880.531517490555}
+	,{-4,	12,	2650155.92794626}
+	,{-3,	1,	-0.359287150025783}
+	,{-3,	6,	-656.991567673753}
+	,{-2,	2,	2.41768149185367}
+	,{0,	0,	0.856873461222588}
+	,{2,	1,	0.655143675313458}
+	,{3,	1,	-0.213535213206406}
+	,{4,	0,	5.62974957606348E-03}
+	,{5,	24,	-316955725450471.}
+	,{6,	0,	-6.99997000152457E-04}
+	,{8,	3,	1.19845803210767E-02}
+	,{12,	1,	1.93848122022095E-05}
+	,{14,	2,	-2.15095749182309E-05}
+};
+
+const unsigned REGION3B_TPS_MAX = sizeof(REGION3B_TPS_DATA)/sizeof(BackwardsData);
+
+const double REGION3A_TPS_TSTAR = 760.; /* K */
+const double REGION3A_TPS_SSTAR = 4.4e3; /* J/kgK */
+const double REGION3A_TPS_PSTAR = 1e6; /* Pa */
+
+const double REGION3B_TPS_TSTAR = 860.; /* K */
+const double REGION3B_TPS_SSTAR = 5.3e3; /* J/kgK */
+const double REGION3B_TPS_PSTAR = 1e6; /* Pa */
+
+const double REGION3AB_SC = 4.41202148223476e3; /* J/kgK */
+
+/**
+	Backward equation for temperature in terms of pressure and entropy
+	in IAPWS-IF97 Region 3 (composed of sub-regions 3a, 3b).
+
+	Source: IAPWS 'Revised Supplementary Release on Backward Equations for the Functions
+	T(p,h), v(p,h) and T(p,s), v(p,s) for Region 3 of the IAPWS Industrial
+	Formulation 1997 for the Thermodynamic Properties of Water and Steam', 2004.
+
+	@param p pressure in Pa
+	@param s specific entropy in J/kgK
+	@return temperature in K
+*/
+double freesteam_region3_T_ps(double p, double s){
+
+	IAPWS97_APPROXIMATE;
+
+	double p1, s1;
+	double Tstar;
+	BackwardsData *d;
+	unsigned i, n;
+	double sum = 0;
+	if(s < REGION3AB_SC){
+		/* sub-region 3a */
+		p1 = p/REGION3A_TPS_PSTAR + 0.240; s1 = s/REGION3A_TPS_SSTAR - 0.703;
+		d = REGION3A_TPS_DATA;
+		n = REGION3A_TPS_MAX;
+		Tstar = REGION3A_TPS_TSTAR;
+	}else{
+		/* sub-region 3b */
+		p1 = p/REGION3B_TPS_PSTAR + 0.760; s1 = s/REGION3B_TPS_SSTAR - 0.818;
+		d = REGION3B_TPS_DATA;
+		n = REGION3B_TPS_MAX;
+		Tstar = REGION3B_TPS_TSTAR;
+	}
+
+	for(i = 0; i<n; ++i, ++d){
+		sum += d->n * ipow(p1, d->I) * ipow(s1, d->J);
+	}
+
+	return sum * Tstar;
+}
+
 

@@ -39,6 +39,7 @@
 
 #define IAPWS97_PMAX 100e6 /* Pa */
 #define IAPWS97_TMIN 273.15 /* K */
+#define IAPWS97_TMAX 1073.15 /* K */
 
 #define IAPWS97_TCRIT 647.096 /* K */
 #define IAPWS97_PCRIT 22.064e6 /* Pa */
