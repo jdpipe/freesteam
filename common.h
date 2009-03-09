@@ -72,6 +72,10 @@
 
 /* Basic math routines, if necesary... */
 
-FREESTEAM_DLL double ipow(double x, int n);
+FREESTEAM_DLL double freesteam_ipow(double x, int n);
+
+#ifdef FREESTEAM_BUILDING_LIB
+# define ipow freesteam_ipow
+#endif
 
 #endif /* FREESTEAM_COMMON_H */

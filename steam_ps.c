@@ -111,11 +111,25 @@ SteamState freesteam_set_ps(double p, double s){
 	int region = freesteam_region_ps(p,s);
 	switch(region){
 		case 1:
+#if 0
 			lb = IAPWS97_TMIN;
 			ub = REGION1_TMAX;
 			tol = 1e-9; /* ??? */
 			zeroin_solve(&ps_region1_fn, &D, lb, ub, tol, &sol, &err);
 			return freesteam_region1_set_pT(p,sol);
+#else
+			{
+				int status;
+				double Tsat = freesteam_region4_Tsat_p(p);
+				SteamState guess = freesteam_region1_set_pT(p,Tsat);
+				SteamState S = freesteam_solver2_region1('p','s', p, s, guess, &status);
+				/*if(status){
+					fprintf(stderr,"%s (%s:%d): Failed solve in region 1\n",__func__,__FILE__,__LINE__);
+					exit(1);
+				}*/
+				return S;
+			}	
+#endif
 		case 2:
 			lb = IAPWS97_TMIN;
 			ub = REGION2_TMAX;
@@ -140,10 +154,10 @@ SteamState freesteam_set_ps(double p, double s){
 				double Tsat = freesteam_region4_Tsat_p(p);
 				SteamState guess = freesteam_region3_set_rhoT(freesteam_region4_rhof_T(Tsat),Tsat);
 				SteamState S = freesteam_solver2_region3('p','s', p, s, guess, &status);
-				if(status){
+				/*if(status){
 					fprintf(stderr,"%s (%s:%d): Failed solve in region 3\n",__func__,__FILE__,__LINE__);
 					exit(1);
-				}
+				}*/
 				return S;
 			}
 		default:

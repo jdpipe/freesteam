@@ -19,11 +19,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FREESTEAM_BUILDING_LIB
 #include "steam_pT.h"
 #include "region1.h"
+#include "region4.h"
+#include "region3.h"
+#include "zeroin.h"
+
 #include <stdlib.h>
+
+typedef struct{
+	double p, T;
+} SteamPTData;
+
+static double pT_region3_fn(double rho, void *user_data){
+#define D ((SteamPTData *)user_data)
+	return D->p - freesteam_region3_p_rhoT(rho, D->T);
+#undef D
+}
 
 /**
 	This function will never return region 4, because it's not possible
-	to sit on the knife of saturation. If you need to set saturated states,
+	to 'sit on the knife' of saturation. If you need to set saturated states,
 	you should use another function such as freesteam_region1_set_Tx.
 */
 SteamState freesteam_set_pT(double p, double T){
@@ -33,19 +47,47 @@ SteamState freesteam_set_pT(double p, double T){
 			S.region = 1;
 			S.R1.T = T;
 			S.R1.p = p;
-			return S;
 		}else{
 			S.region = 2;
 			S.R2.T = T;
 			S.R2.p = p;
-			return S;
 		}
 	}else{
-		S.region = 3;
-		S.R3.T = T;
-		/* FIXME need to iterate to find rho */
-		fprintf(stderr,"Not implemented...\n");
-		abort();
+		//fprintf(stderr,"%s: T = %g >= REGION1_TMAX = %g\n",__func__,T,REGION1_TMAX);
+		/* FIXME some optimisation possible here with test for lower pressures */
+		double T23 = freesteam_b23_T_p(p);
+		if(T > T23){
+			//fprintf(stderr,"%s: T = %g > T23 =  %g\n",__func__,T,T23);
+			S.region = 2;
+			S.R2.T = T;
+			S.R2.p = p;
+		}else{
+			/* FIXME the limit values are all wrong here! */
+			fprintf(stderr,"%s: T = %g > T23 =  %g\n",__func__,T,T23);
+			SteamPTData D = {p,T};
+			double lb = freesteam_b23_p_T(T);
+			double ub = IAPWS97_PMAX;
+			/* if we're in the little wee area around the critical pt... */
+			if(T < IAPWS97_TCRIT){
+				double psat = freesteam_region4_psat_T(T);
+				if(p < psat){
+					ub = freesteam_region4_rhof_T(T);
+				}else{
+					lb = psat;
+				}
+			}
+			double tol = 1e-7;
+			double sol, err = 0;
+			if(zeroin_solve(&pT_region3_fn, &D, lb, ub, tol, &sol, &err)){
+				fprintf(stderr,"%s (%s:%d): failed to solve for rho\n",__func__,__FILE__,__LINE__);
+				exit(1);
+			}
+			S.region = 3;
+			S.R3.T = T;
+			S.R3.rho = sol;
+		}
 	}
+	//fprintf(stderr,"%s: region %d\n",__func__,S.region);
+	return S;
 }		
 
