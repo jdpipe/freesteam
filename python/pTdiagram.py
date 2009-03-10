@@ -6,9 +6,14 @@ import math
 
 figure()
 hold(1)
+
+# SATURATION CURVE
+
 n = 400
 TT0 = [273.15 + (freesteam.TCRIT - 273.15)*x/n for x in range(n+1)]
 psat = [freesteam.psat_T(T)/1e6 for T in TT0]
+
+# REGION MAP
 
 Tmin = 273.15
 Tmax = 1073.15
@@ -33,10 +38,23 @@ for p in pp:
 		y += 1
 	x += 1
 
-imshow(im,extent=[Tmin,Tmax,pmin/1e6,pmax/1e6],cmap=autumn(),origin='lower',aspect='auto',interpolation='nearest')
+imshow(im,extent=[Tmin,Tmax,pmin/1e6,pmax/1e6],cmap=autumn(),origin='lower',aspect='auto',interpolation='nearest',alpha=0.7)
+
+# LINES OF CONSTANT ENTHALPY
+
+hh = arange(100,4500,200)*1e3
+for h in hh:
+	TT2 = [freesteam.steam_ph(p,h).T for p in pp]
+	plot(TT2,pp/1e6,'g-')
+
 plot(TT0,psat,'b-')
 axis([Tmin,Tmax,pmin/1e6,pmax/1e6])
 #quiver(x,y,u,v,alpha=0.6)
+
+
+
 xlabel('T / [K]')
 ylabel('p / [MPa]')
 show()
+
+
