@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "region3.h"
 #include "solver2.h"
 #include "steam_ps.h"
+#include "steam_pT.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -560,6 +561,28 @@ void testps(void){
 }
 
 /*------------------------------------------------------------------------------
+  FULL (P,T) ROUTINES
+*/
+
+void test_point_pT(double p, double T){
+	SteamState S = freesteam_set_pT(p,T);
+	fprintf(stderr,"region = %d\n",S.region);
+	CHECK_VAL(freesteam_p(S),p,1e-7);
+	CHECK_VAL(freesteam_T(S),T,1e-7);
+}
+
+void testpT(void){
+	int np = 100, nT = 100;
+	double p,T, dp = (IAPWS97_PMAX - 0.)/np, dT = (IAPWS97_TMAX - IAPWS97_TMIN)/nT;
+	fprintf(stderr,"FULL (P,T) TESTS\n");
+	for(p = 0.; p <= IAPWS97_PMAX; p += dp){
+		for(T = IAPWS97_TMIN; T <= IAPWS97_TMAX; T += dT){
+			test_point_pT(p,T);
+		}
+	}
+}
+
+/*------------------------------------------------------------------------------
   MAIN ROUTINE
 */
 
@@ -594,6 +617,7 @@ int main(void){
 	// COMMENT OUT TO PERFORM THESE TESTS:
 	//testph();
 	testps();
+	testpT();
 	//testregion4props();
 
 	//testderivs();

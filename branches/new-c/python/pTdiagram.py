@@ -15,21 +15,23 @@ Tmax = 1073.15
 DT = Tmax - Tmin
 pmin = 1e-3*1e5
 pmax = 1e3*1e5
-pp = logspace(-3,3)*1.e5
-TT = arange(Tmin,Tmax,DT/100)
-im = zeros((len(TT),len(pp)))
-y = 0
+DP = pmax - pmin
+pp = arange(pmin,pmax,DP/400)
+#pp = logspace(-3,3)*1.e5
+TT = arange(Tmin,Tmax,DT/500)
+im = zeros((len(pp),len(TT)))
+x = 0
 for p in pp:
-	print "p = %f MPa" % (p/1e6)
-	x = 0
+	#print "p = %f MPa" % (p/1e6)
+	y = 0
 	for T in TT:
 		S = freesteam.steam_pT(p,T)
 		#print "p = %f, T = %f" % (p,T)
 		r = ord(S.region)
 		#print "p = %f MPa, T = %f K, region[%d,%d] = %d" % (p/1e6,T,x,y,r)
 		im[x,y] = float(r) / 4.
-		x += 1
-	y += 1
+		y += 1
+	x += 1
 
 imshow(im,extent=[Tmin,Tmax,pmin/1e6,pmax/1e6],cmap=autumn(),origin='lower',aspect='auto',interpolation='nearest')
 plot(TT0,psat,'b-')
