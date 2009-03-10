@@ -15,9 +15,9 @@ plot(hf,TT,'b-')
 plot(hg,TT,'r-')
 
 pp = logspace(-3,3)*1e5
-hh = arange(50.,4000.,100)*1e3
+hh = arange(50.,4500.,100)*1e3
 
-hh1 = arange(50.,4000.,20)*1e3
+hh1 = arange(50.,4500.,20)*1e3
 
 x = []
 y = []
@@ -39,7 +39,7 @@ for p in pp:
 			pass
 
 quiver(x,y,u,v,alpha=0.6)
-axis([0,4000,273.15,800])
+axis([0,4500,273.15,1073.15])
 xlabel('h / [kJ/kg]')
 ylabel('T / [K]')
 show()

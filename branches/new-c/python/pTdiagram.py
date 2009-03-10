@@ -38,7 +38,7 @@ for p in pp:
 		y += 1
 	x += 1
 
-imshow(im,extent=[Tmin,Tmax,pmin/1e6,pmax/1e6],cmap=autumn(),origin='lower',aspect='auto',interpolation='nearest',alpha=0.7)
+imshow(im,extent=[Tmin,Tmax,pmin/1e6,pmax/1e6],origin='lower',aspect='auto',interpolation='nearest',alpha=0.6)
 
 # LINES OF CONSTANT ENTHALPY
 
