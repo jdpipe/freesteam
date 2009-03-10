@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 int errorflag = 0;
 double maxrelerr = 0;
-int verbose = 0;
+int verbose = 1;
 
 #define CHECK_VAL(EXPR, VAL, RELTOL){ \
 	double calc = (EXPR); \
@@ -583,6 +583,28 @@ void testpT(void){
 }
 
 /*------------------------------------------------------------------------------
+  REGION 3 (p,s) TEST DATA
+*/
+
+void test_region3_ps_point(double p,double s, double T, double v){
+	double T1 = freesteam_region3_T_ps(p*1e6,s*1e3);
+	CHECK_VAL(T1,T,RELTOL);
+	double v1 = freesteam_region3_v_ps(p*1e6,s*1e3);
+	CHECK_VAL(v1,v,RELTOL);
+}
+
+void testregion3ps(void){
+	fprintf(stderr,"REGION 3 (P,S) TESTS\n");
+	test_region3_ps_point(20.,	3.8,	6.282959869e2, 1.733791463e-3);
+	test_region3_ps_point(50.,	3.6,	6.297158726e2, 1.469680170e-3);
+	test_region3_ps_point(100.,	4.0,	7.056880237e2, 1.555893131e-3);
+
+	test_region3_ps_point(20.,	5.0,	6.401176443e2, 6.262101987e-3);
+	test_region3_ps_point(50.,	4.5,	7.163687517e2, 2.332634294e-3);
+	test_region3_ps_point(100.,	5.0,	8.474332825e2, 2.449610757e-3);
+}	
+
+/*------------------------------------------------------------------------------
   MAIN ROUTINE
 */
 
@@ -596,9 +618,11 @@ int main(void){
 	testregion1ph();
 	testregion2ph();
 	testregion3ph();
+	testregion3ps();
 	testregion3psath();
 	testb23();
-	
+
+#if 0	
 	/* the following tests cause the larger errors, and are not part of the
 	formal validation of freesteam. It is *expected* that T(p,h) routines and
 	v(p,h) routines will introduce some errors, and we are seeing this.
@@ -623,19 +647,8 @@ int main(void){
 	//testderivs();
 	//testzeroin();
 	testsolver2();
-	
-#if 0
-
-	SteamState S;
-	S = freesteam_set_ph(100e5,2000);
-	fprintf(stderr,"p = %f\n",freesteam_p(S));
-	fprintf(stderr,"h = %f\n",freesteam_h(S));
-	fprintf(stderr,"T = %f\n",freesteam_T(S));
-	fprintf(stderr,"v = %f\n",freesteam_v(S));
-	fprintf(stderr,"u = %f\n",freesteam_u(S));
-	fprintf(stderr,"s = %f\n",freesteam_s(S));
 #endif
-
+	
 	if(!errorflag){
 		fprintf(stderr,"SUCCESS! Max rel err = %e %%\n",maxrelerr*100);
 	}else{

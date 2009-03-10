@@ -650,11 +650,11 @@ const unsigned REGION3B_TPS_MAX = sizeof(REGION3B_TPS_DATA)/sizeof(BackwardsData
 
 const double REGION3A_TPS_TSTAR = 760.; /* K */
 const double REGION3A_TPS_SSTAR = 4.4e3; /* J/kgK */
-const double REGION3A_TPS_PSTAR = 1e6; /* Pa */
+const double REGION3A_TPS_PSTAR = 100e6; /* Pa */
 
 const double REGION3B_TPS_TSTAR = 860.; /* K */
 const double REGION3B_TPS_SSTAR = 5.3e3; /* J/kgK */
-const double REGION3B_TPS_PSTAR = 1e6; /* Pa */
+const double REGION3B_TPS_PSTAR = 100e6; /* Pa */
 
 const double REGION3AB_SC = 4.41202148223476e3; /* J/kgK */
 
@@ -698,6 +698,132 @@ double freesteam_region3_T_ps(double p, double s){
 	}
 
 	return sum * Tstar;
+}
+
+
+/**
+	Source: Revised_Release_Tv3ph_Tv3ps_Rev3.doc sect 3.4
+*/
+BackwardsData REGION3A_VPS_DATA[] = {
+	{-12,	10,	0.795544074093975e2}
+	, {-12,	12,	-0.238261242984590e4}
+	, {-12,	14,	0.176813100617787e5}
+	, {-10,	4,	-0.110524727080379e-2}
+	, {-10,	8,	-0.153213833655326e2}
+	, {-10,	10,	0.297544599376982e3}
+	, {-10,	20,	-0.350315206871242e8}
+	, {-8,	5,	0.277513761062119}
+	, {-8,	6,	-0.523964271036888}
+	, {-8,	14,	-0.148011182995403e6}
+	, {-8,	16,	0.160014899374266e7}
+	, {-6,	28,	0.170802322663427e13}
+	, {-5,	1,	0.246866996006494e-3}
+	, {-4,	5,	0.165326084797980e1}
+	, {-3,	2,	-0.118008384666987}
+	, {-3,	4,	0.253798642355900e1}
+	, {-2,	3,	0.965127704669424}
+	, {-2,	8,	-0.282172420532826e2}
+	, {-1,	1,	0.203224612353823}
+	, {-1,	2,	0.110648186063513e1}
+	, {0,	0,	0.526127948451280}
+	, {0,	1,	0.277000018736321}
+	, {0,	3,	0.108153340501132e1}
+	, {1,	0,	-0.744127885357893e-1}
+	, {2,	0,	0.164094443541384e-1}
+	, {4,	2,	-0.680468275301065e-1}
+	, {5,	2,	0.257988576101640e-1}
+	, {6,	0,	-0.145749861944416e-3}
+};
+
+const unsigned REGION3A_VPS_MAX = sizeof(REGION3A_VPS_DATA)/sizeof(BackwardsData);
+
+/**
+	Source: Revised_Release_Tv3ph_Tv3ps_Rev3.doc sect 3.4
+*/
+BackwardsData REGION3B_VPS_DATA[] = {
+	{-12,	0,	0.591599780322238e-4}
+	, {-12,	1,	-0.185465997137856e-2}
+	, {-12,	2,	0.104190510480013e-1}
+	, {-12,	3,	0.598647302038590e-2}
+	, {-12,	5,	-0.771391189901699}
+	, {-12,	6,	0.172549765557036e1}
+	, {-10,	0,	-0.467076079846526e-3}
+	, {-10,	1,	0.134533823384439e-1}
+	, {-10,	2,	-0.808094336805495e-1}
+	, {-10,	4,	0.508139374365767}
+	, {-8,	0,	0.128584643361683e-2}
+	, {-5,	1,	-0.163899353915435e1}
+	, {-5,	2,	0.586938199318063e1}
+	, {-5,	3,	-0.292466667918613e1}
+	, {-4,	0,	-0.614076301499537e-2}
+	, {-4,	1,	0.576199014049172e1}
+	, {-4,	2,	-0.121613320606788e2}
+	, {-4,	3,	0.167637540957944e1}
+	, {-3,	1,	-0.744135838773463e1}
+	, {-2,	0,	0.378168091437659e-1}
+	, {-2,	1,	0.401432203027688e1}
+	, {-2,	2,	0.160279837479185e2}
+	, {-2,	3,	0.317848779347728e1}
+	, {-2,	4,	-0.358362310304853e1}
+	, {-2,	12,	-0.115995260446827e7}
+	, {0,	0,	0.199256573577909}
+	, {0,	1,	-0.122270624794624}
+	, {0,	2,	-0.191449143716586e2}
+	, {1,	0,	-0.150448002905284e-1}
+	, {1,	2,	0.146407900162154e2}
+	, {2,	2,	-0.327477787188230e1}
+};
+
+const unsigned REGION3B_VPS_MAX = sizeof(REGION3B_VPS_DATA)/sizeof(BackwardsData);
+
+const double REGION3A_VPS_VSTAR = 0.0028; /* kg/m³ */
+const double REGION3A_VPS_SSTAR = 4.4e3; /* J/kgK */
+const double REGION3A_VPS_PSTAR = 100e6; /* Pa */
+
+const double REGION3B_VPS_VSTAR = 0.0088; /* kg/m³ */
+const double REGION3B_VPS_SSTAR = 5.3e3; /* J/kgK */
+const double REGION3B_VPS_PSTAR = 100e6; /* Pa */
+
+/**
+	Backward equation for temperature in terms of pressure and entropy
+	in IAPWS-IF97 Region 3 (composed of sub-regions 3a, 3b).
+
+	Source: IAPWS 'Revised Supplementary Release on Backward Equations for the Functions
+	T(p,h), v(p,h) and T(p,s), v(p,s) for Region 3 of the IAPWS Industrial
+	Formulation 1997 for the Thermodynamic Properties of Water and Steam', 2004.
+
+	@param p pressure in Pa
+	@param s specific entropy in J/kgK
+	@return temperature in K
+*/
+double freesteam_region3_v_ps(double p, double s){
+
+	IAPWS97_APPROXIMATE;
+
+	double p1, s1;
+	double vstar;
+	BackwardsData *d;
+	unsigned i, n;
+	double sum = 0;
+	if(s < REGION3AB_SC){
+		/* sub-region 3a */
+		p1 = p/REGION3A_VPS_PSTAR + 0.187; s1 = s/REGION3A_VPS_SSTAR - 0.755;
+		d = REGION3A_VPS_DATA;
+		n = REGION3A_VPS_MAX;
+		vstar = REGION3A_VPS_VSTAR;
+	}else{
+		/* sub-region 3b */
+		p1 = p/REGION3B_VPS_PSTAR + 0.298; s1 = s/REGION3B_VPS_SSTAR - 0.816;
+		d = REGION3B_VPS_DATA;
+		n = REGION3B_VPS_MAX;
+		vstar = REGION3B_VPS_VSTAR;
+	}
+
+	for(i = 0; i<n; ++i, ++d){
+		sum += d->n * ipow(p1, d->I) * ipow(s1, d->J);
+	}
+
+	return sum * vstar;
 }
 
 

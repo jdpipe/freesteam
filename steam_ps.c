@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "zeroin.h"
 #include "b23.h"
 #include "solver2.h"
+#include "backwards.h"
 
 #include <stdlib.h>
 
@@ -111,25 +112,11 @@ SteamState freesteam_set_ps(double p, double s){
 	int region = freesteam_region_ps(p,s);
 	switch(region){
 		case 1:
-#if 0
 			lb = IAPWS97_TMIN;
 			ub = REGION1_TMAX;
 			tol = 1e-9; /* ??? */
 			zeroin_solve(&ps_region1_fn, &D, lb, ub, tol, &sol, &err);
 			return freesteam_region1_set_pT(p,sol);
-#else
-			{
-				int status;
-				double Tsat = freesteam_region4_Tsat_p(p);
-				SteamState guess = freesteam_region1_set_pT(p,Tsat);
-				SteamState S = freesteam_solver2_region1('p','s', p, s, guess, &status);
-				/*if(status){
-					fprintf(stderr,"%s (%s:%d): Failed solve in region 1\n",__func__,__FILE__,__LINE__);
-					exit(1);
-				}*/
-				return S;
-			}	
-#endif
 		case 2:
 			lb = IAPWS97_TMIN;
 			ub = REGION2_TMAX;
@@ -142,17 +129,18 @@ SteamState freesteam_set_ps(double p, double s){
 				ub = 1.;
 				tol = 1e-9; /* ??? */
 				D.T = freesteam_region4_Tsat_p(p);
-				fprintf(stderr,"%s: (%s:%d): p = %g\n",__func__,__FILE__,__LINE__,D.p);
+				//fprintf(stderr,"%s: (%s:%d): p = %g\n",__func__,__FILE__,__LINE__,D.p);
 				zeroin_solve(&ps_region4_fn, &D, lb, ub, tol, &sol, &err);
 				SteamState S = freesteam_region4_set_Tx(D.T,sol);
-				fprintf(stderr,"%s: (%s:%d): p = %g\n",__func__,__FILE__,__LINE__,D.p);
+				//fprintf(stderr,"%s: (%s:%d): p = %g\n",__func__,__FILE__,__LINE__,D.p);
 				return S;
 			}
 		case 3:
+#ifdef USE_SOLVER_FOR_PS3
+		/* FIXME looks like a problem with the derivative routines here? */
 			{
 				int status;
-				double Tsat = freesteam_region4_Tsat_p(p);
-				SteamState guess = freesteam_region3_set_rhoT(IAPWS97_RHOCRIT,700);
+				SteamState guess = freesteam_region3_set_rhoT(freesteam_region3_v_ps(p,s),freesteam_region3_T_ps(p,s));
 				SteamState S = freesteam_solver2_region3('p','s', p, s, guess, &status);
 				if(status){
 					fprintf(stderr,"%s (%s:%d): Failed solve in region 3 for (p = %g MPa, s = %g kJ/kgK\n",__func__,__FILE__,__LINE__,p/1e6,s/1e3);
@@ -160,6 +148,9 @@ SteamState freesteam_set_ps(double p, double s){
 				}
 				return S;
 			}
+#else
+			return freesteam_region3_set_rhoT(freesteam_region3_v_ps(p,s),freesteam_region3_T_ps(p,s));
+#endif
 		default:
 			/* ??? */
 			fprintf(stderr,"%s (%s:%d): Region '%d' not implemented\n",__func__,__FILE__,__LINE__,region);

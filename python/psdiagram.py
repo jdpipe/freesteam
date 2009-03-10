@@ -29,10 +29,7 @@ for p in pp:
 		except:
 			T = None
 		TT += [T]
-	plot(ss/1e3,TT,alpha=0.2)
-	print "pp =",pp
-	print "ss =",ss
-	print "TT =",TT
+	plot(ss/1e3,TT,alpha=0.4)
 	#sys.exit(1)
 
 #quiver(x,y,u,v,alpha=0.6)
