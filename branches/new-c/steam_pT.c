@@ -20,12 +20,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "steam_pT.h"
 #include "region1.h"
 #include "region4.h"
+#include "region2.h"
 #include "region3.h"
 #include "zeroin.h"
 #include "b23.h"
 
 #include <stdlib.h>
 #include <assert.h>
+#include <math.h>
 
 typedef struct{
 	double p, T;

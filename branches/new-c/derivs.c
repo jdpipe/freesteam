@@ -326,8 +326,9 @@ double freesteam_region4_dAdTx(char z, SteamState S){
 	double res;
 #define T S.R4.T
 	switch(z){
-		case 'p': res = freesteam_region4_dpsatdT_T(T); break;
-		case 'T': res = 1; break;
+		case 'p': res = freesteam_region4_dpsatdT_T(T); return res;
+		case 'T': res = 1; return res;
+		case 'x': res = 0; return res;
 	}
 
 	//fprintf(stderr,"%s: T = %g\n",__func__,T);
@@ -387,6 +388,7 @@ double freesteam_region4_dAdxT(char z, SteamState S){
 	switch(z){
 		case 'p': return 0;
 		case 'T': return 0;
+		case 'x': return 1;
 	}
 #define T S.R4.T
 #define x S.R4.x

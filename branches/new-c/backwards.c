@@ -568,6 +568,44 @@ double freesteam_region3_psat_h(double h){
 }
 
 /*------------------------------------------------------------------------------
+  REGION 3 PSAT(S) BOUNDARY
+*/
+
+BackwardsData REGION3_PSATS_DATA[] = {
+	{  0,	0,	 0.639767553612785}
+	, {1,	1,	-0.129727445396014e2}
+	, {1,	32,	-0.224595125848403e16}
+	, {4,	7,	 0.177466741801846e7}
+	, {12,	4,	 0.717079349571538e10}
+	, {12,	14,	-0.378829107169011e18}
+	, {16,	36,	-0.955586736431328e35}
+	, {24,	10,	 0.187269814676188e24}
+	, {28,	0,	 0.119254746466473e12}
+	, {32,	18,	 0.110649277244882e37}
+};
+
+const unsigned REGION3_PSATS_MAX = sizeof(REGION3_PSATS_DATA)/sizeof(BackwardsData);
+
+const double REGION3_PSATS_SSTAR = 5.2e3;
+const double REGION3_PSATS_PSTAR = 22.e6;
+
+double freesteam_region3_psat_s(double s){
+
+	IAPWS97_APPROXIMATE;
+
+	BackwardsData *d, *e = REGION3_PSATS_DATA + REGION3_PSATS_MAX;
+	double sig = s / REGION3_PSATS_SSTAR;
+	double sig1 = sig - 1.03;
+	double sig2 = sig - 0.699;
+	double sum = 0;
+	for(d = REGION3_PSATS_DATA; d<e; ++d){
+		sum += d->n * ipow(sig1, d->I) * ipow(sig2, d->J);
+	}
+	return sum * REGION3_PSATS_PSTAR;
+}
+
+
+/*------------------------------------------------------------------------------
   REGION 3 BACKWARDS EQUATION T(P,S)
 */
 

@@ -1,0 +1,132 @@
+/*
+freesteam - IAPWS-IF97 steam tables library
+Copyright (C) 2004-2009  John Pye
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+#define FREESTEAM_BUILDING_LIB
+#include "steam_Ts.h"
+
+#include "region1.h"
+#include "region2.h"
+#include "region3.h"
+#include "region4.h"
+#include "zeroin.h"
+#include "b23.h"
+#include "solver2.h"
+#include "backwards.h"
+
+#include <stdlib.h>
+#include <assert.h>
+#include <math.h>
+
+int freesteam_region_Ts(double T, double s){
+
+	if(T < REGION1_TMAX){
+		double p = freesteam_region4_psat_T(T);
+		double sf = freesteam_region1_s_pT(p,T);
+		double sg = freesteam_region2_s_pT(p,T);
+		if(s <= sf){
+			return 1;
+		}
+		if(s >= sg){
+			return 2;
+		}
+		return 4;
+	}
+
+	/* an optimisation, using known range of s values on b23 IAPWS97 sect 4, p 5 */
+	if(s > 5.261e3)return 2;
+
+	if(s < 3.6e3)return 3;
+
+	double p23 = freesteam_b23_p_T(T);
+	double s23 = freesteam_region2_s_pT(p23,T);
+	if(s > s23){
+		return 2;
+	}
+	
+	/* that leaves region 4 (near the C.P.) or region 3 */
+
+	/* FIXME iterate to improve location of saturation curve? */
+	double psat = freesteam_region3_psat_s(s);
+	double Tsat = freesteam_region4_Tsat_p(psat);
+	if(T > Tsat)return 3;
+	
+	return 4;
+}
+
+typedef struct{
+	double T, s;
+} SolveTSData;
+
+#define D ((SolveTSData *)user_data)
+static ZeroInSubjectFunction Ts_region1_fn, Ts_region2_fn, Ts_region4_fn;
+double Ts_region1_fn(double p, void *user_data){
+	return D->s - freesteam_region1_s_pT(p, D->T);
+}
+double Ts_region2_fn(double p, void *user_data){
+	return D->s - freesteam_region2_s_pT(p, D->T);
+}
+double Ts_region3_fn(double rho, void *user_data){
+	return D->s - freesteam_region3_s_rhoT(rho, D->T);
+}
+double Ts_region4_fn(double x, void *user_data){
+	return D->s - freesteam_region4_s_Tx(D->T, x);
+}
+#undef D
+
+SteamState freesteam_set_Ts(double T, double s){
+	double lb, ub, tol, sol, err;
+	SolveTSData D = {T, s};
+
+	int region = freesteam_region_Ts(T,s);
+	switch(region){
+		case 1:
+			lb = 0.;
+			ub = IAPWS97_PCRIT;
+			tol = 1e-9; /* ??? */
+			zeroin_solve(&Ts_region1_fn, &D, lb, ub, tol, &sol, &err);
+			//assert(fabs(err/sol)<tol);
+			return freesteam_region1_set_pT(sol,T);
+		case 2:
+			lb = 0.;
+			ub = IAPWS97_PMAX;
+			tol = 1e-9; /* ??? */
+			zeroin_solve(&Ts_region2_fn, &D, lb, ub, tol, &sol, &err);
+			//assert(fabs(err/sol)<tol);
+			return freesteam_region2_set_pT(sol,T);
+		case 3:
+			lb = REGION1_TMAX;
+			ub = 900.;
+			tol = 1e-9; /* ??? */
+			zeroin_solve(&Ts_region3_fn, &D, lb, ub, tol, &sol, &err);
+			//assert(fabs(err/sol)<tol);
+			return freesteam_region3_set_rhoT(sol,T);
+		case 4:
+			lb = 0.;
+			ub = 1.;
+			tol = 1e-9; /* ??? */
+			zeroin_solve(&Ts_region4_fn, &D, lb, ub, tol, &sol, &err);
+			//assert(fabs(err)<tol);
+			return freesteam_region4_set_Tx(D.T,sol);
+		default:
+			/* ??? */
+			fprintf(stderr,"%s (%s:%d): Region '%d' not implemented\n",__func__,__FILE__,__LINE__,region);
+			exit(1);
+	}
+}
+
+

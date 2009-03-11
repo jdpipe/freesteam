@@ -136,6 +136,7 @@ SteamState freesteam_set_ps(double p, double s){
 				return S;
 			}
 		case 3:
+//#define USE_SOLVER_FOR_PS3
 #ifdef USE_SOLVER_FOR_PS3
 		/* FIXME looks like a problem with the derivative routines here? */
 			{

@@ -37,14 +37,15 @@ You may not use it in commercially-released software."
 %rename(steam_ps) freesteam_set_ps;
 %rename(steam_pT) freesteam_set_pT;
 %rename(steam_pu) freesteam_set_pu;
-%rename(region1_pT) freesteam_region1_set_pT;
-%rename(region2_pT) freesteam_region2_set_pT;
+%rename(steam_Ts) freesteam_set_Ts;
 
 %rename(solver2_region1) freesteam_solver2_region1;
 %rename(solver2_region2) freesteam_solver2_region2;
 %rename(solver2_region3) freesteam_solver2_region3;
 %rename(solver2_region4) freesteam_solver2_region4;
 
+%rename(region1_pT) freesteam_region1_set_pT;
+%rename(region2_pT) freesteam_region2_set_pT;
 %rename(region3_rhoT) freesteam_region3_set_rhoT;
 %rename(region4_Tx) freesteam_region4_set_Tx;
 
@@ -87,6 +88,7 @@ You may not use it in commercially-released software."
 #include "steam_ps.h"
 #include "steam_pT.h"
 #include "steam_pu.h"
+#include "steam_Ts.h"
 #include "region1.h"
 #include "region2.h"
 #include "region3.h"
@@ -107,6 +109,7 @@ double freesteam_region4_dpsatdT_T(double T);
 %include "steam_ps.h";
 %include "steam_pT.h";
 %include "steam_pu.h";
+%include "steam_Ts.h";
 %include "derivs.h";
 
 /* Rewrite the solver2 functions to include */
@@ -127,6 +130,7 @@ SteamState freesteam_solver2_region1(char X, char Y, double x, double y, SteamSt
 SteamState freesteam_solver2_region2(char X, char Y, double x, double y, SteamState guess, int *OUTPUT);
 SteamState freesteam_solver2_region4(char X, char Y, double x, double y, SteamState guess, int *OUTPUT);
 
+/* An experiment: make solver2 errors become Python exceptions. */
 %pythoncode %{
 def solver2_region3(X, Y, x, y, guess):
 	S, err = _freesteam.solver2_region3(X,Y,x,y,guess)
@@ -135,6 +139,8 @@ def solver2_region3(X, Y, x, y, guess):
 	return S
 %}
 
+/* SteamState in python is an object with attributes that are the properties,
+  calculated when requested (note: *every time* they are requested) */
 %extend SteamState{
 	SteamState(){
 		SteamState *S;

@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	Inputs: p, h
 	@return 0 on success 
 */
-int T_ph_calc(struct BBoxInterp *bbox,
+int Tvsx_ph_calc(struct BBoxInterp *bbox,
 		int ninputs, int noutputs,
 		double *inputs, double *outputs,
 		double *jacobian
@@ -39,42 +39,87 @@ int T_ph_calc(struct BBoxInterp *bbox,
 
 #if 0
 	ASSERT(ninputs==2);
-	ASSERT(noutputs==1);
+	ASSERT(noutputs==2);
 #endif
 
 	// convert inputs to freesteam dimensionful values
 	double p = inputs[0]; /* ASCEND uses SI units, so no conversion needed */
 	double h = inputs[1]; /* ASCEND uses SI units, so no conversion needed */
 	
+#ifdef BBOX_DEBUG
 	ERROR_REPORTER_HERE(ASC_USER_NOTE,
 		"Evaluating with p = %f bar, h = %f kJ/kg"
 		,p,h
 	);
+#endif
 
 	SteamState S;
 	S = freesteam_set_ph(p,h);
 	double T, dTdh_p, dTdp_h;
+	double v, dvdh_p, dvdp_h;
+	double s, dsdh_p, dsdp_h;
 
+	double x, dxdh_p, dxdp_h;
 	switch(bbox->task){
 	case bb_func_eval:
 		T = freesteam_T(S);
+		v = freesteam_v(S);
+		s = freesteam_s(S);
+		if(S.region==3){
+			/* nonsense value */
+			x = 0.5;
+		}else{
+			x = freesteam_x(S);
+		}
 
+#ifdef BBOX_DEBUG
 		ERROR_REPORTER_HERE(ASC_USER_NOTE,
 			"Got result T = %f K"
 			,T
 		);
-
+#endif
 		outputs[0] = T;
+		outputs[1] = v;
+		outputs[2] = s;
+		outputs[3] = x;
+
 		/* TODO add error checks here, surely? */
 		return 0;
 	case bb_deriv_eval:
+		/*fprintf(stderr,"derivative evaluation, region %d\n",S.region);*/
 		dTdp_h = freesteam_deriv(S,'T','p','h');
 		dTdh_p = freesteam_deriv(S,'T','h','p');
+		dvdp_h = freesteam_deriv(S,'v','p','h');
+		dvdh_p = freesteam_deriv(S,'v','h','p');
+		dsdp_h = freesteam_deriv(S,'s','p','h');
+		dsdh_p = freesteam_deriv(S,'s','h','p');
+		switch(S.region){
+			case 4:	
+				dxdp_h = freesteam_deriv(S,'x','p','h');
+				dxdh_p = freesteam_deriv(S,'x','h','p');
+				break;
+			default:
+				/* try to 'slope' the solver into the saturation region */
+				dxdp_h = 0;
+				dxdh_p = 0.001;
+				break;
+		}
+#ifdef BBOX_DEBUG
 		ERROR_REPORTER_HERE(ASC_USER_NOTE,
 			"Got result (∂T/∂p)h = %g, (∂T/∂h)p = %g K/Pa",dTdp_h,dTdh_p
 		);
+		ERROR_REPORTER_HERE(ASC_USER_NOTE,
+			"Got result (∂v/∂p)h = %g, (∂v/∂h)p = %g K/Pa",dvdp_h,dvdh_p
+		);
+#endif
 		jacobian[0] = dTdp_h;
 		jacobian[1] = dTdh_p;
+		jacobian[2] = dvdp_h;
+		jacobian[3] = dvdh_p;
+		jacobian[4] = dsdp_h;
+		jacobian[5] = dsdh_p;
+		jacobian[6] = dxdp_h;
+		jacobian[7] = dxdh_p;
 		return 0;
 	default:
 		ERROR_REPORTER_HERE(ASC_PROG_ERR,"Invalid call, unknown bbox->task");
@@ -85,16 +130,17 @@ int T_ph_calc(struct BBoxInterp *bbox,
 FREESTEAM_EXPORT int freesteam_register(){
 		int result = 0;
 
+#ifdef BBOX_DEBUG
 		CONSOLE_DEBUG("Initialising freesteam...");
-
-		result += CreateUserFunctionBlackBox("freesteam_T_ph"
+#endif
+		result += CreateUserFunctionBlackBox("freesteam_Tvsx_ph"
 			, NULL /* alloc */
-			, T_ph_calc /* value */
-			, /*T_ph_calc*/ NULL /* deriv */
+			, Tvsx_ph_calc /* value */
+			, Tvsx_ph_calc /* deriv */
 			, NULL /* deriv2 */
 			, NULL /* free */
-			, 2,1 /* inputs, outputs */
-			, "[T] = freesteam_T_ph(p,h) (see http://freesteam.sf.net)"
+			, 2,4 /* inputs, outputs */
+			, "[T,v,s,x] = freesteam_Tvs_ph(p,h) (see http://freesteam.sf.net)"
 			, 0.0
 		);
 

@@ -253,7 +253,21 @@ double freesteam_w(SteamState S){
 			return freesteam_region4_w_Tx(S.R4.T, S.R4.x);
 #endif
 		default:
-			fprintf(stderr,"ERROR: invalid region in freesteam_w\n");
+			fprintf(stderr,"ERROR: invalid region '%d' in freesteam_w\n",S.region);
+			exit(1);
+	}
+}
+
+double freesteam_x(SteamState S){
+	switch(S.region){
+		case 1:
+			return 0.;
+		case 2:
+			return 1.;
+		case 4:
+			return S.R4.x;
+		default:
+			fprintf(stderr,"ERROR: invalid region '%d' in freesteam_x\n",S.region);
 			exit(1);
 	}
 }
