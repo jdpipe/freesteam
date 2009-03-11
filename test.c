@@ -270,10 +270,26 @@ void test_region3_psath_point(double h,double p){
 }
 
 void testregion3psath(void){
-	fprintf(stderr,"REGION 3 Psat(H) TESTS\n");
+	fprintf(stderr,"REGION 3 PSAT(H) TESTS\n");
 	test_region3_psath_point(1700., 1.724175718e1);
 	test_region3_psath_point(2000., 2.193442957e1);
 	test_region3_psath_point(2400., 2.018090839e1);
+}
+
+/*------------------------------------------------------------------------------
+  REGION 3 PSAT(S)
+*/
+
+void test_region3_psats_point(double s,double p){
+	double p1 = freesteam_region3_psat_s(s*1e3);
+	CHECK_VAL(p1,p*1e6,RELTOL);
+}
+
+void testregion3psats(void){
+	fprintf(stderr,"REGION 3 PSAT(S) TESTS\n");
+	test_region3_psats_point(3.8, 1.687755057e1);
+	test_region3_psats_point(4.2, 2.164451789e1);
+	test_region3_psats_point(5.2, 1.668968482e1);
 }
 
 /*------------------------------------------------------------------------------
@@ -620,6 +636,7 @@ int main(void){
 	testregion3ph();
 	testregion3ps();
 	testregion3psath();
+	testregion3psats();
 	testb23();
 
 #if 0	

@@ -16,20 +16,15 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-#ifndef FREESTEAM_BACKWARDS_H
-#define FREESTEAM_BACKWARDS_H
+#ifndef FREESTEAM_STEAMTS_H
+#define FREESTEAM_STEAMTS_H
 
 #include "common.h"
+#include "steam.h"
 
-FREESTEAM_DLL double freesteam_region1_T_ph(double p, double h);
-FREESTEAM_DLL double freesteam_region2_T_ph(double p, double h);
-FREESTEAM_DLL double freesteam_region3_T_ph(double p, double h);
-FREESTEAM_DLL double freesteam_region3_v_ph(double p, double h);
-FREESTEAM_DLL double freesteam_region3_psat_h(double h);
-FREESTEAM_DLL double freesteam_region3_psat_s(double s);
+FREESTEAM_DLL int freesteam_region_Ts(double T, double s);
 
-FREESTEAM_DLL double freesteam_region3_T_ps(double p, double h);
-FREESTEAM_DLL double freesteam_region3_v_ps(double p, double h);
+FREESTEAM_DLL SteamState freesteam_set_Ts(double T, double s);
 
 #endif
 
