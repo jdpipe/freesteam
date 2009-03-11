@@ -36,6 +36,7 @@ You may not use it in commercially-released software."
 %rename(steam_ph) freesteam_set_ph;
 %rename(steam_ps) freesteam_set_ps;
 %rename(steam_pT) freesteam_set_pT;
+%rename(steam_pu) freesteam_set_pu;
 %rename(region1_pT) freesteam_region1_set_pT;
 %rename(region2_pT) freesteam_region2_set_pT;
 
@@ -85,6 +86,7 @@ You may not use it in commercially-released software."
 #include "steam_ph.h"
 #include "steam_ps.h"
 #include "steam_pT.h"
+#include "steam_pu.h"
 #include "region1.h"
 #include "region2.h"
 #include "region3.h"
@@ -104,6 +106,7 @@ double freesteam_region4_dpsatdT_T(double T);
 %include "steam_ph.h";
 %include "steam_ps.h";
 %include "steam_pT.h";
+%include "steam_pu.h";
 %include "derivs.h";
 
 /* Rewrite the solver2 functions to include */
@@ -149,6 +152,7 @@ def solver2_region3(X, Y, x, y, guess):
 	%immutable;
 	const double p;
 	const double T;
+	const double u;
 	const double h;
 	const double v;
 	const double s;
