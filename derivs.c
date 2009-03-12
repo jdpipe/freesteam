@@ -149,7 +149,7 @@ double freesteam_region3_dAdTv(char x, SteamState S){
 		case 'v': res = 0; break;
 		case 'u': res = cv; break;
 		case 'h': res = cv + p*v*alphap; break;
-		case 's': res = cv/alphap; break;
+		case 's': res = cv/T; break;
 		case 'g': res = p*v*alphap - s; break;
 		case 'a':
 		case 'f': res = -s; break;
