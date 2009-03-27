@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 int errorflag = 0;
 double maxrelerr = 0;
-int verbose = 1;
+int verbose = 0;
 
 #define CHECK_VAL(EXPR, VAL, RELTOL){ \
 	double calc = (EXPR); \
@@ -458,8 +458,6 @@ void testderivs(void){
 			test_ph_derivs((*p)*1e6,(*h)*4e3);
 		}
 	}
-
-	double freesteam_deriv(SteamState S, char x, char y, char z);
 }
 
 /*------------------------------------------------------------------------------
@@ -551,10 +549,11 @@ void testsolver2(void){
 
 void test_steam_ps(double p,double s){
 	//fprintf(stderr,"------------\n");
-	fprintf(stderr,"p = %f MPa, s = %f kJ/kgK\n",p, s);
+	//fprintf(stderr,"%s: p = %f MPa, s = %f kJ/kgK\n",__func__, p, s);
+	freesteam_bounds_ps(p*1e6,s*1e3,1);
 	SteamState S = freesteam_set_ps(p*1e6,s*1e3);
 	//if(S.region !=1)return;
-	fprintf(stderr,"--> region = %d\n", S.region);
+	//fprintf(stderr,"--> region = %d\n", S.region);
 	if(S.region==4)fprintf(stderr,"--> p = %g\n", freesteam_region4_psat_T(S.R4.T));
 	CHECK_VAL(freesteam_p(S),p*1e6,PHRELTOL);
 	CHECK_VAL(freesteam_s(S),s*1e3,PHRELTOL);
@@ -564,13 +563,15 @@ void test_steam_ps(double p,double s){
 void testps(void){
 	const double pp[] = {0.001, 0.0035, 0.01, 0.1, 1, 2, 5, 10, 20, 22, 22.06, 22.064, 22.07, 23, 25, 30, 40, 50, 80, 90, 100};
 	const int np = sizeof(pp)/sizeof(double);
-	const double ss[] = {3};
+	const double ss[] = {0.01,1,2,3,4,5,6,7,8,9,10,11,12};
 	const int ns = sizeof(ss)/sizeof(double);
 	const double *p, *s;
 
 	fprintf(stderr,"FULL (P,S) TESTS\n");
 	for(p=pp; p<pp+np; ++p){
 		for(s=ss; s<ss+ns; ++s){
+			if(freesteam_bounds_ps(*p*1e6,*s*1e3,0))continue;
+			if(freesteam_region_ps(*p*1e6,*s*1e3)!=3)continue;
 			test_steam_ps(*p,*s);
 		}
 	}
@@ -639,6 +640,9 @@ int main(void){
 	testregion3psats();
 	testb23();
 
+	testps();
+	//testph();
+
 #if 0	
 	/* the following tests cause the larger errors, and are not part of the
 	formal validation of freesteam. It is *expected* that T(p,h) routines and
@@ -656,8 +660,6 @@ int main(void){
 	perfect agreement with IAPWS-IF97. */
 
 	// COMMENT OUT TO PERFORM THESE TESTS:
-	//testph();
-	testps();
 	testpT();
 	//testregion4props();
 

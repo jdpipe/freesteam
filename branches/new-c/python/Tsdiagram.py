@@ -17,8 +17,8 @@ DT = Tmax - Tmin
 smin = 0e3
 smax = 10e3
 Ds = smax - smin
-ss = arange(smin,smax,Ds/300)
-TT = arange(Tmin,Tmax,DT/200)
+ss = arange(smin,smax,Ds/100)
+TT = arange(Tmin,Tmax,DT/100)
 im = zeros((len(TT),len(ss)))
 x = 0
 for T in TT:
@@ -74,17 +74,15 @@ u = []
 v = []
 for p in pp:
 	for s in ss1:
-		try:
-			S = freesteam.steam_ps(p,s)
-			x += [S.s/1.e3]
-			y += [S.T]
-			dy = freesteam.freesteam_deriv(S,'T','s','p')/1e3
-			dx = 1.5/1e4
-			m = math.sqrt(dx**2 + dy**2)
-			u += [dx/m]
-			v += [dy/m]
-		except:
-			pass
+		S = freesteam.steam_ps(p,s)
+		assert(fabs(S.s - s) < 1e-5)
+		dy = freesteam.freesteam_deriv(S,'T','s','p')
+		dx = 0.15
+		m = math.sqrt(dx**2 + dy**2)
+		x += [s/1.e3]
+		y += [S.T]
+		u += [dx/m]
+		v += [dy/m]
 
 quiver(x,y,u,v,alpha=0.6)
 axis([0,10,273.15,1073.15])

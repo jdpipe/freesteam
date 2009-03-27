@@ -30,17 +30,39 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <stdlib.h>
 
-/* to solve within a region:
-	- two property values A=a, B=b
-	- a first guess for the solution
-	- function that evaluates A and B given the guess
-		- if one of the variables is one of the standard vars for that region
-		  use single variable iteration between upper/lower limit.
-		- if neither match, use two-var iteration.
-	- derivative function or estimate
-	- convergence test or tolerance
-	- return the SteamState
-*/
+int freesteam_bounds_ps(double p, double s, int verbose){
+	if(p < 0){
+		if(verbose){
+			fprintf(stderr,"%s (%s:%d): WARNING p < 0 (p = %g MPa, s = %g kJ/kgK)\n"
+			,__func__,__FILE__,__LINE__,p/1e6,s/1e3);
+		}
+		return 1;
+	}
+	if(p > IAPWS97_PMAX){
+		if(verbose){
+			fprintf(stderr,"%s (%s:%d): WARNING p > PMAX (p = %g MPa, s = %g kJ/kgK)\n"
+				,__func__,__FILE__,__LINE__,p/1e6,s/1e3);
+		}
+		return 2;
+	}
+	double smin = freesteam_region1_s_pT(p, IAPWS97_TMIN);
+	if(s < smin){
+		if(verbose){
+			fprintf(stderr,"%s (%s:%d): WARNING s < smin (p = %g MPa, s = %g kJ/kgK)\n"
+				,__func__,__FILE__,__LINE__,p/1e6,s/1e3);
+		}
+		return 3;
+	}
+	double smax = freesteam_region2_s_pT(p, IAPWS97_TMAX);
+	if(s > smax){
+		if(verbose){
+			fprintf(stderr,"%s (%s:%d): WARNING s > smax (p = %g MPa, s = %g kJ/kgK)\n"
+				,__func__,__FILE__,__LINE__,p/1e6,s/1e3);
+		}
+		return 4;
+	}
+	return 0;
+}
 
 int freesteam_region_ps(double p, double s){
 	// FIXME add test/warning for max S
@@ -87,7 +109,7 @@ int freesteam_region_ps(double p, double s){
 	return 3;
 }
 
-typedef struct{
+typedef struct SolvePSData_struct{
 	double p, s, T;
 } SolvePSData;
 
@@ -144,13 +166,30 @@ SteamState freesteam_set_ps(double p, double s){
 				SteamState guess = freesteam_region3_set_rhoT(freesteam_region3_v_ps(p,s),freesteam_region3_T_ps(p,s));
 				SteamState S = freesteam_solver2_region3('p','s', p, s, guess, &status);
 				if(status){
-					fprintf(stderr,"%s (%s:%d): Failed solve in region 3 for (p = %g MPa, s = %g kJ/kgK\n",__func__,__FILE__,__LINE__,p/1e6,s/1e3);
+					fprintf(stderr,"%s (%s:%d): Failed solve in region 3 for (p = %g MPa, s = %g kJ/kgK\n"
+						,__func__,__FILE__,__LINE__,p/1e6,s/1e3);
 					//exit(1);
 				}
 				return S;
 			}
 #else
-			return freesteam_region3_set_rhoT(freesteam_region3_v_ps(p,s),freesteam_region3_T_ps(p,s));
+			{
+				SteamState S;
+				double v = freesteam_region3_v_ps(p,s);
+				double T = freesteam_region3_T_ps(p,s);
+				S = freesteam_region3_set_rhoT(v,T);
+				if((freesteam_p(S) - p) > 0.1){
+					fprintf(stderr,"%s (%s:%d): Failed p solution in region 3(p,s)"	
+						" (p = %g MPa, s = %g kJ/kgK => v = %g m³/kg, T = %g K => p = %g\n"
+						,__func__,__FILE__,__LINE__,p/1e6,s/1e3,v,T,freesteam_p(S)/1e6);
+				}
+				if((freesteam_s(S) - s) > 0.1){
+					fprintf(stderr,"%s (%s:%d): Failed s solution in region 3(p,s)"
+						" (p = %g MPa, s = %g kJ/kgK => v = %g m³/kg, T = %g K => s = %g\n"
+						,__func__,__FILE__,__LINE__,p/1e6,s/1e3,v,T,freesteam_s(S)/1e3);
+				}
+				return S;
+			}
 #endif
 		default:
 			/* ??? */
