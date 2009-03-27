@@ -22,6 +22,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "common.h"
 #include "steam.h"
 
+/**
+	Check that variables (p,s) are within bounds for IAPWS-IF97.
+	@return zero if within bounds, or non-zero if out-of-bounds
+	(different values for different	boundary violations)
+*/
+FREESTEAM_DLL int freesteam_bounds_ps(double p, double s, int verbose);
+
 FREESTEAM_DLL int freesteam_region_ps(double p, double s);
 
 FREESTEAM_DLL SteamState freesteam_set_ps(double p, double s);
