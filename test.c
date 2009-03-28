@@ -334,6 +334,8 @@ void testph(void){
 	fprintf(stderr,"FULL (P,H) TESTS\n");
 	for(p=pp; p<pp+np; ++p){
 		for(h=hh; h<hh+nh; ++h){
+			if(freesteam_bounds_ph(*p*1e6, *h*1e3, 0))continue;
+			//if(freesteam_region_ph(*p*1e6, *h*1e3)!=4)continue;
 			test_steam_ph(*p,*h);
 		}
 	}
@@ -540,42 +542,6 @@ void testsolver2(void){
 	CHECK_VAL(freesteam_h(S2),h, 1e-7);
 }
 
-/*------------------------------------------------------------------------------
-  FULL (P,S) ROUTINES
-*/
-
-/* #define PHRELTOL 6e-5 ---region 2 */
-#define PHRELTOL 1e-3 /* region 1 */
-
-void test_steam_ps(double p,double s){
-	//fprintf(stderr,"------------\n");
-	//fprintf(stderr,"%s: p = %f MPa, s = %f kJ/kgK\n",__func__, p, s);
-	freesteam_bounds_ps(p*1e6,s*1e3,1);
-	SteamState S = freesteam_set_ps(p*1e6,s*1e3);
-	//if(S.region !=1)return;
-	//fprintf(stderr,"--> region = %d\n", S.region);
-	if(S.region==4)fprintf(stderr,"--> p = %g\n", freesteam_region4_psat_T(S.R4.T));
-	CHECK_VAL(freesteam_p(S),p*1e6,PHRELTOL);
-	CHECK_VAL(freesteam_s(S),s*1e3,PHRELTOL);
-
-};
-
-void testps(void){
-	const double pp[] = {0.001, 0.0035, 0.01, 0.1, 1, 2, 5, 10, 20, 22, 22.06, 22.064, 22.07, 23, 25, 30, 40, 50, 80, 90, 100};
-	const int np = sizeof(pp)/sizeof(double);
-	const double ss[] = {0.01,1,2,3,4,5,6,7,8,9,10,11,12};
-	const int ns = sizeof(ss)/sizeof(double);
-	const double *p, *s;
-
-	fprintf(stderr,"FULL (P,S) TESTS\n");
-	for(p=pp; p<pp+np; ++p){
-		for(s=ss; s<ss+ns; ++s){
-			if(freesteam_bounds_ps(*p*1e6,*s*1e3,0))continue;
-			if(freesteam_region_ps(*p*1e6,*s*1e3)!=3)continue;
-			test_steam_ps(*p,*s);
-		}
-	}
-}
 
 /*------------------------------------------------------------------------------
   FULL (P,T) ROUTINES
@@ -583,7 +549,7 @@ void testps(void){
 
 void test_point_pT(double p, double T){
 	SteamState S = freesteam_set_pT(p,T);
-	fprintf(stderr,"region = %d\n",S.region);
+	//fprintf(stderr,"region = %d\n",S.region);
 	CHECK_VAL(freesteam_p(S),p,1e-7);
 	CHECK_VAL(freesteam_T(S),T,1e-7);
 }
@@ -608,6 +574,10 @@ void test_region3_ps_point(double p,double s, double T, double v){
 	CHECK_VAL(T1,T,RELTOL);
 	double v1 = freesteam_region3_v_ps(p*1e6,s*1e3);
 	CHECK_VAL(v1,v,RELTOL);
+
+	//SteamState S = freesteam_set_ps(p*1e6,s*1e3);
+	//CHECK_VAL(freesteam_p(S)/1e6,p,RELTOL);
+	//CHECK_VAL(freesteam_s(S)/1e3,s,RELTOL);
 }
 
 void testregion3ps(void){
@@ -620,6 +590,43 @@ void testregion3ps(void){
 	test_region3_ps_point(50.,	4.5,	7.163687517e2, 2.332634294e-3);
 	test_region3_ps_point(100.,	5.0,	8.474332825e2, 2.449610757e-3);
 }	
+
+/*------------------------------------------------------------------------------
+  FULL (P,S) ROUTINES
+*/
+
+/* #define PHRELTOL 6e-5 ---region 2 */
+#define PHRELTOL 1e-3 /* region 1 */
+
+void test_steam_ps(double p,double s){
+	//fprintf(stderr,"------------\n");
+	//fprintf(stderr,"%s: p = %f MPa, s = %f kJ/kgK\n",__func__, p, s);
+	freesteam_bounds_ps(p*1e6,s*1e3,1);
+	SteamState S = freesteam_set_ps(p*1e6,s*1e3);
+	//if(S.region !=1)return;
+	//fprintf(stderr,"--> region = %d\n", S.region);
+	//if(S.region==4)fprintf(stderr,"--> p = %g\n", freesteam_region4_psat_T(S.R4.T));
+	CHECK_VAL(freesteam_p(S),p*1e6,PHRELTOL);
+	CHECK_VAL(freesteam_s(S),s*1e3,PHRELTOL);
+
+};
+
+void testps(void){
+	const double pp[] = {0.001, 0.0035, 0.01, 0.1, 1, 2, 3, 5, 10, 17, 18, 20, 22, 22.06, 22.064, 22.07, 23, 25, 30, 40, 50, 80, 90, 100};
+	const int np = sizeof(pp)/sizeof(double);
+	const double ss[] = {0.01,1,2,3,3.5,4,5,6,7,8,9,10,11,12};
+	const int ns = sizeof(ss)/sizeof(double);
+	const double *p, *s;
+
+	fprintf(stderr,"FULL (P,S) TESTS\n");
+	for(p=pp; p<pp+np; ++p){
+		for(s=ss; s<ss+ns; ++s){
+			if(freesteam_bounds_ps(*p*1e6,*s*1e3,0))continue;
+			//if(freesteam_region_ps(*p*1e6,*s*1e3)!=3)continue;
+			test_steam_ps(*p,*s);
+		}
+	}
+}
 
 /*------------------------------------------------------------------------------
   MAIN ROUTINE
@@ -640,9 +647,14 @@ int main(void){
 	testregion3psats();
 	testb23();
 
-	testps();
-	//testph();
+	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
 
+	maxrelerr = 0;
+	fprintf(stderr,"\nFurther tests...\n");
+	testps();
+	testph();
+	testpT();
+	//testTu();
 #if 0	
 	/* the following tests cause the larger errors, and are not part of the
 	formal validation of freesteam. It is *expected* that T(p,h) routines and
@@ -660,7 +672,7 @@ int main(void){
 	perfect agreement with IAPWS-IF97. */
 
 	// COMMENT OUT TO PERFORM THESE TESTS:
-	testpT();
+	
 	//testregion4props();
 
 	//testderivs();

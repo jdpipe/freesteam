@@ -171,15 +171,15 @@ SteamState freesteam_solver2_region3(char A, char B, double atarget, double btar
 			/* check if solver is stuck */
 			break;
 		}
-		status = gsl_multiroot_test_residual(s->f, 1e-7);
-	} while(status == GSL_CONTINUE && iter < 30);
+		status = gsl_multiroot_test_residual(s->f, 2e-6);
+	} while(status == GSL_CONTINUE && iter < 50);
 
 	SteamState S = freesteam_region3_set_rhoT(gsl_vector_get(s->x,0), gsl_vector_get(s->x,1));
 	gsl_multiroot_fdfsolver_free(s);
 	gsl_vector_free(x);
 	*retstatus = status;
-	fprintf(stderr,"%s (%s:%d): %s: ",__func__,__FILE__,__LINE__,gsl_strerror(status));
-	freesteam_fprint(stderr,S);
+	if(status)fprintf(stderr,"%s (%s:%d): %s: ",__func__,__FILE__,__LINE__,gsl_strerror(status));
+	//freesteam_fprint(stderr,S);
 	return S;
 }
 
@@ -236,12 +236,12 @@ SteamState freesteam_solver2_region4(char A, char B, double atarget, double btar
 	T = gsl_multiroot_fdfsolver_gnewton;
 	s = gsl_multiroot_fdfsolver_alloc(T, n);
 	gsl_multiroot_fdfsolver_set(s, &f, x);
-	region4_print_state(iter, s);
+	//region4_print_state(iter, s);
 
 	do{
 		iter++;
 		status = gsl_multiroot_fdfsolver_iterate(s);
-		region4_print_state(iter, s);
+		//region4_print_state(iter, s);
 		if(status){
 			/* check if solver is stuck */
 			break;
@@ -255,8 +255,8 @@ SteamState freesteam_solver2_region4(char A, char B, double atarget, double btar
 
 	gsl_vector_free(x);
 	*retstatus = status;
-	fprintf(stderr,"%s (%s:%d): %s: ",__func__,__FILE__,__LINE__,gsl_strerror(status));
-	freesteam_fprint(stderr,S);
+	if(status)fprintf(stderr,"%s (%s:%d): %s: ",__func__,__FILE__,__LINE__,gsl_strerror(status));
+	//freesteam_fprint(stderr,S);
 	return S;
 }
 
@@ -333,8 +333,8 @@ SteamState freesteam_solver2_region2(char A, char B, double atarget, double btar
 
 	gsl_vector_free(x);
 	*retstatus = status;
-	fprintf(stderr,"%s (%s:%d): %s: ",__func__,__FILE__,__LINE__,gsl_strerror(status));
-	freesteam_fprint(stderr,S);
+	if(status)fprintf(stderr,"%s (%s:%d): %s: ",__func__,__FILE__,__LINE__,gsl_strerror(status));
+	//freesteam_fprint(stderr,S);
 	return S;
 }
 
@@ -382,7 +382,8 @@ SteamState freesteam_solver2_region1(char A, char B, double atarget, double btar
 	size_t iter = 0;
 	const size_t n = 2;
 
-	fprintf(stderr,"region 2 solver...\n");
+
+	//fprintf(stderr,"region 1 solver...\n");
 	Solver2Data D = {A,B,solver2_region1_propfn(A), solver2_region1_propfn(B), atarget,btarget};
 
 	gsl_multiroot_function_fdf f = {&region1_f, &region1_df, &region1_fdf, n, &D};
@@ -393,17 +394,17 @@ SteamState freesteam_solver2_region1(char A, char B, double atarget, double btar
 	T = gsl_multiroot_fdfsolver_gnewton;
 	s = gsl_multiroot_fdfsolver_alloc(T, n);
 	gsl_multiroot_fdfsolver_set(s, &f, x);
-	region1_print_state(iter, s);
+	//region1_print_state(iter, s);
 
 	do{
 		iter++;
 		status = gsl_multiroot_fdfsolver_iterate(s);
-		region1_print_state(iter, s);
+		//region1_print_state(iter, s);
 		if(status){
 			/* check if solver is stuck */
 			break;
 		}
-		status = gsl_multiroot_test_residual(s->f, 1e-7);
+		status = gsl_multiroot_test_residual(s->f, 1e-6);
 	} while(status == GSL_CONTINUE && iter < 20);
 
 	SteamState S = freesteam_region1_set_pT(gsl_vector_get(s->x,0), gsl_vector_get(s->x,1));
@@ -411,8 +412,10 @@ SteamState freesteam_solver2_region1(char A, char B, double atarget, double btar
 
 	gsl_vector_free(x);
 	*retstatus = status;
-	fprintf(stderr,"%s (%s:%d): %s: ",__func__,__FILE__,__LINE__,gsl_strerror(status));
-	freesteam_fprint(stderr,S);
+	if(status){
+		fprintf(stderr,"%s (%s:%d): %s: ",__func__,__FILE__,__LINE__,gsl_strerror(status));
+		freesteam_fprint(stderr,S);
+	}
 	return S;
 }
 

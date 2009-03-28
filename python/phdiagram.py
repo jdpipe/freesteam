@@ -34,9 +34,7 @@ for p in pp:
 	#print "p = %f MPa" % (p/1e6)
 	y = 0
 	for h in hh:
-		S = freesteam.steam_ph(p,h)
-		#print "p = %f, T = %f" % (p,T)
-		r = ord(S.region)
+		r = freesteam.region_ph(p,h)
 		#print "p = %f MPa, h = %f kJ/kg, region[%d,%d] = %d, T = %f" % (p/1e6,h/1e3,x,y,r,S.T)
 		im[x,y] = float(r) / 4.
 		y += 1
@@ -45,9 +43,29 @@ for p in pp:
 imshow(im,extent=[hmin/1e3,hmax/1e3,pmin/1e6,pmax/1e6],origin='lower',aspect='auto',interpolation='nearest',alpha=0.6)
 
 # FIXME add lines of constant temperature
+TT = logspace(math.log10(273.15),math.log10(1073.15),30)
+for T in TT:
+	print "T =",T
+	smin = freesteam.steam_pT(freesteam.PMAX,T).s
+	smax = freesteam.region2_pT(1,T).s
+	ss = linspace(smin,smax)
+	print "smin =",smin, ", smax =",smax
+	hh = []
+	pp = []
+	for s in ss:
+		if not freesteam.bounds_Ts(T,s,0):
+			continue;
+		#print "T = ",T, " s =",s
+		S = freesteam.steam_Ts(T,s)
+		hh += [S.h/1e3]	
+		pp += [S.p/1e6]
+	plot(hh,pp,'g-')
 
 # plot the sat curve
 plot(hf,psat,'b-')
 plot(hg,psat,'r-')
+
+xlabel("h / [kJ/kg]")
+ylabel("p / [MPa]")
 show()
 

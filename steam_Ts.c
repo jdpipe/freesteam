@@ -32,6 +32,36 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <assert.h>
 #include <math.h>
 
+int freesteam_bounds_Ts(double T, double s, int verbose){
+#define BOUND_WARN(MSG) \
+	if(verbose){\
+		fprintf(stderr,"%s (%s:%d): WARNING " MSG " (T = %g, s = %g kJ/kgK)\n"\
+		,__func__,__FILE__,__LINE__,T,s/1e3);\
+	}
+
+	if(T <= IAPWS97_TMIN){
+		BOUND_WARN("T <= TMIN");
+		return 1;
+	}
+	if(T > IAPWS97_TMAX){
+		BOUND_WARN("T > TMAX");
+		return 2;
+	}
+
+	double smax = freesteam_region2_s_pT(IAPWS97_PMAX,T);
+	if(s>smax){
+		BOUND_WARN("s > smax");
+		return 3;
+	}
+	double smin = freesteam_region1_s_pT(0,T);
+	if(s < smin){
+		BOUND_WARN("s < smin");
+		return 4;
+	}
+	return 0;
+#undef BOUND_WARN
+}
+
 int freesteam_region_Ts(double T, double s){
 
 	if(T < REGION1_TMAX){

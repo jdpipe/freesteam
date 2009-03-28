@@ -39,6 +39,14 @@ You may not use it in commercially-released software."
 %rename(steam_pu) freesteam_set_pu;
 %rename(steam_Ts) freesteam_set_Ts;
 
+%rename(bounds_ps) freesteam_bounds_ps;
+%rename(bounds_ph) freesteam_bounds_ph;
+%rename(bounds_Ts) freesteam_bounds_Ts;
+
+%rename(region_ps) freesteam_region_ps;
+%rename(region_ph) freesteam_region_ph;
+%rename(region_Ts) freesteam_region_Ts;
+
 %rename(solver2_region1) freesteam_solver2_region1;
 %rename(solver2_region2) freesteam_solver2_region2;
 %rename(solver2_region3) freesteam_solver2_region3;
@@ -77,7 +85,6 @@ You may not use it in commercially-released software."
 %ignore freesteam_w;
 %ignore freesteam_fprint;
 %ignore freesteam_region;
-%ignore freesteam_region_ph;
 %ignore ipow;
 
 %include "common.h"
