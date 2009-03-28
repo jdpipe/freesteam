@@ -82,16 +82,6 @@ int freesteam_region_ps(double p, double s){
 		return 4;
 	}
 
-	if(p < IAPWS97_PCRIT){ /* but not in region 1/2 */
-		double T = freesteam_region4_Tsat_p(p);
-		double rhof = freesteam_region4_rhof_T(T);
-		double rhog = freesteam_region4_rhog_T(T);
-		double sf = freesteam_region3_s_rhoT(rhof,T);
-		double sg = freesteam_region3_s_rhoT(rhog,T);
-		if(s <= sf || s >= sg)return 3;
-		return 4;
-	}
-
 	/* FIXME solve for s_b13(p) */
 	double s_b13 = freesteam_region1_s_pT(p, REGION1_TMAX);
 
@@ -104,6 +94,16 @@ int freesteam_region_ps(double p, double s){
 	double s_b23 = freesteam_region2_s_pT(p,T_b23);
 	if(s >= s_b23){
 		return 2;
+	}
+
+	if(p < IAPWS97_PCRIT){ /* but not in region 1/2 */
+		double T = freesteam_region4_Tsat_p(p);
+		double rhof = freesteam_region4_rhof_T(T);
+		double rhog = freesteam_region4_rhog_T(T);
+		double sf = freesteam_region3_s_rhoT(rhof,T);
+		double sg = freesteam_region3_s_rhoT(rhog,T);
+		if(s <= sf || s >= sg)return 3;
+		return 4;
 	}
 
 	return 3;
@@ -145,6 +145,46 @@ SteamState freesteam_set_ps(double p, double s){
 			tol = 1e-9; /* ??? */
 			zeroin_solve(&ps_region2_fn, &D, lb, ub, tol, &sol, &err);
 			return freesteam_region2_set_pT(p,sol);
+		case 3:
+#define USE_SOLVER_FOR_PS3
+#ifdef USE_SOLVER_FOR_PS3
+		/* FIXME looks like a problem with the derivative routines here? */
+			{
+				int status;
+				double v = freesteam_region3_v_ps(p,s);
+				double T = freesteam_region3_T_ps(p,s);
+				SteamState guess = freesteam_region3_set_rhoT(1./v,T);
+				//SteamState guess = freesteam_region3_set_rhoT(322,700);
+				SteamState S = freesteam_solver2_region3('p','s', p, s, guess, &status);
+				if(status){
+					fprintf(stderr,"%s (%s:%d): Failed solve in region 3 for (p = %g MPa, s = %g kJ/kgK\n"
+						,__func__,__FILE__,__LINE__,p/1e6,s/1e3);
+					fprintf(stderr,"%s: Starting guess was ",__func__);
+					freesteam_fprint(stderr,guess);
+					fprintf(stderr,"%s: v = %g, T = %f => p = %g MPa, s = %g kJ/kgK\n",__func__,v,T,freesteam_p(S)/1e6,freesteam_s(S)/1e3);
+					//exit(1);
+				}
+				return S;
+			}
+#else
+			{
+				SteamState S;
+				double v = freesteam_region3_v_ps(p,s);
+				double T = freesteam_region3_T_ps(p,s);
+				S = freesteam_region3_set_rhoT(1./v,T);
+				if((freesteam_p(S) - p) > 30000){
+					fprintf(stderr,"%s (%s:%d): Failed p solution in region 3(p,s)"	
+						" (p = %g MPa, s = %g kJ/kgK => v = %g m³/kg, T = %g K => p = %g\n"
+						,__func__,__FILE__,__LINE__,p/1e6,s/1e3,v,T,freesteam_p(S)/1e6);
+				}
+				if((freesteam_s(S) - s) > 0.2){
+					fprintf(stderr,"%s (%s:%d): Failed s solution in region 3(p,s)"
+						" (p = %g MPa, s = %g kJ/kgK => v = %g m³/kg, T = %g K => s = %g\n"
+						,__func__,__FILE__,__LINE__,p/1e6,s/1e3,v,T,freesteam_s(S)/1e3);
+				}
+				return S;
+			}
+#endif
 		case 4:
 			{
 				lb = 0.;
@@ -157,40 +197,6 @@ SteamState freesteam_set_ps(double p, double s){
 				//fprintf(stderr,"%s: (%s:%d): p = %g\n",__func__,__FILE__,__LINE__,D.p);
 				return S;
 			}
-		case 3:
-//#define USE_SOLVER_FOR_PS3
-#ifdef USE_SOLVER_FOR_PS3
-		/* FIXME looks like a problem with the derivative routines here? */
-			{
-				int status;
-				SteamState guess = freesteam_region3_set_rhoT(freesteam_region3_v_ps(p,s),freesteam_region3_T_ps(p,s));
-				SteamState S = freesteam_solver2_region3('p','s', p, s, guess, &status);
-				if(status){
-					fprintf(stderr,"%s (%s:%d): Failed solve in region 3 for (p = %g MPa, s = %g kJ/kgK\n"
-						,__func__,__FILE__,__LINE__,p/1e6,s/1e3);
-					//exit(1);
-				}
-				return S;
-			}
-#else
-			{
-				SteamState S;
-				double v = freesteam_region3_v_ps(p,s);
-				double T = freesteam_region3_T_ps(p,s);
-				S = freesteam_region3_set_rhoT(v,T);
-				if((freesteam_p(S) - p) > 0.1){
-					fprintf(stderr,"%s (%s:%d): Failed p solution in region 3(p,s)"	
-						" (p = %g MPa, s = %g kJ/kgK => v = %g m³/kg, T = %g K => p = %g\n"
-						,__func__,__FILE__,__LINE__,p/1e6,s/1e3,v,T,freesteam_p(S)/1e6);
-				}
-				if((freesteam_s(S) - s) > 0.1){
-					fprintf(stderr,"%s (%s:%d): Failed s solution in region 3(p,s)"
-						" (p = %g MPa, s = %g kJ/kgK => v = %g m³/kg, T = %g K => s = %g\n"
-						,__func__,__FILE__,__LINE__,p/1e6,s/1e3,v,T,freesteam_s(S)/1e3);
-				}
-				return S;
-			}
-#endif
 		default:
 			/* ??? */
 			fprintf(stderr,"%s (%s:%d): Region '%d' not implemented\n",__func__,__FILE__,__LINE__,region);

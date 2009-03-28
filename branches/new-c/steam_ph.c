@@ -26,42 +26,47 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "region4.h"
 #include "b23.h"
 #include "backwards.h"
+#include "solver2.h"
+#include "zeroin.h"
 
 #include "common.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-int freesteam_region_ph(double p, double h){
-	SteamState S = freesteam_set_ph(p, h);
-	return S.region;
-	/* Note: there are some optimisations possible here due to calculations
-	needed to fully specify S.R1, S.R2, etc. */
-}
+int freesteam_bounds_ph(double p, double h, int verbose){
 
-SteamState freesteam_set_ph(double p, double h){
-	SteamState S;
+#define BOUND_WARN(MSG) \
+	if(verbose){\
+		fprintf(stderr,"%s (%s:%d): WARNING " MSG " (p = %g MPa, h = %g kJ/kg)\n"\
+		,__func__,__FILE__,__LINE__,p/1e6,h/1e3);\
+	}
 
-	//fprintf(stderr,"freesteam_set_ph(p = %f, h = %f)\n",p,h);
-
-	/* this function is structurally the same as region_ph but we store
-	the useful intermediate calculation results. */
-
-	/* give warnings about outer limits */
-	double hmax = freesteam_region2_h_pT(p,REGION2_TMAX);
-	if(h>hmax){
-		fprintf(stderr,"WARNING: freesteam_region_ph: h > hmax\n");
+	if(p <= 0){
+		BOUND_WARN("p <= 0");
+		return 1;
 	}
 	if(p > IAPWS97_PMAX){
-		fprintf(stderr,"WARNING: freesteam_region_ph: p > pmax\n");
+		BOUND_WARN("p > PMAX");
+		return 2;
 	}
-	if(p <= 0){
-		fprintf(stderr,"WARNING: freesteam_region_ph: p <= 0\n");
+
+	double hmax = freesteam_region2_h_pT(p,REGION2_TMAX);
+	if(h>hmax){
+		BOUND_WARN("h > hmax");
+		return 3;
 	}
 	double hmin = freesteam_region1_h_pT(p,IAPWS97_TMIN);
 	if(h < hmin){
-		fprintf(stderr,"WARNING: freesteam_region_ph: h < hmin\n");
+		BOUND_WARN("h < hmin");
+		return 4;
 	}
+	return 0;
+#undef BOUND_WARN
+}
+
+int freesteam_region_ph(double p, double h){
+	//fprintf(stderr,"freesteam_set_ph(p = %f, h = %f)\n",p,h);
 
 	double p13 = 0;
 	p13 = freesteam_region4_psat_T(REGION1_TMAX);
@@ -73,74 +78,113 @@ SteamState freesteam_set_ph(double p, double h){
 		double Tsat = freesteam_region4_Tsat_p(p);
 		double hf = freesteam_region1_h_pT(p,Tsat);
 		if(h<hf){
-			S.region = 1;
-			S.R1.p = p;
-			S.R1.T = freesteam_region1_T_ph(p, h);
-			FREESTEAM_DEBUG("(h < hf)",S);
-			return S;
+			return 1;
 		}
 		double hg = freesteam_region2_h_pT(p,Tsat);
 		if(h>hg){
-			S.region = 2;
-			S.R2.p = p;
-			S.R2.T = freesteam_region2_T_ph(p, h);
-			FREESTEAM_DEBUG("(h > hg)",S);
-			return S;
+			return 2;
 		}
 		/* this is the low-pressure portion of region 4 */
-		S.region = 4;
-		S.R4.T = freesteam_region4_Tsat_p(p);
-		/* TODO iteratively improve estimate of T */
-		S.R4.x = (h - hf)/(hg - hf);
-		FREESTEAM_DEBUG("(hf < h < hg)",S);
-		return S;
+		return 4;
 	}
 
 	double h13 = freesteam_region1_h_pT(p,REGION1_TMAX);
 	if(h <= h13){
-		S.region = 1;
-		S.R1.p = p;
-		S.R1.T = freesteam_region1_T_ph(p, h);
-		FREESTEAM_DEBUG("(h <= h(p,T1max)",S);
-		return S;
+		return 1;
 	}
 
 	double T23 = freesteam_b23_T_p(p);
 	//fprintf(stderr,"p = %f MPa --> T23(p) = %f K (%f °C)\n",p/1e6,T23,T23-273.15);
 	double h23 = freesteam_region2_h_pT(p,T23);
 	if(h >= h23){
-		S.region = 2;
-		S.R2.p = p;
-		S.R2.T = freesteam_region2_T_ph(p, h);
-		//fprintf(stderr,"T23(p) = %f, h23(p,T23) = %f\n",T23,h23);
-		FREESTEAM_DEBUG("(high pressure region 2, h > h2(p,Tb23(p))",S);
-		//fprintf(stderr,"--> h = %f kJ/kg\n",freesteam_region2_h_pT(S.R2.p,S.R2.T)/1e3);
-		return S;
+		return 2;
 	}
 
 	double psat = freesteam_region3_psat_h(h);
 	if(p > psat){
-		S.region = 3;
-		S.R3.rho = 1./freesteam_region3_v_ph(p, h);
-		S.R3.T = freesteam_region3_T_ph(p, h);
-		FREESTEAM_DEBUG("(p > psat(h))",S);
-		return S;
+		return 3;
 	}
 
 	/* high-pressure portion of region 4 */
-	S.region = 4;
-	double Tsat = freesteam_region4_Tsat_p(p);
-	/* FIXME iteratively improve this estimate of Tsat */
-	S.R4.T = Tsat;
-	double rhof = freesteam_region4_rhof_T(Tsat);
-	double rhog = freesteam_region4_rhog_T(Tsat);
-	/* FIXME iteratively improve these estimates of rhof, rhog */
-	double hf = freesteam_region3_h_rhoT(rhof,Tsat);
-	double hg = freesteam_region3_h_rhoT(rhog,Tsat);
-
-	//fprintf(stderr,"T = %f, rhof = %f, rhog = %f (vf = %f, vg = %f), hf = %f, hg = %f\n", Tsat, rhof, rhog, 1./rhof, 1./rhog, hf, hg);
-	S.R4.x = (h - hf)/(hg - hf);
-	FREESTEAM_DEBUG("(high-pressure)",S);
-	return S;
+	return 4;
 }
+
+
+typedef struct SolvePHData_struct{
+	double p, h;
+} SolvePHData;
+
+#define D ((SolvePHData *)user_data)
+static ZeroInSubjectFunction ph_region2_fn;
+double ph_region2_fn(double T, void *user_data){
+	return D->h - freesteam_region2_h_pT(D->p, T);
+}
+#undef D
+
+
+SteamState freesteam_set_ph(double p, double h){
+	SteamState S;
+	S.region = (char)freesteam_region_ph(p,h);
+	int status;
+	switch(S.region){
+		case 1:
+			S.R1.p = p;
+			S.R1.T = freesteam_region1_T_ph(p, h);
+			S = freesteam_solver2_region1('p','h', p, h, S, &status);
+			if(status){
+				fprintf(stderr,"%s: WARNING: Failed to converge in region 1\n",__func__);
+			}
+			return S;
+		case 2:
+			S.R2.p = p;
+			S.R2.T = freesteam_region2_T_ph(p, h);
+			{
+				double lb = S.R2.T * 0.999;
+				double ub = S.R2.T * 1.001;
+				double tol = 1e-9; /* ??? */
+				double sol, err;
+				SolvePHData D = {p, h};
+				zeroin_solve(&ph_region2_fn, &D, lb, ub, tol, &sol, &err);
+				S.R2.T = sol;
+			}
+#if 0
+			/* solver2 is not working in this region, for some reason. */
+			S = freesteam_solver2_region2('p','h', p, h, S, &status);
+			if(status){
+				fprintf(stderr,"%s: WARNING: Failed to converge in region 2\n");
+			}
+#endif
+			return S;
+		case 3:
+			S.R3.rho = 1./freesteam_region3_v_ph(p, h);
+			S.R3.T = freesteam_region3_T_ph(p, h);
+#if 0
+			S = freesteam_solver2_region3('p','h', p, h, S, &status);
+			if(status){
+				fprintf(stderr,"%s: WARNING: Failed to converge in region 3\n",__func__);
+			}
+#endif
+			return S;
+		case 4:
+			S.R4.T = freesteam_region4_Tsat_p(p);
+			//fprintf(stderr,"%s: region 4, Tsat = %g\n",__func__,S.R4.T);
+			double hf, hg;
+			if(S.R4.T < REGION1_TMAX){
+				hf = freesteam_region1_h_pT(p,S.R4.T);
+				hg = freesteam_region2_h_pT(p,S.R4.T);
+			}else{
+				/* TODO iteratively improve estimate of T */
+				double rhof = freesteam_region4_rhof_T(S.R4.T);
+				double rhog = freesteam_region4_rhog_T(S.R4.T);
+				/* FIXME iteratively improve these estimates of rhof, rhog */
+				hf = freesteam_region3_h_rhoT(rhof,S.R4.T);
+				hg = freesteam_region3_h_rhoT(rhog,S.R4.T);
+			}
+			S.R4.x = (h - hf)/(hg - hf);
+			return S;
+	}
+}
+
+
+
 

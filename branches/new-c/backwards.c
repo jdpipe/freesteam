@@ -845,14 +845,14 @@ double freesteam_region3_v_ps(double p, double s){
 	double sum = 0;
 	if(s < REGION3AB_SC){
 		/* sub-region 3a */
-		fprintf(stderr,"3A\n");
+		//fprintf(stderr,"3A\n");
 		p1 = p/REGION3A_VPS_PSTAR + 0.187; s1 = s/REGION3A_VPS_SSTAR - 0.755;
 		d = REGION3A_VPS_DATA;
 		n = REGION3A_VPS_MAX;
 		vstar = REGION3A_VPS_VSTAR;
 	}else{
 		/* sub-region 3b */
-		fprintf(stderr,"3B\n");
+		//fprintf(stderr,"3B\n");
 		p1 = p/REGION3B_VPS_PSTAR + 0.298; s1 = s/REGION3B_VPS_SSTAR - 0.816;
 		d = REGION3B_VPS_DATA;
 		n = REGION3B_VPS_MAX;

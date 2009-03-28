@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "common.h"
 #include "steam.h"
 
+FREESTEAM_DLL int freesteam_bounds_Ts(double T, double s, int verbose);
+
 FREESTEAM_DLL int freesteam_region_Ts(double T, double s);
 
 FREESTEAM_DLL SteamState freesteam_set_Ts(double T, double s);

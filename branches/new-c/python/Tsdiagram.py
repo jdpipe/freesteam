@@ -25,9 +25,9 @@ for T in TT:
 	print "T = %f K" % (T)
 	y = 0
 	for s in ss:
-		S = freesteam.steam_Ts(T,s)
-		#print "p = %f, T = %f" % (p,T)
-		r = ord(S.region)
+		#if freesteam.bounds_Ts(T,s,0):
+		#	continue
+		r = freesteam.region_Ts(T,s)
 		#print "T = %f K, s = %f kg/kgK, region[%d,%d] = %d" % (T,s/1e3,x,y,r)
 		im[x,y] = float(r) / 4.
 		y += 1
@@ -56,10 +56,12 @@ ss = arange(0.,10.,0.1)*1e3
 for p in pp:
 	TT = []
 	for s in ss:
-		try: 
-			T = freesteam.steam_ps(p,s).T
-		except:
-			T = None
+		T = None
+		if not freesteam.bounds_ps(p,s,0):
+			try: 
+				T = freesteam.steam_ps(p,s).T
+			except:
+				pass
 		TT += [T]
 	plot(ss/1e3,TT,alpha=0.4)
 	#sys.exit(1)
@@ -74,6 +76,8 @@ u = []
 v = []
 for p in pp:
 	for s in ss1:
+		if freesteam.bounds_ps(p,s,0):
+			continue
 		S = freesteam.steam_ps(p,s)
 		assert(fabs(S.s - s) < 1e-5)
 		dy = freesteam.freesteam_deriv(S,'T','s','p')
