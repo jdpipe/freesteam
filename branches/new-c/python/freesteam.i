@@ -47,6 +47,8 @@ You may not use it in commercially-released software."
 %rename(region_ph) freesteam_region_ph;
 %rename(region_Ts) freesteam_region_Ts;
 
+%rename(bound_pmax_T) freesteam_bound_pmax_T;
+
 %rename(solver2_region1) freesteam_solver2_region1;
 %rename(solver2_region2) freesteam_solver2_region2;
 %rename(solver2_region3) freesteam_solver2_region3;
@@ -102,6 +104,7 @@ You may not use it in commercially-released software."
 #include "region4.h"
 #include "derivs.h"
 #include "solver2.h"
+#include "bounds.h"
 %}
 
 /* TODO clean up region4.h so we can just include it here */
@@ -117,6 +120,7 @@ double freesteam_region4_dpsatdT_T(double T);
 %include "steam_pT.h";
 %include "steam_pu.h";
 %include "steam_Ts.h";
+%include "bounds.h";
 %include "derivs.h";
 
 /* Rewrite the solver2 functions to include */
