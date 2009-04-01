@@ -44,10 +44,58 @@ for p in pp:
 
 imshow(im,extent=[umin/1e3,umax/1e3,pmin/1e6,pmax/1e6],origin='lower',aspect='auto',interpolation='nearest',alpha=0.6)
 
-# FIXME add lines of constant temperature
+# LINES OF CONSTANT TEMPERATURE
+
+if 1:
+	TT = logspace(math.log10(273.15),math.log10(1073.15),30)
+	for T in TT:
+		print "T =",T
+		smin = freesteam.bound_pmax_T(T).s + 0.1 
+		smax = freesteam.region2_pT(1,T).s - 0.1
+		ss = linspace(smin,smax,1000)
+		uu = []
+		pp = []
+		for s in ss:
+			if freesteam.bounds_Ts(T,s,0):
+				continue
+			S = freesteam.steam_Ts(T,s)
+			uu += [S.u/1e3]	
+			pp += [S.p/1e6]
+		plot(uu,pp,'g-')
+
+# LINES OF CONSTANT ENTROPY
+
+sgpmin = freesteam.region4_Tx(freesteam.Tsat_p(freesteam.PTRIPLE),1.).s
+print sgpmin
+
+ss = logspace(math.log10(1e3),math.log10(12e3),30)
+for s in ss:
+	print "s =",s
+	Tmax = freesteam.steam_ps(100e6,s).T
+	if s<sgpmin:
+		Tmin = freesteam.TMIN
+	else:
+		Tmin = freesteam.steam_ps(freesteam.PTRIPLE,s).T
+	print "Tmin = %f, Tmax = %f" %(Tmin,Tmax)
+	TT = linspace(Tmin,Tmax,1000)
+	uu = []
+	pp = []
+	for T in TT:
+		#print T
+		if freesteam.bounds_Ts(T,s,0):
+			continue
+		S = freesteam.steam_Ts(T,s)
+		uu += [S.u/1e3]	
+		pp += [S.p/1e6]
+	plot(uu,pp,'r-')
+
 
 # plot the sat curve
 plot(uf,psat,'b-')
 plot(ug,psat,'r-')
+
+xlabel('u / [kJ/kg]')
+ylabel('p / [MPa]')
 show()
+
 
