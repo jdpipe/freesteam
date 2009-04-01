@@ -65,6 +65,7 @@ You may not use it in commercially-released software."
 %rename(RHOCRIT) IAPWS97_RHOCRIT;
 %rename(PMAX) IAPWS97_PMAX;
 %rename(R) IAPWS97_R;
+%rename(PTRIPLE) IAPWS97_PTRIPLE;
 
 %rename(psat_T) freesteam_region4_psat_T;
 %rename(dpsatdT_T) freesteam_region4_dpsatdT_T;
