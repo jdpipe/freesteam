@@ -153,9 +153,12 @@ SteamState freesteam_set_Ts(double T, double s){
 		case 2:
 			lb = 0.;
 			ub = IAPWS97_PMAX;
+			if(T > REGION1_TMAX && T < freesteam_b23_T_p(IAPWS97_PMAX)){
+				ub = freesteam_b23_p_T(T);
+			}		
 			tol = 1e-9; /* ??? */
 			zeroin_solve(&Ts_region2_fn, &D, lb, ub, tol, &sol, &err);
-			//assert(fabs(err/sol)<tol);
+			//if(T > 600.)assert(fabs(err/sol)<tol);
 			return freesteam_region2_set_pT(sol,T);
 		case 3:
 			lb = 0;

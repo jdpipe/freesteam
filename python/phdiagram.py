@@ -42,12 +42,13 @@ for p in pp:
 
 imshow(im,extent=[hmin/1e3,hmax/1e3,pmin/1e6,pmax/1e6],origin='lower',aspect='auto',interpolation='nearest',alpha=0.6)
 
-# FIXME add lines of constant temperature
+# LINES OF CONSTANT TEMPERATURE
+
 TT = logspace(math.log10(273.15),math.log10(1073.15),30)
 for T in TT:
 	print "T =",T
-	smin = freesteam.bound_pmax_T(T).s
-	smax = freesteam.region2_pT(1,T).s
+	smin = freesteam.bound_pmax_T(T).s + 0.1 
+	smax = freesteam.region2_pT(1,T).s - 0.1
 	ss = linspace(smin,smax,1000)
 	#print "smin =",smin, ", smax =",smax
 	#continue
@@ -57,14 +58,17 @@ for T in TT:
 		if freesteam.bounds_Ts(T,s,0):
 			continue
 		S = freesteam.steam_Ts(T,s)
+		if p < 20e6:
+			freesteam.bounds_ph(S.p, S.h,1)
+		if S.h < 0:
+			raise RuntimeError("failed to solve in bounds T = %f, s = %f" % (T,s))
 		hh += [S.h/1e3]	
 		pp += [S.p/1e6]
 	plot(hh,pp,'g-')
 
-# plot the sat curve
+# plot the sat curve on top
 plot(hf,psat,'b-')
 plot(hg,psat,'r-')
-
 xlabel("h / [kJ/kg]")
 ylabel("p / [MPa]")
 show()
