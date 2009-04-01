@@ -46,16 +46,16 @@ imshow(im,extent=[hmin/1e3,hmax/1e3,pmin/1e6,pmax/1e6],origin='lower',aspect='au
 TT = logspace(math.log10(273.15),math.log10(1073.15),30)
 for T in TT:
 	print "T =",T
-	smin = freesteam.steam_pT(freesteam.PMAX,T).s
+	smin = freesteam.bound_pmax_T(T).s
 	smax = freesteam.region2_pT(1,T).s
-	ss = linspace(smin,smax)
-	print "smin =",smin, ", smax =",smax
+	ss = linspace(smin,smax,1000)
+	#print "smin =",smin, ", smax =",smax
+	#continue
 	hh = []
 	pp = []
 	for s in ss:
-		if not freesteam.bounds_Ts(T,s,0):
-			continue;
-		#print "T = ",T, " s =",s
+		if freesteam.bounds_Ts(T,s,0):
+			continue
 		S = freesteam.steam_Ts(T,s)
 		hh += [S.h/1e3]	
 		pp += [S.p/1e6]

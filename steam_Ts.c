@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "b23.h"
 #include "solver2.h"
 #include "backwards.h"
+#include "bounds.h"
 
 #include <stdlib.h>
 #include <assert.h>
@@ -43,20 +44,38 @@ int freesteam_bounds_Ts(double T, double s, int verbose){
 		BOUND_WARN("T <= TMIN");
 		return 1;
 	}
-	if(T > IAPWS97_TMAX){
+	if(T > IAPWS97_TMAX + 1e-5){
 		BOUND_WARN("T > TMAX");
 		return 2;
 	}
 
-	double smax = freesteam_region2_s_pT(IAPWS97_PMAX,T);
-	if(s>smax){
+	double smax = freesteam_region2_s_pT(0,T);
+	if(s > smax){
 		BOUND_WARN("s > smax");
 		return 3;
 	}
-	double smin = freesteam_region1_s_pT(0,T);
-	if(s < smin){
-		BOUND_WARN("s < smin");
-		return 4;
+
+	if(T < REGION1_TMAX){
+		double smin = freesteam_region1_s_pT(IAPWS97_PMAX,T);
+		if(s < smin){
+			BOUND_WARN("s < smin (region 1)");
+			return 4;
+		}
+	}else if(T > freesteam_b23_T_p(IAPWS97_PMAX)){
+		double smin = freesteam_region2_s_pT(IAPWS97_PMAX,T);
+		if(s < smin){
+			BOUND_WARN("s < smin (region 2)");
+			return 4;
+		}
+	}else{
+		/* region 3, need to iterate */
+		SteamState S = freesteam_bound_pmax_T(T);
+		assert(S.region==3);
+		double smin = freesteam_s(S);
+		if(s < smin){
+			BOUND_WARN("s < smin (region 3)");
+			return 4;
+		}
 	}
 	return 0;
 #undef BOUND_WARN
@@ -78,9 +97,9 @@ int freesteam_region_Ts(double T, double s){
 	}
 
 	/* an optimisation, using known range of s values on b23 IAPWS97 sect 4, p 5 */
-	if(s > 5.261e3)return 2;
+	//if(s > 5.261e3)return 2;
 
-	if(s < 3.6e3)return 3;
+	//if(s < 3.6e3)return 3;
 
 	double p23 = freesteam_b23_p_T(T);
 	double s23 = freesteam_region2_s_pT(p23,T);
@@ -126,10 +145,10 @@ SteamState freesteam_set_Ts(double T, double s){
 	switch(region){
 		case 1:
 			lb = 0.;
-			ub = IAPWS97_PCRIT;
+			ub = IAPWS97_PMAX;
 			tol = 1e-9; /* ??? */
 			zeroin_solve(&Ts_region1_fn, &D, lb, ub, tol, &sol, &err);
-			//assert(fabs(err/sol)<tol);
+			assert(fabs(err/sol)<tol);
 			return freesteam_region1_set_pT(sol,T);
 		case 2:
 			lb = 0.;
@@ -139,11 +158,11 @@ SteamState freesteam_set_Ts(double T, double s){
 			//assert(fabs(err/sol)<tol);
 			return freesteam_region2_set_pT(sol,T);
 		case 3:
-			lb = REGION1_TMAX;
-			ub = 900.;
+			lb = 0;
+			ub = 1000;
 			tol = 1e-9; /* ??? */
 			zeroin_solve(&Ts_region3_fn, &D, lb, ub, tol, &sol, &err);
-			//assert(fabs(err/sol)<tol);
+			assert(fabs(err/sol)<tol);
 			return freesteam_region3_set_rhoT(sol,T);
 		case 4:
 			lb = 0.;
