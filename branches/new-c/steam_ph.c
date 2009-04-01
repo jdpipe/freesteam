@@ -130,10 +130,12 @@ SteamState freesteam_set_ph(double p, double h){
 		case 1:
 			S.R1.p = p;
 			S.R1.T = freesteam_region1_T_ph(p, h);
+#if 0
 			S = freesteam_solver2_region1('p','h', p, h, S, &status);
 			if(status){
 				fprintf(stderr,"%s: WARNING: Failed to converge in region 1\n",__func__);
 			}
+#endif
 			return S;
 		case 2:
 			S.R2.p = p;
@@ -159,6 +161,7 @@ SteamState freesteam_set_ph(double p, double h){
 			S.R3.rho = 1./freesteam_region3_v_ph(p, h);
 			S.R3.T = freesteam_region3_T_ph(p, h);
 #if 0
+			/* this code doesn't work, see pTdiagram.h for example */
 			S = freesteam_solver2_region3('p','h', p, h, S, &status);
 			if(status){
 				fprintf(stderr,"%s: WARNING: Failed to converge in region 3\n",__func__);
