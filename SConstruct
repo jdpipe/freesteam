@@ -6,6 +6,9 @@
 # that shouldn't be necessary, as you should be able to use the MinGW-generated
 # DLL even with MSVS, because it only uses C code.
 
+#version number for this copy of freesteam
+version = "2.0"
+
 # Set up some platform-specific defaults
 
 import platform
@@ -98,7 +101,7 @@ opts.Add(
 # and create the SCONS 'environment':
 
 import os
-tools = ['swig','ascend']
+tools = ['swig','ascend','substinfile']
 if os.environ.has_key('OSTYPE') and os.environ['OSTYPE']=='msys':
 	env = Environment(ENV=os.environ
 		, toolpath = ['scons']
@@ -155,6 +158,16 @@ if env.get('DEBUG'):
 	env.Append(
 		CFLAGS=['-g']
 	)
+
+# Create config.h including version number
+
+subst_dict = {
+	'@VERSION@':version
+}
+
+env.Append(SUBST_DICT=subst_dict)
+
+configh = env.SubstInFile('config.h.in')
 
 # Here is the list of all of the source files that will go into
 # the freesteam DLL/SO.
@@ -225,6 +238,7 @@ prog_env.Append(
 
 prog_env.Program("test","test.c")
 
+#-------------------------------------------------------------------------------
 # Install files, if requested.
 
 try:

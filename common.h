@@ -1,6 +1,8 @@
 #ifndef FREESTEAM_COMMON_H
 #define FREESTEAM_COMMON_H
 
+#include "config.h"
+
 /*
 	ASCEND code in base/generic only EXPORTS symbols, no imports.
 	The FREESTEAM_DLLSPEC macro will, depending on whether we are
