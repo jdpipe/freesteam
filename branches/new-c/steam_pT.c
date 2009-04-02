@@ -93,7 +93,7 @@ SteamState freesteam_set_pT(double p, double T){
 			S.region = 3;
 			S.R3.T = T;
 			S.R3.rho = sol;
-			assert(fabs((freesteam_p(S) - p)/p) < tol);
+			//assert(fabs((freesteam_p(S) - p)/p) < tol);
 		}
 	}
 	//fprintf(stderr,"%s: region %d\n",__func__,S.region);

@@ -67,6 +67,7 @@ You may not use it in commercially-released software."
 %rename(R) IAPWS97_R;
 %rename(PTRIPLE) IAPWS97_PTRIPLE;
 
+
 %rename(psat_T) freesteam_region4_psat_T;
 %rename(dpsatdT_T) freesteam_region4_dpsatdT_T;
 %rename(Tsat_p) freesteam_region4_Tsat_p;
@@ -90,6 +91,7 @@ You may not use it in commercially-released software."
 %ignore freesteam_region;
 %ignore ipow;
 
+%include "config.h"
 %include "common.h"
 
 %{

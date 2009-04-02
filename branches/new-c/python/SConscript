@@ -27,6 +27,8 @@ python_env.Append(
 swigobj = python_env.SharedObject('freesteam.i'
 	, SWIGFLAGS=['-python']
 )
+env.Depends("freesteam.i","../config.h")
+
 
 if platform.system()=="Windows":
 	python_env['SHLIBSUFFIX']=".pyd"
