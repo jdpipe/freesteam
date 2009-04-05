@@ -101,7 +101,7 @@ opts.Add(
 # and create the SCONS 'environment':
 
 import os
-tools = ['swig','ascend','substinfile']
+tools = ['swig','ascend','substinfile','gsl']
 if os.environ.has_key('OSTYPE') and os.environ['OSTYPE']=='msys':
 	env = Environment(ENV=os.environ
 		, toolpath = ['scons']
@@ -184,7 +184,11 @@ lib_env = env.Clone()
 lib_env.Append(
 	LIBS = ['m']
 )
-lib_env.ParseConfig(['gsl-config','--cflags','--libs'])
+lib_env.Append(
+	LIBS = env['GSL_LIBS']
+	,LIBPATH = env['GSL_LIBPATH']
+	,CPPPATH = env['GSL_CPPPATH']
+)
 
 # Create the shared library
 
