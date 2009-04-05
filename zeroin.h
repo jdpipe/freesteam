@@ -20,8 +20,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef FREESTEAM_ZEROIN_H
 #define FREESTEAM_ZEROIN_H
 
+#include "common.h"
+
 /**
-	Any function that you want to solve using the 'zeroin_solve' function 
+	Any function that you want to solve using the 'zeroin_solve' function
 	needs to conform to this function prototype. Any parameters required
 	internally by the function can be passed in to the function as a pointer
 	to a struct, array, etc, via the void 'user_data' pointer. Your subject
@@ -57,7 +59,7 @@ typedef double ZeroInSubjectFunction(double, void *user_data);
 	@return 0 on success
 */
 
-char zeroin_solve(ZeroInSubjectFunction *func, void *user_data, double lowerbound, double upperbound, double tol, double *solution, double *error);
+FREESTEAM_DLL char zeroin_solve(ZeroInSubjectFunction *func, void *user_data, double lowerbound, double upperbound, double tol, double *solution, double *error);
 
 #endif
 

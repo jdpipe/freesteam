@@ -53,9 +53,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 	FIXME provide 'default' guess functions.
 */
-SteamState freesteam_solver2_region1(char X, char Y, double x, double y, SteamState guess, int *status);
-SteamState freesteam_solver2_region2(char X, char Y, double x, double y, SteamState guess, int *status);
-SteamState freesteam_solver2_region3(char X, char Y, double x, double y, SteamState guess, int *status);
-SteamState freesteam_solver2_region4(char X, char Y, double x, double y, SteamState guess, int *status);
+FREESTEAM_DLL SteamState freesteam_solver2_region1(char X, char Y, double x, double y, SteamState guess, int *status);
+FREESTEAM_DLL SteamState freesteam_solver2_region2(char X, char Y, double x, double y, SteamState guess, int *status);
+FREESTEAM_DLL SteamState freesteam_solver2_region3(char X, char Y, double x, double y, SteamState guess, int *status);
+FREESTEAM_DLL SteamState freesteam_solver2_region4(char X, char Y, double x, double y, SteamState guess, int *status);
 
 #endif
