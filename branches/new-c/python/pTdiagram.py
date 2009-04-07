@@ -51,6 +51,16 @@ plot(TT0,psat,'b-')
 axis([Tmin,Tmax,pmin/1e6,pmax/1e6])
 #quiver(x,y,u,v,alpha=0.6)
 
+# LINES OF CONSTANT ENTROPY
+
+ss = arange(0,12,1./3)*1e3
+for s in ss:
+	TT2 = [freesteam.steam_ps(p,s).T for p in pp]
+	plot(TT2,pp/1e6,'r:')
+
+plot(TT0,psat,'b-')
+axis([Tmin,Tmax,pmin/1e6,pmax/1e6])
+#quiver(x,y,u,v,alpha=0.6)
 
 
 xlabel('T / [K]')

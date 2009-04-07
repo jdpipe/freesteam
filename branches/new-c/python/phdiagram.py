@@ -66,10 +66,31 @@ for T in TT:
 		pp += [S.p/1e6]
 	plot(hh,pp,'g-')
 
+# LINES OF CONSTANT ENTROPY
+
+ss = linspace(1,11,30) * 1e3
+for s in ss:
+	print "s =",s
+	Tmin = freesteam.steam_ps(freesteam.PMAX,s).T
+	Tmax = freesteam.steam_ps(freesteam.PTRIPLE,s).T
+	TT = linspace(Tmin,Tmax,1000)
+	#print "smin =",smin, ", smax =",smax
+	#continue
+	hh = []
+	pp = []
+	for T in TT:
+		if freesteam.bounds_Ts(T,s,0):
+			continue
+		S = freesteam.steam_Ts(T,s)
+		hh += [S.h/1e3]	
+		pp += [S.p/1e6]
+	plot(hh,pp,'r-')
+
 # plot the sat curve on top
 plot(hf,psat,'b-')
 plot(hg,psat,'r-')
 xlabel("h / [kJ/kg]")
 ylabel("p / [MPa]")
+axis([0,4500,0,100])
 show()
 
