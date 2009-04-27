@@ -41,19 +41,23 @@ def generate(env):
 			
 			env['GSL_CPPPATH'] = [munge(INCLUDE)]
 			env['GSL_LIBPATH'] = [munge(LIB)]
-			env['GSL_LIBS'] = ['gslcblas','gsl']
+			env['GSL_LIBS'] = ['gsl']
+			env['GSL_LIBS_CBLAS'] = ['gslcblas','gsl']
 			env['HAVE_GSL'] = True
 									
 		else:
 			cmd = ['gsl-config','--cflags','--libs']
-			env1 = env.Clone()
-			env1['CPPPATH'] = None
-			env1['LIBPATH'] = None
-			env1['LIBS'] = None
-			env1.ParseConfig(cmd)
-			env['GSL_CPPPATH'] = env1.get('CPPPATH')
-			env['GSL_LIBPATH'] = env1.get('LIBPATH')
-			env['GSL_LIBS'] = env1.get('LIBS')
+			old_env = env.Clone()
+			env.ParseConfig(cmd)
+			env['GSL_CPPPATH'] = env.get('CPPPATH')
+			env['GSL_LIBPATH'] = env.get('LIBPATH')
+			env['GSL_LIBS'] = env.get('LIBS')
+			for i in ['LIBS','LIBPATH','CPPPATH']:
+				if old_env.get(i) is None:
+					if haskey(env,i):
+						del env[i]
+				else:
+					env[i] = old_env[i]
 			env['HAVE_GSL'] = True
 
 		print "GSL_LIBS =",env.get('GSL_LIBS')

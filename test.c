@@ -27,7 +27,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "region3.h"
 #include "solver2.h"
 #include "steam_ps.h"
+#include "steam_Ts.h"
 #include "steam_pT.h"
+#include "region1.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,7 +43,8 @@ int verbose = 0;
 #define CHECK_VAL(EXPR, VAL, RELTOL){ \
 	double calc = (EXPR); \
 	double error = calc - (VAL);\
-	double relerr = error / (VAL);\
+	double relerr;\
+	relerr = (VAL==0) ? error : error / (VAL);\
 	if(fabs(relerr)>maxrelerr)maxrelerr=fabs(relerr);\
 	if(fabs(relerr) > RELTOL){\
 		fprintf(stderr,"ERROR (%s:%d): %s = %e, should be %e, error %10e %% exceeds tol %10e %%\n",\
@@ -335,7 +338,7 @@ void testph(void){
 	for(p=pp; p<pp+np; ++p){
 		for(h=hh; h<hh+nh; ++h){
 			if(freesteam_bounds_ph(*p*1e6, *h*1e3, 0))continue;
-			//if(freesteam_region_ph(*p*1e6, *h*1e3)!=4)continue;
+			if(freesteam_region_ph(*p*1e6, *h*1e3)!=3)continue;
 			test_steam_ph(*p,*h);
 		}
 	}
@@ -629,6 +632,41 @@ void testps(void){
 }
 
 /*------------------------------------------------------------------------------
+  FULL (T,S) ROUTINES
+*/
+
+void test_steam_Ts(double T,double s){
+	//fprintf(stderr,"------------\n");
+	//fprintf(stderr,"%s: T = %f K, s = %f kJ/kgK\n",__func__, T, s);
+	freesteam_bounds_Ts(T,s*1e3,1);
+	SteamState S = freesteam_set_Ts(T,s*1e3);
+	//if(S.region !=1)return;
+	//fprintf(stderr,"--> region = %d\n", S.region);
+	//if(S.region==4)fprintf(stderr,"--> p = %g\n", freesteam_region4_psat_T(S.R4.T));
+	CHECK_VAL(freesteam_T(S),T,RELTOL);
+	CHECK_VAL(freesteam_s(S),s*1e3,RELTOL);
+};
+
+void testTs(void){
+	const double TT[] = {273.15, 276.15, 283.15, 300, 400, 500, 600, 621
+		, REGION1_TMAX, 630, 647, IAPWS97_TCRIT, 648, 680, 700,800,900
+		, 1000,1073.15
+	};
+	const int nT = sizeof(TT)/sizeof(double);
+	const double ss[] = {0,0.01,1,2,3,3.5,4,5,6,7,8,9,10,11,12};
+	const int ns = sizeof(ss)/sizeof(double);
+	const double *T, *s;
+
+	fprintf(stderr,"FULL (T,S) TESTS\n");
+	for(T=TT; T<TT+nT; ++T){
+		for(s=ss; s<ss+ns; ++s){
+			if(freesteam_bounds_Ts(*T,*s*1e3,0))continue;
+			test_steam_Ts(*T,*s);
+		}
+	}
+}
+
+/*------------------------------------------------------------------------------
   MAIN ROUTINE
 */
 
@@ -654,6 +692,7 @@ int main(void){
 	testps();
 	testph();
 	testpT();
+	testTs();
 	//testTu();
 #if 0	
 	/* the following tests cause the larger errors, and are not part of the

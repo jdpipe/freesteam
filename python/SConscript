@@ -37,3 +37,6 @@ swiglib = python_env.SharedLibrary("freesteam",swigobj
 	, SHLIBPREFIX = '_'
 )
 
+env['installedfiles'] += [env.InstallLibrary("${INSTALL_ROOT}$INSTALL_PYTHON",[swiglib])]
+env['installedfiles'] += [env.Install("${INSTALL_ROOT}$INSTALL_PYTHON",['freesteam.py'])]
+
