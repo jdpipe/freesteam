@@ -2,7 +2,7 @@ Source: freesteam
 Section: contrib/science
 Priority: extra
 Maintainer: John Pye <john@curioussymbols.com>
-Build-Depends: scons, gcc, swig, python-dev, debhelper, libgsl0-dev, ascend
+Build-Depends: scons, gcc, swig, python-dev, debhelper, libgsl0-dev, ascend-dev
 Standards-Version: 3.7.2
 
 Package: libfreesteam1
