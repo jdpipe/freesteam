@@ -26,8 +26,6 @@ if env.get('HAVE_ASCEND'):
 
 	env.Depends(lib,env['libfreesteam'])
 
-	if env.get('CAN_INSTALL'):
-		# FIXME implement this
-		pass
+	env['installedfiles'] += [env.InstallLibrary("${INSTALL_ROOT}$ASCEND_MODELS",[lib])]
 
 # vim: set syntax=python:

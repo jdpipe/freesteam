@@ -11,13 +11,17 @@ version = "2.0"
 
 # Set up some platform-specific defaults
 
-import platform
+import platform, sys, distutils.sysconfig
 if platform.system()=="Windows":
 	default_emso_location = "c:\\Program Files\\EMSO\\interface"
 	default_prefix = 'c:/MinGW'
+	python_exe = sys.executable
+	default_python = distutils.sysconfig.get_python_lib()
 else:
 	default_emso_location = None
 	default_prefix = '/usr/local'
+	python_exe = "/usr/bin/env python"
+	default_python = distutils.sysconfig.get_python_lib()
 
 # SONAME related flags, for linux shared object versioning. Because this is a
 # re-write of freesteam with a new API, we will bump the soname to .1
@@ -55,13 +59,13 @@ opts.Add(PathOption(
 ))
 
 opts.Add(
-	'LIBDIR'
+	'INSTALL_LIB'
 	,"Location to install library"
 	, "$INSTALL_PREFIX/lib"
 )
 
 opts.Add(
-	'INCDIR'
+	'INSTALL_INCLUDE'
 	,"Location to install headers"
 	,"$INSTALL_PREFIX/include"
 )
@@ -77,6 +81,12 @@ opts.Add(PathOption(
 	,"Root onto which installation should take place. Normally only for "
 		+"use when building RPMs"
 	,None
+))
+
+opts.Add(PathOption(
+	'INSTALL_PYTHON'
+	,"Directory for installation of Python extensions"
+	,"%s" % default_python
 ))
 
 opts.Add(
@@ -97,11 +107,17 @@ opts.Add(
 	,soname_default
 )
 
+opts.Add(
+	'DISTTAR_NAME'
+	,"Stem name of the tarball created by 'scons dist'. So for 'freesteam-aaa.tar.bz2', set this to 'freesteam-aaa'."
+	,"freesteam-"+version
+)
+
 # Set up the 'tools' the SCONS will need access to , eg compilers
 # and create the SCONS 'environment':
 
 import os
-tools = ['swig','ascend','substinfile','gsl']
+tools = ['swig','ascend','substinfile','gsl','disttar']
 if os.environ.has_key('OSTYPE') and os.environ['OSTYPE']=='msys':
 	env = Environment(ENV=os.environ
 		, toolpath = ['scons']
@@ -163,11 +179,19 @@ if env.get('DEBUG'):
 
 subst_dict = {
 	'@VERSION@':version
+	, '@PYTHON@' : python_exe
+	, '@INSTALL_BIN@':env['INSTALL_BIN']
+	, '@INSTALL_INCLUDE@':env['INSTALL_INCLUDE']
+	, '@INSTALL_LIB@':env['INSTALL_LIB']
 }
 
 env.Append(SUBST_DICT=subst_dict)
 
 configh = env.SubstInFile('config.h.in')
+
+configscript = env.SubstInFile('freesteam-config.in')
+
+install_config = env.InstallProgram("${INSTALL_ROOT}$INSTALL_BIN",configscript)
 
 # Here is the list of all of the source files that will go into
 # the freesteam DLL/SO.
@@ -245,6 +269,10 @@ prog_env.Program("test","test.c")
 #-------------------------------------------------------------------------------
 # Install files, if requested.
 
+print "INSTALL_LIB =",env.get('INSTALL_LIB')
+print "INSTALL_PREFIX =",env.get('INSTALL_PREFIX')
+print "INSTALL_ROOT =",env.get('INSTALL_ROOT')
+
 try:
 	umask = os.umask(022)
 except OSError:
@@ -252,14 +280,14 @@ except OSError:
 	pass
 
 
-libname = "$LIBDIR/$SONAME$SONAME_MINOR"
+libname = "${INSTALL_LIB}/$SONAME$SONAME_MINOR"
 if platform.system()=="Windows":
-	install_lib = env.InstallLibrary("$INSTALL_ROOT$LIBDIR",[lib])
+	install_lib = env.InstallLibrary("$INSTALL_ROOT$INSTALL_LIB",[lib])
 else:
-	install_lib = env.InstallLibraryAs("$INSTALL_ROOT"+libname, [lib])
+	install_lib = env.InstallLibraryAs("${INSTALL_ROOT}"+libname, [lib])
 
-	link1 = "$LIBDIR/${SHLIBPREFIX}freesteam$SHLIBSUFFIX"
-	link2 = "$LIBDIR/$SONAME"
+	link1 = "$INSTALL_LIB/${SHLIBPREFIX}freesteam$SHLIBSUFFIX"
+	link2 = "$INSTALL_LIB/$SONAME"
 
 	install_link1 = None
 	if env.subst(link1) != env.subst(libname):
@@ -271,19 +299,60 @@ else:
 	
 	env['installedfiles'] += [install_link1, install_link2]
 
-#env['installedfiles'] += env.InstallProgram("$INSTALL_ROOT$INSTALL_BIN",[configscript])
-
-env['installedfiles'] += [install_lib] #,install_config
+env['installedfiles'] += [install_lib, install_config]
 
 import glob
-files = glob.glob("*.h")
+headerfiles = glob.glob("*.h")
 
 if env.get('HAVE_SWIG') and env.get('HAVE_PYTHON'):
-	files += glob.glob("python/*.i")
+	headerfiles += glob.glob("python/*.i")
 
-#print files
+#---------------
+# DISTRIBUTION TARBALL
 
-env['installedfiles'] += [env.InstallHeader("$INSTALL_ROOT$INCDIR/freesteam", files)]
+env['DISTTAR_FORMAT']='bz2'
+env.Append(
+	DISTTAR_EXCLUDEEXTS=['.o','.os','.so','.0','.1','.2','.3'
+		,'.a','.dll','.lib','.cc','.cache'
+		,'.pyc','.cvsignore','.dblite','.log','.pl','.out','.exe','.aux','.idx'
+		,'.toc','.lof','.lot','.mm','.warnings','.tm2','.swp',',tmp','.gz'
+		,'.bz2','.7z','.deb','.dsc','.changes'
+	]
+	, DISTTAR_EXCLUDEDIRS=['CVS','.svn','.sconf_temp', 'dist','debian']
+)
+
+tar = env.DistTar("dist/"+env['DISTTAR_NAME']
+	, [env.Dir('#')]
+)
+
+#------------------------------------------------------
+# DEBIAN TARBALL for use with Build Service
+
+import glob
+deb_files = glob.glob('debian/*.install')
+deb_files += glob.glob('debian/*.docs')
+deb_files += glob.glob('debian/*.dirs')
+deb_files += glob.glob('debian/*.man')
+deb_files += glob.glob('debian/*.manpages')
+deb_files += ['debian/%s' % s for s in ['rules','control','changelog','compat','copyright','dirs']]
+
+deb_tar = env.Tar(
+	'dist/debian.tar.gz'
+	,deb_files
+	,TARFLAGS = ['cz']
+)
+
+#---------------------------------------------------
+env['installedfiles'] += [env.InstallHeader("${INSTALL_ROOT}$INSTALL_INCLUDE/freesteam", headerfiles)]
 	
 env.Alias('install',env['installedfiles'])
+
+#------------------------------------------------------
+# DEFAULT TARGETS
+
+default_targets =['python','ascend']
+
+env.Default(default_targets)
+
+print "Building targets:"," ".join([str(i) for i in BUILD_TARGETS])
 

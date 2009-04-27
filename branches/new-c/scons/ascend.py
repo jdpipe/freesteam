@@ -1,3 +1,8 @@
+# SCons tool to determine settings for use with ASCEND modelling environment.
+# If you change this file, please provide a copy back to the ASCEND project;
+# hopefully someone else will also find your changes useful:
+# see http://ascend.cheme.cmu.edu/
+
 import os, platform,sys,subprocess
 from SCons.Script import *
 
@@ -41,6 +46,8 @@ def generate(env):
 			cmd = ['ascend-config']
 			libext = ".so"
 			libpref = "lib"
+
+		# Get the suffix and prefix used for external libraries
 		
 		proc = subprocess.Popen(cmd+['--extlib-prefix'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 		out = proc.communicate()[0].strip()
@@ -56,6 +63,14 @@ def generate(env):
 		else:
 			env.Append(ASCEND_EXTLIB_SUFFIX="_ascend%s"%libext)
 			
+		# Get the ASCEND model library location (it will be assumed that
+		# we can install files to that location)
+
+		proc = subprocess.Popen(cmd+['--models'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+		out = proc.communicate()[0].strip()
+		if proc.returncode is 0:
+			env.Append(ASCEND_MODELS=out)
+
 		env.Append(HAVE_ASCEND=True)
 
 		print "ASCEND_LIBS =",env.get('ASCEND_LIBS')
@@ -63,6 +78,7 @@ def generate(env):
 		print "ASCEND_CPPPATH =",env.get('ASCEND_CPPPATH')
 		print "ASCEND_EXTLIB_SUFFIX =",env.get('ASCEND_EXTLIB_SUFFIX')
 		print "ASCEND_EXTLIB_PREFIX =",env.get('ASCEND_EXTLIB_PREFIX')
+		print "ASCEND_MODELS =",env.get('ASCEND_MODELS')
 
 	except Exception,e:
 		print "FAILED TO SET UP ASCEND (%s)" % str(e)
