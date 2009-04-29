@@ -19,9 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../steam_ph.h"
 #include "../derivs.h"
 
-#include <utilities/ascConfig.h>
-#include <utilities/error.h>
-#include <compiler/extfunc.h>
+#include <ascend/utilities/ascConfig.h>
+#include <ascend/utilities/error.h>
+#include <ascend/compiler/extfunc.h>
 
 /**
 	ASCEND external evaluation function
