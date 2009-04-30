@@ -117,7 +117,7 @@ opts.Add(
 # and create the SCONS 'environment':
 
 import os
-tools = ['swig','ascend','substinfile','gsl','disttar']
+tools = ['swig','ascend','substinfile','gsl','tar','disttar']
 if os.environ.has_key('OSTYPE') and os.environ['OSTYPE']=='msys':
 	env = Environment(ENV=os.environ
 		, toolpath = ['scons']
@@ -346,6 +346,11 @@ deb_tar = env.Tar(
 env['installedfiles'] += [env.InstallHeader("${INSTALL_ROOT}$INSTALL_INCLUDE/freesteam", headerfiles)]
 	
 env.Alias('install',env['installedfiles'])
+
+#------------------------------------------------------
+# WINDOWS INSTALLER
+
+
 
 #------------------------------------------------------
 # DEFAULT TARGETS
