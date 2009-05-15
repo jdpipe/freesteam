@@ -125,8 +125,9 @@ if os.environ.has_key('OSTYPE') and os.environ['OSTYPE']=='msys':
 	)
 else:
 	env = Environment(
-		toolpath=['scons']
-		,tools=['default']+tools
+		ENV={"PATH":os.environ['PATH']}
+		, toolpath=['scons']
+		, tools=['default']+tools
 	)
 
 # Some utility tools for installing file with suitable permissions
