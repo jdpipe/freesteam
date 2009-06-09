@@ -120,7 +120,7 @@ print "Lines of constant temperature..."
 for i in const_T_range:
     T = i + 273.15 # K
     #print "T = %f" % T
-    if i < TCRIT: # temperature is below the critical point
+    if T < TCRIT: # temperature is below the critical point
         S = region4_Tx(T,1)
         saturation_p = float(S.p / 1e5)        
         p_range = linspace(pmin,saturation_p,50)
