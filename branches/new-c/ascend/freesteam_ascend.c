@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "../steam_ph.h"
 #include "../derivs.h"
+#include "../region4.h"
 
 #include <ascend/utilities/ascConfig.h>
 #include <ascend/utilities/error.h>
@@ -38,7 +39,7 @@ int Tvsx_ph_calc(struct BBoxInterp *bbox,
 	(void)ninputs; (void)noutputs; // not used currently
 
 #if 0
-	ASSERT(ninputs==2);
+	ASC_ASSERT(ninputs==2);
 	ASSERT(noutputs==2);
 #endif
 
@@ -127,6 +128,99 @@ int Tvsx_ph_calc(struct BBoxInterp *bbox,
 	}
 }
 
+/**
+	ASCEND external evaluation function
+	Outputs: hf
+	Inputs: p
+	@return 0 on success 
+*/
+int hf_p_calc(struct BBoxInterp *bbox,
+		int ninputs, int noutputs,
+		double *inputs, double *outputs,
+		double *jacobian
+){
+	(void)bbox; (void)jacobian; // not used
+	(void)ninputs; (void)noutputs; // not used currently
+
+	if(ninputs!=1 || noutputs!=1)return 1;
+
+	// convert inputs to freesteam dimensionful values
+	double p = inputs[0]; /* ASCEND uses SI units, so no conversion needed */
+	
+#ifdef BBOX_DEBUG
+	ERROR_REPORTER_HERE(ASC_USER_NOTE,
+		"Evaluating with p = %f bar"
+		,p
+	);
+#endif
+
+	SteamState S;
+	double T = freesteam_region4_Tsat_p(p);
+	S = freesteam_region4_set_Tx(T,0);
+
+	switch(bbox->task){
+	case bb_func_eval:
+		outputs[0] = freesteam_h(S);
+		return 0;
+	case bb_deriv_eval:
+		jacobian[0] = freesteam_region4_dAdTx('h',S)/freesteam_region4_dpsatdT_T(T);
+		CONSOLE_DEBUG("jacobian[0] = %f",jacobian[0]);
+		return 0;
+	default:
+		ERROR_REPORTER_HERE(ASC_PROG_ERR,"Invalid call, unknown bbox->task");
+		return 1;
+	}
+}
+
+
+
+/**
+	ASCEND external evaluation function
+	Outputs: hg
+	Inputs: p
+	@return 0 on success 
+*/
+int hg_p_calc(struct BBoxInterp *bbox,
+		int ninputs, int noutputs,
+		double *inputs, double *outputs,
+		double *jacobian
+){
+	(void)bbox; (void)jacobian; // not used
+	(void)ninputs; (void)noutputs; // not used currently
+
+	if(ninputs!=1 || noutputs!=1)return 1;
+
+	// convert inputs to freesteam dimensionful values
+	double p = inputs[0]; /* ASCEND uses SI units, so no conversion needed */
+	
+#ifdef BBOX_DEBUG
+	ERROR_REPORTER_HERE(ASC_USER_NOTE,
+		"Evaluating with p = %f bar"
+		,p
+	);
+#endif
+
+	SteamState S;
+	double T = freesteam_region4_Tsat_p(p);
+	S = freesteam_region4_set_Tx(T,1);
+
+	switch(bbox->task){
+	case bb_func_eval:
+		outputs[0] = freesteam_h(S);
+		CONSOLE_DEBUG("p = %f bar, T = %f K, hg = %f",p/1e5, T, outputs[0]);
+		return 0;
+	case bb_deriv_eval:
+		jacobian[0] = freesteam_region4_dAdTx('h',S)/freesteam_region4_dpsatdT_T(T);
+		CONSOLE_DEBUG("p = %f bar, T = %f K, dhg/dp = %f",p/1e5, T, jacobian[0]);
+		return 0;
+	default:
+		ERROR_REPORTER_HERE(ASC_PROG_ERR,"Invalid call, unknown bbox->task");
+		return 1;
+	}
+}
+
+
+
 FREESTEAM_EXPORT int freesteam_register(){
 		int result = 0;
 
@@ -141,6 +235,28 @@ FREESTEAM_EXPORT int freesteam_register(){
 			, NULL /* free */
 			, 2,4 /* inputs, outputs */
 			, "[T,v,s,x] = freesteam_Tvs_ph(p,h) (see http://freesteam.sf.net)"
+			, 0.0
+		);
+
+		result += CreateUserFunctionBlackBox("freesteam_hf_p"
+			, NULL /* alloc */
+			, hf_p_calc /* value */
+			, hf_p_calc /* deriv */
+			, NULL /* deriv2 */
+			, NULL /* free */
+			, 1,1 /* inputs, outputs */
+			, "[hf] = freesteam_hf_p(p) (see http://freesteam.sf.net)"
+			, 0.0
+		);
+
+		result += CreateUserFunctionBlackBox("freesteam_hg_p"
+			, NULL /* alloc */
+			, hg_p_calc /* value */
+			, hg_p_calc /* deriv */
+			, NULL /* deriv2 */
+			, NULL /* free */
+			, 1,1 /* inputs, outputs */
+			, "[hg] = freesteam_hg_p(p) (see http://freesteam.sf.net)"
 			, 0.0
 		);
 
