@@ -128,98 +128,85 @@ int Tvsx_ph_calc(struct BBoxInterp *bbox,
 	}
 }
 
-/**
-	ASCEND external evaluation function
-	Outputs: hf
-	Inputs: p
-	@return 0 on success 
-*/
-int hf_p_calc(struct BBoxInterp *bbox,
-		int ninputs, int noutputs,
-		double *inputs, double *outputs,
-		double *jacobian
-){
-	(void)bbox; (void)jacobian; // not used
-	(void)ninputs; (void)noutputs; // not used currently
+/*============== a few quick single-input, single output routines ============*/
 
-	if(ninputs!=1 || noutputs!=1)return 1;
+#define FREESTEAM_SISO_FUNCS(D,X)\
+	D(Tsat_p\
+		, double T = freesteam_region4_Tsat_p(inputs[0])\
+		, T\
+		, 1./freesteam_region4_dpsatdT_T(T)\
+		, "[T] = freesteam_Tsat_p(p)"\
+	) X\
+	D(psat_T\
+		, double T = inputs[0]\
+		, freesteam_region4_psat_T(T)\
+		, freesteam_region4_dpsatdT_T(T)\
+		, "[p] = freesteam_psat_T(T)"\
+	) X\
+	D(hf_p\
+		, double T = freesteam_region4_Tsat_p(inputs[0])\
+		, freesteam_h(freesteam_region4_set_Tx(T, 0))\
+		, freesteam_region4_dAdTx('h',freesteam_region4_set_Tx(T, 0))/freesteam_region4_dpsatdT_T(T)\
+		, "[hf] = freesteam_hf_p(p)"\
+	) X \
+	D(hg_p\
+		, double T = freesteam_region4_Tsat_p(inputs[0])\
+		, freesteam_h(freesteam_region4_set_Tx(T, 1))\
+		, freesteam_region4_dAdTx('h',freesteam_region4_set_Tx(T, 1))/freesteam_region4_dpsatdT_T(T)\
+		, "[hg] = freesteam_hg_p(p)"\
+	) X \
+	D(sf_p\
+		, double T = freesteam_region4_Tsat_p(inputs[0])\
+		, freesteam_s(freesteam_region4_set_Tx(T, 0))\
+		, freesteam_region4_dAdTx('s',freesteam_region4_set_Tx(T, 0))/freesteam_region4_dpsatdT_T(T)\
+		, "[sf] = freesteam_sf_p(p)"\
+	) X \
+	D(sg_p\
+		, double T = freesteam_region4_Tsat_p(inputs[0])\
+		, freesteam_s(freesteam_region4_set_Tx(T, 1))\
+		, freesteam_region4_dAdTx('s',freesteam_region4_set_Tx(T, 1))/freesteam_region4_dpsatdT_T(T)\
+		, "[sg] = freesteam_sg_p(p)"\
+	)
 
-	// convert inputs to freesteam dimensionful values
-	double p = inputs[0]; /* ASCEND uses SI units, so no conversion needed */
-	
-#ifdef BBOX_DEBUG
-	ERROR_REPORTER_HERE(ASC_USER_NOTE,
-		"Evaluating with p = %f bar"
-		,p
-	);
-#endif
-
-	SteamState S;
-	double T = freesteam_region4_Tsat_p(p);
-	S = freesteam_region4_set_Tx(T,0);
-
-	switch(bbox->task){
-	case bb_func_eval:
-		outputs[0] = freesteam_h(S);
-		return 0;
-	case bb_deriv_eval:
-		jacobian[0] = freesteam_region4_dAdTx('h',S)/freesteam_region4_dpsatdT_T(T);
-		CONSOLE_DEBUG("jacobian[0] = %f",jacobian[0]);
-		return 0;
-	default:
-		ERROR_REPORTER_HERE(ASC_PROG_ERR,"Invalid call, unknown bbox->task");
-		return 1;
+#define FREESTEAM_SISO_WRAP(FN,PRECALC,VALCODE,JACCODE,DOCSTRING)\
+	int FN##_calc(struct BBoxInterp *bbox,\
+		int ninputs, int noutputs,\
+		double *inputs, double *outputs,\
+		double *jacobian\
+	){\
+		if(ninputs!=1 || noutputs!=1)return 1;\
+		PRECALC;\
+		switch(bbox->task){\
+		case bb_func_eval:\
+			outputs[0] = VALCODE;\
+			return 0;\
+		case bb_deriv_eval:\
+			jacobian[0] = JACCODE;\
+			return 0;\
+		default:\
+			ERROR_REPORTER_HERE(ASC_PROG_ERR,"Invalid call, unknown bbox->task");\
+		}\
+		return 1;\
 	}
-}
 
-
-
-/**
-	ASCEND external evaluation function
-	Outputs: hg
-	Inputs: p
-	@return 0 on success 
-*/
-int hg_p_calc(struct BBoxInterp *bbox,
-		int ninputs, int noutputs,
-		double *inputs, double *outputs,
-		double *jacobian
-){
-	(void)bbox; (void)jacobian; // not used
-	(void)ninputs; (void)noutputs; // not used currently
-
-	if(ninputs!=1 || noutputs!=1)return 1;
-
-	// convert inputs to freesteam dimensionful values
-	double p = inputs[0]; /* ASCEND uses SI units, so no conversion needed */
-	
-#ifdef BBOX_DEBUG
-	ERROR_REPORTER_HERE(ASC_USER_NOTE,
-		"Evaluating with p = %f bar"
-		,p
+#define FREESTEAM_SISO_DECL(FN,PRECALC,VALCODE,JACCODE,DOCSTRING)\
+	result += CreateUserFunctionBlackBox("freesteam_" #FN\
+		, NULL /* alloc */\
+		, FN##_calc /* value */\
+		, FN##_calc /* deriv */\
+		, NULL /* deriv2 */\
+		, NULL /* free */\
+		, 1,1 /* inputs, outputs */\
+		, DOCSTRING " (see http://freesteam.sf.net)"\
+		, 0.0\
 	);
-#endif
-
-	SteamState S;
-	double T = freesteam_region4_Tsat_p(p);
-	S = freesteam_region4_set_Tx(T,1);
-
-	switch(bbox->task){
-	case bb_func_eval:
-		outputs[0] = freesteam_h(S);
-		CONSOLE_DEBUG("p = %f bar, T = %f K, hg = %f",p/1e5, T, outputs[0]);
-		return 0;
-	case bb_deriv_eval:
-		jacobian[0] = freesteam_region4_dAdTx('h',S)/freesteam_region4_dpsatdT_T(T);
-		CONSOLE_DEBUG("p = %f bar, T = %f K, dhg/dp = %f",p/1e5, T, jacobian[0]);
-		return 0;
-	default:
-		ERROR_REPORTER_HERE(ASC_PROG_ERR,"Invalid call, unknown bbox->task");
-		return 1;
-	}
-}
 
 
+#define X
+FREESTEAM_SISO_FUNCS(FREESTEAM_SISO_WRAP,X)
+#undef X
+
+/*----------------------- REGISTRATION --------------------------*/
 
 FREESTEAM_EXPORT int freesteam_register(){
 		int result = 0;
@@ -238,27 +225,9 @@ FREESTEAM_EXPORT int freesteam_register(){
 			, 0.0
 		);
 
-		result += CreateUserFunctionBlackBox("freesteam_hf_p"
-			, NULL /* alloc */
-			, hf_p_calc /* value */
-			, hf_p_calc /* deriv */
-			, NULL /* deriv2 */
-			, NULL /* free */
-			, 1,1 /* inputs, outputs */
-			, "[hf] = freesteam_hf_p(p) (see http://freesteam.sf.net)"
-			, 0.0
-		);
-
-		result += CreateUserFunctionBlackBox("freesteam_hg_p"
-			, NULL /* alloc */
-			, hg_p_calc /* value */
-			, hg_p_calc /* deriv */
-			, NULL /* deriv2 */
-			, NULL /* free */
-			, 1,1 /* inputs, outputs */
-			, "[hg] = freesteam_hg_p(p) (see http://freesteam.sf.net)"
-			, 0.0
-		);
+#define X
+FREESTEAM_SISO_FUNCS(FREESTEAM_SISO_DECL,X)
+#undef X
 
 		return result;
 }
