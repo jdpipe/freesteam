@@ -178,6 +178,18 @@ int Tvsx_ph_calc(struct BBoxInterp *bbox,
 		, freesteam_s(freesteam_region4_set_Tx(T, 1))\
 		, freesteam_region4_dAdTx('s',freesteam_region4_set_Tx(T, 1))\
 		, "[sg] = freesteam_sg_T(T)"\
+	) X \
+	D(hf_T\
+		, double T = inputs[0];CONSOLE_DEBUG("hf(%f) --> %f",T, freesteam_h(freesteam_region4_set_Tx(T, 0)))\
+		, freesteam_h(freesteam_region4_set_Tx(T, 0))\
+		, freesteam_region4_dAdTx('h',freesteam_region4_set_Tx(T, 0))\
+		, "[hf] = freesteam_hf_T(T)"\
+	) X \
+	D(hg_T\
+		, double T = inputs[0]\
+		, freesteam_h(freesteam_region4_set_Tx(T, 1))\
+		, freesteam_region4_dAdTx('h',freesteam_region4_set_Tx(T, 1))\
+		, "[hg] = freesteam_hg_T(T)"\
 	)
 
 #define FREESTEAM_SISO_WRAP(FN,PRECALC,VALCODE,JACCODE,DOCSTRING)\

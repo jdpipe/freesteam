@@ -17,7 +17,7 @@ plot(hg,TT,'r-')
 pp = logspace(-3,3)*1e5
 
 # these are the pressures we're interested in here
-pp = [freesteam.psat_T(50+273.15), 3e6, 12e6]
+pp = [freesteam.psat_T(50+273.15), 3e6, 12e6,  165e5, 300e5]
 
 print "low p =",pp[0]
 
