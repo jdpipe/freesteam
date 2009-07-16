@@ -34,7 +34,7 @@ Steam</a> (IAPWS). <b>freesteam</b> lets you compute water and steam properties 
 
 <p><font color=red><i><b>New:&nbsp;</b></i></font>The 0.8 release contains a rewrite of the thermal conductivity correlation, and fixes a bug in the calculation of densities in the two-phase Region 4.</p>
 
-<p><font color=red><i><b>UPDATE:&nbsp;</b></i></font>(Feb 2009) Work is currently going on towards a 0.9 release of freesteam in which the main code will be rewritten in plain C. This will make freesteam easier for most people to use (e.g. Visual Basic problems with C++ ABI will go away) and will make it easier for people to contribute (the current C++ templates are difficult to understand and to maintain).</p>
+<p><font color=red><i><b>UPDATE:&nbsp;</b></i></font>(Jul 2009) Work is currently going on towards a new release of freesteam in which the main code will be rewritten in plain C. This will make freesteam easier for most people to use (e.g. Visual Basic problems with C++ ABI will go away) and will make it easier for people to contribute (the current C++ templates are difficult to understand and to maintain).</p>
 
 <p>There is a <a href="https://lists.sourceforge.net/lists/listinfo/freesteam-users">mailing list for freesteam users</a>, which is the preferred support mechansim (it ensures that FAQs are captured for others to re-use). Alternatively, you can email the developer directly on <script><!--
 
