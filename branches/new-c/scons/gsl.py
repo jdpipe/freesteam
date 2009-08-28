@@ -43,8 +43,7 @@ def generate(env):
 			env['GSL_LIBPATH'] = [munge(LIB)]
 			env['GSL_LIBS'] = ['gsl']
 			env['GSL_LIBS_CBLAS'] = ['gslcblas','gsl']
-			env['HAVE_GSL'] = True
-									
+			env['HAVE_GSL'] = True		
 		else:
 			cmd = ['gsl-config','--cflags','--libs']
 			old_env = env.Clone()
@@ -54,18 +53,19 @@ def generate(env):
 			env['GSL_LIBS'] = env.get('LIBS')
 			for i in ['LIBS','LIBPATH','CPPPATH']:
 				if old_env.get(i) is None:
-					if haskey(env,i):
+					if env.has_key(i):
 						del env[i]
 				else:
 					env[i] = old_env[i]
 			env['HAVE_GSL'] = True
 
-		print "GSL_LIBS =",env.get('GSL_LIBS')
-		print "GSL_LIBPATH =",env.get('GSL_LIBPATH')
-		print "GSL_CPPPATH =",env.get('GSL_CPPPATH')
+		#print "GSL_LIBS =",env.get('GSL_LIBS')
+		#print "GSL_LIBPATH =",env.get('GSL_LIBPATH')
+		#print "GSL_CPPPATH =",env.get('GSL_CPPPATH')
 
-	except:
-		env['HAVE_GRAPHVIZ'] = False
+	except Exception,e:
+		print "Checking for GSL... not found! (%s)" % str(e)
+		env['HAVE_GSL'] = False
 
 def exists(env):
 	"""

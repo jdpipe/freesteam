@@ -113,6 +113,18 @@ opts.Add(
 	,"freesteam-"+version
 )
 
+opts.Add(
+	'CC'
+	,'C Compiler command'
+	,None
+)
+
+opts.Add(
+	'SWIG'
+	,"Name of your swig executable"
+	,'swig'
+)
+
 # Set up the 'tools' the SCONS will need access to , eg compilers
 # and create the SCONS 'environment':
 
@@ -158,6 +170,89 @@ SConsEnvironment.InstallLibraryAs = lambda env, dest, files: InstallPermAs(env, 
 # Add configuration options to the 'environment'
 
 opts.Update(env)
+
+#----------------
+# SWIG
+
+import re,subprocess
+
+def get_swig_version(env):
+	#print "SWIG='%s'" % env['SWIG']
+	cmd = [env['SWIG'],'-version']
+	output = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
+	
+	restr = "SWIG\\s+Version\\s+(?P<maj>[0-9]+)\\.(?P<min>[0-9]+)\\.(?P<pat>[0-9]+)\\s*$"
+	expr = re.compile(restr,re.M);
+	m = expr.search(output);
+	if not m:
+		return None
+	maj = int(m.group('maj'))
+	min = int(m.group('min'))
+	pat = int(m.group('pat'))
+
+	return (maj,min,pat)
+	
+
+def CheckSwigVersion(context):
+	
+	try:
+		context.Message("Checking version of SWIG... ")
+		maj,min,pat = get_swig_version(context.env)
+	except Exception,e:
+		context.Result("Failed to detect version, or failed to run SWIG (%s)"% str(e))
+		return False;
+	
+	context.env['SWIGVERSION']=tuple([maj,min,pat])
+	
+	if maj == 1 and (
+			min > 3
+			or (min == 3 and pat >= 24)
+		):
+		context.Result("ok, %d.%d.%d" % (maj,min,pat))
+		return True;
+	else:
+		context.Result("too old, %d.%d.%d" % (maj,min,pat))
+		return False;
+
+
+
+# Check that we got all the associated stuff that we need...
+
+if not env.get('HAVE_GSL'):
+	print "GSL was not found... install GSL (package 'gsl-dev' in Ubuntu)."
+	Exit(1)
+
+# TODO: detect PYTHON properly.
+if platform.system()=="Windows":
+	python_lib='python%d%d'
+else:
+	python_lib='python%d.%d'
+
+import distutils.sysconfig
+
+python_lib = python_lib % (sys.version_info[0],sys.version_info[1])
+
+conf = env.Configure(custom_tests =
+	{'CheckSwigVersion' : CheckSwigVersion}
+)
+
+without_python_reason = "Python library '%s' not found" % python_lib
+conf.env['HAVE_PYTHON'] = conf.CheckLib(python_lib)
+
+if conf.env['HAVE_PYTHON'] and conf.CheckSwigVersion() is False:
+	without_python_reason = 'SWIG >= 1.3.24 is required'
+	conf.env['HAVE_PYTHON']=False
+else:
+	print "SWIG WAS FOUND"
+
+conf.Finish()
+
+if  not env.get('HAVE_ASCEND'):
+	print "WARNING: ASCEND was not found... freesteam will be built without ASCEND bindings."
+
+if not env['HAVE_PYTHON']:
+	print "WARNING: Freesteam will be built without Python bindings.", without_python_reason
+
 
 # Flags to give some more warning output from the GCC compiler
 
@@ -228,7 +323,7 @@ libs = [lib]
 if platform.system()=="Linux":
 	if env.get('SONAME_MAJOR'):
 		lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}",lib,Move("$TARGET","$SOURCE"))
-		print "MAKING LINK, SONAME_MAJOR =",env.get('SONAME_MAJOR')
+		#print "MAKING LINK, SONAME_MAJOR =",env.get('SONAME_MAJOR')
 		liblink = lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}"
 			,lib
 			,"ln -s $SOURCE $TARGET"
@@ -270,9 +365,9 @@ prog_env.Program("test","test.c")
 #-------------------------------------------------------------------------------
 # Install files, if requested.
 
-print "INSTALL_LIB =",env.get('INSTALL_LIB')
-print "INSTALL_PREFIX =",env.get('INSTALL_PREFIX')
-print "INSTALL_ROOT =",env.get('INSTALL_ROOT')
+#print "INSTALL_LIB =",env.get('INSTALL_LIB')
+#print "INSTALL_PREFIX =",env.get('INSTALL_PREFIX')
+#print "INSTALL_ROOT =",env.get('INSTALL_ROOT')
 
 try:
 	umask = os.umask(022)

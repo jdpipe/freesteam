@@ -81,8 +81,8 @@ def generate(env):
 		print "ASCEND_MODELS =",env.get('ASCEND_MODELS')
 
 	except Exception,e:
-		print "FAILED TO SET UP ASCEND (%s)" % str(e)
-		pass
+		print "Checking for ASCEND... not found! (%s)" % str(e)
+		env.Append(HAVE_ASCEND=False)
 
 def exists(env):
 	"""
