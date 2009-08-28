@@ -73,12 +73,12 @@ def generate(env):
 
 		env.Append(HAVE_ASCEND=True)
 
-		print "ASCEND_LIBS =",env.get('ASCEND_LIBS')
-		print "ASCEND_LIBPATH =",env.get('ASCEND_LIBPATH')
-		print "ASCEND_CPPPATH =",env.get('ASCEND_CPPPATH')
-		print "ASCEND_EXTLIB_SUFFIX =",env.get('ASCEND_EXTLIB_SUFFIX')
-		print "ASCEND_EXTLIB_PREFIX =",env.get('ASCEND_EXTLIB_PREFIX')
-		print "ASCEND_MODELS =",env.get('ASCEND_MODELS')
+		#print "ASCEND_LIBS =",env.get('ASCEND_LIBS')
+		#print "ASCEND_LIBPATH =",env.get('ASCEND_LIBPATH')
+		#print "ASCEND_CPPPATH =",env.get('ASCEND_CPPPATH')
+		#print "ASCEND_EXTLIB_SUFFIX =",env.get('ASCEND_EXTLIB_SUFFIX')
+		#print "ASCEND_EXTLIB_PREFIX =",env.get('ASCEND_EXTLIB_PREFIX')
+		#print "ASCEND_MODELS =",env.get('ASCEND_MODELS')
 
 	except Exception,e:
 		print "Checking for ASCEND... not found! (%s)" % str(e)
