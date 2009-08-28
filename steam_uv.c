@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <stdio.h>
 #include <stdlib.h>
 
-/* required helper functions */
+/*-----------------required helper functions---------------*/
 
 static double uf_p(double p){
 	Tsat = freesteam_region4_Tsat_p(p);
@@ -76,10 +76,50 @@ static double u23_v(double v){
 	/* is there a better way using region 3 (rho, T) ?? */
 }
 
+/*-----------------main routines --------------------*/
+
 int freesteam_bounds_uv(double u, double v, int verbose){
 
-	/* if u < uf(pmin) */
-	/*     out of bounds */
+	/* lower bound on u */
+	double uf = uf_p(IAPWS97_PTRIPLE)
+	if(u < uf){
+		return 1;
+	}
+
+	double ug = ug_p(IAPWS97_PTRIPLE);
+	double vf = vf_p(IAPWS97_PTRIPLE), vg = vg_p(IAPWS97_PTRIPLE);
+	/* triple-point pressure line boundary for saturation region */
+	if(u < ug || v > vf){
+		double v1 = vf + (vg - vf)*(u - uf)/(ug - uf);
+		if(v > v1){
+			return 1;
+		}
+	}
+
+	double v2 = freesteam_region2_v_pT(IAPWS97_PMAX, IAPWS97_TMAX);
+	if(v > v2 && u > ug){
+			/* triple-point pressure line boundary for superheat region */
+			/* solve for T to give u,pmin --> check v */
+
+			/* maximum temperature line */
+			/* solve p to give region2_v_pT(p, TMAX) --> check u */
+		}
+	}
+
+	double u2 = freesteam_region2_u_pT(IAPWS97_PMAX, IAPWS97_TMAX);
+	if(u > u2 && v < v2){
+		return 2;
+	}
+
+
+	/* use steam_pu(PMAX, u) to work out if v is within limits */
+	
+	
+
+
+	if(u < uf_p(IAPWS97_PTRIPLE){
+		return 1;
+	}else if(u < ug_p(IAPWS97_PTRIPLE)
 
 	/* else if u < ug(pmin) */
 	/*     check v < v(pmin, u) region 4 */
