@@ -38,88 +38,88 @@ soname_default = "${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}"
 # Configuration options for the build. You can set these on the command-line
 # eg using "scons GCOV=1 ..."
 
-opts = Options()
+vars = Variables()
 
-opts.Add(BoolOption(
+vars.Add(BoolVariable(
 	'GCOV'
 	,"Build for coverage testing using gcov."
 	,False
 ))
 
-opts.Add(BoolOption(
+vars.Add(BoolVariable(
 	'DEBUG'
 	,"Build with debug data for use with GDB."
 	,False
 ))
 
-opts.Add(PathOption(
+vars.Add(PathVariable(
 	'INSTALL_PREFIX'
 	,"Base directory for install, see also INSTALL_LIB and INSTALL_INCLUDE"
 	,default_prefix
 ))
 
-opts.Add(
+vars.Add(
 	'INSTALL_LIB'
 	,"Location to install library"
 	, "$INSTALL_PREFIX/lib"
 )
 
-opts.Add(
+vars.Add(
 	'INSTALL_INCLUDE'
 	,"Location to install headers"
 	,"$INSTALL_PREFIX/include"
 )
 
-opts.Add(
+vars.Add(
 	'INSTALL_BIN'
 	,"Location to install binaries"
 	,"$INSTALL_PREFIX/bin"
 )
 
-opts.Add(PathOption(
+vars.Add(PathVariable(
 	'INSTALL_ROOT'
 	,"Root onto which installation should take place. Normally only for "
 		+"use when building RPMs"
 	,None
 ))
 
-opts.Add(PathOption(
+vars.Add(PathVariable(
 	'INSTALL_PYTHON'
 	,"Directory for installation of Python extensions"
 	,"%s" % default_python
 ))
 
-opts.Add(
+vars.Add(
 	'SONAME_MAJOR'
 	,"major version of the freesteam library"
 	,soname_major
 )
 
-opts.Add(
+vars.Add(
 	'SONAME_MINOR'
 	,"Shared library minor version number (for use in installed file name). Should be '.0' for example."
 	,soname_minor
 )
 
-opts.Add(
+vars.Add(
 	'SONAME'
 	,"'soname' to be assigned to the shared library. Should be 'freesteam.so.1' for example."
 	,soname_default
 )
 
-opts.Add(
+vars.Add(
 	'DISTTAR_NAME'
 	,"Stem name of the tarball created by 'scons dist'. So for 'freesteam-aaa.tar.bz2', set this to 'freesteam-aaa'."
 	,"freesteam-"+version
 )
 
-opts.Add(
+vars.Add(
 	'CC'
 	,'C Compiler command'
 	,None
 )
 
-opts.Add(
+vars.Add(
 	'SWIG'
 	,"Name of your swig executable"
 	,'swig'
@@ -169,7 +169,7 @@ SConsEnvironment.InstallLibraryAs = lambda env, dest, files: InstallPermAs(env, 
 
 # Add configuration options to the 'environment'
 
-opts.Update(env)
+vars.Update(env)
 
 #----------------
 # SWIG
@@ -236,14 +236,16 @@ conf = env.Configure(custom_tests =
 	{'CheckSwigVersion' : CheckSwigVersion}
 )
 
+if not conf.CheckFunc('fprintf'):
+	print "You compiler and/or environment is not correctly configured (see config.log for details)"
+	Exit(1)
+
 without_python_reason = "Python library '%s' not found" % python_lib
 conf.env['HAVE_PYTHON'] = conf.CheckLib(python_lib)
 
 if conf.env['HAVE_PYTHON'] and conf.CheckSwigVersion() is False:
 	without_python_reason = 'SWIG >= 1.3.24 is required'
 	conf.env['HAVE_PYTHON']=False
-else:
-	print "SWIG WAS FOUND"
 
 conf.Finish()
 
