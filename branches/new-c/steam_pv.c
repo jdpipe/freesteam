@@ -118,6 +118,17 @@ double pv_region2_fn(double T, void *user_data){
 }
 #undef D
 
+typedef struct SolveTVData_struct{
+	double T, rho;
+} SolveTVData;
+
+#define D ((SolveTVData *)user_data)
+static ZeroInSubjectFunction pv_region3_fn;
+double pv_region3_fn(double T, void *user_data){
+	return D->T - freesteam_region3_p_rhoT(D->rho, T);
+}
+#undef D
+
 
 SteamState freesteam_set_pv(double p, double v){
 	SteamState S;
@@ -136,6 +147,7 @@ SteamState freesteam_set_pv(double p, double v){
 				SolvePVData D = {p, v};
 				zeroin_solve(&pv_region1_fn, &D, lb, ub, tol, &sol, &err);
 				S.R1.T = sol;
+				/* FIXME check convergence! */
 			}
 #if 0
 			S = freesteam_solver2_region1('p','v', p, v, S, &status);
@@ -146,8 +158,8 @@ SteamState freesteam_set_pv(double p, double v){
 			break;
 		case 2:
 			/* iterate T to get correct value of v */
-			S.R1.p = p;
-			S.R1.T = freesteam_region4_Tsat_p(p);
+			S.R2.p = p;
+			S.R2.T = freesteam_region4_Tsat_p(p);
 			{
 				double lb = IAPWS97_TMIN;
 				double ub = IAPWS97_TMAX;
@@ -156,6 +168,7 @@ SteamState freesteam_set_pv(double p, double v){
 				SolvePVData D = {p, v};
 				zeroin_solve(&pv_region2_fn, &D, lb, ub, tol, &sol, &err);
 				S.R2.T = sol;
+				/* FIXME check convergence! */
 			}
 
 #if 0
@@ -168,10 +181,24 @@ SteamState freesteam_set_pv(double p, double v){
 #endif
 			break;
 		case 3:
+			S.R3.rho = 1./ v;
+			S.R3.T = REGION1_TMAX;
+			{
+				double lb = REGION1_TMAX;
+				double ub = IAPWS97_TMAX;
+				double tol = 1e-13; /* ??? */
+				double sol, err;
+				SolveTVData D = {S.R3.T, S.R3.rho};
+				zeroin_solve(&pv_region3_fn, &D, lb, ub, tol, &sol, &err);
+				S.R3.T = sol;
+				/* FIXME check convergence! */
+			}
+#if 0
 			S = freesteam_solver2_region3('p','v', p, v, S, &status);
 			if(status){
 				fprintf(stderr,"%s: WARNING: Failed to converge in region 3\n",__func__);
 			}
+#endif
 			break;
 		case 4:
 			S.R4.T = freesteam_region4_Tsat_p(p);
