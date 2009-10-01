@@ -47,3 +47,18 @@ print "v =",S.v
 print "p =",S.p
 print "s =",S.s
 
+print "TESTING PV"
+
+p = 250e5
+v = 0.04
+print "bounds errors?",freesteam.bounds_pv(p,v,1)
+print "region?",freesteam.region_pv(p,v)
+
+S = freesteam.steam_pv(p,v)
+
+print "region =",ord(S.region)
+print "h =",S.h
+print "v =",S.v
+print "p =",S.p
+print "s =",S.s
+

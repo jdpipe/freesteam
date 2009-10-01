@@ -38,14 +38,17 @@ You may not use it in commercially-released software."
 %rename(steam_pT) freesteam_set_pT;
 %rename(steam_pu) freesteam_set_pu;
 %rename(steam_Ts) freesteam_set_Ts;
+%rename(steam_pv) freesteam_set_pv;
 
 %rename(bounds_ps) freesteam_bounds_ps;
 %rename(bounds_ph) freesteam_bounds_ph;
 %rename(bounds_Ts) freesteam_bounds_Ts;
+%rename(bounds_pv) freesteam_bounds_pv;
 
 %rename(region_ps) freesteam_region_ps;
 %rename(region_ph) freesteam_region_ph;
 %rename(region_Ts) freesteam_region_Ts;
+%rename(region_pv) freesteam_region_pv;
 
 %rename(bound_pmax_T) freesteam_bound_pmax_T;
 
@@ -101,6 +104,7 @@ You may not use it in commercially-released software."
 #include "steam_pT.h"
 #include "steam_pu.h"
 #include "steam_Ts.h"
+#include "steam_pv.h"
 #include "region1.h"
 #include "region2.h"
 #include "region3.h"
@@ -123,6 +127,7 @@ double freesteam_region4_dpsatdT_T(double T);
 %include "steam_pT.h";
 %include "steam_pu.h";
 %include "steam_Ts.h";
+%include "steam_pv.h";
 %include "bounds.h";
 %include "derivs.h";
 
