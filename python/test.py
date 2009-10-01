@@ -49,8 +49,9 @@ print "s =",S.s
 
 print "TESTING PV"
 
-p = 250e5
-v = 0.04
+p = 500e5
+v = 1./401.
+print "(p,v) = (%f, %f)" % (p, v)
 print "bounds errors?",freesteam.bounds_pv(p,v,1)
 print "region?",freesteam.region_pv(p,v)
 
