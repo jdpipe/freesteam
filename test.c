@@ -671,34 +671,35 @@ void testTs(void){
   FULL (P,V) ROUTINES
 */
 
-#define PVRELTOL 1e-6
+#define PVRELTOL 1.e-8
 
 void test_steam_pv(double p,double v){
-	fprintf(stderr,"------------\n");
-	fprintf(stderr,"%s: p = %f MPa, v = %f m3/kg\n",__func__, p, v);
+	//fprintf(stderr,"------------\n");
+	//fprintf(stderr,"%s: p = %f MPa, v = %f m3/kg\n",__func__, p, v);
 	freesteam_bounds_pv(p*1e6,v,1);
 	SteamState S = freesteam_set_pv(p*1e6,v);
-	//if(S.region !=1)return;
+	//if(S.region != 3)return;
 	//fprintf(stderr,"--> region = %d\n", S.region);
-	//if(S.region==4)fprintf(stderr,"--> p = %g\n", freesteam_region4_psat_T(S.R4.T));
+	//if(S.region==4)fprintf(stderr,"--> T = %g\n", freesteam_T(S));
 	CHECK_VAL(freesteam_p(S),p*1e6,PVRELTOL);
-	CHECK_VAL(freesteam_s(S),v,PVRELTOL);
-
+	CHECK_VAL(freesteam_v(S),v,PVRELTOL);
 };
 
 void testpv(void){
-	const double pp[] = {0.001, 0.0035, 0.01, 0.1, 1, 2, 3, 5, 10, 17, 18, 20, 22, 22.06, 22.064, 22.07, 23, 25, 30, 40, 50, 80, 90, 100};
+	const double pp[] = {1e-5, 2e-5, 5e-5, 1e-4, 5e-4, 0.001, 0.0035, 0.01, 0.1, 1, 2, 3, 5, 8, 10, 12, 17, 18, 20, 22, 22.06
+		, 22.064, 22.07, 23, 25, 30, 40, 50, 80, 90, 100
+	};
 	const int np = sizeof(pp)/sizeof(double);
-	const double vv[] = {0.0009,0.001,0.002,0.005,0.01,0.02,0.03,0.04,0.05,0.1,0.2,0.3,0.4};
+	const double vv[] = {0.0009, 0.001, 0.0012, 0.0014, 0.0017, 0.002, 0.003, 0.004, 0.005, 0.01, 0.02, 0.03, 0.04, 0.06, 0.1, 0.2};
 	const int nv = sizeof(vv)/sizeof(double);
-	const double *p, *s;
+	const double *p, *v;
 
-	fprintf(stderr,"FULL (P,S) TESTS\n");
+	fprintf(stderr,"FULL (P,V) TESTS\n");
 	for(p=pp; p<pp+np; ++p){
 		for(v=vv; v<vv+nv; ++v){
-			if(freesteam_bounds_pv(*p*1e6,*s,0))continue;
+			if(freesteam_bounds_pv(*p * 1e6, *v, 0))continue;
 			//if(freesteam_region_ps(*p*1e6,*s*1e3)!=3)continue;
-			test_steam_pv(*p,*s);
+			test_steam_pv(*p,*v);
 		}
 	}
 }
@@ -709,7 +710,9 @@ void testpv(void){
 
 int main(void){
 	errorflag = 0;
+	maxrelerr = 0;
 
+#if 1
 	testregion1();
 	testregion2();
 	testregion3();
@@ -723,16 +726,20 @@ int main(void){
 	testb23();
 
 	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
+#endif
 
 	maxrelerr = 0;
+#if 0
 	fprintf(stderr,"\nFurther tests...\n");
+#endif
 	testps();
-	testph();
 	testpT();
 	testTs();
 	testpv();
-	//testTu();
-#if 0	
+
+	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
+	maxrelerr = 0;
+
 	/* the following tests cause the larger errors, and are not part of the
 	formal validation of freesteam. It is *expected* that T(p,h) routines and
 	v(p,h) routines will introduce some errors, and we are seeing this.
@@ -744,24 +751,27 @@ int main(void){
 		6e-5 (region 2)
 		3e-4 (region 3)
 		5e-7 (region 4)
-	
-	Also, the region4props test uses data from IAPWS95, which is not in
+	*/	
+	maxrelerr = 0;
+	testph();
+	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
+
+#if 0
+	/* Also, the region4props test uses data from IAPWS95, which is not in
 	perfect agreement with IAPWS-IF97. */
 
-	// COMMENT OUT TO PERFORM THESE TESTS:
-	
 	//testregion4props();
 
 	//testderivs();
 	//testzeroin();
 	testsolver2();
-#endif
+
+	//testTu(); .. not implemented
 	
-	if(!errorflag){
-		fprintf(stderr,"SUCCESS! Max rel err = %e %%\n",maxrelerr*100);
-	}else{
-		fprintf(stderr,"ERRORS ENCOUNTERED. Max rel err = %e %% Return code %d.\n",maxrelerr*100, errorflag);
-	}
+	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
+#endif
+
+	if(errorflag)fprintf(stderr,"Return code %d.\n",errorflag);
 	return errorflag;
 }
 

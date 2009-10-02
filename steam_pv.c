@@ -118,14 +118,14 @@ double pv_region2_fn(double T, void *user_data){
 }
 #undef D
 
-typedef struct SolveTVData_struct{
-	double T, rho;
-} SolveTVData;
+typedef struct SolvePRhoData_struct{
+	double p, rho;
+} SolvePRhoData;
 
-#define D ((SolveTVData *)user_data)
+#define D ((SolvePRhoData *)user_data)
 static ZeroInSubjectFunction pv_region3_fn;
 double pv_region3_fn(double T, void *user_data){
-	return D->T - freesteam_region3_p_rhoT(D->rho, T);
+	return D->p - freesteam_region3_p_rhoT(D->rho, T);
 }
 #undef D
 
@@ -186,11 +186,12 @@ SteamState freesteam_set_pv(double p, double v){
 			{
 				double lb = REGION1_TMAX;
 				double ub = IAPWS97_TMAX;
-				double tol = 1e-13; /* ??? */
+				double tol = 1e-12; /* ??? */
 				double sol, err;
-				SolveTVData D = {S.R3.T, S.R3.rho};
+				SolvePRhoData D = {p, S.R3.rho};
 				zeroin_solve(&pv_region3_fn, &D, lb, ub, tol, &sol, &err);
 				S.R3.T = sol;
+				//fprintf(stderr,"%s: (p = %f MPa,v = %f m3/kg) region 3, error in p = %f\n",__func__,p,v, err);
 				/* FIXME check convergence! */
 			}
 #if 0
