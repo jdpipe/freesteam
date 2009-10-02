@@ -318,6 +318,7 @@ if platform.system()=="Linux":
 	lib_env.Append(LINKFLAGS=['-Wl,-soname,$SONAME'])
 
 lib = lib_env.SharedLibrary("freesteam",srcs)
+env.Depends('python',lib)
 
 libs = [lib]
 
@@ -422,8 +423,8 @@ env.Append(
 tar = env.DistTar("dist/"+env['DISTTAR_NAME']
 	, [env.Dir('#')]
 )
-
 #------------------------------------------------------
+
 # DEBIAN TARBALL for use with Build Service
 
 import glob
@@ -453,7 +454,7 @@ env.Alias('install',env['installedfiles'])
 #------------------------------------------------------
 # DEFAULT TARGETS
 
-default_targets =['python','ascend']
+default_targets =[lib, 'python','ascend']
 
 env.Default(default_targets)
 
