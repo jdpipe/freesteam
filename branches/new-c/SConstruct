@@ -291,6 +291,8 @@ configscript = env.SubstInFile('freesteam-config.in')
 
 install_config = env.InstallProgram("${INSTALL_ROOT}$INSTALL_BIN",configscript)
 
+default_targets =['python','ascend']
+
 # Here is the list of all of the source files that will go into
 # the freesteam DLL/SO.
 
@@ -332,7 +334,7 @@ if platform.system()=="Linux":
 			,"ln -s $SOURCE $TARGET"
 		)
 		libs.append(liblink)
-
+		env.Depends('python',liblink)
 
 # Store a reference to this library so that we can reference it from
 # SConscript files in subdirectories
@@ -453,8 +455,6 @@ env.Alias('install',env['installedfiles'])
 
 #------------------------------------------------------
 # DEFAULT TARGETS
-
-default_targets =[lib, 'python','ascend']
 
 env.Default(default_targets)
 
