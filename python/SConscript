@@ -33,6 +33,8 @@ if env.get('HAVE_PYTHON'):
 
 	if platform.system()=="Windows":
 		python_env['SHLIBSUFFIX']=".pyd"
+	elif platform.system()=="Darwin":
+		python_env['SHLIBSUFFIX']='.so'
 
 	swiglib = python_env.SharedLibrary("freesteam",swigobj
 		, SHLIBPREFIX = '_'

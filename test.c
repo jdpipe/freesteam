@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "steam_ps.h"
 #include "steam_Ts.h"
 #include "steam_pT.h"
+#include "steam_pv.h"
 #include "region1.h"
 
 #include <stdio.h>
@@ -667,6 +668,42 @@ void testTs(void){
 }
 
 /*------------------------------------------------------------------------------
+  FULL (P,V) ROUTINES
+*/
+
+#define PVRELTOL 1e-6
+
+void test_steam_pv(double p,double v){
+	fprintf(stderr,"------------\n");
+	fprintf(stderr,"%s: p = %f MPa, v = %f m3/kg\n",__func__, p, v);
+	freesteam_bounds_pv(p*1e6,v,1);
+	SteamState S = freesteam_set_pv(p*1e6,v);
+	//if(S.region !=1)return;
+	//fprintf(stderr,"--> region = %d\n", S.region);
+	//if(S.region==4)fprintf(stderr,"--> p = %g\n", freesteam_region4_psat_T(S.R4.T));
+	CHECK_VAL(freesteam_p(S),p*1e6,PVRELTOL);
+	CHECK_VAL(freesteam_s(S),v,PVRELTOL);
+
+};
+
+void testpv(void){
+	const double pp[] = {0.001, 0.0035, 0.01, 0.1, 1, 2, 3, 5, 10, 17, 18, 20, 22, 22.06, 22.064, 22.07, 23, 25, 30, 40, 50, 80, 90, 100};
+	const int np = sizeof(pp)/sizeof(double);
+	const double vv[] = {0.0009,0.001,0.002,0.005,0.01,0.02,0.03,0.04,0.05,0.1,0.2,0.3,0.4};
+	const int nv = sizeof(vv)/sizeof(double);
+	const double *p, *s;
+
+	fprintf(stderr,"FULL (P,S) TESTS\n");
+	for(p=pp; p<pp+np; ++p){
+		for(v=vv; v<vv+nv; ++v){
+			if(freesteam_bounds_pv(*p*1e6,*s,0))continue;
+			//if(freesteam_region_ps(*p*1e6,*s*1e3)!=3)continue;
+			test_steam_pv(*p,*s);
+		}
+	}
+}
+
+/*------------------------------------------------------------------------------
   MAIN ROUTINE
 */
 
@@ -693,6 +730,7 @@ int main(void){
 	testph();
 	testpT();
 	testTs();
+	testpv();
 	//testTu();
 #if 0	
 	/* the following tests cause the larger errors, and are not part of the
