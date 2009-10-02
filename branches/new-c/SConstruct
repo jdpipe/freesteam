@@ -335,6 +335,7 @@ if platform.system()=="Linux":
 		)
 		libs.append(liblink)
 		env.Depends('python',liblink)
+		env.Depends('test',liblink)
 
 # Store a reference to this library so that we can reference it from
 # SConscript files in subdirectories
