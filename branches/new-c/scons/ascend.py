@@ -21,7 +21,7 @@ def generate(env):
 				raise RuntimeError("Could not find 'ascend-config' in your PATH")
 				
 			cmd = [sys.executable,"\"%s\""%Path,"--cppflags","--libs"]
-			env1 = env.Copy()
+			env1 = env.Clone()
 			env1.ParseConfig(cmd)
 			env.Append(
 				ASCEND_CPPPATH = env1.get('CPPPATH') or []

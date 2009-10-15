@@ -90,7 +90,7 @@ Section "freesteam (required)"
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
   File "LICENSE.txt"
-  File "README.html"
+  File "README.txt"
   File "CHANGELOG.txt"
 
   ; We'll use the Windows directory for the DLL
@@ -151,17 +151,17 @@ configerror:
 
 SectionEnd
 
-Section "Example C++ code"
-  DetailPrint "--- EXAMPLE FILES ---"
-	SetOutPath $INSTDIR\example
-	File "example\example.cpp"
-	File "example\SConstruct"
-	File "example\Makefile"
-	File "example\README.txt"
-	WriteRegDWORD HKLM "SOFTWARE\freesteam" "Example" 1
-	StrCpy $EXAMPLEINSTALLED "1"
-	Return
-SectionEnd
+;Section "Example C++ code"
+;  DetailPrint "--- EXAMPLE FILES ---"
+;	SetOutPath $INSTDIR\example
+;	File "example\example.cpp"
+;	File "example\SConstruct"
+;	File "example\Makefile"
+;	File "example\README.txt"
+;	WriteRegDWORD HKLM "SOFTWARE\freesteam" "Example" 1
+;	StrCpy $EXAMPLEINSTALLED "1"
+;	Return
+;SectionEnd
 
 Section "Python language bindings"
 	${If} $PYOK == 'OK'
@@ -172,7 +172,15 @@ Section "Python language bindings"
 		; README file for python users
 		SetOutPath $INSTDIR\python
 		File python\README.txt
-		File python\example.py
+		File python\test.py
+		File python\phdiagram.py
+		File python\pTdiagram.py
+		File python\pudiagram.py
+		File python\rhoTdiagram.py
+		File python\satcurve.py
+		File python\tables.py
+		File python\Thdiagram.py
+		File python\Tsdiagram.py
 
 		; Set output path to the installation directory.
 		SetOutPath $PYPATH\Lib\site-packages
@@ -213,7 +221,7 @@ Section "Start Menu Shortcuts"
   CreateDirectory "$SMPROGRAMS\freesteam"
   CreateShortCut "$SMPROGRAMS\freesteam\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
   CreateShortCut "$SMPROGRAMS\freesteam\LICENSE.lnk" "$INSTDIR\LICENSE.txt" "" "$INSTDIR\LICENSE.txt" 0
-  CreateShortCut "$SMPROGRAMS\freesteam\README.lnk" "$INSTDIR\README.html" "" "$INSTDIR\README.html" 0
+  CreateShortCut "$SMPROGRAMS\freesteam\README.lnk" "$INSTDIR\README.txt" "" "$INSTDIR\README.txt" 0
   CreateShortCut "$SMPROGRAMS\freesteam\CHANGELOG.lnk" "$INSTDIR\CHANGELOG.txt" "" "$INSTDIR\CHANGELOG.txt" 0
 
   ${If} $EXAMPLEINSTALLED == "1"
@@ -222,6 +230,7 @@ Section "Start Menu Shortcuts"
 
   ${If} $PYINSTALLED == "1"
 	CreateShortCut "$SMPROGRAMS\freesteam\Python README.lnk" "$INSTDIR\python\README.txt" "" "$INSTDIR\python\README.txt" 0
+	CreateShortCut "$SMPROGRAMS\freesteam\Python scripts.lnk" "$INSTDIR\python" "" "$INSTDIR\python" 0
   ${EndIf}
   
   ${If} $ASCENDINSTALLED == "1"
@@ -262,7 +271,16 @@ Section "Uninstall"
 		Delete $PYPATH\Lib\site-packages\_freesteam.dll
 		Delete $PYPATH\Lib\site-packages\freesteam.py*
 		Delete $INSTDIR\python\README.txt
-		Delete $INSTDIR\python\example.py
+		Delete $INSTDIR\python\test.py
+		Delete $INSTDIR\python\phdiagram.py
+		Delete $INSTDIR\python\pTdiagram.py
+		Delete $INSTDIR\python\pudiagram.py
+		Delete $INSTDIR\python\rhoTdiagram.py
+		Delete $INSTDIR\python\satcurve.py
+		Delete $INSTDIR\python\tables.py
+		Delete $INSTDIR\python\Thdiagram.py
+		Delete $INSTDIR\python\Tsdiagram.py
+		
 		RmDir $INSTDIR\python
 	${EndIf}
 	
@@ -297,7 +315,7 @@ Section "Uninstall"
 
 	Delete $SYSDIR\freesteam.dll
 	Delete $INSTDIR\LICENSE.txt
-	Delete $INSTDIR\README.html
+	Delete $INSTDIR\README.txt
 	Delete $INSTDIR\CHANGELOG.txt
 	Delete $INSTDIR\uninstall.exe
 	
