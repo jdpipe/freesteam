@@ -29,12 +29,12 @@ if platform.system()=="Windows":
 	import _winreg
 	x=_winreg.ConnectRegistry(None,_winreg.HKEY_LOCAL_MACHINE)
 	y= _winreg.OpenKey(x,r"SOFTWARE\FREESTEAM")
-	LIB,t = _winreg.QueryValueEx(y,"INSTALL_LIB")
-	BIN,t = _winreg.QueryValueEx(y,"INSTALL_BIN")
-	INCLUDE,t = _winreg.QueryValueEx(y,"INSTALL_INCLUDE")
-
+	LIB,t = _winreg.QueryValueEx(y,"Install_Dir")	
 	_winreg.CloseKey(y)
 	_winreg.CloseKey(x)
+
+	BIN = LIB
+	INCLUDE = LIB		
 	
 	try:
 		# if we have access to GetShortPathName, we'll use it...
@@ -51,7 +51,7 @@ if platform.system()=="Windows":
 			return s1
 		munge = munge1 
 	except:
-		pass
+		pass		
 else:
 	# If we're not in Windows, use the original values passed to us from SCons:
 	LIB="@INSTALL_LIB@"
