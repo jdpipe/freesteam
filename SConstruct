@@ -5,13 +5,15 @@
 # We don't currently propose to support building freesteam from MSVS but
 # that shouldn't be necessary, as you should be able to use the MinGW-generated
 # DLL even with MSVS, because it only uses C code.
+import platform, sys, distutils.sysconfig
 
 #version number for this copy of freesteam
 version = "2.0"
 
-# Set up some platform-specific defaults
+# version number of python
+pyversion = "%d.%d" % (sys.version_info[0],sys.version_info[1])
 
-import platform, sys, distutils.sysconfig
+# Set up some platform-specific defaults
 if platform.system()=="Windows":
 	default_emso_location = "c:\\Program Files\\EMSO\\interface"
 	default_prefix = 'c:/MinGW'
@@ -125,11 +127,19 @@ vars.Add(
 	,'swig'
 )
 
+if platform.system()=="Windows":
+	vars.Add(
+		'WIN_INSTALLER_NAME'
+		,"Name of the installer .exe to create under Windows (minus the '.exe')"
+		,"freesteam-"+version+"-py"+pyversion+".exe"
+	)
+
+
 # Set up the 'tools' the SCONS will need access to , eg compilers
 # and create the SCONS 'environment':
 
 import os
-tools = ['swig','ascend','substinfile','gsl','tar','disttar']
+tools = ['swig','ascend','substinfile','gsl','tar','disttar', 'nsis']
 if os.environ.has_key('OSTYPE') and os.environ['OSTYPE']=='msys':
 	env = Environment(ENV=os.environ
 		, toolpath = ['scons']
@@ -458,7 +468,25 @@ env.Alias('install',env['installedfiles'])
 #------------------------------------------------------
 # WINDOWS INSTALLER
 
+with_installer = True
 
+if not env.get('NSIS'):
+	with_installer = False
+	without_installer_reason = "NSIS not found"
+
+if platform.system()=="Windows":
+	if with_installer:
+		env.Append(NSISDEFINES={
+			'OUTFILE':"#dist/"+env['WIN_INSTALLER_NAME']
+			,"VERSION":version
+			,'PYVERSION':pyversion
+		})
+		installer = env.Installer('installer.nsi')
+		Depends(installer,["python","ascend"])
+		Depends(installer,[configscript])
+		env.Alias('installer',installer)
+	else:
+		print "Skipping... Windows installer isn't being built:",without_installer_reason
 
 #------------------------------------------------------
 # DEFAULT TARGETS
