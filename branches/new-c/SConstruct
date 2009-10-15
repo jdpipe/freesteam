@@ -240,8 +240,14 @@ if not conf.CheckFunc('fprintf'):
 	print "You compiler and/or environment is not correctly configured (see config.log for details)"
 	Exit(1)
 
-without_python_reason = "Python library '%s' not found" % python_lib
-conf.env['HAVE_PYTHON'] = conf.CheckLib(python_lib)
+without_python_reason = "Python header 'Python.h' not found"
+env['HAVE_PYTHON'] = False
+_havepy = conf.CheckHeader(os.path.join(distutils.sysconfig.get_python_inc(),"Python.h"))
+if _havepy:
+	env['HAVE_PYTHON'] = True
+
+#without_python_reason = "Python library '%s' not found" % python_lib
+#conf.env['HAVE_PYTHON'] = conf.CheckLib(python_lib)
 
 if conf.env['HAVE_PYTHON'] and conf.CheckSwigVersion() is False:
 	without_python_reason = 'SWIG >= 1.3.24 is required'
