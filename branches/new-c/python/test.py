@@ -3,13 +3,14 @@
 import os, sys, platform
 
 up = os.path.abspath(os.path.join(sys.path[0],'..'))
-
+ext = ".so"
+sep = ":"
+LDVAR = "LD_LIBRARY_PATH"
 if platform.system()=="Windows":
 	sep = ";"
 	ext = ".pyd"
-else:
-	ext = ".so"
-	sep = ":"
+elif platform.system()=="Darwin":
+	LDVAR = "DYLD_LIBRARY_PATH"	
 
 if not os.path.exists(os.path.join(sys.path[0],'_freesteam%s' % ext)):
 	sys.stderr.write("\nLibrary _freesteam.so not present in %s\n" % sys.path[0])
@@ -17,7 +18,7 @@ if not os.path.exists(os.path.join(sys.path[0],'_freesteam%s' % ext)):
 
 if platform.system()=="Windows":
 	if not os.environ.get('PATH'):
-		raise RuntimeError("PATH environment variable is note defined.")
+		raise RuntimeError("PATH environment variable is not defined.")
 	pathsep = [os.path.abspath(p) for p in os.environ['PATH'].split(sep)]
 	if not up in pathsep:
 		sys.stderr.write("\nBefore running tests on Windows, you need to your PATH\n")
@@ -27,8 +28,8 @@ if platform.system()=="Windows":
 		sys.exit(1)
 
 else:
-	if not os.environ.get('LD_LIBRARY_PATH') or up not in os.environ['LD_LIBRARY_PATH']:
-		os.environ['LD_LIBRARY_PATH'] = up
+	if not os.environ.get(LDVAR) or up not in os.environ[LDVAR]:
+		os.environ[LDVAR] = up
 		script = os.path.join(sys.path[0],"test.py")					
 		os.execvp("python",[script] + sys.argv)
 
