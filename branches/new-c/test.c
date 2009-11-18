@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "steam_pT.h"
 #include "steam_pv.h"
 #include "region1.h"
+#include "viscosity.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -705,6 +706,32 @@ void testpv(void){
 }
 
 /*------------------------------------------------------------------------------
+ FULL VISCOSITY ROUTINES
+ */
+
+#define MURELTOL 1e-6
+
+void test_viscosity_rhoT_point(double rho, double T, double mu){
+	double mu1 = freesteam_mu_rhoT(rho,T)*1e6; // compare in microPascal-s
+	CHECK_VAL(mu1,mu,MURELTOL);
+}
+
+void testviscosityrhoT(void){
+	fprintf(stderr,"VISCOSITY (RHO,T) TESTS\n");
+	test_viscosity_rhoT_point(998.,     298.15,	    889.735100);
+	test_viscosity_rhoT_point(1200.,    298.15,	    1437.649467);
+	test_viscosity_rhoT_point(1000.,    373.15,	    307.883622);
+	test_viscosity_rhoT_point(1.,       433.15,	    14.538324);
+	test_viscosity_rhoT_point(1000.,    433.15,	    217.685358);
+	test_viscosity_rhoT_point(1.,       873.15,	    32.619287);
+	test_viscosity_rhoT_point(100.,     873.15,	    35.802262);
+	test_viscosity_rhoT_point(600., 	873.15,     77.430195);
+	test_viscosity_rhoT_point(1.,       1173.15,	44.217245);
+	test_viscosity_rhoT_point(100.,     1173.15,	47.640433);
+	test_viscosity_rhoT_point(400.,     1173.15,	64.154608);
+}
+
+/*------------------------------------------------------------------------------
   MAIN ROUTINE
 */
 
@@ -771,6 +798,10 @@ int main(void){
 	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
 #endif
 
+	maxrelerr = 0;
+    testviscosityrhoT();
+	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
+	
 	if(errorflag)fprintf(stderr,"Return code %d.\n",errorflag);
 	return errorflag;
 }

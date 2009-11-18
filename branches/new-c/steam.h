@@ -81,6 +81,8 @@ FREESTEAM_DLL double freesteam_w(SteamState S);
 
 FREESTEAM_DLL double freesteam_x(SteamState S);
 
+FREESTEAM_DLL double freesteam_mu(SteamState S);
+
 #endif
 
 
