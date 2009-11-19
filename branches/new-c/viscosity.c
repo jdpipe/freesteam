@@ -46,8 +46,7 @@ double mu0(double tau){
     const double H[4] = {1.67752, 2.20462, 0.6366564, -0.241605};
     int i;
     double sum = 0;
-    for (i = 0; i < 4; i++)
-    {
+    for (i = 0; i < 4; i++){
         sum += H[i] * ipow(tau, i) ;
     }
     return 100.0 / (sqrt(tau) * sum);
@@ -57,8 +56,7 @@ double mu0(double tau){
 
 double mu1(double del, double tau){
     // contribution to viscosity due to finite density
-    const double H[6][7] =
-    {
+    const double H[6][7] = {
         { 5.20094E-1, 2.22531E-1, -2.81378E-1, 1.61913E-1, -3.25372E-2, 0.0,         0.0},
         { 8.50895E-2, 9.99115E-1, -9.06851E-1, 2.57399E-1,  0.0,        0.0,         0.0},
         {-1.08374,    1.88797,    -7.72479E-1, 0.0,         0.0,        0.0,         0.0},
@@ -69,11 +67,12 @@ double mu1(double del, double tau){
 	
     int i, j;
     double sum = 0;
-    for (i = 0; i < 6; i++)
-    {
-        for (j = 0; j < 7; j++)
-        {
-            sum += ipow(tau - 1, i) * H[i][j] * ipow(del - 1, j);
+	double tau1 = 0;
+    for (i = 0; i < 6; i++){
+		tau1 = ipow(tau - 1, i);
+        for (j = 0; j < 7; j++){
+			if(0==H[i][j])continue;
+            sum += H[i][j] * tau1 * ipow(del - 1, j);
         }
     }
     return exp(del * sum);
