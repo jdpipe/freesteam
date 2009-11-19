@@ -35,13 +35,7 @@ double tau = IAPWS97_TCRIT / T
 
 #include <math.h>
 
-double freesteam_mu_rhoT(double rho, double T){
-	DEFINE_DELTAU(RHO,T);
-    const int mu2 = 1; // critical enhancement to viscosity not implemented for IF-97, set to 1
-	return VISCOSITY_MUSTAR * mu0(tau) * mu1(del,tau) * mu2;
-}
-
-double mu0(double tau){
+static double mu0(double tau){
     // viscosity in the dilute-gas limit
     const double H[4] = {1.67752, 2.20462, 0.6366564, -0.241605};
     int i;
@@ -54,7 +48,7 @@ double mu0(double tau){
 
 
 
-double mu1(double del, double tau){
+static double mu1(double del, double tau){
     // contribution to viscosity due to finite density
     const double H[6][7] = {
         { 5.20094E-1, 2.22531E-1, -2.81378E-1, 1.61913E-1, -3.25372E-2, 0.0,         0.0},
@@ -77,3 +71,10 @@ double mu1(double del, double tau){
     }
     return exp(del * sum);
 }
+
+double freesteam_mu_rhoT(double rho, double T){
+	DEFINE_DELTAU(RHO,T);
+    const int mu2 = 1; // critical enhancement to viscosity not implemented for IF-97, set to 1
+	return VISCOSITY_MUSTAR * mu0(tau) * mu1(del,tau) * mu2;
+}
+
