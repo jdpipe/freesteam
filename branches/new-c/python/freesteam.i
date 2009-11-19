@@ -185,6 +185,7 @@ def solver2_region3(X, Y, x, y, guess):
 	const double cv;	
 	const double w;
 	const double rho;
+	const double mu;
 };
 
 %{
@@ -226,6 +227,10 @@ double SteamState_cv_get(SteamState *S){
 
 double SteamState_w_get(SteamState *S){
 	return freesteam_w(*S);
+}
+
+double SteamState_mu_get(SteamState *S){
+	return freesteam_mu(*S);
 }
 
 %}

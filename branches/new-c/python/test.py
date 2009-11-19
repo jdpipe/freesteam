@@ -47,6 +47,7 @@ print "h =",S.h
 print "v =",S.v
 print "p =",S.p
 print "s =",S.s
+print "mu=",S.mu
 
 print "TESTING PV"
 
@@ -63,4 +64,6 @@ print "h =",S.h
 print "v =",S.v
 print "p =",S.p
 print "s =",S.s
+print "mu=",S.mu
+
 
