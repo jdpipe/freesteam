@@ -696,13 +696,16 @@ void testpv(void){
 	const double *p, *v;
 
 	fprintf(stderr,"FULL (P,V) TESTS\n");
+	int n = 0;
 	for(p=pp; p<pp+np; ++p){
 		for(v=vv; v<vv+nv; ++v){
 			if(freesteam_bounds_pv(*p * 1e6, *v, 0))continue;
 			//if(freesteam_region_ps(*p*1e6,*s*1e3)!=3)continue;
 			test_steam_pv(*p,*v);
+			++n;
 		}
 	}
+	fprintf(stderr,"...tested %d points.\n",n);
 }
 
 /*------------------------------------------------------------------------------
