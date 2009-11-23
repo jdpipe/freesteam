@@ -25,7 +25,11 @@ def tc_ptrho(p,T, rho):
 	Revised release on the IAPS Formulation 1985 for the Thermal Conductivity of ordinary water
 	IAPWS September 1998
 	Page 8
+
+	Converted from Python from the XSteam OpenOffice version.
 	"""
+
+	print "rho = %f, T = %f" % (rho, T)
 
 	# ver2.6 Start corrected bug
 	if T < 273.15:
@@ -43,8 +47,8 @@ def tc_ptrho(p,T, rho):
 
 	T = T / 647.26
 	rho = rho / 317.7
-	tc0 = T ** 0.5 * (0.0102811 + 0.0299621 * T + 0.0156146 * T ** 2 - 0.00422464 * T ** 3)
-	tc1 = -0.39707 + 0.400302 * rho + 1.06 * exp(-0.171587 * (rho + 2.39219) ** 2)
+	lam0 = T ** 0.5 * (0.0102811 + 0.0299621 * T + 0.0156146 * T ** 2 - 0.00422464 * T ** 3)
+	lam1 = -0.39707 + 0.400302 * rho + 1.06 * exp(-0.171587 * (rho + 2.39219) ** 2)
 	dT = abs(T - 1) + 0.00308976
 	Q = 2 + 0.0822994 / dT ** (3. / 5)
 
@@ -53,17 +57,20 @@ def tc_ptrho(p,T, rho):
 	else:
 		s = 10.0932 / dT ** (3. / 5)
 
-	tc2 = (0.0701309 / T ** 10 + 0.011852) * rho ** (9. / 5) * exp(0.642857 * (1 - rho ** (14. / 5))) + 0.00169937 * s * rho ** Q * exp((Q / (1. + Q)) * (1. - rho ** (1. + Q))) - 1.02 * exp(-4.11717 * T ** (3. / 2) - 6.17937 / rho ** 5)
+	lam2 = (0.0701309 / T ** 10 + 0.011852) * rho ** (9. / 5) * exp(0.642857 * (1 - rho ** (14. / 5))) + 0.00169937 * s * rho ** Q * exp((Q / (1. + Q)) * (1. - rho ** (1. + Q))) - 1.02 * exp(-4.11717 * T ** (3. / 2) - 6.17937 / rho ** 5)
 
-	return tc0 + tc1 + tc2
+	print "lam0 = %f, lam1 = %f, lam2 = %f" % (lam0, lam1, lam2)
+
+	return lam0 + lam1 + lam2
 
 if __name__=='__main__':
-	p = 1
-	T = 350
+	p = 5
+	T = 300
 	rho = steam_pT(p * 1e6,T + 273.15).rho
 	print "p = %f MPa" % p
 	print "T = %f °C" % T
 	print "rho = %f kg/m³" % rho
-
-	print "k =",tc_ptrho(p, T + 273.15, rho)
+	
+	k = tc_ptrho(p, T + 273.15, rho)
+	print "k =",k
 

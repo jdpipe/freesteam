@@ -746,21 +746,21 @@ void testviscosityrhoT(void){
 	@param T temperature/[°C]
 */
 void test_k_pT_point(double p, double T, double k){
-#if 1
+#if 0
 	fprintf(stderr,"\n\np = %f MPa, T = %f °C, expect k = %f mW/m·K\n", p, T, k);
 #endif
 
 	SteamState S = freesteam_set_pT(p * 1e6, T + 273.15);
 
-#if 1
+#if 0
 	CHECK_VAL(freesteam_p(S), p*1e6, 1e-5);
 	CHECK_VAL(freesteam_T(S), T + 273.15,1e-5);
 	fprintf(stderr,"rho = %f\n", freesteam_rho(S));
 #endif
 
-	double k1 = freesteam_k_rhoT(freesteam_rho(S),T = 273.15) * 1.e3; // compare in mW/m·K
+	double k1 = freesteam_k_rhoT(freesteam_rho(S),T + 273.15) * 1.e3; // compare in mW/m·K
 
-#if 1
+#if 0
 	fprintf(stderr,"===> error = %f mW/m·K\n", k1 - k);
 #endif
 
@@ -769,6 +769,9 @@ void test_k_pT_point(double p, double T, double k){
 
 void testconductivitypT(void){
 	fprintf(stderr,"THERMAL CONDUCTIVITY (P,T) TESTS\n");
+
+
+	test_k_pT_point(5,    300,     53.0);
 
 #define P_COUNT 29
 #define T_COUNT 22
