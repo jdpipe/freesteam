@@ -32,22 +32,22 @@
 # include <stdio.h>
 #endif
 
-#define IAPWS_THCOND_T_REF 647.26
-#define IAPWS_THCOND_DENS_REF 317.7
-#define IAPWS_THCON_REF 1.0
+#define THCOND_TSTAR 647.26
+#define THCOND_RHOSTAR 317.7
+#define THCOND_KSTAR 1.0
 
 
 double freesteam_k_rhoT(double rho, double T){
-	double Tbar = T / IAPWS_THCOND_T_REF;
-	double rhobar = rho / IAPWS_THCOND_DENS_REF;
+	double Tbar = T / THCOND_TSTAR;
+	double rhobar = rho / THCOND_RHOSTAR;
 
 	/* lam0 -- fast implementation without 'pow' function */
 	double Troot = sqrt(Tbar);
 	double Tpow = Troot;
 	double lam0 = 0;
 
-#define THCON_a_COUNT 4
-	const double THCON_a[THCON_a_COUNT] = {
+#define THCOND_a_COUNT 4
+	const double THCOND_a[THCOND_a_COUNT] = {
 		0.0102811
 		,0.0299621
 		,0.0156146
@@ -55,78 +55,79 @@ double freesteam_k_rhoT(double rho, double T){
 	};
 
 	int k;
-	for(k = 0; k < THCON_a_COUNT; ++k) {
-		lam0 += THCON_a[k] * Tpow;
+	for(k = 0; k < THCOND_a_COUNT; ++k) {
+		lam0 += THCOND_a[k] * Tpow;
 		Tpow *= Tbar;
 	}
 
-#define THCON_b0 -0.397070
-#define THCON_b1 0.400302
-#define THCON_b2 1.060000
-#define THCON_B1 -0.171587
-#define THCON_B2 2.392190
+#define THCOND_b0 -0.397070
+#define THCOND_b1 0.400302
+#define THCOND_b2 1.060000
+#define THCOND_B1 -0.171587
+#define THCOND_B2 2.392190
 
-	double lam1 = THCON_b0 + THCON_b1 * rhobar + THCON_b2 * exp(THCON_B1 * SQ(rhobar + THCON_B2));
+	double lam1 = THCOND_b0 + THCOND_b1 * rhobar + THCOND_b2 * exp(THCOND_B1 * SQ(rhobar + THCOND_B2));
 
-#define THCON_C1 0.642857
-#define THCON_C2 -4.11717
-#define THCON_C3 -6.17937
-#define THCON_C4 0.00308976
-#define THCON_C5 0.0822994
-#define THCON_C6 10.0932
+#define THCOND_C1 0.642857
+#define THCOND_C2 -4.11717
+#define THCOND_C3 -6.17937
+#define THCOND_C4 0.00308976
+#define THCOND_C5 0.0822994
+#define THCOND_C6 10.0932
 	
-	double DTbar = fabs(Tbar - 1) + THCON_C4;
-	double Q = 2. + THCON_C5 / pow(DTbar,0.6);
+	double DTbar = fabs(Tbar - 1) + THCOND_C4;
+	double DTbarpow = pow(DTbar, 0.6);
+	double Q = 2. + THCOND_C5 / DTbarpow;
 
 	double S;
 	if(Tbar >= 1){
 		S = 1. / DTbar;
 	}else{
-		S = THCON_C6 / pow(DTbar,0.6);
+		S = THCOND_C6 / DTbarpow;
 	}
 
-#define THCON_d1 0.0701309
-#define THCON_d2 0.0118520
-#define THCON_d3 0.00169937
-#define THCON_d4 -1.0200
+#define THCOND_d1 0.0701309
+#define THCOND_d2 0.0118520
+#define THCOND_d3 0.00169937
+#define THCOND_d4 -1.0200
+
+	double lam2 = 
+		(THCOND_d1 / pow(Tbar,10) + THCOND_d2) * pow(rhobar,1.8) * 
+			exp(THCOND_C1 * (1 - pow(rhobar,2.8)))
+		+ THCOND_d3 * S * pow(rhobar,Q) *
+			exp((Q/(1+Q))*(1 - pow(rhobar,1+Q)))
+		+ THCOND_d4 *
+			exp(THCOND_C2 * pow(Tbar,3./2) + THCOND_C3 / pow(rhobar,5));
 
 #if 0
-	double lam2 = 
-		(THCON_d1 / pow(Tbar,10) + THCON_d2) * pow(rhobar,1.8) * 
-			exp(THCON_C1 * (1 - pow(rhobar,2.8)))
-		+ THCON_d3 * S * pow(rhobar,Q) *
-			exp((Q/(1+Q))*(1 - pow(rhobar,1+Q)))
-		+ THCON_d4 *
-			exp(THCON_C2 * pow(Tbar,3./2) + THCON_C3 / pow(rhobar,5));
-#endif
-
-	double lam2_1_1 = (THCON_d1 / pow(Tbar,10) + THCON_d2);
+	double lam2_1_1 = (THCOND_d1 / pow(Tbar,10) + THCOND_d2);
 
 #ifdef THCOND_DEBUG
 	fprintf(stderr,"pow(Tbar,10) = %f, lam2_1_1 = %f\n",pow(Tbar,10), lam2_1_1);
 #endif	
 
 	double lam2_1 = lam2_1_1 * pow(rhobar,1.8) * 
-			exp(THCON_C1 * (1. - pow(rhobar,2.8)));
+			exp(THCOND_C1 * (1. - pow(rhobar,2.8)));
 		
-	double lam2_2 = THCON_d3 * S * pow(rhobar,Q) *
+	double lam2_2 = THCOND_d3 * S * pow(rhobar,Q) *
 			exp((Q/(1.+Q))*(1. - pow(rhobar,1+Q)));
 
-	double lam2_3 = THCON_d4 *
-			exp(THCON_C2 * pow(Tbar,1.5) + THCON_C3 / pow(rhobar,5));
+	double lam2_3 = THCOND_d4 *
+			exp(THCOND_C2 * pow(Tbar,1.5) + THCOND_C3 / pow(rhobar,5));
 
 #ifdef THCOND_DEBUG
 	fprintf(stderr,"lam2_1 = %f, lam2_2 = %f, lam2_3 = %f\n",lam2_1, lam2_2, lam2_3);
 #endif	
 	
 	double lam2 = lam2_1 + lam2_2 + lam2_3;
+#endif
 
 #ifdef THCOND_DEBUG
 	fprintf(stderr,"lam0 = %f, lam1 = %f, lam2 = %f\n",lam0, lam1, lam2);
-	fprintf(stderr,"k0 =%f, k1 = %f, k2 = %f\n",IAPWS_THCON_REF*lam0, IAPWS_THCON_REF*lam1, IAPWS_THCON_REF*lam2);
-	fprintf(stderr,"returning k = %f\n", IAPWS_THCON_REF * (lam0 + lam1 + lam2));
+	fprintf(stderr,"k0 =%f, k1 = %f, k2 = %f [mW/m·K]\n",1000*THCOND_KSTAR*lam0, 1000*THCOND_KSTAR*lam1, 1000*THCOND_KSTAR*lam2);
+	fprintf(stderr,"returning k = %f mW/m·K\n", 1000 * THCOND_KSTAR * (lam0 + lam1 + lam2));
 #endif
 
-	return IAPWS_THCON_REF * (lam0 + lam1 + lam2);
+	return THCOND_KSTAR * (lam0 + lam1 + lam2);
 }
 
