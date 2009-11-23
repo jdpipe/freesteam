@@ -39,7 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef double PropertyFunction(double, double);
 
-static PropertyFunction *solver2_region3_propfn(char A){
+static PropertyFunction *solver2_region3_propfn(FREESTEAM_CHAR A){
 	switch(A){
 		case 'p': return &freesteam_region3_p_rhoT;
 		case 'u': return &freesteam_region3_u_rhoT;
@@ -55,7 +55,7 @@ static double solver2_region4_p_Tx(double T, double x){
 	return freesteam_region4_psat_T(T);
 }
 
-static PropertyFunction *solver2_region4_propfn(char A){
+static PropertyFunction *solver2_region4_propfn(FREESTEAM_CHAR A){
 	switch(A){
 		case 'p': return &solver2_region4_p_Tx;
 		case 'u': return &freesteam_region4_u_Tx;
@@ -72,7 +72,7 @@ static double solver2_region2_p_pT(double p, double T){
 	return p;
 }
 
-static PropertyFunction *solver2_region2_propfn(char A){
+static PropertyFunction *solver2_region2_propfn(FREESTEAM_CHAR A){
 	switch(A){
 		case 'p': return &solver2_region2_p_pT;
 		case 'u': return &freesteam_region2_u_pT;
@@ -89,7 +89,7 @@ static double solver2_region1_p_pT(double p, double T){
 	return p;
 }
 
-static PropertyFunction *solver2_region1_propfn(char A){
+static PropertyFunction *solver2_region1_propfn(FREESTEAM_CHAR A){
 	switch(A){
 		case 'p': return &solver2_region1_p_pT;
 		case 'u': return &freesteam_region1_u_pT;
@@ -102,7 +102,7 @@ static PropertyFunction *solver2_region1_propfn(char A){
 
 
 typedef struct{
-	char A,B;
+	FREESTEAM_CHAR A,B;
 	PropertyFunction *Afn, *Bfn;	
 	double a,b;
 } Solver2Data;
@@ -138,13 +138,15 @@ static int region3_fdf(const gsl_vector *x, void *user_data, gsl_vector *f, gsl_
 	return region3_f(x, user_data, f) || region3_df(x, user_data, J);
 }
 
+#if 0
 static void region3_print_state(size_t iter, gsl_multiroot_fdfsolver *s){
 	double rho = gsl_vector_get(s->x,0);
 	double T = gsl_vector_get(s->x,1);
-	fprintf(stderr,"iter = %d: rho = %g, T = %g\n", iter,rho,T);
+	fprintf(stderr,"iter = %lu: rho = %g, T = %g\n", iter,rho,T);
 }
+#endif
 
-SteamState freesteam_solver2_region3(char A, char B, double atarget, double btarget, SteamState guess, int *retstatus){
+SteamState freesteam_solver2_region3(FREESTEAM_CHAR A, FREESTEAM_CHAR B, double atarget, double btarget, SteamState guess, int *retstatus){
 	const gsl_multiroot_fdfsolver_type *T;
 	gsl_multiroot_fdfsolver *s;
 	int status;
@@ -212,13 +214,15 @@ static int region4_fdf(const gsl_vector *x, void *user_data, gsl_vector *f, gsl_
 	return region4_f(x, user_data, f) || region4_df(x, user_data, J);
 }
 
+#if 0
 static void region4_print_state(size_t iter, gsl_multiroot_fdfsolver *s){
 	double T = gsl_vector_get(s->x,0);
 	double x = gsl_vector_get(s->x,1);
-	fprintf(stderr,"iter = %d: T = %g, x = %g\n", iter,T,x);
+	fprintf(stderr,"iter = %lu: T = %g, x = %g\n", iter,T,x);
 }
+#endif
 
-SteamState freesteam_solver2_region4(char A, char B, double atarget, double btarget, SteamState guess, int *retstatus){
+SteamState freesteam_solver2_region4(FREESTEAM_CHAR A, FREESTEAM_CHAR B, double atarget, double btarget, SteamState guess, int *retstatus){
 	const gsl_multiroot_fdfsolver_type *T;
 	gsl_multiroot_fdfsolver *s;
 	int status;
@@ -294,10 +298,10 @@ static int region2_fdf(const gsl_vector *x, void *user_data, gsl_vector *f, gsl_
 static void region2_print_state(size_t iter, gsl_multiroot_fdfsolver *s){
 	double p = gsl_vector_get(s->x,0);
 	double T = gsl_vector_get(s->x,1);
-	fprintf(stderr,"iter = %d: p = %g, T = %g\n", iter,p,T);
+	fprintf(stderr,"iter = %lu: p = %g, T = %g\n", iter,p,T);
 }
 
-SteamState freesteam_solver2_region2(char A, char B, double atarget, double btarget, SteamState guess, int *retstatus){
+SteamState freesteam_solver2_region2(FREESTEAM_CHAR A, FREESTEAM_CHAR B, double atarget, double btarget, SteamState guess, int *retstatus){
 	const gsl_multiroot_fdfsolver_type *T;
 	gsl_multiroot_fdfsolver *s;
 	int status;
@@ -369,13 +373,15 @@ static int region1_fdf(const gsl_vector *x, void *user_data, gsl_vector *f, gsl_
 	return region1_f(x, user_data, f) || region1_df(x, user_data, J);
 }
 
+#if 0
 static void region1_print_state(size_t iter, gsl_multiroot_fdfsolver *s){
 	double p = gsl_vector_get(s->x,0);
 	double T = gsl_vector_get(s->x,1);
-	fprintf(stderr,"iter = %d: p = %g, T = %g\n", iter,p,T);
+	fprintf(stderr,"iter = %lu: p = %g, T = %g\n", iter,p,T);
 }
+#endif
 
-SteamState freesteam_solver2_region1(char A, char B, double atarget, double btarget, SteamState guess, int *retstatus){
+SteamState freesteam_solver2_region1(FREESTEAM_CHAR A, FREESTEAM_CHAR B, double atarget, double btarget, SteamState guess, int *retstatus){
 	const gsl_multiroot_fdfsolver_type *T;
 	gsl_multiroot_fdfsolver *s;
 	int status;

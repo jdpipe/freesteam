@@ -125,7 +125,7 @@ double ph_region2_fn(double T, void *user_data){
 SteamState freesteam_set_ph(double p, double h){
 	SteamState S;
 	S.region = (char)freesteam_region_ph(p,h);
-	int status;
+	//int status;
 	switch(S.region){
 		case 1:
 			S.R1.p = p;
@@ -186,6 +186,9 @@ SteamState freesteam_set_ph(double p, double h){
 				hg = freesteam_region3_h_rhoT(rhog,S.R4.T);
 			}
 			S.R4.x = (h - hf)/(hg - hf);
+			return S;
+		default:
+			fprintf(stderr,"%s: invalid region %d\n",__func__,S.region);
 			return S;
 	}
 }

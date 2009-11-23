@@ -73,7 +73,7 @@ PartialDerivFn PT1, TP1, PT2, TP2, TV3, VT3, TX4, XT4;
 
 	@return the numerical value of the derivative (∂z/∂x)y.
 */
-double freesteam_deriv(SteamState S, char z, char x, char y){
+double freesteam_deriv(SteamState S, FREESTEAM_CHAR z, FREESTEAM_CHAR x, FREESTEAM_CHAR y){
 	PartialDerivFn *AB, *BA;
 
 	//fprintf(stderr,"CALCULATING (∂%c/∂%c)%c... ",z,x,y);
@@ -121,7 +121,7 @@ will be calculated several times in different calls to VT3.
 /**
 	TODO convert char to enum for better compiler checking capability
 */
-double freesteam_region3_dAdvT(char x, SteamState S){
+double freesteam_region3_dAdvT(FREESTEAM_CHAR x, SteamState S){
 	double res;
 	switch(x){
 		case 'p': res = -p*betap; break;
@@ -141,7 +141,7 @@ double freesteam_region3_dAdvT(char x, SteamState S){
 	return res;
 }
 
-double freesteam_region3_dAdTv(char x, SteamState S){
+double freesteam_region3_dAdTv(FREESTEAM_CHAR x, SteamState S){
 	double res;
 	switch(x){
 		case 'p': res = p*alphap; break;
@@ -185,7 +185,7 @@ double freesteam_region3_dAdTv(char x, SteamState S){
 /**
 	TODO convert char to enum for better compiler checking capability
 */
-double freesteam_region1_dAdTp(char x, SteamState S){
+double freesteam_region1_dAdTp(FREESTEAM_CHAR x, SteamState S){
 	double res;
 	switch(x){
 		case 'p': res = 0; break;
@@ -207,7 +207,7 @@ double freesteam_region1_dAdTp(char x, SteamState S){
 	return res;
 }
 
-double freesteam_region1_dAdpT(char x, SteamState S){
+double freesteam_region1_dAdpT(FREESTEAM_CHAR x, SteamState S){
 	double res;
 	switch(x){
 		case 'p': res = 1; break;
@@ -253,7 +253,7 @@ double freesteam_region1_dAdpT(char x, SteamState S){
 /**
 	TODO convert char to enum for better compiler checking capability
 */
-double freesteam_region2_dAdTp(char x, SteamState S){
+double freesteam_region2_dAdTp(FREESTEAM_CHAR x, SteamState S){
 	double res;
 	switch(x){
 		case 'p': res = 0; break;
@@ -278,7 +278,7 @@ double freesteam_region2_dAdTp(char x, SteamState S){
 	return res;
 }
 
-double freesteam_region2_dAdpT(char x, SteamState S){
+double freesteam_region2_dAdpT(FREESTEAM_CHAR x, SteamState S){
 	double res;
 	switch(x){
 		case 'p': res = 1; break;
@@ -322,7 +322,7 @@ in terms of (∂z/∂T)x and (∂z/∂x)T.
 	⎰ ∂z ⎱   =  ⎰∂z_f⎱ (1 - x) + ⎰∂z_f⎱ x
 	⎱ ∂T ⎰x     ⎱ ∂T ⎰           ⎱ ∂T ⎰
 */
-double freesteam_region4_dAdTx(char z, SteamState S){
+double freesteam_region4_dAdTx(FREESTEAM_CHAR z, SteamState S){
 	double res;
 #define T S.R4.T
 	switch(z){
@@ -384,7 +384,7 @@ double freesteam_region4_dAdTx(char z, SteamState S){
 	⎱ ∂x ⎰T   ⎱ ∂x ⎰T
 
 */	
-double freesteam_region4_dAdxT(char z, SteamState S){
+double freesteam_region4_dAdxT(FREESTEAM_CHAR z, SteamState S){
 	switch(z){
 		case 'p': return 0;
 		case 'T': return 0;

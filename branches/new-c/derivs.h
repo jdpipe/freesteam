@@ -27,21 +27,25 @@ These functions are drawn from the IAPWS Guidelines document "Revised Advisory
 Note No. 3 Thermodynamic Derivatives from IAPWS Formulations". (2008).
 */
 
-FREESTEAM_DLL double freesteam_deriv(SteamState S, char x, char y, char z);
+/*
+	x, y, and z should be passed as character constants, which in C are e.g. 'p'
+	http://stackoverflow.com/questions/433895/why-are-c-character-literals-ints-instead-of-chars
+ */
+FREESTEAM_DLL double freesteam_deriv(SteamState S, FREESTEAM_CHAR x, FREESTEAM_CHAR y, FREESTEAM_CHAR z);
 
 FREESTEAM_DLL double freesteam_drhofdT_T(double T);
 FREESTEAM_DLL double freesteam_drhogdT_T(double T);
 
 /* region-by-region derivative functions */
-typedef double PartialDerivFn(char,SteamState);
-FREESTEAM_DLL double freesteam_region3_dAdvT(char,SteamState);
-FREESTEAM_DLL double freesteam_region3_dAdTv(char,SteamState);
-FREESTEAM_DLL double freesteam_region1_dAdTp(char,SteamState);
-FREESTEAM_DLL double freesteam_region1_dAdpT(char,SteamState);
-FREESTEAM_DLL double freesteam_region2_dAdTp(char,SteamState);
-FREESTEAM_DLL double freesteam_region2_dAdpT(char,SteamState);
-FREESTEAM_DLL double freesteam_region4_dAdTx(char,SteamState);
-FREESTEAM_DLL double freesteam_region4_dAdxT(char,SteamState);
+typedef double PartialDerivFn(int,SteamState);
+FREESTEAM_DLL double freesteam_region3_dAdvT(FREESTEAM_CHAR,SteamState);
+FREESTEAM_DLL double freesteam_region3_dAdTv(FREESTEAM_CHAR,SteamState);
+FREESTEAM_DLL double freesteam_region1_dAdTp(FREESTEAM_CHAR,SteamState);
+FREESTEAM_DLL double freesteam_region1_dAdpT(FREESTEAM_CHAR,SteamState);
+FREESTEAM_DLL double freesteam_region2_dAdTp(FREESTEAM_CHAR,SteamState);
+FREESTEAM_DLL double freesteam_region2_dAdpT(FREESTEAM_CHAR,SteamState);
+FREESTEAM_DLL double freesteam_region4_dAdTx(FREESTEAM_CHAR,SteamState);
+FREESTEAM_DLL double freesteam_region4_dAdxT(FREESTEAM_CHAR,SteamState);
 
 
 

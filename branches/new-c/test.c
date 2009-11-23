@@ -489,7 +489,7 @@ void testzeroin(void){
 	TestQuadratic Q1 = {1, 0, -4};
 	fprintf(stderr,"BRENT SOLVER TESTS\n");
 	double sol = 0, err = 0;
-	zeroin_solve(&test_zeroin_subject,&Q1, -10, 4.566, 1e-10, &sol, &err);
+	zeroin_solve(&test_zeroin_subject,&Q1, -10., 4.566, 1e-10, &sol, &err);
 	CHECK_VAL(sol,2.,1e-10);
 }
 
@@ -516,7 +516,7 @@ void testsolver2(void){
 	CHECK_VAL(freesteam_h(S2),h, 1e-7);
 
 	/* test in region 4 */
-	S = freesteam_region4_set_Tx(440, 0.9);
+	S = freesteam_region4_set_Tx(440., 0.9);
 	p = freesteam_p(S);
 	h = freesteam_h(S);
 	fprintf(stderr,"Solving for p = %g MPa, h = %g kJ/kgK (region 4: T = %g, x = %g)\n",p/1e6, h/1e3,S.R4.T, S.R4.x);
@@ -770,9 +770,6 @@ void test_k_pT_point(double p, double T, double k){
 void testconductivitypT(void){
 	fprintf(stderr,"THERMAL CONDUCTIVITY (P,T) TESTS\n");
 
-
-	test_k_pT_point(5,    300,     53.0);
-
 #define P_COUNT 29
 #define T_COUNT 22
 	const double p_raw[P_COUNT]={0.1, 0.5, 1, 2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20, 22.5, 25, 27.5, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100};
@@ -813,18 +810,6 @@ void testconductivitypT(void){
 #undef P_COUNT
 #undef T_COUNT
 
-	test_k_pT_point(0.1,    0,     562.0);
-	test_k_pT_point(0.5,    0,     562.3);
-	test_k_pT_point(40,     0,     584.9);
-	test_k_pT_point(100,    0,     616.0);
-	test_k_pT_point(0.1,    100,   24.8);
-	test_k_pT_point(1.,     100,   678.3);
-	test_k_pT_point(10.,    100,   683.2);	
-	test_k_pT_point(100.,   100,   727.5);
-	test_k_pT_point(0.1,    250,   38.3 );
-	test_k_pT_point(1.,     250,   39.7 );
-	test_k_pT_point(10.,    250,   625.5);
-	test_k_pT_point(100.,   250,   707.7);
 }
 
 
