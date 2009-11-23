@@ -29,10 +29,6 @@ static double mu1(double del, double tau);
 
 #define VISCOSITY_MUSTAR 1.0e-6 /* Pa-s */
 
-#define DEFINE_DELTAU(RHO,T) \
-double del = rho / IAPWS97_RHOCRIT; \
-double tau = IAPWS97_TCRIT / T
-
 #include <math.h>
 
 static double mu0(double tau){
@@ -73,7 +69,9 @@ static double mu1(double del, double tau){
 }
 
 double freesteam_mu_rhoT(double rho, double T){
-	DEFINE_DELTAU(RHO,T);
+	double del = rho / IAPWS97_RHOCRIT;
+	double tau = IAPWS97_TCRIT / T;
+
     const int mu2 = 1; // critical enhancement to viscosity not implemented for IF-97, set to 1
 	return VISCOSITY_MUSTAR * mu0(tau) * mu1(del,tau) * mu2;
 }
