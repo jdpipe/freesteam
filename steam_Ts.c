@@ -49,7 +49,7 @@ int freesteam_bounds_Ts(double T, double s, int verbose){
 		return 2;
 	}
 
-	double smax = freesteam_region2_s_pT(0,T);
+	double smax = freesteam_region2_s_pT(0.,T);
 	if(s > smax){
 		BOUND_WARN("s > smax");
 		return 3;

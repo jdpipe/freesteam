@@ -32,7 +32,7 @@
 
 	@return Thermal conductivity [W/m.K]
 */
-double freesteam_k_rhoT(double rho, double T);
+FREESTEAM_DLL double freesteam_k_rhoT(double rho, double T);
 
 #endif
 

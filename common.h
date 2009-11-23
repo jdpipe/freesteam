@@ -3,6 +3,8 @@
 
 #include "config.h"
 
+#define FREESTEAM_CHAR int
+
 /*
 	ASCEND code in base/generic only EXPORTS symbols, no imports.
 	The FREESTEAM_DLLSPEC macro will, depending on whether we are
