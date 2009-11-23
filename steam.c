@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "b23.h"
 #include "backwards.h"
 #include "viscosity.h"
+#include "thcond.h"
 
 /* 'setter' functions for SteamState (forwards equations) */
 
@@ -274,6 +275,7 @@ double freesteam_x(SteamState S){
 }
 
 double freesteam_mu(SteamState S){
+	static char warned = 0;
 	switch(S.region){
 		case 1:
             return freesteam_mu_rhoT(1./freesteam_region1_v_pT(S.R1.p,S.R1.T), S.R1.T);
@@ -282,9 +284,34 @@ double freesteam_mu(SteamState S){
 		case 3:
             return freesteam_mu_rhoT(S.R3.rho, S.R3.T);
 		case 4:
+			if(!warned){
+				fprintf(stderr,"WARNING: viscosity evaluation in region 4 is poorly defined! (this warning is only shown once)\n");
+				warned = 1;
+			}
             return freesteam_mu_rhoT(1./freesteam_region4_v_Tx(S.R4.T, S.R4.x), S.R4.T);
 		default:
 			fprintf(stderr,"ERROR: invalid region '%d' in freesteam_mu\n",S.region);
+			exit(1);
+	}
+}
+
+double freesteam_k(SteamState S){
+	static char warned = 0;
+	switch(S.region){
+		case 1:
+            return freesteam_k_rhoT(1./freesteam_region1_v_pT(S.R1.p,S.R1.T), S.R1.T);
+		case 2:
+            return freesteam_k_rhoT(1./freesteam_region2_v_pT(S.R2.p,S.R2.T), S.R2.T);
+		case 3:
+            return freesteam_k_rhoT(S.R3.rho, S.R3.T);
+		case 4:
+			if(!warned){
+				fprintf(stderr,"WARNING: thermal conductivity evaluation in region 4 is poorly defined! (this warning is only shown once)\n");
+				warned = 1;
+			}
+            return freesteam_k_rhoT(1./freesteam_region4_v_Tx(S.R4.T, S.R4.x), S.R4.T);
+		default:
+			fprintf(stderr,"ERROR: invalid region '%d' in freesteam_k\n",S.region);
 			exit(1);
 	}
 }
