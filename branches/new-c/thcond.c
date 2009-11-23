@@ -25,24 +25,9 @@
 
 #include <math.h>
 
-/* #define THCOND_DEBUG */
-
-#ifdef THCOND_DEBUG
-# include <assert.h>
-# include <stdio.h>
-#endif
-
 #define THCOND_TSTAR 647.26
 #define THCOND_RHOSTAR 317.7
 #define THCOND_KSTAR 1.0
-
-#define THCOND_a_COUNT 4
-const double THCOND_a[THCOND_a_COUNT] = {
-	0.0102811
-	,0.0299621
-	,0.0156146
-	,-0.00422464
-};
 
 #define THCOND_b0 -0.397070
 #define THCOND_b1 0.400302
@@ -64,6 +49,15 @@ const double THCOND_a[THCOND_a_COUNT] = {
 
 /* freesteam code */
 double freesteam_k_rhoT(double rho, double T){
+
+#define THCOND_a_COUNT 4
+	const double THCOND_a[THCOND_a_COUNT] = {
+		0.0102811
+		,0.0299621
+		,0.0156146
+		,-0.00422464
+	};
+
 	double Tbar = T / THCOND_TSTAR;
 	double rhobar = rho / THCOND_RHOSTAR;
 
