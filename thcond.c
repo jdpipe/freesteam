@@ -62,59 +62,24 @@ const double THCOND_a[THCOND_a_COUNT] = {
 #define THCOND_d3 0.00169937
 #define THCOND_d4 -1.0200
 
-
-double freesteam_k_rhoT_dbg(double rho, double T){
-
-	/* based on code from xsteam openoffice version, by Magnus Holmgren, www.x-eng.com */
-
-	double lam0, lam1, lam2, dT, Q, s;
-
-#ifdef THCOND_DEBUG
-	fprintf(stderr,"rho = %f, T = %f\n", rho, T);
-#endif
-
-	T = T / 647.26;
-	rho = rho / 317.7;
-	lam0 = pow(T,0.5) * (0.0102811 + 0.0299621 * T + 0.0156146 * pow(T, 2) - 0.00422464 * pow(T, 3));
-	lam1 = -0.39707 + 0.400302 * rho + 1.06 * exp(-0.171587 * pow((rho + 2.39219), 2));
-	dT = fabs(T - 1) + 0.00308976;
-	Q = 2 + 0.0822994 / pow(dT, (3. / 5));
-
-	if(T >= 1){
-		s = 1. / dT;
-	}else{
-		s = 10.0932 / pow(dT, (3. / 5));
-	}
-
-	lam2 = (0.0701309 / pow(T, 10) + 0.011852) * pow(rho, (9. / 5)) * exp(0.642857 * (1 - pow(rho, (14. / 5)))) + 0.00169937 * s * pow(rho, Q) * exp((Q / (1. + Q)) * (1. - pow(rho, (1. + Q)))) - 1.02 * exp(-4.11717 * pow(T, (3. / 2)) - 6.17937 / pow(rho, 5));
-
-#ifdef THCOND_DEBUG
-	fprintf(stderr,"lam0 = %f, lam1 = %f, lam2 = %f\n",lam0, lam1, lam2);
-#endif
-
-	return lam0 + lam1 + lam2;
-
-}
-
 /* freesteam code */
 double freesteam_k_rhoT(double rho, double T){
 	double Tbar = T / THCOND_TSTAR;
 	double rhobar = rho / THCOND_RHOSTAR;
 
-	/* lam0 -- fast implementation without 'pow' function */
+	/* fast implementation... minimised calls to 'pow' routine... */
+
 	double Troot = sqrt(Tbar);
 	double Tpow = Troot;
-	double lam0 = 0;
-
+	double lam = 0;
 
 	int k;
 	for(k = 0; k < THCOND_a_COUNT; ++k) {
-		lam0 += THCOND_a[k] * Tpow;
+		lam += THCOND_a[k] * Tpow;
 		Tpow *= Tbar;
 	}
 
-
-	double lam1 = THCOND_b0 + THCOND_b1 * rhobar + THCOND_b2 * exp(THCOND_B1 * SQ(rhobar + THCOND_B2));
+	lam += THCOND_b0 + THCOND_b1 * rhobar + THCOND_b2 * exp(THCOND_B1 * SQ(rhobar + THCOND_B2));
 	
 	double DTbar = fabs(Tbar - 1) + THCOND_C4;
 	double DTbarpow = pow(DTbar, 3./5);
@@ -127,45 +92,17 @@ double freesteam_k_rhoT(double rho, double T){
 		S = THCOND_C6 / DTbarpow;
 	}
 
-#if 0
-	double lam2 = 
-		(THCOND_d1 / ipow(Tbar,10) + THCOND_d2) * pow(rhobar,1.8) * 
-			exp(THCOND_C1 * (1 - pow(rhobar,2.8)))
-		+ THCOND_d3 * S * pow(rhobar,Q) *
-			exp((Q/(1+Q))*(1 - pow(rhobar,1+Q)))
+	double rhobar18 = pow(rhobar, 1.8);
+	double rhobarQ = pow(rhobar, Q);
+
+	lam += 
+		(THCOND_d1 / ipow(Tbar,10) + THCOND_d2) * rhobar18 * 
+			exp(THCOND_C1 * (1 - rhobar * rhobar18))
+		+ THCOND_d3 * S * rhobarQ *
+			exp((Q/(1+Q))*(1 - rhobar*rhobarQ))
 		+ THCOND_d4 *
 			exp(THCOND_C2 * ipow(Troot,3) + THCOND_C3 / ipow(rhobar,5));
-#endif
 
-#if 1
-	double lam2_1_1 = THCOND_d1 * pow(Tbar,-10) + THCOND_d2;
-
-#ifdef THCOND_DEBUG
-	fprintf(stderr,"Q = %f, S = %f, pow(Tbar,10) = %f, lam2_1_1 = %f\n", Q, S, ipow(Tbar,10), lam2_1_1);
-#endif	
-
-	double lam2_1 = lam2_1_1 * pow(rhobar,9./5) * 
-			exp(THCOND_C1 * (1. - pow(rhobar,14./5)));
-		
-	double lam2_2 = THCOND_d3 * S * pow(rhobar,Q) *
-			exp((Q/(1.+Q))*(1. - pow(rhobar,1+Q)));
-
-	double lam2_3 = THCOND_d4 *
-			exp(THCOND_C2 * pow(Tbar,1.5) + THCOND_C3 / pow(rhobar,5));
-
-#ifdef THCOND_DEBUG
-	fprintf(stderr,"lam2_1 = %f, lam2_2 = %f, lam2_3 = %f\n",lam2_1, lam2_2, lam2_3);
-#endif	
-	
-	double lam2 = lam2_1 + lam2_2 + lam2_3;
-#endif
-
-#ifdef THCOND_DEBUG
-	fprintf(stderr,"lam0 = %f, lam1 = %f, lam2 = %f\n",lam0, lam1, lam2);
-	fprintf(stderr,"k0 =%f, k1 = %f, k2 = %f [mW/m·K]\n",1000*THCOND_KSTAR*lam0, 1000*THCOND_KSTAR*lam1, 1000*THCOND_KSTAR*lam2);
-	fprintf(stderr,"returning k = %f mW/m·K\n", 1000 * THCOND_KSTAR * (lam0 + lam1 + lam2));
-#endif
-
-	return THCOND_KSTAR * (lam0 + lam1 + lam2);
+	return THCOND_KSTAR * lam;
 }
 
