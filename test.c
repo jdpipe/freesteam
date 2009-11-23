@@ -740,7 +740,7 @@ void testviscosityrhoT(void){
   THERMAL CONDUCTIVITY ROUTINES
 */
 
-#define KRELTOL 100
+#define KRELTOL 0.0013
 /*
 	@param p pressure/[MPa]
 	@param T temperature/[°C]
