@@ -32,6 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "steam_pv.h"
 #include "region1.h"
 #include "viscosity.h"
+#include "thcond.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -709,8 +710,8 @@ void testpv(void){
 }
 
 /*------------------------------------------------------------------------------
- FULL VISCOSITY ROUTINES
- */
+  VISCOSITY ROUTINES
+*/
 
 #define MURELTOL 1e-6
 
@@ -733,6 +734,38 @@ void testviscosityrhoT(void){
 	test_viscosity_rhoT_point(100.,     1173.15,	47.640433);
 	test_viscosity_rhoT_point(400.,     1173.15,	64.154608);
 }
+
+/*------------------------------------------------------------------------------
+  THERMAL CONDUCTIVITY ROUTINES
+*/
+
+#define KRELTOL 5e-4
+
+/*
+	@param p pressure/[MPa]
+	@param T temperature/[°C]
+*/
+void test_k_rhoT_point(double p, double T, double k){
+	SteamState S = freesteam_set_ph(p * 1e6, T + 273.15);
+#if 1
+	fprintf(stderr,"p = %f MPa, T = %f °C, expect k = %f mW/m·K\n", p, T, k);
+#endif
+	double k1 = freesteam_k_rhoT(freesteam_rho(S),T = 273.15) * 1.e3; // compare in mW/m·K
+	CHECK_VAL(k1,k,KRELTOL);
+}
+
+void testconductivitypT(void){
+	fprintf(stderr,"THERMAL CONDUCTIVITY (P,T) TESTS\n");
+	test_k_rhoT_point(0.1,    0,     562.0);
+	test_k_rhoT_point(0.5,    0,     562.3);
+	test_k_rhoT_point(40,     0,     584.9);
+	test_k_rhoT_point(100,    0,     616.0);
+	test_k_rhoT_point(0.1,    250,   38.3 );
+	test_k_rhoT_point(1.,     250,   39.7 );
+	test_k_rhoT_point(10.,    250,   625.5);
+	test_k_rhoT_point(100.,   250,   707.7);
+}
+
 
 /*------------------------------------------------------------------------------
   MAIN ROUTINE
@@ -804,6 +837,11 @@ int main(void){
 	maxrelerr = 0;
     testviscosityrhoT();
 	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
+
+	maxrelerr = 0;
+	testconductivitypT();
+	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
+
 	
 	if(errorflag)fprintf(stderr,"Return code %d.\n",errorflag);
 	return errorflag;
