@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# vim: set fileencoding=utf-8 :
 
 # tables - a script that produces the data for Steam Tables using
 # freesteam the GPL steam table library
@@ -34,19 +35,6 @@ Ttriple = 0.01 # Ideally this would be freesteam.TTRIPLE ?
 ptriple = 0.00611
 
 def temperature_table(T_range,caption,fout):
-
-	categs = {
-		"T" : "^\circ C"
-		,"p" : "bar"
-		,"rho_f" : "kg/m^3"
-		,"rho_g" : "kg/m^3"
-		,"u_f" : "kg/m^3"
-		,"u_g" : "kg/m^3"
-		,"h_f" : "kJ/kg"
-		,"h_g" : "kJ/kg"
-		,"s_f" : "kJ/kg/K"
-		,"s_g" : "kJ/kg/K"
-	}
 
     fout.write(r"""\begin{landscape}
     \begin{table}
@@ -174,6 +162,36 @@ def superheat_table(caption,variable,fout,p_range,t_range):
 #    \hline
 #    """)
 
+def thermophys_table(caption, T_range):
+
+	fout.write(r"""
+	\begin{table}
+	\centering
+	\begin{tabular}{ c              c             c            c              c           c }
+		             $T$          & $c_p$       & $\rho$     & $\mu$        & $k$       & $\mathrm{Pr}$ \\
+		             $\mathrm{[^\circ C]}$ & $\mathrm{[kJ/kg \cdot K]}$ & $\mathrm{[kg/m^3]}$ & $\mathrm{[Pa \cdot s]}$ & $\mathrm{[W/m \cdot K]}$ & $$ \\
+	\hline
+	""")
+
+	for T in T_range:
+		S = steam_Tx(T + 273.15, 0)
+	
+		k = S.k
+		mu = S.mu
+		cp = S.cp
+		Pr = cp * mu / k
+		fout.write(r"%3.2f & %4.3f & %4.1f & %4.3e & %4.3f & %4.3f \\" \
+			% (T, cp/1e3, S.rho, mu, k, Pr)
+		)
+		fout.write("\n")
+		
+
+	fout.write(r"\end{tabular}")
+	fout.write("\n")
+	fout.write(r"\caption{%s}" % caption)
+	fout.write("\n")
+	fout.write("""\end{table}\n""")
+
 print "tables.py - script to get data for Steam Tables"
 
 # Create a latex file
@@ -183,8 +201,8 @@ fout.write(r"""\documentclass[dvips,a4paper,11pt]{article}
 \usepackage{lscape}
 \usepackage[scaled=.92]{helvet}
 \renewcommand{\familydefault}{\sfdefault}
-\author{Scripted by Grant Ingram}
-\title{Steam Tables calculated using freesteam}
+\author{Scripted by Grant Ingram and John Pye}
+\title{Steam Tables calculated using freesteam http://freesteam.sf.net}
 \date{\today}
 \begin{document}
 \maketitle
@@ -250,6 +268,10 @@ superheat_table("Enthalpy of Water and Steam","enthalpy",fout,p_range,t_range)
 superheat_table("Entropy of Water and Steam","entropy",fout,p_range,t_range)
 superheat_table("Density of Water and Steam","density",fout,p_range,t_range)
 superheat_table("Internal Energy of Water and Steam","internal",fout,p_range,t_range)
+
+print "Creating thermophysical properties table"
+t_range = [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,110,120,130,140,150,160,180,200,220,240,260,280,300,320,340,360, 370]
+thermophys_table("Transport properties of water (saturated liquid)",t_range)
 
 print "including hsdiagram"
 fout.write(r"""
