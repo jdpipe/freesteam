@@ -266,6 +266,9 @@ double freesteam_x(SteamState S){
 			return 0.;
 		case 2:
 			return 1.;
+		case 3:
+			if(S.R3.rho > IAPWS97_RHOCRIT)return 0.;
+			return 1.;
 		case 4:
 			return S.R4.x;
 		default:

@@ -24,21 +24,23 @@ if env.get('HAVE_PYTHON'):
 		CPPPATH = [distutils.sysconfig.get_python_inc()]
 		,LIBPATH = [distutils.sysconfig.PREFIX+"/libs"]
 		, LIBS = ['freesteam',python_lib]
-	)
-
-	swigobj = python_env.SharedObject('freesteam.i'
 		, SWIGFLAGS=['-python']
 	)
-	env.Depends("freesteam.i","../config.h")
+
+#	swigobj = python_env.SharedObject('freesteam.i'
+#		, SWIGFLAGS=['-python']
+#	)
+#
 
 	if platform.system()=="Windows":
 		python_env['SHLIBSUFFIX']=".pyd"
 	elif platform.system()=="Darwin":
 		python_env['SHLIBSUFFIX']='.so'
 
-	swiglib = python_env.SharedLibrary("freesteam",swigobj
+	swiglib = python_env.SharedLibrary("freesteam",['freesteam.i']
 		, SHLIBPREFIX = '_'
 	)
+	env.Depends("freesteam.i","../config.h")
 
 	env['installedfiles'] += [env.InstallLibrary("${INSTALL_ROOT}$INSTALL_PYTHON",[swiglib])]
 	env['installedfiles'] += [env.Install("${INSTALL_ROOT}$INSTALL_PYTHON",['freesteam.py'])]
