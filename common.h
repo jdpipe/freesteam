@@ -59,7 +59,7 @@
 # define __func__ "<function>"
 #endif
 
-#include <stdio.h>
+//#include <stdio.h>
 
 #ifdef IAPWS97_WARN_APPROX
 # define IAPWS97_APPROXIMATE \
