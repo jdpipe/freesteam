@@ -315,6 +315,7 @@ default_targets =['python','ascend']
 srcs = ["region1.c", "region2.c", "region3.c", "region4.c", "steam_ph.c"
 	,"steam.c", "backwards.c","b23.c", "common.c", "derivs.c", "zeroin.c"
 	,"steam_ps.c", "solver2.c","steam_pT.c","steam_pu.c","steam_Ts.c"
+	,"steam_Tx.c"
 	,"bounds.c", "steam_pv.c", "viscosity.c", "thcond.c"
 ]
 
@@ -371,6 +372,10 @@ env.SConscript(["python/SConscript"],'env')
 # once it becomes stable.
 
 env.SConscript(["ascend/SConscript"],'env')
+
+# Build the cheery little GTK GUI that everyone 
+
+env.SConscript(["python/SConscript"],'env')
 
 # Create the test program. Currently we're not using any unit testing library;
 # this is currently just simple bespoke code.

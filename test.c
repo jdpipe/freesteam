@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "steam_Ts.h"
 #include "steam_pT.h"
 #include "steam_pv.h"
+#include "steam_Tx.h"
 #include "region1.h"
 #include "viscosity.h"
 #include "thcond.h"
@@ -53,7 +54,7 @@ int verbose = 0;
 		fprintf(stderr,"ERROR (%s:%d): %s = %e, should be %e, error %10e %% exceeds tol %10e %%\n",\
 			__FILE__,__LINE__,#EXPR, calc, (VAL), relerr*100., RELTOL*100.\
 		);\
-		exit(1);\
+		/*exit(1);*/\
 		errorflag = 1; \
 	 }else if(verbose){ \
 		fprintf(stderr,"OK: %s = %f with %e %% error (test value = %f).\n", #EXPR, calc, error/(VAL)*100,(VAL)); \
@@ -662,12 +663,15 @@ void testTs(void){
 	const double *T, *s;
 
 	fprintf(stderr,"FULL (T,S) TESTS\n");
+	int n = 0;
 	for(T=TT; T<TT+nT; ++T){
 		for(s=ss; s<ss+ns; ++s){
 			if(freesteam_bounds_Ts(*T,*s*1e3,0))continue;
 			test_steam_Ts(*T,*s);
+			++n;
 		}
 	}
+	fprintf(stderr,"...tested %d points.\n",n);
 }
 
 /*------------------------------------------------------------------------------
@@ -704,6 +708,44 @@ void testpv(void){
 			if(freesteam_bounds_pv(*p * 1e6, *v, 0))continue;
 			//if(freesteam_region_ps(*p*1e6,*s*1e3)!=3)continue;
 			test_steam_pv(*p,*v);
+			++n;
+		}
+	}
+	fprintf(stderr,"...tested %d points.\n",n);
+}
+
+/*------------------------------------------------------------------------------
+  FULL (T, x) ROUTINES
+*/
+
+#define TXRELTOL 1.e-4
+
+void testTx(void){
+	SteamState S;
+
+	const double xx[] = {-1, -2, -1e-6, 0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 0.3, 0.5, 0.7
+		, 0.9, 0.99, 0.999, 0.9999, 0.99999, 0.999999, 1, 1.00000001, 1.1, 2, 5
+	};
+	const int nx = sizeof(xx)/sizeof(double);
+
+	const double TT[] = {273.15, 273.16, 273.2, 274, 280, 290, 300, 310, 350
+		, 400, 450, 500, 550, 600, 620, 630, 640, 645, 647, 647.09, IAPWS97_TCRIT
+		, 647.1, 650, 700, 800, 900, 1000, 1073.15
+	};
+	const int nT = sizeof(TT)/sizeof(double);
+
+	fprintf(stderr,"FULL (T,X) TESTS\n");
+
+	const double *x,*T;
+	int n = 0;
+	for(x = xx; x < xx+nx; ++x){
+		for(T = TT; T < TT+nT; ++T){
+			if(freesteam_bounds_Tx(*T, *x, 0))continue;
+			if(*T == IAPWS97_TCRIT)continue;
+			S = freesteam_set_Tx(*T, *x);
+			//fprintf(stderr,"T = %f, x = %f... region %d\n", *T, *x, S.region);
+			CHECK_VAL(freesteam_T(S), *T, TXRELTOL);
+			CHECK_VAL(freesteam_x(S), *x, TXRELTOL);
 			++n;
 		}
 	}
@@ -845,6 +887,7 @@ int main(void){
 	testpT();
 	testTs();
 	testpv();
+	testTx();
 
 	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
 	maxrelerr = 0;
