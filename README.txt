@@ -36,6 +36,8 @@ error messages that you can't work out, please send an email the
 freemsteam-users mailing list and enclose the 'config.log' file as well as the
 SCons command-line output.
 
+See also 'Special tips for Ubuntu 9.10 users' further below.
+
 
 Accessing freesteam from Python
 -------------------------------
@@ -117,6 +119,28 @@ to implement bindings for these environments, but it hasn't happened yet.
 In the mean time, it is suggested that Visual Basic / OpenOffice Basic code
 from the XSteam project will probably do what you need.
 http://www.x-eng.com/XSteam_Information.htm
+
+
+Special tips for Ubuntu 9.10 users
+----------------------------------
+
+On a clean Ubuntu 9.10 machine, a perfect development environment can be
+established by installing the following packages on your machine:
+
+  subversion
+  swig
+  python-dev
+  scons
+  texlive
+  texlive-latex-extra
+  python-matplotlib
+  dvipng
+
+With the above packages, you will be able to build and install freesteam,
+as well as create the steam tables PDF and the related h-s diagram.
+
+As of today (16 Dec 09), there seem to be some bugs in the generation of some
+of the diagrams (python/*diagram.py) on this platform; stay tuned for fixes.
 
 
 -- 
