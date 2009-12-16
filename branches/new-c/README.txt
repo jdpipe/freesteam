@@ -121,6 +121,36 @@ from the XSteam project will probably do what you need.
 http://www.x-eng.com/XSteam_Information.htm
 
 
+Automatic generation of property tables
+---------------------------------------
+
+Freesteam includes a script that will automatically produce a set of steam
+tables similar to those presented in R. W. Haywood, 1990, "Thermodynamic Tables 
+in SI (metric) Units", Cambridge University Press (out of print).
+
+These tabulated steam tables include a Mollier h-s diagram which must first be 
+generated. To produce these tables, compile freesteam, including the Python
+language bindings, then:
+
+cd ~/freesteam
+  [or whatever the location of your working directory happens to be]
+export LD_LIBRARY_PATH=~/freesteam
+  [likewise]
+cd python
+python hsdiagram.py
+  [save the resulting diagram as mollier.eps]
+python tables.py
+pslatex steamtable.tex
+dvipdf steamtable.dvi
+  [you should now have steamtable.pdf]
+
+If you don't have the directory containing your libfreesteam.so in your
+LD_LIBRARY_PATH (linux/mac) or PATH (windows), then the above won't work, so
+make sure not the forget the first step.
+
+Steam tables code was initially contributed to freesteam by Grant Ingram.
+
+
 Special tips for Ubuntu 9.10 users
 ----------------------------------
 
