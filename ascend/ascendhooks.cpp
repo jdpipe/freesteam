@@ -25,9 +25,9 @@
 #include "../surfacetension.h"
 
 extern "C"{
-#include <utilities/ascConfig.h>
-#include <utilities/error.h>
-#include <compiler/extfunc.h>
+#include <ascend/utilities/ascConfig.h>
+#include <ascend/utilities/error.h>
+#include <ascend/compiler/extfunc.h>
 }
 
 /* #define FREESTEAM_DEBUG */
