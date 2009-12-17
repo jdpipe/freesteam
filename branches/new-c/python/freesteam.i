@@ -23,7 +23,7 @@ property correlations, published by the Internation
 Association for the Properties of Water & Steam (IAPWS).
 
 Freesteam is based on the IAPWS-IF97 releases, but is not
-officialy endorsed by IAPWS. Freesteam is written by
+officially endorsed by IAPWS. Freesteam is written by
 John Pye. Freesteam is released under the GPL license. 
 You may not use it in commercially-released software."
 %enddef
@@ -136,18 +136,7 @@ double freesteam_region4_dpsatdT_T(double T);
 %include "bounds.h";
 %include "derivs.h";
 
-/* Rewrite the solver2 functions to include */
-%pythoncode %{
-def set_transform(im,x):
-   a = new_mat44()
-   for i in range(4):
-       for j in range(4):
-           mat44_set(a,i,j,x[i][j])
-   _example.set_transform(im,a)
-   free_mat44(a)
-%}
-
-
+#if 0
 /* FIXME convert solver2 routines to throw exception instead of return status */
 SteamState freesteam_solver2_region3(char X, char Y, double x, double y, SteamState guess, int *OUTPUT);
 SteamState freesteam_solver2_region1(char X, char Y, double x, double y, SteamState guess, int *OUTPUT);
@@ -162,6 +151,7 @@ def solver2_region3(X, Y, x, y, guess):
 		raise ValueError("solver2_region3 returned error %d" % err);
 	return S
 %}
+#endif
 
 /* SteamState in python is an object with attributes that are the properties,
   calculated when requested (note: *every time* they are requested) */

@@ -373,9 +373,8 @@ env.SConscript(["python/SConscript"],'env')
 
 env.SConscript(["ascend/SConscript"],'env')
 
-# Build the cheery little GTK GUI that everyone 
-
-env.SConscript(["python/SConscript"],'env')
+# Build the cheery little GTK GUI that everyone will like
+#env.SConscript(["python/SConscript"],'env')
 
 # Create the test program. Currently we're not using any unit testing library;
 # this is currently just simple bespoke code.
