@@ -78,7 +78,7 @@ int freesteam_region_pv(double p, double v){
 		double T23 = freesteam_b23_T_p(p);
 		double v23 = freesteam_region2_v_pT(p,T23);
 		if(v > v23) return 2;
-		
+
 		/* region 3? or high-pressure part of region 4? */
 		if(p >= IAPWS97_PCRIT) return 3;
 
@@ -98,7 +98,7 @@ int freesteam_region_pv(double p, double v){
 		if(v > vg) return 2;
 
 		return 4;
-	}	
+	}
 }
 
 
@@ -133,7 +133,9 @@ double pv_region3_fn(double T, void *user_data){
 SteamState freesteam_set_pv(double p, double v){
 	SteamState S;
 	S.region = (char)freesteam_region_pv(p,v);
+#if 0
 	int status;
+#endif
 	switch(S.region){
 		case 1:
 			/* iterate T to get correct value of v */

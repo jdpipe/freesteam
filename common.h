@@ -82,7 +82,13 @@
 FREESTEAM_DLL double freesteam_ipow(double x, int n);
 
 #ifdef FREESTEAM_BUILDING_LIB
+/* our local ipow implementation */
 # define ipow freesteam_ipow
+/* 'isnan' function for use with Windows */
+# ifdef WIN32
+#  include <float.h>
+#  define isnan _isnan
+# endif
 #endif
 
 #endif /* FREESTEAM_COMMON_H */
