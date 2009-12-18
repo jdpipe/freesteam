@@ -6,6 +6,20 @@
 import os, platform,sys,subprocess
 from SCons.Script import *
 
+def my_parse_config(env,cmd):
+	env1 = env.Clone()
+	proc = subprocess.Popen(cmd,stdout=subprocess.PIPE)
+	out = proc.communicate()[0].strip()
+	
+	env1.MergeFlags(out)
+
+	env.Append(
+		ASCEND_CPPPATH = env1.get('CPPPATH') or []
+		,ASCEND_CPPDEFINES = env1.get('CPPDEFINES') or []
+		,ASCEND_LIBPATH = env1.get('LIBPATH') or []
+		,ASCEND_LIBS = env1.get('LIBS') or []
+	)
+
 def generate(env):
 	"""
 	Detect ASCEND settings and add them to the environment.
@@ -20,15 +34,9 @@ def generate(env):
 			if not os.path.exists(Path):
 				raise RuntimeError("Could not find 'ascend-config' in your PATH")
 				
-			cmd = [sys.executable,"\"%s\""%Path,"--cppflags","--libs"]
-			env1 = env.Clone()
-			env1.ParseConfig(cmd)
-			env.Append(
-				ASCEND_CPPPATH = env1.get('CPPPATH') or []
-				,ASCEND_CPPDEFINES = env1.get('CPPDEFINES') or []
-				,ASCEND_LIBPATH = env1.get('LIBPATH') or []
-				,ASCEND_LIBS = env1.get('LIBS') or []
-			)
+			cmd = [sys.executable,Path,"--cppflags","--libs"]
+			my_parse_config(env,cmd)
+
 			cmd = [sys.executable,Path]
 			libext = ".dll"
 			libpref = ""
@@ -83,7 +91,9 @@ def generate(env):
 	except Exception,e:
 		print "Checking for ASCEND... not found! (%s)" % str(e)
 		env.Append(HAVE_ASCEND=False)
-
+		
+	print "Checking for ASCEND... found (ASCEND_CPPPATH = %s)" % env['ASCEND_CPPPATH']
+	
 def exists(env):
 	"""
 	Make sure this tool exists.

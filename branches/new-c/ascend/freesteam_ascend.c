@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	ASCEND external evaluation function
 	Outputs: T
 	Inputs: p, h
-	@return 0 on success 
+	@return 0 on success
 */
 int Tvsx_ph_calc(struct BBoxInterp *bbox,
 		int ninputs, int noutputs,
@@ -46,7 +46,7 @@ int Tvsx_ph_calc(struct BBoxInterp *bbox,
 	// convert inputs to freesteam dimensionful values
 	double p = inputs[0]; /* ASCEND uses SI units, so no conversion needed */
 	double h = inputs[1]; /* ASCEND uses SI units, so no conversion needed */
-	
+
 #ifdef BBOX_DEBUG
 	ERROR_REPORTER_HERE(ASC_USER_NOTE,
 		"Evaluating with p = %f bar, h = %f kJ/kg"
@@ -95,7 +95,7 @@ int Tvsx_ph_calc(struct BBoxInterp *bbox,
 		dsdp_h = freesteam_deriv(S,'s','p','h');
 		dsdh_p = freesteam_deriv(S,'s','h','p');
 		switch(S.region){
-			case 4:	
+			case 4:
 				dxdp_h = freesteam_deriv(S,'x','p','h');
 				dxdh_p = freesteam_deriv(S,'x','h','p');
 				break;
@@ -107,10 +107,10 @@ int Tvsx_ph_calc(struct BBoxInterp *bbox,
 		}
 #ifdef BBOX_DEBUG
 		ERROR_REPORTER_HERE(ASC_USER_NOTE,
-			"Got result (∂T/∂p)h = %g, (∂T/∂h)p = %g K/Pa",dTdp_h,dTdh_p
+			"Got result (dT/dp)h = %g, (dT/dh)p = %g K/Pa",dTdp_h,dTdh_p
 		);
 		ERROR_REPORTER_HERE(ASC_USER_NOTE,
-			"Got result (∂v/∂p)h = %g, (∂v/∂h)p = %g K/Pa",dvdp_h,dvdh_p
+			"Got result (dv/dp)h = %g, (dv/dh)p = %g K/Pa",dvdp_h,dvdh_p
 		);
 #endif
 		jacobian[0] = dTdp_h;
@@ -145,50 +145,50 @@ int Tvsx_ph_calc(struct BBoxInterp *bbox,
 	) X\
 	D(hf_p\
 		, double T = freesteam_region4_Tsat_p(inputs[0])\
-		, freesteam_h(freesteam_region4_set_Tx(T, 0))\
-		, freesteam_region4_dAdTx('h',freesteam_region4_set_Tx(T, 0))/freesteam_region4_dpsatdT_T(T)\
+		, freesteam_h(freesteam_region4_set_Tx(T, 0.))\
+		, freesteam_region4_dAdTx('h',freesteam_region4_set_Tx(T, 0.))/freesteam_region4_dpsatdT_T(T)\
 		, "[hf] = freesteam_hf_p(p)"\
 	) X \
 	D(hg_p\
 		, double T = freesteam_region4_Tsat_p(inputs[0])\
-		, freesteam_h(freesteam_region4_set_Tx(T, 1))\
-		, freesteam_region4_dAdTx('h',freesteam_region4_set_Tx(T, 1))/freesteam_region4_dpsatdT_T(T)\
+		, freesteam_h(freesteam_region4_set_Tx(T, 1.))\
+		, freesteam_region4_dAdTx('h',freesteam_region4_set_Tx(T, 1.))/freesteam_region4_dpsatdT_T(T)\
 		, "[hg] = freesteam_hg_p(p)"\
 	) X \
 	D(sf_p\
 		, double T = freesteam_region4_Tsat_p(inputs[0])\
-		, freesteam_s(freesteam_region4_set_Tx(T, 0))\
-		, freesteam_region4_dAdTx('s',freesteam_region4_set_Tx(T, 0))/freesteam_region4_dpsatdT_T(T)\
+		, freesteam_s(freesteam_region4_set_Tx(T, 0.))\
+		, freesteam_region4_dAdTx('s',freesteam_region4_set_Tx(T, 0.))/freesteam_region4_dpsatdT_T(T)\
 		, "[sf] = freesteam_sf_p(p)"\
 	) X \
 	D(sg_p\
 		, double T = freesteam_region4_Tsat_p(inputs[0])\
-		, freesteam_s(freesteam_region4_set_Tx(T, 1))\
-		, freesteam_region4_dAdTx('s',freesteam_region4_set_Tx(T, 1))/freesteam_region4_dpsatdT_T(T)\
+		, freesteam_s(freesteam_region4_set_Tx(T, 1.))\
+		, freesteam_region4_dAdTx('s',freesteam_region4_set_Tx(T, 1.))/freesteam_region4_dpsatdT_T(T)\
 		, "[sg] = freesteam_sg_p(p)"\
 	) X \
 	D(sf_T\
-		, double T = inputs[0];CONSOLE_DEBUG("sf(%f) --> %f",T, freesteam_s(freesteam_region4_set_Tx(T, 0)))\
-		, freesteam_s(freesteam_region4_set_Tx(T, 0))\
-		, freesteam_region4_dAdTx('s',freesteam_region4_set_Tx(T, 0))\
+		, double T = inputs[0];CONSOLE_DEBUG("sf(%f) --> %f",T, freesteam_s(freesteam_region4_set_Tx(T, 0.)))\
+		, freesteam_s(freesteam_region4_set_Tx(T, 0.))\
+		, freesteam_region4_dAdTx('s',freesteam_region4_set_Tx(T, 0.))\
 		, "[sf] = freesteam_sf_T(T)"\
 	) X \
 	D(sg_T\
 		, double T = inputs[0]\
-		, freesteam_s(freesteam_region4_set_Tx(T, 1))\
-		, freesteam_region4_dAdTx('s',freesteam_region4_set_Tx(T, 1))\
+		, freesteam_s(freesteam_region4_set_Tx(T, 1.))\
+		, freesteam_region4_dAdTx('s',freesteam_region4_set_Tx(T, 1.))\
 		, "[sg] = freesteam_sg_T(T)"\
 	) X \
 	D(hf_T\
-		, double T = inputs[0];CONSOLE_DEBUG("hf(%f) --> %f",T, freesteam_h(freesteam_region4_set_Tx(T, 0)))\
-		, freesteam_h(freesteam_region4_set_Tx(T, 0))\
-		, freesteam_region4_dAdTx('h',freesteam_region4_set_Tx(T, 0))\
+		, double T = inputs[0];CONSOLE_DEBUG("hf(%f) --> %f",T, freesteam_h(freesteam_region4_set_Tx(T, 0.)))\
+		, freesteam_h(freesteam_region4_set_Tx(T, 0.))\
+		, freesteam_region4_dAdTx('h',freesteam_region4_set_Tx(T, 0.))\
 		, "[hf] = freesteam_hf_T(T)"\
 	) X \
 	D(hg_T\
 		, double T = inputs[0]\
-		, freesteam_h(freesteam_region4_set_Tx(T, 1))\
-		, freesteam_region4_dAdTx('h',freesteam_region4_set_Tx(T, 1))\
+		, freesteam_h(freesteam_region4_set_Tx(T, 1.))\
+		, freesteam_region4_dAdTx('h',freesteam_region4_set_Tx(T, 1.))\
 		, "[hg] = freesteam_hg_T(T)"\
 	)
 

@@ -5,7 +5,7 @@
 # We don't currently propose to support building freesteam from MSVS but
 # that shouldn't be necessary, as you should be able to use the MinGW-generated
 # DLL even with MSVS, because it only uses C code.
-import platform, sys, distutils.sysconfig
+import platform, sys, distutils.sysconfig, os 
 
 #version number for this copy of freesteam
 version = "2.0"
@@ -138,9 +138,8 @@ if platform.system()=="Windows":
 # Set up the 'tools' the SCONS will need access to , eg compilers
 # and create the SCONS 'environment':
 
-import os
 tools = ['swig','ascend','substinfile','gsl','tar','disttar', 'nsis']
-if os.environ.has_key('OSTYPE') and os.environ['OSTYPE']=='msys':
+if platform.system()=="Windows":
 	env = Environment(ENV=os.environ
 		, toolpath = ['scons']
 		, tools = ['mingw']+tools
@@ -252,7 +251,9 @@ if not conf.CheckFunc('fprintf'):
 
 without_python_reason = "Python header 'Python.h' not found"
 env['HAVE_PYTHON'] = False
-_havepy = conf.CheckHeader(os.path.join(distutils.sysconfig.get_python_inc(),"Python.h"))
+pyinc = os.path.join(distutils.sysconfig.get_python_inc(),"Python.h")
+#print "PYINC =",pyinc
+_havepy = conf.CheckHeader(pyinc)
 if _havepy:
 	env['HAVE_PYTHON'] = True
 

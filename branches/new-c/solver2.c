@@ -103,7 +103,7 @@ static PropertyFunction *solver2_region1_propfn(FREESTEAM_CHAR A){
 
 typedef struct{
 	FREESTEAM_CHAR A,B;
-	PropertyFunction *Afn, *Bfn;	
+	PropertyFunction *Afn, *Bfn;
 	double a,b;
 } Solver2Data;
 
@@ -298,7 +298,7 @@ static int region2_fdf(const gsl_vector *x, void *user_data, gsl_vector *f, gsl_
 static void region2_print_state(size_t iter, gsl_multiroot_fdfsolver *s){
 	double p = gsl_vector_get(s->x,0);
 	double T = gsl_vector_get(s->x,1);
-	fprintf(stderr,"iter = %lu: p = %g, T = %g\n", iter,p,T);
+	fprintf(stderr,"iter = %lu: p = %g, T = %g\n", (long unsigned)iter,p,T);
 }
 
 SteamState freesteam_solver2_region2(FREESTEAM_CHAR A, FREESTEAM_CHAR B, double atarget, double btarget, SteamState guess, int *retstatus){
