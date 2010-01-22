@@ -2,8 +2,8 @@ FREESTEAM CHANGELOG
 ===================
 
 2.0
-XXXXXX 2009
------
+XX Jan 2009
+-----------
 
 - Complete rewrite in plain C
 - Two-way solver now makes use of GSL, instead of being standalone.
