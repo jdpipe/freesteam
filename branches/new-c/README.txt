@@ -13,8 +13,24 @@ freesteam is not a stand-alone program in its own right. Rather, it is a 'shared
 library' that implements a range of functions that you can use to work out steam
 properties in your own program that you write yourself.
 
+This version 2.x release of freesteam is a complete re-write of freesteam in 
+pure C. We have removed all the complicated C++ template code (excessively
+complicated) as well as the units-of-measurement code (cute, but also
+rather hard to maintain). This has the immediate advantage that the resulting
+DLLs/libraries can be linked to from all C/C++ compilers, something which was 
+not possible with the previous C++ version.
+
 For more information, see
 http://freesteam.sourceforge.net/
+
+
+Installing freesteam
+--------------------
+
+If you're reading this file, it's possible that you may have already downloaded
+and installed a binary version of freesteam on your machine. If not, please note
+that we provide binary versions of freesteam for Windows and Ubuntu 9.10 users.
+See the freesteam website for details.
 
 
 Building freesteam
@@ -175,5 +191,5 @@ of the diagrams (python/*diagram.py) on this platform; stay tuned for fixes.
 
 -- 
 John Pye
-Dec 2009
+Jan 2009
 
