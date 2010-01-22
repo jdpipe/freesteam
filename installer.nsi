@@ -19,6 +19,7 @@
 Name "freesteam ${VERSION}"
 
 !include LogicLib.nsh
+!include nsis\EnvVarUpdate.nsh
 
 ; The file to write
 !ifdef OUTFILE
@@ -206,8 +207,17 @@ Section "ASCEND hooks"
 		StrCpy $ASCENDINSTALLED "1"
 		WriteRegDWORD HKLM "SOFTWARE\freesteam" "ASCEND" 1
 	${Else}
-		MessageBox MB_OK "ASCNED hooks can not be installed, because ASCEND was not found on this system. If you do want to use the ASCEND hooks, please check the installation instructions ($ASCENDPATH)"
+		MessageBox MB_OK "ASCEND hooks can not be installed, because ASCEND was not found on this system. If you do want to use the ASCEND hooks, please check the installation instructions ($ASCENDPATH)"
 	${EndIf}
+
+	${EnvVarUpdate} $0 "ASCENDLIBRARY" "A" "HKLM" "$INSTDIR\ascend"
+
+	Return
+SectionEnd
+
+Section "Add to PATH"
+	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR"
+	WriteRegDWORD HKLM "SOFTWARE\freesteam" "AddedToPATH" 1	
 	Return
 SectionEnd
 
@@ -290,8 +300,16 @@ Section "Uninstall"
 	${If} $0 != 0:
 		DetailPrint "--- REMOVING ASCEND HOOKS ---"
 		RmDir /r "$INSTDIR\ascend"
+		${un.EnvVarUpdate} $0 "ASCENDLIBRARY" "R" "HKLM" "$INSTDIR\ascend"
 	${EndIf}
-	
+
+;--- remove from PATH ---
+
+	ReadRegDWORD $1 HKLM "SOFTWARE\freesteam" "AddedToPATH"
+	${If} $1 != 0:
+		DetailPrint "--- REMOVING FROM PATH ---"
+		${un.EnvVarUpdate} $0 "PATH" "R" "HKLM" "$INSTDIR"  
+	${EndIf}
 
 ;--- start menu ---
 
@@ -305,24 +323,21 @@ Section "Uninstall"
 ;--- common components ---
 
 	DetailPrint "--- REMOVING COMMON COMPONENTS ---"
+	
 	; Remove registry keys
-
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\freesteam"
 	DeleteRegKey HKLM "SOFTWARE\freesteam"
 
-
 	; Remove files and uninstaller
-
 	Delete $SYSDIR\freesteam.dll
 	Delete $INSTDIR\LICENSE.txt
 	Delete $INSTDIR\README.txt
 	Delete $INSTDIR\CHANGELOG.txt
 	Delete $INSTDIR\uninstall.exe
 	
-	
-	; Remove directories used
+	; Remove directories used (should be empty now)
 	RMDir "$INSTDIR"
-
+	
 SectionEnd
 
 ;---------------------------------------------------------------------
