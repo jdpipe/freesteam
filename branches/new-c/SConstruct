@@ -439,7 +439,7 @@ env.Append(
 		,'.a','.dll','.lib','.cc','.cache'
 		,'.pyc','.cvsignore','.dblite','.log','.pl','.out','.exe','.aux','.idx'
 		,'.toc','.lof','.lot','.mm','.warnings','.tm2','.swp',',tmp','.gz'
-		,'.bz2','.7z','.deb','.dsc','.changes'
+		,'.bz2','.7z','.deb','.dsc','.changes','_wrap.c','.pyc'
 	]
 	, DISTTAR_EXCLUDEDIRS=['CVS','.svn','.sconf_temp', 'dist','debian']
 )
@@ -451,19 +451,20 @@ tar = env.DistTar("dist/"+env['DISTTAR_NAME']
 
 # DEBIAN TARBALL for use with Build Service
 
-import glob
-deb_files = glob.glob('debian/*.install')
-deb_files += glob.glob('debian/*.docs')
-deb_files += glob.glob('debian/*.dirs')
-deb_files += glob.glob('debian/*.man')
-deb_files += glob.glob('debian/*.manpages')
-deb_files += ['debian/%s' % s for s in ['rules','control','changelog','compat','copyright','dirs']]
+if platform.system() != "Windows":
+	import glob
+	deb_files = glob.glob('debian/*.install')
+	deb_files += glob.glob('debian/*.docs')
+	deb_files += glob.glob('debian/*.dirs')
+	deb_files += glob.glob('debian/*.man')
+	deb_files += glob.glob('debian/*.manpages')
+	deb_files += ['debian/%s' % s for s in ['rules','control','changelog','compat','copyright','dirs']]
 
-deb_tar = env.Tar(
-	'dist/debian.tar.gz'
-	,deb_files
-	,TARFLAGS = ['cz']
-)
+	deb_tar = env.Tar(
+		'dist/debian.tar.gz'
+		,deb_files
+		,TARFLAGS = ['cz']
+	)
 
 #---------------------------------------------------
 env['installedfiles'] += [env.InstallHeader("${INSTALL_ROOT}$INSTALL_INCLUDE/freesteam", headerfiles)]
