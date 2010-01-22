@@ -6,10 +6,10 @@
 import os, platform,sys,subprocess
 from SCons.Script import *
 
-def my_parse_config(env,cmd):
+def my_parse_config_win(env,cmd):
 	env1 = env.Clone()
 	proc = subprocess.Popen(cmd,stdout=subprocess.PIPE)
-	out = proc.communicate()[0].strip()
+	out = proc.communicate()[0].strip()	
 	
 	env1.MergeFlags(out)
 
@@ -26,6 +26,11 @@ def generate(env):
 	"""
 	try:
 		if platform.system()=="Windows":
+			try:
+				import win32api
+			except:
+				raise RuntimeError("PyWin32 is not installed. Install it first.")
+
 			import _winreg
 			x=_winreg.ConnectRegistry(None,_winreg.HKEY_LOCAL_MACHINE)
 			y= _winreg.OpenKey(x,r"SOFTWARE\ASCEND")
@@ -35,7 +40,7 @@ def generate(env):
 				raise RuntimeError("Could not find 'ascend-config' in your PATH")
 				
 			cmd = [sys.executable,Path,"--cppflags","--libs"]
-			my_parse_config(env,cmd)
+			my_parse_config_win(env,cmd)
 
 			cmd = [sys.executable,Path]
 			libext = ".dll"
@@ -91,8 +96,10 @@ def generate(env):
 	except Exception,e:
 		print "Checking for ASCEND... not found! (%s)" % str(e)
 		env.Append(HAVE_ASCEND=False)
+		return False
 		
-	print "Checking for ASCEND... found (ASCEND_CPPPATH = %s)" % env['ASCEND_CPPPATH']
+	print "Checking for ASCEND... found (ASCEND_CPPPATH = %s)" % env.get('ASCEND_CPPPATH')
+	return True
 	
 def exists(env):
 	"""
