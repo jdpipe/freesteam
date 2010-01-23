@@ -68,6 +68,42 @@ Var /GLOBAL LIBINSTALLED
 Var /GLOBAL EXAMPLEINSTALLED
 
 Function .onInit
+
+	; Check for previous version that needs uninstalling first
+
+	ReadRegStr $R1 HKLM "SOFTWARE\freesteam" "Install_Dir"
+	${If} $R1 != ""
+		ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\freesteam" "UninstallString"
+		StrCmp $R0 "" uninstprob
+
+		StrCpy $R2 "freesteam is already installed$\n$\nClick 'OK' to first remove the previous version, or 'Cancel' to cancel this upgrade."
+		Goto domessagebox
+
+uninstprob:
+		StrCpy $R2 "Error locating uninstallation program for freesteam"
+
+domessagebox:
+		MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION $R2 IDOK uninst
+		Abort
+
+uninst:
+		ClearErrors
+		ExecWait '$R0 _?=$INSTDIR' ;Do not copy the uninstaller to a temp file
+
+		${If} ${Errors}
+			;You can either use Delete /REBOOTOK in the uninstaller or add some code
+			;here to remove the uninstaller. Use a registry key to check
+			;whether the user has chosen to uninstall. If you are using an uninstaller
+			;components page, make sure all sections are uninstalled.
+		${EndIf}
+	${EndIf} 
+
+	${If} ${FileExists} "$SYSDIR\freesteam.dll"
+		MessageBox MB_OK|MB_ICONEXCLAMATION \
+	  		"A freesteam DLL is present in $SYSDIR. This file must removed before installation can proceed."
+ 		Abort
+	${EndIf}
+
 	StrCpy $PYINSTALLED ""
 	StrCpy $ASCENDINSTALLED ""
 	StrCpy $LIBINSTALLED ""
@@ -100,8 +136,8 @@ Section "freesteam (required)"
   File "README.txt"
   File "CHANGELOG.txt"
 
-  ; We'll use the Windows directory for the DLL
-  SetOutPath $SYSDIR
+  ; Let's go back to installing the DLL in the correct place, in INSTDIR...
+  SetOutPath $INSTDIR
   File "freesteam.dll"
     
   ; Write the installation path into the registry
@@ -339,7 +375,7 @@ Section "Uninstall"
 	DeleteRegKey HKLM "SOFTWARE\freesteam"
 
 	; Remove files and uninstaller
-	Delete $SYSDIR\freesteam.dll
+	Delete $INSTDIR\freesteam.dll
 	Delete $INSTDIR\LICENSE.txt
 	Delete $INSTDIR\README.txt
 	Delete $INSTDIR\CHANGELOG.txt
