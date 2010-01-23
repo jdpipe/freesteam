@@ -1,5 +1,6 @@
 # DistTarBuilder: tool to generate tar files using SCons
 # Copyright (C) 2005, 2006  Matthew A. Nicholson
+# Copyright (C) 2006-2010 John Pye
 #
 # This file is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -14,7 +15,6 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-# vim: set et sw=3 tw=0 fo=awqorc ft=python:
 
 import os,sys
 from SCons.Script import *

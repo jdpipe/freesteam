@@ -1,5 +1,5 @@
-; NSIS script to create an freesteam binary installer.
-; by John Pye, 2006.
+; NSIS script to create a freesteam binary installer.
+; (c) John Pye, 2006-2010.
 ;
 ; Based on example2.nsi from the NSIS distribution.
 ;
@@ -59,6 +59,8 @@ Var /GLOBAL PYOK
 Var /GLOBAL PYPATH
 Var /GLOBAL ASCENDOK
 Var /GLOBAL ASCENDPATH
+Var /GLOBAL ASCENDMODELSOK
+Var /GLOBAL ASCENDMODELS
 
 Var /GLOBAL PYINSTALLED
 Var /GLOBAL ASCENDINSTALLED
@@ -78,7 +80,11 @@ Function .onInit
 	Call DetectASCEND
 	Pop $ASCENDOK
 	Pop $ASCENDPATH
-		
+
+	Call DetectASCENDModels
+	Pop $ASCENDMODELSOK
+	Pop $ASCENDMODELS		
+			
 FunctionEnd
 
 
@@ -208,6 +214,10 @@ Section "ASCEND hooks"
 		WriteRegDWORD HKLM "SOFTWARE\freesteam" "ASCEND" 1
 	${Else}
 		MessageBox MB_OK "ASCEND hooks can not be installed, because ASCEND was not found on this system. If you do want to use the ASCEND hooks, please check the installation instructions ($ASCENDPATH)"
+	${EndIf}
+
+	${If} $ASCENDMODELSOK = 'OK'
+		${EnvVarUpdate} $0 "ASCENDLIBRARY" "P" "HKLM" "$ASCENDMODELS"
 	${EndIf}
 
 	${EnvVarUpdate} $0 "ASCENDLIBRARY" "A" "HKLM" "$INSTDIR\ascend"
@@ -385,3 +395,24 @@ Function DetectASCEND
 		Push "NOK"
 	${EndIf}
 FunctionEnd
+
+Function DetectASCENDModels
+	ReadRegStr $R6 HKCU "SOFTWARE\ASCEND" "INSTALL_MODELS"
+	${If} $R6 == ''
+		ReadRegStr $R6 HKLM "SOFTWARE\ASCEND" "INSTALL_MODELS"
+		${If} $R6 == ''
+			Push "No INSTALL_MODELSregistry key found"
+			Push "NOK"
+			Return
+		${EndIf}
+	${EndIf}
+	
+	${If} ${FileExists} "$R6\system.a4l"
+		Push "$R6"
+		Push "OK"
+	${Else}
+		Push "No 'system.a4l' found"
+		Push "NOK"
+	${EndIf}
+FunctionEnd
+
