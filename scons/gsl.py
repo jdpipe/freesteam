@@ -38,12 +38,18 @@ def generate(env):
 			BIN,t = _winreg.QueryValueEx(y,"INSTALL_BIN")
 			LIB,t = _winreg.QueryValueEx(y,"INSTALL_LIB")
 			INCLUDE,t = _winreg.QueryValueEx(y,"INSTALL_INCLUDE")
-			
+
 			env['GSL_CPPPATH'] = [munge(INCLUDE)]
 			env['GSL_LIBPATH'] = [munge(LIB)]
-			env['GSL_LIBS'] = ['gsl']
-			env['GSL_LIBS_CBLAS'] = ['gslcblas','gsl']
 			env['HAVE_GSL'] = True		
+			if env.get('GSL_STATIC'):
+				env['GSL_STATICLIBS'] = [os.path.join(munge(LIB),"lib%s.a"%i) for i in ["gsl","gslcblas"]]
+				# not sure when the following is needing, so ignoring for now:
+				#env['GSL_LIBS_CBLAS'] = env['GSL_LIBS'] + [os.path.join(munge(LIB),"libgslcblas.a")]
+			else:
+				env['GSL_LIBS'] = ['gsl']
+				# not sure when the following is needing, so ignoring for now:
+				#env['GSL_LIBS_CBLAS'] = ['gslcblas','gsl']
 		else:
 			cmd = ['gsl-config','--cflags','--libs']
 			old_env = env.Clone()
@@ -62,6 +68,7 @@ def generate(env):
 		#print "GSL_LIBS =",env.get('GSL_LIBS')
 		#print "GSL_LIBPATH =",env.get('GSL_LIBPATH')
 		#print "GSL_CPPPATH =",env.get('GSL_CPPPATH')
+		print "GSL_LINKFLAGS =",env.get('GSL_LINKFLAGS')
 
 	except Exception,e:
 		print "Checking for GSL... not found! (%s)" % str(e)
@@ -84,4 +91,5 @@ def exists(env):
 		if not subprocess.call('pkg-config libgvc libagraph --exists'):
 			return True
 		return False
+# vim: set ts=4 noexpandtab:
 
