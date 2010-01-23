@@ -440,13 +440,16 @@ env.Append(
 		,'.pyc','.cvsignore','.dblite','.log','.pl','.out','.exe','.aux','.idx'
 		,'.toc','.lof','.lot','.mm','.warnings','.tm2','.swp',',tmp','.gz'
 		,'.bz2','.7z','.deb','.dsc','.changes','_wrap.c','.pyc'
+		,'.dvi','.tex','.lot','.loc','.eps'
 	]
 	, DISTTAR_EXCLUDEDIRS=['CVS','.svn','.sconf_temp', 'dist','debian']
+	, DISTTAR_EXCLUDERES=[r"_wrap\.c$", r"~$", r"python/freesteam\.py"]
 )
 
 tar = env.DistTar("dist/"+env['DISTTAR_NAME']
 	, [env.Dir('#')]
 )
+
 #------------------------------------------------------
 
 # DEBIAN TARBALL for use with Build Service
@@ -500,4 +503,6 @@ if platform.system()=="Windows":
 env.Default(default_targets)
 
 print "Building targets:"," ".join([str(i) for i in BUILD_TARGETS])
+
+# vim:set ts=4 sw=4 noexpandtab:
 
