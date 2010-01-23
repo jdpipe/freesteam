@@ -141,6 +141,7 @@ if platform.system()=="Windows":
 tools = ['swig','ascend','substinfile','gsl','tar','disttar', 'nsis']
 if platform.system()=="Windows":
 	env = Environment(ENV=os.environ
+		, GSL_STATIC = 1
 		, toolpath = ['scons']
 		, tools = ['mingw']+tools
 	)
@@ -327,9 +328,9 @@ lib_env.Append(
 	LIBS = ['m']
 )
 lib_env.Append(
-	LIBS = env['GSL_LIBS']
-	,LIBPATH = env['GSL_LIBPATH']
-	,CPPPATH = env['GSL_CPPPATH']
+	LIBS = env.get('GSL_LIBS')
+	,LIBPATH = env.get('GSL_LIBPATH')
+	,CPPPATH = env.get('GSL_CPPPATH')
 )
 
 # Create the shared library
@@ -337,7 +338,7 @@ lib_env.Append(
 if platform.system()=="Linux":
 	lib_env.Append(LINKFLAGS=['-Wl,-soname,$SONAME'])
 
-lib = lib_env.SharedLibrary("freesteam",srcs)
+lib = lib_env.SharedLibrary("freesteam",srcs + env.get('GSL_STATICLIBS'))
 env.Depends('python',lib)
 
 libs = [lib]
@@ -504,5 +505,5 @@ env.Default(default_targets)
 
 print "Building targets:"," ".join([str(i) for i in BUILD_TARGETS])
 
-# vim:set ts=4 sw=4 noexpandtab:
+# vim:set ts=4 sw=4 noexpandtab ft=python:
 
