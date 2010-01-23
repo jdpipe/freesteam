@@ -38,11 +38,17 @@ def temperature_table(T_range,caption,fout):
 
     fout.write(r"""\begin{landscape}
     \begin{table}
+    \renewcommand{\tabcolsep}{0.6cm}
+    \small
     \centering
     \begin{tabular}{ c c c c c c c c c c c }
-    $T$ & $p$ & $\rho_f$ & $\rho_g$ & $u_f$ & $u_g$ & $h_f$ & $h_g$ & $s_f$ & $s_g$ \\
-    $[^\circ C]$ & $[bar]$ & $[kg/m^3]$ & $[kg/m^3]$ & $[kJ/kg]$ & $[kJ/kg]$ & $[kJ/kg]$ & $[kJ/kg]$ & $[kJ/kg K]$ & $[kJ/kg K]$ \\
+      & & \multicolumn{2}{c}{Specific volume} & \multicolumn{2}{c}{Internal energy} & \multicolumn{2}{c}{Specific enthalpy} & \multicolumn{2}{c}{Specific entropy}\\
+      & & \multicolumn{2}{c}{$\unit{m^{3}/kg}$} & \multicolumn{2}{c}{$\unit{kJ/kg}$} & \multicolumn{2}{c}{$\unit{kJ/kg}$} & \multicolumn{2}{c}{$\unit{kJ/kg K}$} \\ \cline{3-4} 
+      % & & \multicolumn{2}{c}{$\underline{\hphantom{aaaaaaaaa}}$}\\
+    temp & pressure & Water & Steam \\
+    $T \quad \unit{^{\circ}C} $ & $p \quad \unit{bar} $ & $\rho_f$ & $\rho_g$ & $u_f$ & $u_g$ & $h_f$ & $h_g$ & $s_f$ & $s_g$ \\[2pt]
     \hline
+    \\[2pt]
     """)
 
     for T in T_range:
@@ -53,7 +59,7 @@ def temperature_table(T_range,caption,fout):
                    % (T,V.p/1e5,W.rho,V.rho,W.u/1000,V.u/1000,W.h/1000,V.h/1000,W.s/1000,V.s/1000))
         fout.write("\n")
         
-
+    fout.write(r"\\[3pt]\hline")
     fout.write(r"\end{tabular}")
     fout.write("\n")
     fout.write(r"\caption{%s}" % caption)
@@ -70,7 +76,6 @@ def pressure_table(p_range,caption,fout):
     $[bar]$ & $[^\circ C]$ & $[kg/m^3]$ & $[kg/m^3]$ & $[kJ/kg]$ & $[kJ/kg]$ & $[kJ/kg]$ & $[kJ/kg]$ & $[kJ/kg K]$ & $[kJ/kg K]$ \\
     \hline
     """)
-
     for p in p_range:
         T = Tsat_p(p*1e5)
         T = T - 273.15
@@ -199,7 +204,10 @@ fout = open("steamtable.tex","w")
 fout.write(r"""\documentclass[dvips,a4paper,11pt]{article}
 \usepackage{graphicx}
 \usepackage{lscape}
-\usepackage[scaled=.92]{helvet}
+%\usepackage[scaled=.92]{helvet}
+\usepackage[hang, small, bf]{caption}
+\usepackage{amssymb}
+\usepackage{units}
 \renewcommand{\familydefault}{\sfdefault}
 \author{Scripted by Grant Ingram and John Pye}
 \title{Steam Tables calculated using freesteam http://freesteam.sf.net}
