@@ -29,7 +29,7 @@ Installing freesteam
 
 If you're reading this file, it's possible that you may have already downloaded
 and installed a binary version of freesteam on your machine. If not, please note
-that we provide binary versions of freesteam for Windows and Ubuntu 9.10 users.
+that we provide binary versions of freesteam for g and Ubuntu 9.10 users.
 See the freesteam website for details.
 
 
@@ -115,6 +115,20 @@ and so on. A model of a complete steam power station that uses
 freesteam property evaluations is included with the ASCEND program, see
 models/johnpye/rankine.a4c.
 
+Here is the list of external functions currently present in the Library (as of
+version 2.0):
+
+freesteam_hf_T (1 inputs, 1 outputs):
+freesteam_hf_p (1 inputs, 1 outputs):
+freesteam_hg_T (1 inputs, 1 outputs):
+freesteam_hg_p (1 inputs, 1 outputs):
+freesteam_Tsat_p (1 inputs, 1 outputs):
+freesteam_psat_T (1 inputs, 1 outputs):
+freesteam_sf_T (1 inputs, 1 outputs):
+freesteam_sf_p (1 inputs, 1 outputs):
+freesteam_sg_T (1 inputs, 1 outputs):
+freesteam_sg_p (1 inputs, 1 outputs):
+freesteam_Tvsx_ph (2 inputs, 4 outputs):
 
 Accessing freesteam from Fortran
 --------------------------------
@@ -165,6 +179,22 @@ LD_LIBRARY_PATH (linux/mac) or PATH (windows), then the above won't work, so
 make sure not the forget the first step.
 
 Steam tables code was initially contributed to freesteam by Grant Ingram.
+
+
+Special notes for Windows users
+-------------------------------
+
+The Windows installer for freesteam has been tested on 32-bit Windows XP. It
+has not been tested on 64-bit Windows.
+
+If you want to use the ASCEND language bindings for freesteam, you will need to
+first install ASCEND and make sure it's working. Then install freesteam. The
+freesteam installer will create (if necessary) the ASCENDLIBRARY environment
+variable (under HKLM). It will first add the default Models directory to that
+path, and then after that add the path to the ASCEND models belonging to
+freesteam. Note that if you have got a customised ASCENDLIBRARY environment
+variable already, this might cause problems in certain cases (but we considered
+it to be very unlikely).
 
 
 Special tips for Ubuntu 9.10 users
