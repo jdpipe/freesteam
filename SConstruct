@@ -426,6 +426,7 @@ list = Split("""
 	designbycontract.cpp units.cpp solver.cpp steamproperty.cpp satcurve.cpp b23curve.cpp 
 	b13curve.cpp convergencetest.cpp solver2.cpp iapws95.cpp measurement.cpp
 	surfacetension.cpp
+	backwards.c
 """)
 
 lib_env = env.Clone()
