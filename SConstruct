@@ -19,11 +19,16 @@ if platform.system()=="Windows":
 	default_prefix = 'c:/MinGW'
 	python_exe = sys.executable
 	default_python = distutils.sysconfig.get_python_lib()
+	default_gsl_static = 1
 else:
 	default_emso_location = None
 	default_prefix = '/usr/local'
 	python_exe = "/usr/bin/env python"
 	default_python = distutils.sysconfig.get_python_lib()
+	default_gsl_static = 0
+
+if platform.system()=="Darwin":
+	default_gsl_static = 0
 
 # SONAME related flags, for linux shared object versioning. Because this is a
 # re-write of freesteam with a new API, we will bump the soname to .1
@@ -134,6 +139,7 @@ if platform.system()=="Windows":
 		,"freesteam-"+version+"-py"+pyversion+".exe"
 	)
 
+# TODO work out a way to set gsl_static via options...?
 
 # Set up the 'tools' the SCONS will need access to , eg compilers
 # and create the SCONS 'environment':
@@ -141,13 +147,14 @@ if platform.system()=="Windows":
 tools = ['swig','ascend','substinfile','gsl','tar','disttar', 'nsis']
 if platform.system()=="Windows":
 	env = Environment(ENV=os.environ
-		, GSL_STATIC = 1
+		, GSL_STATIC = default_gsl_static
 		, toolpath = ['scons']
 		, tools = ['mingw']+tools
 	)
 else:
 	env = Environment(
 		ENV={"PATH":os.environ['PATH']}
+		, GSL_STATIC = default_gsl_static
 		, toolpath=['scons']
 		, tools=['default']+tools
 	)
