@@ -1,0 +1,1 @@
+shlibs:Depends=freesteam, libc6 (>= 2.1.3)
