@@ -1,0 +1,58 @@
+using "newtypes";
+using "streams";
+using "pipe3";
+
+FlowSheet Pipe3Test
+	
+	PARAMETERS
+	pipe as CalcObject(File="emsopipe");
+	freesteam as CalcObject(File="emsofreesteam");
+	p_in as Pressure;
+	p_out as Pressure;
+	
+	DEVICES
+	S1 as Stream_pT;
+	P as Pipe3;
+
+	CONNECTIONS
+	S1 to P.In;
+
+	SET
+	P.n = 5;
+	P.D = 0.05 * "m";
+	P.L = 600 * "m";
+	P.eps = 1e-5 * "m";
+	
+	p_in = 60 * "bar";
+	p_out = 50 * "bar";
+	
+	SPECIFY
+	S1.p = p_in;
+	S1.T = (273.15 + 500) * "K";
+	S1.mdot = 0.7 * "kg/s";
+	# P.X(P.n).p = p_out;
+	
+	GUESS
+	P.X([1:P.n]).rho = 997 *"kg/m^3";
+	P.X([1:P.n]).mdot = 0.7 * "kg/s";
+	P.X([1:P.n]).u = 2500 *"kJ/kg";
+	
+	INITIAL
+	# Set the internal state along internal nodes of the pipe
+	P.X([2:P.n]).p = p_in + (p_out - p_in)/(P.n - 1)*([2:P.n] - 1);
+	
+	for i in [2:P.n]
+		P.X(i).u = freesteam.u_pT(P.X(i).p,(273.15+25) * "K");
+	end
+	
+	P.X([2:P.n]).mdot = 0.01 * "kg/s";
+	
+	# Set the initial outlet flowrate
+	# P.Out.u = 500 * "kJ/kg";
+		
+	OPTIONS
+	# mode="steady";
+	outputLevel="high";
+	time=[0:0.001:1] * "s";
+	
+end

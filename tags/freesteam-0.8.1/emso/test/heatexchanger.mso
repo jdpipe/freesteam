@@ -1,0 +1,70 @@
+#*
+	Heat exchanger models
+
+	Intention is to initially model simple single-phase heat exchangers, 
+	then expand with two-phase LMTD models,
+	then eventually model using 'slices' to accurately estimate amount
+	of water inside the HE.
+*#
+using "steamequipment";
+
+Model HeatExchangerBase
+	
+	VARIABLES
+	UA as HeatTransferCoefficient;
+	LMTD as TemperatureDifference;
+	DTCS as TemperatureDifference;
+end
+
+Model HeatExchangerBase_ph as HeatExchangerBase
+	
+	VARIABLES
+	in CSIn as Stream;
+	out CSOut as Stream_ph;
+	
+	EQUATIONS
+	DTCS = CSOut.T - CSIn.T;
+
+end
+
+Model CounterFlowHeatExchanger_ph_ph as HeatExchanger_ph, SteamEquipment_ph
+	
+	EQUATIONS
+	LMTD = ....
+	
+end
+
+
+#*
+	Just rubbish for now...
+*#
+Model HeatExchanger
+	
+	DEVICES
+	in CSIn as Stream;
+	out CSOut as Stream;
+	
+	S as Stream_pT; # 5 - 2       = 3
+	CO as Condenser_ph; # 14 - 5 - 2 = 7
+	#CO as Condenser;
+	
+	CONNECTIONS
+	S to CO.In; # (-5) - 0        = -5 DF
+	
+	SPECIFY
+	S.mdot = 1 * "kg/s";
+	S.p = 2.0 * "bar";
+	S.T = (150 + 273.15) * "K";
+	
+	CO.UA = 3090 * "kW/K";
+	CO.Out.p = 1 * "bar";
+	
+	GUESS 
+	CO.Out.h = 500 * "kJ/kg";
+	CO.Out.T = (50 + 273.15) * "K";
+	
+	OPTIONS
+	mode = "steady";
+	outputLevel = "all";
+end
+

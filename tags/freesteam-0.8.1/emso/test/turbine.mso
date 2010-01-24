@@ -1,0 +1,106 @@
+#* 
+    freesteam stream integration for use in steam system calculations
+    
+    Based on steam.mso by Rafael de Pelegrini Soares,
+
+    Copyright 2002-2005 Rafael de Pelegrini Soares.
+    Modified by John Pye 2005 http://freesteam.sf.net
+    
+    This copyright statement must not be deleted and must be
+    included in any modification or adaptation of this Model.
+*#
+
+using "steamequipment";
+
+#* 
+    Ideal (isentropic) turbine
+*#
+Model Turbine_ideal as SteamEquipment_ps # 8 + 1 - 3 = 6 DF
+
+    VARIABLES
+    x as Quality(Brief="Outlet quality");
+    
+	EQUATIONS # DF = -3
+	# Mass conservation	
+	In.mdot = Out.mdot;
+	m = 0 * "kg";
+	
+	# Energy conservation, no work, no volume
+	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot;
+	H = 0 * "J";
+	Qdot = 0 * "W";
+ 
+    "Isentropic constraint"
+    Out.s = In.s;
+	
+	"Outlet quality"
+	x = Out.freesteam.x_ps(Out.p,Out.s);
+	
+end
+
+
+#* 
+    Turbine (non-isentropic, with efficiency specified)
+*#
+Model Turbine as SteamEquipment_ph # 8 + 4 - 5 = 7 DF
+
+	PARAMETERS
+	freesteam_es as CalcObject(File="emsofreesteam");
+	
+    VARIABLES # DF = 4
+    eta as Efficiency(Brief="Turbine efficiency"); # DF = 1
+	h_es as SpecificEnthalpy(Default = 3000, Lower=150, Upper = 4300);
+    x as Quality(Brief="Outlet quality");
+	
+    EQUATIONS
+	# Mass conservation	
+	In.mdot = Out.mdot;
+	m = 0 * "kg";
+	
+	# Energy conservation, no work, no volume
+	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot;
+	H = 0 * "J";
+	Qdot = 0 * "W";
+
+    "Isentropic output enthalpy"
+    h_es = freesteam_es.h_ps(Out.p, In.s);
+    
+    "Efficiency"
+    In.h - Out.h= eta * (In.h - h_es);
+	
+	"Outlet quality"
+	x = Out.freesteam.x_ph(Out.p,Out.h);
+end
+
+#* 
+    Turbine (non-isentropic, with efficiency specified)
+*#
+Model Turbine_ps as SteamEquipment_ps # 8 + 4 - 5 = 7 DF
+
+	PARAMETERS
+	freesteam_es as CalcObject(File="emsofreesteam");
+    
+    VARIABLES # DF = 4
+    eta as Efficiency(Brief="Turbine efficiency");
+	h_es as SpecificEnthalpy(Default = 3000, Lower=150, Upper = 4300);
+    x as Quality(Brief="Outlet quality");
+    
+    EQUATIONS #DF = -5
+	# Mass conservation	
+	In.mdot = Out.mdot;
+	m = 0 * "kg";
+	
+	# Energy conservation, no work, no volume
+	Qdot - Wdot = Out.h * Out.mdot - In.h * In.mdot;
+	H = 0 * "J";
+	Qdot = 0 * "W";
+
+	"Isentropic output enthalpy"
+    h_es = freesteam_es.h_ps(Out.p, In.s);
+
+    "Isentropic Efficiency"
+    (Out.h - In.h) = eta * (h_es - In.h);
+
+	"Outlet quality"
+	x = Out.freesteam.x_ps(Out.p,Out.s);
+end

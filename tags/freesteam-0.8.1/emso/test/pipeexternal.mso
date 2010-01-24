@@ -1,0 +1,168 @@
+using "steamequipment";
+
+#*
+	This model of a pipe uses an external CalcObject to work
+	out the friction factor. You must install the emsopipe.dll 
+	or libemsopipe.so file (same process as for installing 
+	emsofreesteam)
+*#
+Model PipeExternal as SteamEquipment_ph
+
+	PARAMETERS
+	L as Length(Lower = 0, Upper= 1000, Default=10, Unit="m");
+	D as Length(Lower = 0, Upper= 1, Default=0.1, Unit="m");
+	eps as Length(Lower = 0, Upper= 0.01, Default=0.0001, Unit="m");
+	
+	pipe as CalcObject(File="emsopipe");
+	
+	VARIABLES
+	rho as Density;
+	# v as SpecificVolume(Lower = 0.0009, Upper=1e5, Default=0.001, Unit="m^3/kg");
+	vel as Velocity(Lower = 0, Upper= 300, Default=1, Unit="m/s");
+	A as Area(Lower = 0, Upper = 0.7854, Default = 7.8e-5, Unit="m^2");	
+	Re as Real(Lower=0, Upper=1e8, Default=2e4);
+	f as Real(Lower = 0.008, Upper=0.1, Default=0.05);
+	mu as DynamicViscosity;	
+		
+	EQUATIONS
+	# Energy balance
+	Qdot - Wdot = In.h * In.mdot - Out.h * Out.mdot + diff(Out.h * rho) * A * L;
+	U = (Out.h - Out.p / rho) * rho * A * L;
+	Wdot = 0 * "W";
+
+	# Mass balance
+	In.mdot - Out.mdot = A * L * diff(rho);
+	A = (3.14159265358 * D^2 / 4);
+	m = rho * A * L;
+	
+	# Pipe inlet flow velocity
+	In.mdot = rho * A * vel;
+	
+	# Inlet density and viscosity
+	rho = In.freesteam.rho_ph(In.p, In.h);
+	mu = In.freesteam.mu_ph(In.p, In.h);
+	
+	# Inlet Reynolds number
+	Re = rho * vel * D  / mu;	
+
+	# Friction factor calculated in external CalcObject
+	f = pipe.f_ReEd(Re,eps/D);
+
+	# Pressure drop
+	Dp = - f * L/D * rho * vel^2 / 2;	
+end
+
+#*
+	todo: APPLY THE FIXED-VOLUME CONSTRAINTS HERE*
+*#
+Model PipeExternal2 as SteamEquipment_uv
+
+	PARAMETERS
+	L as Length(Lower = 0, Upper= 1000, Default=10, Unit="m");
+	D as Length(Lower = 0, Upper= 1, Default=0.1, Unit="m");
+	eps as Length(Lower = 0, Upper= 0.01, Default=0.0001, Unit="m");
+	
+	pipe as CalcObject(File="emsopipe");
+	
+	VARIABLES
+	
+	# rho as Density;
+	v as SpecificVolume(Lower = 0.0009, Upper=1e5, Default=0.001, Unit="m^3/kg");
+	vel_in as Velocity(Lower = 0, Upper= 300, Default=1, Unit="m/s");
+	vel_out as Velocity(Lower = 0, Upper= 300, Default=1, Unit="m/s");
+	A as Area(Lower = 0, Upper = 0.7854, Default = 7.8e-5, Unit="m^2");	
+	Re as Real(Lower=0, Upper=1e8, Default=2e4);
+	f as Real(Lower = 0.008, Upper=0.1, Default=0.05);
+	mu as DynamicViscosity;	
+	u as SpecificInternalEnergy;
+	tau as Stress;
+	
+	EQUATIONS
+	# Energy balance
+	In.h * In.mdot - Out.h * Out.mdot = diff(U);
+	u = U / m;
+	
+	Wdot = 0 * "W";
+	Qdot = 0 * "W";
+
+	# Mass balance
+	In.mdot - Out.mdot = diff(m);
+	A = (3.14159265358 * D^2 / 4);
+	v = A * L / m;
+	
+	# Pipe inlet flow velocity
+	vel_in = In.mdot * v / A;
+	
+	# Pipe outlet flow velocity
+	vel_out = Out.mdot * Out.v / A;
+	
+	# Inlet density and viscosity
+	v = In.freesteam.v_ph(In.p, In.h);
+	mu = In.freesteam.mu_ph(In.p, In.h);
+	
+	# Inlet Reynolds number
+	Re = vel_in * D  / mu / v;	
+
+	# Friction factor calculated in external CalcObject
+	f = pipe.f_ReEd(Re,eps/D);
+
+	# Momentum conservation
+	1/A * diff(Out.mdot) = - Dp/L - 4 * tau / D - ( vel_out^2 / Out.v - vel_in^2 / v) / L;
+
+	tau = f / 8 / v * vel_in^2;
+
+end
+
+#*
+Model PipeExternal2 as SteamEquipment_uv
+
+	PARAMETERS
+	L as Length(Lower = 0, Upper= 1000, Default=10, Unit="m");
+	D as Length(Lower = 0, Upper= 1, Default=0.1, Unit="m");
+	eps as Length(Lower = 0, Upper= 0.01, Default=0.0001, Unit="m");
+	
+	pipe as CalcObject(File="emsopipe");
+
+	VARIABLES
+	rho as Density;
+	# v as SpecificVolume(Lower = 0.0009, Upper=1e5, Default=0.001, Unit="m^3/kg");
+	vel as Velocity(Lower = 0, Upper= 300, Default=1, Unit="m/s");
+	A as Area(Lower = 0, Upper = 0.7854, Default = 7.8e-5, Unit="m^2");	
+	Re as Real(Lower=0, Upper=1e8, Default=2e4);
+	f as Real(Lower = 0.008, Upper=0.1, Default=0.05);
+	mu as DynamicViscosity;	
+	tau as Stress;
+	
+	EQUATIONS
+	# Energy balance
+	Qdot = 0 * "W";
+	Wdot = 0 * "W";
+	H = Out.h * rho * A * L;
+	diff(rhou) = 1/A/L * ( Qdot - (Out.mdot * Out.h - In.mdot * In.h));
+
+	# Mass balance
+	diff(rho) = (In.mdot - Out.mdot)/A /L
+	In.mdot - Out.mdot = A * L * diff(rho);
+	A = (3.14159265358 * D^2 / 4);
+	m = rho * A * L;
+	
+	# Pipe inlet flow velocity
+	In.mdot = rho * A * vel;
+	
+	# Inlet density and viscosity
+	rho = In.freesteam.rho_ph(In.p, In.h);
+	mu = In.freesteam.mu_ph(In.p, In.h);
+	
+	# Inlet Reynolds number
+	Re = rho * vel * D  / mu;	
+
+	# Friction factor calculated in external CalcObject
+	f = pipe.f_ReEd(Re,eps/D);
+
+	# Momentum conservation
+	1/A *  diff(Out.mdot) = - Dp/L - 4 * tau / D - ( Out.rho * Out.vel^2 - In.rho * In.vel^2)/L
+
+	tau = f / 8 * rho * vel^2;
+
+end
+*#

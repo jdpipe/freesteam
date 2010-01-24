@@ -1,0 +1,24 @@
+using "newtypes";
+
+FlowSheet PipeFrictionTest
+	
+	PARAMETERS
+	pipe as CalcObject(File="emsopipe");
+	
+	DEVICES
+	Re as Real;
+	eps as Length;
+	D as Length;
+	f as Real;
+
+	EQUATIONS
+	f = pipe.f_ReEd(Re,eps/D);
+	
+	SPECIFY
+	Re = 20000;
+	eps = 2e-5 * "m";
+	D = 2e-5;
+	
+	OPTIONS
+	mode="steady";
+end

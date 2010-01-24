@@ -1,0 +1,98 @@
+#* 
+    freesteam IAPWS-IF97 library integration 
+    for use in steam cycle calculations
+    
+    Based on steam.mso by Rafael de Pelegrini Soares,
+
+    Copyright 2002-2005 Rafael de Pelegrini Soares.
+    Modified by John Pye 2005 http://freesteam.sf.net
+    
+    This copyright statement must not be deleted and must be
+    included in any modification or adaptation of this Model.
+*#
+
+using "streams";
+
+#*
+	Test specifying steam state in terms of p, s.
+
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet Test_Stream_ps
+	
+    PARAMETERS
+    freesteam as CalcObject(File="emsofreesteam");
+    
+    DEVICES
+    S as Stream_ps;
+    
+    SPECIFY
+    "Flow rate"
+    S.mdot = 10 * "kg/s";
+    
+    "Pressure"
+    S.p = 101700 * "Pa";
+
+    "Entropy"
+    S.s = 7.5 * "kJ/kg/K";
+    
+    OPTIONS
+    relativeAccuracy = 1e-10;
+    mode = "steady";
+    outputLevel = "all";
+end
+
+#*
+	Test specifying steam state in terms of p, h
+
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet Test_Stream_ph
+   
+    PARAMETERS
+    freesteam as CalcObject(File="emsofreesteam");
+    
+    DEVICES
+    S as Stream_ph;
+    
+    SPECIFY
+    "Flow rate"
+    S.mdot = 10 * "kg/s";
+    
+    "Pressure"
+    S.p = 101700 * "Pa";
+
+    "Enthalpy"
+    S.h = 2500 * "kJ/kg";
+    
+    OPTIONS
+    relativeAccuracy = 1e-8;
+    mode = "steady";
+    outputLevel = "all";
+end
+
+#*
+	Test of specifying saturated water at a given temperature
+	
+	THIS FLOWSHEET WORKS
+*#
+FlowSheet Test_Stream_waterT
+    
+    PARAMETERS
+    freesteam as CalcObject(File="emsofreesteam");
+    
+    DEVICES
+    S as Stream_waterT;
+    
+    SPECIFY
+    "Flow rate"
+    S.mdot = 10 * "kg/s";
+    
+    "Temperature"
+    S.T = (273.15 + 250) * "K";
+    
+    OPTIONS
+    relativeAccuracy = 1e-8;
+    mode = "steady";
+    outputLevel = "all";
+end
