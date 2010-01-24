@@ -65,10 +65,15 @@ def generate(env):
 					env[i] = old_env[i]
 			env['HAVE_GSL'] = True
 
+			# on Ubuntu, remove gslcblas if present 
+			if platform.system()=="Linux":
+				if platform.dist()[0]=="Ubuntu":
+					if 'gslcblas' in env['GSL_LIBS']:
+						env['GSL_LIBS'].remove('gslcblas')
+
 		#print "GSL_LIBS =",env.get('GSL_LIBS')
 		#print "GSL_LIBPATH =",env.get('GSL_LIBPATH')
 		#print "GSL_CPPPATH =",env.get('GSL_CPPPATH')
-		print "GSL_LINKFLAGS =",env.get('GSL_LINKFLAGS')
 
 	except Exception,e:
 		print "Checking for GSL... not found! (%s)" % str(e)
