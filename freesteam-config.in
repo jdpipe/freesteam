@@ -1,6 +1,6 @@
 #!@PYTHON@
 from optparse import OptionParser
-import sys, platform
+import sys, platform, os.path
 
 #---------------------
 # This file is generated automatically by SCons and installed in at INSTALL_BIN.
@@ -29,12 +29,12 @@ if platform.system()=="Windows":
 	import _winreg
 	x=_winreg.ConnectRegistry(None,_winreg.HKEY_LOCAL_MACHINE)
 	y= _winreg.OpenKey(x,r"SOFTWARE\FREESTEAM")
-	LIB,t = _winreg.QueryValueEx(y,"Install_Dir")	
+	BIN,t = _winreg.QueryValueEx(y,"Install_Dir")	
 	_winreg.CloseKey(y)
 	_winreg.CloseKey(x)
 
-	BIN = LIB
-	INCLUDE = LIB		
+	LIB = os.path.join(BIN,"lib")
+	INCLUDE = os.path.join(BIN,"include")
 	
 	try:
 		# if we have access to GetShortPathName, we'll use it...
