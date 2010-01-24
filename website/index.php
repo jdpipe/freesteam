@@ -132,10 +132,8 @@ properties. The following input pairs are implemented:
 <p>Saturation curves and the boundary curves used internally by IAPWS-IF97 can
 also be accessed, if required.
 
-<p>Some <a href="properties/">property diagrams</a>
-are available which were generated using freesteam 0.8.1. Freesteam 2.0 is able
-to auto-generate a complete set of steam tables suitable for student use,
-as well as a range of property diagrams, using Python code.</p>
+<p>Freesteam is now able (version 2.x)
+to auto-generate a <a href="http://downloads.sourceforge.net/project/freesteam/freesteam/2.0/freesteam-steam-tables.pdf">complete set of steam tables</a> suitable for student use, as well as a range of property diagrams, using Python code. Some <a href="properties/">property diagrams</a> produced using freesteam-0.8.1 are also available.
 
 <p><b>Please check out the <a href="example.php">example code</a></b></p>
 
@@ -252,10 +250,11 @@ Journal of Engineering for Gas Turbines and Power</a><br>
 
   <dt>Commercial IAPWS calculators</dt>
 
-  <dd>ChemicaLogic, USA: <span style="font-style: italic;">SteamTab SDK</span><br></dd>
+  <dd>ChemicaLogic, USA: <span style="font-style: italic;"><a href="http://www.chemicalogic.com" rel=nofollow>SteamTab SDK</a></span><br></dd>
   <dd>University of Applied Sciences Zittau/G&ouml;rlitz, Germany: <i>FluidEXL</i></dd>
   <dd>Edward Throm: <i>ASTEM97</i></dd>
   <dd>G&amp;P Engineering: <i>StmProps</i></dd>
+  <dd>Zittau/Goerlitz University of Applied Sciences: <i><a href="http://www.thermodynamics-zittau.de/" rel=nofollow>LibIF97</a></i></dd>
   <dd>Wagner, Wolfgang, Kretzschmar, Hans-Joachim, <i>International Steam Tables - The
 Industrial Standard IAPWS-IF97 for the Thermodynamic Properties and
 Supplemetary Equations for Other Properties: Tables, Algorithms,
@@ -265,6 +264,8 @@ Springer, Germany.</dd>
   <dd>ARC Engineering plc: <i>arcSteam</i></dd>
   <dd>GP International: <i>GPSteam</i> ("ASME
 97" formulation)</dd>
+  <dd>TechWare Engineering: <i><a href="http://www.techwareeng.com/ProdWS.html" rel=nofollow>WinSteam</a></i></dd>
+  <dd><i><a href="http://www.wsp.ru" rel=nofollow>WaterSteamPro</a></i></dd>
   <dd>Rudjer Boskovic Institute: <i>ISANO
 Iapwsif97</i><br><br></dd>
 
@@ -273,6 +274,7 @@ Iapwsif97</i><br><br></dd>
 (ASME 1967 Steam Tables, with source code in C)<br>
 PARVO95, PARVO67 <a href="http://fortraner.narod.ru/">http://fortraner.narod.ru/</a>
 (Fortran) In Russian, not tested.</dd>
+  <dd>Taftan <tt><a href="http://www.taftan.com" rel=nofollow>Thermo Utilities</a></tt> (IFC '67 correlation)</dd>
   <dt><br>
   </dt>
   <dt>Some useful steam table charts</dt>

@@ -46,6 +46,7 @@ function show_nav($this_page=NULL,$current_page=NULL){
 		,new Link("Browse SVN", $viewsvn_base, "ViewVC at SourceForge")
 		,new Link("Code docs", "docs/", "Code docs generated with Doxygen")
 		,new Link("Property diagrams", "properties/")
+		,new Link("Steam tables", "http://downloads.sourceforge.net/project/freesteam/freesteam/2.0/freesteam-steam-tables.pdf")
 		#,new Link("BuildBot","http://buildbot.cruncher2.dyndns.org/")
 		,new Link("SourceForge",	"http://sourceforge.net/projects/freesteam/", "Project page")
 	);
