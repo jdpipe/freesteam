@@ -2,7 +2,7 @@ FREESTEAM CHANGELOG
 ===================
 
 2.0
-XX Jan 2009
+24 Jan 2009
 -----------
 
 - Complete rewrite in plain C
