@@ -1,4 +1,20 @@
-CHANGELOG
+FREESTEAM CHANGELOG
+===================
+
+2.0
+24 Jan 2009
+-----------
+
+- Complete rewrite in plain C
+- Two-way solver now makes use of GSL, instead of being standalone.
+- New APIs for C, Python and ASCEND
+- Extended the use of 'reverse' equations e.g. for (p,h)
+- Updated to new IAPWS-IF97 release documents.
+- Included code for generation of (p,h) and other diagrams.
+- Added Debian packaging meta-info (with multiple packages)
+- freesteam-config package updated to new C API.
+- Added README.txt file.
+- Changed SONAME of libfreesteam.so to '.1.0' due to new API.
 
 0.8.1
 Monday, 15 October 2007

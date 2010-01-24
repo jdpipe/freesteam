@@ -1,7 +1,6 @@
 /*
-
 freesteam - IAPWS-IF97 steam tables library
-Copyright (C) 2004-2005  John Pye
+Copyright (C) 2004-2009  John Pye
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,45 +15,27 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
 */
 
-#ifndef REGION4_H
-#define REGION4_H
+#ifndef FREESTEAM_REGION4_H
+#define FREESTEAM_REGION4_H
 
-#include "state.h"
-#include "zeroin.h"
+#include "common.h"
 
-class Region4 : public SteamState {
+FREESTEAM_DLL double freesteam_region4_psat_T(double T);
+FREESTEAM_DLL double freesteam_region4_Tsat_p(double p);
 
-	public:
-		int getRegion() const;
+FREESTEAM_DLL double freesteam_region4_rhof_T(double T);
+FREESTEAM_DLL double freesteam_region4_rhog_T(double T);
 
-		SpecificVolume specvol(const SteamCalculator &c) const;
-		SpecificEnergy specienergy(const SteamCalculator &c) const;
-		SpecificEntropy specentropy(const SteamCalculator &c) const;
-		SpecificEnergy specenthalpy(const SteamCalculator &c) const;
-		SpecHeatCap speccp(const SteamCalculator &c) const;
-		SpecHeatCap speccv(const SteamCalculator &c) const;
+FREESTEAM_DLL double freesteam_region4_v_Tx(double T, double x);
+FREESTEAM_DLL double freesteam_region4_u_Tx(double T, double x);
+FREESTEAM_DLL double freesteam_region4_h_Tx(double T, double x);
+FREESTEAM_DLL double freesteam_region4_s_Tx(double T, double x);
+FREESTEAM_DLL double freesteam_region4_cp_Tx(double T, double x);
+FREESTEAM_DLL double freesteam_region4_cv_Tx(double T, double x);
 
-		Density dens(const SteamCalculator &c) const;
-		Pressure pres(const SteamCalculator &c) const;
-		Temperature temp(const SteamCalculator &c) const;
-
-	protected:
-		friend class SteamCalculator;
-
-		static SteamState *Instance();
-
-		virtual void set_pT(SteamCalculator &c, const Pressure &p, const Temperature &T, Num x);
-
-		virtual Num pitau_iaps85(const SteamCalculator &c) const;
-		virtual Num delpi_iaps85(const SteamCalculator &c) const;
-
-	private:
-		Region4();
-		static Region4 *_instance;
-
-};
+FREESTEAM_DLL double freesteam_region4_dpsatdT_T(double T);
 
 #endif
+
