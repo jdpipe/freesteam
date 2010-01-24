@@ -56,13 +56,21 @@ def generate(env):
 			env.ParseConfig(cmd)
 			env['GSL_CPPPATH'] = env.get('CPPPATH')
 			env['GSL_LIBPATH'] = env.get('LIBPATH')
-			env['GSL_LIBS'] = env.get('LIBS')
+
+			print "GSL_STATIC =",env.get('GSL_STATIC')
+
+			if env.get('GSL_STATIC'):
+				env['GSL_STATICLIBS'] = [os.path.join(env.get('GSL_LIBPATH')[0],"lib%s.a"%i) for i in ["gsl","gslcblas"]]
+			else:
+				env['GSL_LIBS'] = env.get('LIBS')
+
 			for i in ['LIBS','LIBPATH','CPPPATH']:
 				if old_env.get(i) is None:
 					if env.has_key(i):
 						del env[i]
 				else:
 					env[i] = old_env[i]
+
 			env['HAVE_GSL'] = True
 
 			# on Ubuntu, remove gslcblas if present 
