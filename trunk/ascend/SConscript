@@ -1,108 +1,31 @@
-import os, os.path, platform
-import subprocess
+#!/usr/bin/env python
+Import('env')
 
-Import("env")
+if env.get('HAVE_ASCEND'):
 
-asc_env = env.Clone()
+	libenv = env.Clone()
 
-without_ascend_reason = "unknown reason"
+	# ascend flags, as retrieved from the ascend-config script
+	libenv.Append(
+		LIBS=env.get('ASCEND_LIBS')
+		,LIBPATH=env.get('ASCEND_LIBPATH')
+		,CPPPATH=env.get('ASCEND_CPPPATH')
+	)
 
-asc_env['LIBS'] =['freesteam']
-asc_env['LIBPATH'] = ['#']
+	# link to the freesteam library too
+	libenv.Append(
+		LIBS=['freesteam']
+		,LIBPATH=['#']
+	)
 
-#-------------------------------
-# SCons 'builder' to install file and set permissions
+	# build the library
+	lib = libenv.SharedLibrary("freesteam",["freesteam_ascend.c"]
+		,SHLIBSUFFIX = env['ASCEND_EXTLIB_SUFFIX']
+		,SHLIBPREFIX = env['ASCEND_EXTLIB_PREFIX']		
+	)
 
-import SCons 	 
-from SCons.Script.SConscript import SConsEnvironment 	 
-SConsEnvironment.Chmod = SCons.Action.ActionFactory(os.chmod, 	 
-	lambda dest, mode: 'Chmod("%s", 0%o)' % (dest, mode)) 	 
-  	 
-def InstallPerm(env, dest, files, perm): 	 
-	obj = env.Install(dest, files) 	 
-	for i in obj: 	 
-		env.AddPostAction(i, env.Chmod(str(i), perm))
-	return dest
-  	 
-SConsEnvironment.InstallPerm = InstallPerm 	 
+	env.Depends(lib,env['libfreesteam'])
 
-#----------------------------------
-# get the location of the ASCEND files
+	env['installedfiles'] += [env.InstallLibrary("${INSTALL_ROOT}$ASCEND_MODELS",[lib])]
 
-srcs = Split("""
-	ascendhooks.cpp
-""")
-
-config = asc_env.get('ASCEND_CONFIG');
-ascsrc = asc_env.get('ASCEND_SRCROOT');
-
-modeldir = []
-if ascsrc:
-	print "ASCEND_SRCROOT"
-	modeldir = None
-	asc_env.AppendUnique(LIBS = ['ascend'])
-	asc_env.Append(LIBPATH=[ascsrc])
-	asc_env.Append(CPPPATH=[os.path.join(ascsrc,"base/generic")])
-	ok_to_build = True
-elif config:
-	ok_to_build = True
-	# found the modeldir, now get the compiler/linker flags.
-	# the following fails on Windows if the ASCEND path contains a space.
-	# this is a bug in SCons that is due to be fixed in the upcoming
-	# version (after 0.97).
-
-	if platform.system()=="Windows":
-		cmd = ['"%s" --cppflags --libs' % config]
-	else:
-		cmd = ["ascend-config","--cppflags","--libs"]
-
-	try:
-		asc_env.ParseConfig(cmd)
-		#print "GOT CPPATH=%s"%asc_env.get('CPPPATH')
-	except OSError, e:
-		without_ascend_reason="'ascend-config' script failed (%s)" % str(e)
-		ok_to_build = False
-	except Exception,e:
-		print "ERROR: %s" % str(e)
-		Exit(1)
-
-	if ok_to_build:
-		try:
-			if platform.system()=="Windows":
-				cmd = '"%s.bat" --models' % config
-			else:
-				cmd = [config,"--models"]
-			modeldir = subprocess.Popen(
-				cmd
-				,stdout=subprocess.PIPE
-			).communicate()[0]
-			modeldir = "${INSTALL_ROOT}%s" % modeldir.strip()
-			#print "GOT MODELDIR=%s" % modeldir
-		except OSError,e:
-			print "OSERROR:",str(e)
-			without_ascend_reason = "Unable to locate 'modeldir'"
-			ok_to_build = False
-			pass
-	
-else:
-	ok_to_build = 0
-	without_ascend_reason = "No ascsrc, not config"
-	
-#-------------------------------
-# Build
-
-if ok_to_build:
-	lib = asc_env.SharedLibrary("freesteam_ascend",srcs)
-
-	# Install
-	if modeldir:
-		#print "MODEL LIBRARY:",modeldir
-		asc_env.InstallPerm(modeldir,lib,0644);
-		asc_env.InstallPerm(modeldir,'iapwssatprops.a4c', 0644);
-		asc_env.InstallPerm(modeldir,'testfreesteam.a4c',0644);
-		asc_env.InstallPerm(modeldir,'moistair.a4c', 0644);
-
-else:
-	print "Skipping... ASCEND hooks (%s)" % without_ascend_reason
-
-Return('modeldir')
+# vim: set syntax=python:

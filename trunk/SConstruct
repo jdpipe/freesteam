@@ -1,520 +1,171 @@
-import os, os.path, commands, platform, sys
-import distutils.sysconfig
+#!/usr/bin/env python
+# This is a build script that makes use of the SCONS build system, see
+# http://www.scons.org/. This script is frequently tested on both Windows
+# (via MinGW/MSYS) and Linux, and should work in both of these environments.
+# We don't currently propose to support building freesteam from MSVS but
+# that shouldn't be necessary, as you should be able to use the MinGW-generated
+# DLL even with MSVS, because it only uses C code.
+import platform, sys, distutils.sysconfig, os 
 
-version = "0.8.2"
+#version number for this copy of freesteam
+version = "2.0"
 
+# version number of python
 pyversion = "%d.%d" % (sys.version_info[0],sys.version_info[1])
+
+# Set up some platform-specific defaults
+if platform.system()=="Windows":
+	default_emso_location = "c:\\Program Files\\EMSO\\interface"
+	default_prefix = 'c:/MinGW'
+	python_exe = sys.executable
+	default_python = distutils.sysconfig.get_python_lib()
+	default_gsl_static = 1
+else:
+	default_emso_location = None
+	default_prefix = '/usr/local'
+	python_exe = "/usr/bin/env python"
+	default_python = distutils.sysconfig.get_python_lib()
+	default_gsl_static = 0
+
+if platform.system()=="Darwin":
+	default_gsl_static = 0
+
+# SONAME related flags, for linux shared object versioning. Because this is a
+# re-write of freesteam with a new API, we will bump the soname to .1
 
 if platform.system()=="Windows":
 	soname_major = ""
 	soname_minor = ""
 else:
-	soname_major = ".0"
+	soname_major = ".1"
 	soname_minor = ".0"
 
 soname_default = "${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}"
 
-#----------------------------------------------------
-# CREATE ENVIRONMENT, LOAD TOOLS, SOME DEFAULT PATHS
+# Configuration options for the build. You can set these on the command-line
+# eg using "scons GCOV=1 ..."
 
-can_install=True
+vars = Variables()
 
-# Should exist in path
-cppunit_config_command = 'cppunit-config --libs --cflags'
-
-tools = ['swig','disttar','nsis','substinfile']
-if os.environ.has_key('OSTYPE') and os.environ['OSTYPE']=='msys':
-	env = Environment(ENV=os.environ
-		, toolpath = ['scons']
-		, tools = ['mingw']+tools
-	)
-	if env.WhereIs('cppunit-config'):
-		cppunit_config_command = 'sh cppunit-config --libs --cflags'
-	else:
-		cppunit_config_command = None
-else:
-	env = Environment(ENV=os.environ
-		, toolpath = ['scons']
-		, tools = ['default'] + tools
-	)
-
-	if platform.system()=="Windows":
-		if env.has_key('MSVS'):
-			# for exception handling, following errmsg from VC6
-			env.Append(CXXFLAGS=['/EHsc'])
-			env.Append(CPPDEFINES='UNITS_CAST_THROW');
-			print "VISUAL C++ detected... (Version",env['MSVS']['VERSION']+")"
-		else:
-			print "WARNING: non-POSIX tools"
-		env.AppendUnique(CPPPATH=[os.environ['INCLUDE'].split(";")])
-		can_install=False
-	
-if platform.system()=="Windows":
-	default_emso_location = "c:\\Program Files\\EMSO\\interface"
-	default_prefix = 'c:/MinGW'
-else:
-	default_emso_location = None
-	default_prefix = '/usr/local'
-
-if not default_emso_location or not os.path.exists(default_emso_location):
-	default_emso_location=False
-
-# Find 'ascend-config' script, if available
-if platform.system()=='Windows':
-	# TODO should really get ascend-config location from Registry...
-	default_ascend_config=None
-
-else:
-	try:
-		default_ascend_config = env.WhereIs("ascend-config")
-	except Exception, e:
-		default_ascend_config = None
-
-#------------------------------------------------------
-# OPTIONS
-
-opts = Options(['options.cache', 'config.py'])
-
-opts.Add(PackageOption(
-	'EMSO_INCDIR',"Location of EMSO 'interface' directory", default_emso_location
-))
-opts.Add(BoolOption(
-	'HAVE_EMSO',"Build EMSO hook libraries", False
-))
-
-if can_install:
-	opts.Add(PathOption(
-		'INSTALL_PREFIX'
-		,"Base directory for install, see also INSTALL_LIB and INSTALL_INCLUDE"
-		,default_prefix
-	))
-
-	opts.Add(
-		'LIBDIR'
-		,"Location to install library"
-		, "$INSTALL_PREFIX/lib"
-	)
-
-	opts.Add(
-		'INCDIR'
-		,"Location to install headers"
-		,"$INSTALL_PREFIX/include"
-	)
-
-	opts.Add(
-		'INSTALL_BIN'
-		,"Location to install binaries"
-		,"$INSTALL_PREFIX/bin"
-	)
-	
-	opts.Add(PathOption(
-		'INSTALL_ROOT'
-		,"Root onto which installation should take place. Normally only for "
-			+"use when building RPMs"
-		,None
-	))
-
-opts.Add(BoolOption(
-	'STATIC_LIBRARY'
-	,"Build freesteam as a static library"
+vars.Add(BoolVariable(
+	'GCOV'
+	,"Build for coverage testing using gcov."
 	,False
 ))
 
-opts.Add(BoolOption(
-	'ENABLE_SAT_P'
-	, "Enable saturation curves in terms of pressure"+
-		"(introduces some numerical problems in iterative cases if"+
-		"you're not careful)"
-	, True
+vars.Add(BoolVariable(
+	'DEBUG'
+	,"Build with debug data for use with GDB."
+	,False
 ))
 
-opts.Add(BoolOption(
-	'ENABLE_DEBUG_FLAG',"Add debug symbols to object code, for use with gdb etc", False
+vars.Add(PathVariable(
+	'INSTALL_PREFIX'
+	,"Base directory for install, see also INSTALL_LIB and INSTALL_INCLUDE"
+	,default_prefix
 ))
 
-opts.Add(BoolOption(
-	'WITH_CTESTS'
-	,"Perform compile-time testing of the units of measurement code"
-	,True
-))
+vars.Add(
+	'INSTALL_LIB'
+	,"Location to install library"
+	, "$INSTALL_PREFIX/lib"
+)
 
-opts.Add(PathOption(
-	'ASCEND_CONFIG'
-	,"Location of the 'ascend-config' script"
-	,default_ascend_config
-))
+vars.Add(
+	'INSTALL_INCLUDE'
+	,"Location to install headers"
+	,"$INSTALL_PREFIX/include"
+)
 
-opts.Add(PathOption(
-	'ASCEND_SRCROOT'
-	,"Location of top-level ASCEND source directory. Use this if ASCEND is not"
-		+"actually installed on your system (eg you are testing/developing)."
+vars.Add(
+	'INSTALL_BIN'
+	,"Location to install binaries"
+	,"$INSTALL_PREFIX/bin"
+)
+
+vars.Add(
+	'INSTALL_SHARE'
+	,"Location to install 'share' files, examples, etc."
+	,"$INSTALL_PREFIX/share"
+)
+
+vars.Add(PathVariable(
+	'INSTALL_ROOT'
+	,"Root onto which installation should take place. Normally only for "
+		+"use when building RPMs"
 	,None
 ))
 
-opts.Add(
-	'DISTTAR_NAME'
-	,"Stem name of the tarball created by 'scons dist'."
-	,"freesteam-"+version
-)
+vars.Add(PathVariable(
+	'INSTALL_PYTHON'
+	,"Directory for installation of Python extensions"
+	,"%s" % default_python
+))
 
-opts.Add(
-	'CXX'
-	,"Your C++ compiler"
-	,None
-)
-
-opts.Add(
+vars.Add(
 	'SONAME_MAJOR'
 	,"major version of the freesteam library"
 	,soname_major
 )
 
-opts.Add(
+vars.Add(
 	'SONAME_MINOR'
 	,"Shared library minor version number (for use in installed file name). Should be '.0' for example."
 	,soname_minor
 )
 
-opts.Add(
+vars.Add(
 	'SONAME'
 	,"'soname' to be assigned to the shared library. Should be 'freesteam.so.1' for example."
 	,soname_default
 )
 
+vars.Add(
+	'DISTTAR_NAME'
+	,"Stem name of the tarball created by 'scons dist'. So for 'freesteam-aaa.tar.bz2', set this to 'freesteam-aaa'."
+	,"freesteam-"+version
+)
+
+vars.Add(
+	'CC'
+	,'C Compiler command'
+	,None
+)
+
+vars.Add(
+	'SWIG'
+	,"Name of your swig executable"
+	,'swig'
+)
+
 if platform.system()=="Windows":
-	opts.Add(
+	vars.Add(
 		'WIN_INSTALLER_NAME'
 		,"Name of the installer .exe to create under Windows (minus the '.exe')"
 		,"freesteam-"+version+"-py"+pyversion+".exe"
 	)
 
-opts.Update(env)
+# TODO work out a way to set gsl_static via options...?
 
-opts.Save('options.cache',env)
+# Set up the 'tools' the SCONS will need access to , eg compilers
+# and create the SCONS 'environment':
 
-Help(opts.GenerateHelpText(env))
-
-#-------------
-# Apply the options to the environment
-
-if env['ENABLE_SAT_P']:
-	env.Append(CPPDEFINES=['ENABLE_SAT_P'])
-
-if env['ENABLE_DEBUG_FLAG']:
-	env.Append(CXXFLAGS=['-g'])
-	env.Append(CFLAGS=['-g'])
-
-#------------------------------------------------------
-# CONFIGURATION TESTS
-
-#-----------
-# ISNAN DETECTION
-
-#- - - 8< - - -
-checknansrc = """/* Test for 'isnan' */
-#include <math.h>
-
-int main(void){
-	int x = 1;
-	int y;
-	y = isnan(x);
-	return 0;
-}
-#ifdef __MINGW32__
-# error "MINGW32 isnan is no good for our purpose - a macro isnan is no good"
-#endif
-"""
-#- - - 8< - - -
-
-def CheckIsNan(context):
-	context.Message( 'Checking for isnan...' )
-	lastLIBS = context.env.get('LIBS')
-	lastCPPFLAGS = context.env.get('CPPFLAGS')
-	context.env.Append(LIBS = ['m'])
-	tuple = context.TryRun(checknansrc,'.c')
-	#print tuple
-	if not tuple[0]:
-		context.env.Replace(
-			LIBS = lastLIBS
-			, CPPFLAGS = lastCPPFLAGS
-		)
-		context.config_h = context.config_h +  "#undef HAVE_ISNAN\n"
-	else:
-		context.config_h = context.config_h +  "#define HAVE_ISNAN\n"
-
-	context.Result(tuple[0])
-	return tuple[0]
-
-def CheckCppUnitConfig(context):
-	context.Message( 'Checking cppunit-config...' )
-	lastLIBS = context.env.get('LIBS')
-	lastCPPFLAGS = context.env.get('CPPFLAGS')
-
-#	for k in conf.env['ENV']:
-#		print "ENV:",k,"=",env['ENV'][k]
-
-	res = 1
-	try:
-		context.env.ParseConfig(cppunit_config_command)
-	except IOError:
-		res = 0
-	except:
-		res = 0
-
-	if lastLIBS:
-		context.env.Replace(LIBS=lastLIBS)
-	else:
-		context.env['LIBS'] = []
-
-	if lastCPPFLAGS:
-		context.env.Replace(CPPFLAGS=lastCPPFLAGS)
-	else:
-		context.env['CPPFLAGS'] = []
-			
-	context.config_h = context.config_h + "#define HAVE_CPPUNIT_CONFIG\n"
-	context.Result(res)
-	return res
-
-#----------------
-# SWIG
-
-import os,re
-
-need_fortran = False
-
-def get_swig_version(env):
-	cmd = env['SWIG']+' -version'
-	(cin,coutcerr) = os.popen4(cmd)
-	output = coutcerr.read()
-	
-	restr = "SWIG\\s+Version\\s+(?P<maj>[0-9]+)\\.(?P<min>[0-9]+)\\.(?P<pat>[0-9]+)\\s*$"
-	expr = re.compile(restr,re.M);
-	m = expr.search(output);
-	if not m:
-		return None
-	maj = int(m.group('maj'))
-	min = int(m.group('min'))
-	pat = int(m.group('pat'))
-
-	return (maj,min,pat)
-	
-
-def CheckSwigVersion(context):
-	
-	try:
-		context.Message("Checking version of SWIG... ")
-		maj,min,pat = get_swig_version(context.env)
-	except:
-		context.Result("Failed to detect version, or failed to run SWIG")
-		return 0;
-	
-	if maj == 1 and (
-			min > 3
-			or (min == 3 and pat >= 24)
-		):
-		context.Result("ok, %d.%d.%d" % (maj,min,pat))
-		return 1;
-	else:
-		context.Result("too old, %d.%d.%d" % (maj,min,pat))
-		return 0;
-
-#------------------------------------------------------
-# ASCEND
- 
-def CheckAscend(context):
-		context.Message("Checking for ascend-config... ")
-		
-		if context.env.get("ASCEND_CONFIG"):
-			loc = "path"
-			path = str(context.env.get("ASCEND_CONFIG"))
-		elif platform.system()=="Windows":
-			loc = "registry"	
-			try:
-				import _winreg
-				x=_winreg.ConnectRegistry(None,_winreg.HKEY_LOCAL_MACHINE)
-				y= _winreg.OpenKey(x, r'SOFTWARE\ASCEND' )
-			except Exception,e:
-				context.Result("failed registry check (%s)" % str(e))
-				return 0
-			BIN,_t = _winreg.QueryValueEx(y,"INSTALL_BIN")
-			_winreg.CloseKey(y)
-			_winreg.CloseKey(x)
-			path = os.path.join(BIN,"ascend-config")
-		else:
-			context.Result("not found")
-			return 0				
-		
-		if not os.path.isfile(path):
-			context.Result("not found at '%s' (from %s)" % (str(path),loc))
-			return 0
-
-		context.env['ASCEND_CONFIG'] = path
-		context.Result("ok, %s" % str(path))
-		return 1
-#	except Exception,e:
-#		context.Result("failed (%s)" % str(e))
-#		return 0
-
-#------------------------------------------------------
-# CONFIGURATION
-
-
-conf = Configure(env
-	, custom_tests = { 
-		'CheckIsNan' : CheckIsNan
-		,'CheckCppUnitConfig' : CheckCppUnitConfig
-		,'CheckSwigVersion' : CheckSwigVersion
-		,'CheckAscend' : CheckAscend
-	} 
-	, config_h = "config.h"
-)
-
-# Math library...
-
-if conf.CheckLibWithHeader(['m','c'], 'math.h', 'C') == False:
-	print 'Did not find libm.a or m.lib, exiting!'
-	Exit(1)
-
-# IsNan
-
-conf.CheckIsNan()
-# CppUnit...
-
-have_cppunit = False
-
-if conf.CheckCppUnitConfig():
-	if conf.CheckLibWithHeader("cppunit","cppunit/TestCase.h","C++"):
-		#print "CPPUNIT OK!"
-		have_cppunit=True
-
-# Python DEV files
-
-env['HAVE_PYTHON'] = False
-_havepy = conf.CheckHeader(distutils.sysconfig.get_python_inc()+"/Python.h")
-if _havepy:
-	env['HAVE_PYTHON'] = True
-
-# Swig
-
-env['HAVE_SWIG'] = False
-_swigv = conf.CheckSwigVersion()
-if _swigv:
-	env['HAVE_SWIG'] = True
-
-# ASCEND
-
-if conf.CheckAscend():
-	env['HAVE_ASCEND'] = True
-
-env = conf.Finish()
-
-# install
-
+tools = ['swig','ascend','substinfile','gsl','tar','disttar', 'nsis']
 if platform.system()=="Windows":
-	with_installer=1
-else:
-	with_installer=0
-	without_installer_reason = "only possible under Windows"
-
-#------------------------------------------------------
-# BUILD THE STATIC OR SHARED LIBRARY
-
-
-list = Split("""
-	exception.cpp steamcalculator.cpp state.cpp region1.cpp region2.cpp 
-	region3.cpp region4.cpp boundaries.cpp steamcalculatorexception.cpp zeroin.cpp 
-	designbycontract.cpp units.cpp solver.cpp steamproperty.cpp satcurve.cpp b23curve.cpp 
-	b13curve.cpp convergencetest.cpp solver2.cpp iapws95.cpp measurement.cpp
-	surfacetension.cpp
-""")
-
-lib_env = env.Clone()
-
-if platform.system()=="Linux":
-	lib_env.Append(LINKFLAGS=['-Wl,-soname,$SONAME'])
-
-if lib_env.get('STATIC_LIBRARY'):
-	lib = lib_env.Library('freesteam',list
-		, LIBS = ['m']
+	env = Environment(ENV=os.environ
+		, GSL_STATIC = default_gsl_static
+		, toolpath = ['scons']
+		, tools = ['mingw']+tools
 	)
-	libs = [lib]
 else:
-	lib = lib_env.SharedLibrary('freesteam',list
-		, LIBS = ['m']
+	env = Environment(
+		ENV={"PATH":os.environ['PATH']}
+		, GSL_STATIC = default_gsl_static
+		, toolpath=['scons']
+		, tools=['default']+tools
 	)
 
-	libs = [lib]
-
-	# create local symlink for the soname stuff.
-	if platform.system()=="Linux":
-		if env.get('SONAME_MAJOR'):
-			lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}",lib,Move("$TARGET","$SOURCE"))
-			print "MAKING LINK, SONAME_MAJOR =",env.get('SONAME_MAJOR')
-			liblink = lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}"
-				,lib
-				,"ln -s $SOURCE $TARGET"
-			)
-			libs.append(liblink)
-
-#------------------------------------------------------
-# Build the example program (build-time)
-
-examplesrc = Split("example/example.cpp")
-
-example = env.Program('example/example.cpp'
-	, LIBS = ['freesteam']
-	, LIBPATH='#'
-	, CPPPATH='#'
-	, CPPDEFINES=['FREESTEAM_NOT_INSTALLED']
-)
-
-env.Depends(example,libs)
-
-env.Alias('example',[example])
-
-#env.Program('testnan',['testnan.cpp']
-#	, LIBS = 'm'
-#	, CPPFLAGS = '-fsignaling-nans'
-#)
-
-#------------------------------------------------------
-# SUBDIRECTORIES....
-
-# Testing with CppUnit...
-
-if have_cppunit:
-	env.SConscript(['test/SConscript'],'env have_cppunit') #, 'cli/SConscript'
-else:
-	print "Skipping... Tests (no CppUnit found)"
-
-# Compile-time C++ template testing
-
-if env['WITH_CTESTS']:
-	env.SConscript(['ctest/SConscript'],'env')
-
-# Command-line-interface programs
-
-env.SConscript(['cli/SConscript'],'env')
-
-# EMSO hooks
-
-if env['HAVE_EMSO']:
-	env.SConscript(['emso/SConscript'],'env')
-else:
-	print "Skipping... EMSO hook libraries"
-
-# Python hooks
-
-install_python = []
-install_python.append( env.SConscript(['python/SConscript'],'env') )
-
-# ASCEND hooks
-
-install_ascend = []
-install_ascend.append( env.SConscript(['ascend/SConscript'],'env') )
-
-#------------------------------------------------------
-# Recipe for 'CHMOD' ACTION 	 
+# Some utility tools for installing file with suitable permissions
   	 
 import SCons 	 
 from SCons.Script.SConscript import SConsEnvironment 	 
@@ -534,54 +185,236 @@ def InstallPermAs(env, dest, filen, perm):
 	return dest
   	 
 SConsEnvironment.InstallPerm = InstallPerm
-
-# define wrappers 	 
 SConsEnvironment.InstallProgram = lambda env, dest, files: InstallPerm(env, dest, files, 0755) 	 
 SConsEnvironment.InstallHeader = lambda env, dest, files: InstallPerm(env, dest, files, 0644) 	 
 SConsEnvironment.InstallLibrary = lambda env, dest, files: InstallPerm(env, dest, files, 0644) 	 
-SConsEnvironment.InstallLibraryAs = lambda env, dest, files: InstallPermAs(env, dest, files, 0644) 	 
+SConsEnvironment.InstallLibraryAs = lambda env, dest, files: InstallPermAs(env, dest, files, 0644)
 
-#------------------------------------------------------
-# Symlink
+# Add configuration options to the 'environment'
 
-SConsEnvironment.SymLink = Builder(action='ln -s $SOURCE $TARGET')
+vars.Update(env)
 
-#------------------------------------------------------
-# DOXYGEN DOCUMENTATION
+#----------------
+# SWIG
 
-#docs = env.Doxygen('Doxyfile')
-#env.Alias('docs',[docs])
+import re,subprocess
 
-#---------------------------------------
-# SUBSTITUTION DICTIONARY for .in files
+def get_swig_version(env):
+	#print "SWIG='%s'" % env['SWIG']
+	cmd = [env['SWIG'],'-version']
+	output = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
+	
+	restr = "SWIG\\s+Version\\s+(?P<maj>[0-9]+)\\.(?P<min>[0-9]+)\\.(?P<pat>[0-9]+)\\s*$"
+	expr = re.compile(restr,re.M);
+	m = expr.search(output);
+	if not m:
+		return None
+	maj = int(m.group('maj'))
+	min = int(m.group('min'))
+	pat = int(m.group('pat'))
+
+	return (maj,min,pat)
+	
+
+def CheckSwigVersion(context):
+	
+	try:
+		context.Message("Checking version of SWIG... ")
+		maj,min,pat = get_swig_version(context.env)
+	except Exception,e:
+		context.Result("Failed to detect version, or failed to run SWIG (%s)"% str(e))
+		return False;
+	
+	context.env['SWIGVERSION']=tuple([maj,min,pat])
+	
+	if maj == 1 and (
+			min > 3
+			or (min == 3 and pat >= 24)
+		):
+		context.Result("ok, %d.%d.%d" % (maj,min,pat))
+		return True;
+	else:
+		context.Result("too old, %d.%d.%d" % (maj,min,pat))
+		return False;
+
+
+
+# Check that we got all the associated stuff that we need...
+
+if not env.get('HAVE_GSL'):
+	print "GSL was not found... install GSL (package 'gsl-dev' in Ubuntu)."
+	Exit(1)
+
+# TODO: detect PYTHON properly.
+if platform.system()=="Windows":
+	python_lib='python%d%d'
+else:
+	python_lib='python%d.%d'
+
+import distutils.sysconfig
+
+python_lib = python_lib % (sys.version_info[0],sys.version_info[1])
+
+conf = env.Configure(custom_tests =
+	{'CheckSwigVersion' : CheckSwigVersion}
+)
+
+if not conf.CheckFunc('fprintf'):
+	print "You compiler and/or environment is not correctly configured (see config.log for details)"
+	Exit(1)
+
+without_python_reason = "Python header 'Python.h' not found"
+env['HAVE_PYTHON'] = False
+pyinc = os.path.join(distutils.sysconfig.get_python_inc(),"Python.h")
+#print "PYINC =",pyinc
+_havepy = conf.CheckHeader(pyinc)
+if _havepy:
+	env['HAVE_PYTHON'] = True
+
+#without_python_reason = "Python library '%s' not found" % python_lib
+#conf.env['HAVE_PYTHON'] = conf.CheckLib(python_lib)
+
+if conf.env['HAVE_PYTHON'] and conf.CheckSwigVersion() is False:
+	without_python_reason = 'SWIG >= 1.3.24 is required'
+	conf.env['HAVE_PYTHON']=False
+
+conf.Finish()
+
+if  not env.get('HAVE_ASCEND'):
+	print "WARNING: ASCEND was not found... freesteam will be built without ASCEND bindings."
+
+if not env['HAVE_PYTHON']:
+	print "WARNING: Freesteam will be built without Python bindings.", without_python_reason
+
+
+# Flags to give some more warning output from the GCC compiler
+
+env.Append(CFLAGS=['-Wall','-W','-Wconversion','-Wimplicit'])
+
+# Flags for coverage testing (will apply to all code built in 'env')
+
+if env.get('GCOV'):
+	env.Append(
+		CFLAGS=['-fprofile-arcs','-ftest-coverage']
+		,LIBS=['gcov']
+	)
+
+if env.get('DEBUG'):
+	env.Append(
+		CFLAGS=['-g']
+	)
+
+# Create config.h including version number
 
 subst_dict = {
 	'@VERSION@':version
-	,'@SONAME@':env['SONAME']
-	,'@SONAME_MAJOR@':env['SONAME_MAJOR']
-	,'@SONAME_MINOR@':env['SONAME_MINOR']
-	,'@SHLIBSUFFIX@':env['SHLIBSUFFIX']
-	,'@SHLIBPREFIX@':env['SHLIBPREFIX']
-	,'@INSTALL_BIN@':env['INSTALL_BIN']
-	,'@INSTALL_LIB@':env['LIBDIR']
-	,'@INSTALL_INCLUDE@':env['INCDIR']
-	,'@PYTHON@':sys.executable
+	, '@PYTHON@' : python_exe
+	, '@INSTALL_BIN@':env['INSTALL_BIN']
+	, '@INSTALL_INCLUDE@':env['INSTALL_INCLUDE']
+	, '@INSTALL_LIB@':env['INSTALL_LIB']
+	, '@INSTALL_SHARE@':env['INSTALL_SHARE']
 }
 
 env.Append(SUBST_DICT=subst_dict)
 
-#------------------------------------------------------
-# CREATE the SPEC file for generation of RPM packages
-
-env.SubstInFile('freesteam.spec.in')
-	
-#------------------------------------------------------
-# CREATE 'freesteam-config'
+configh = env.SubstInFile('config.h.in')
 
 configscript = env.SubstInFile('freesteam-config.in')
 
-#------------------------------------------------------
-# INSTALLATION
+install_config = env.InstallProgram("${INSTALL_ROOT}$INSTALL_BIN",configscript)
+
+default_targets =['python','ascend']
+
+# Here is the list of all of the source files that will go into
+# the freesteam DLL/SO.
+
+srcs = ["region1.c", "region2.c", "region3.c", "region4.c", "steam_ph.c"
+	,"steam.c", "backwards.c","b23.c", "common.c", "derivs.c", "zeroin.c"
+	,"steam_ps.c", "solver2.c","steam_pT.c","steam_pu.c","steam_Ts.c"
+	,"steam_Tx.c"
+	,"bounds.c", "steam_pv.c", "viscosity.c", "thcond.c"
+]
+
+# Create a sub-environment with linking to libm for mathematics routines
+
+lib_env = env.Clone()
+lib_env.Append(
+	LIBS = ['m']
+)
+lib_env.Append(
+	LIBS = env.get('GSL_LIBS')
+	,LIBPATH = env.get('GSL_LIBPATH')
+	,CPPPATH = env.get('GSL_CPPPATH')
+)
+
+# Create the shared library
+
+if platform.system()=="Linux":
+	lib_env.Append(LINKFLAGS=['-Wl,-soname,$SONAME'])
+
+lib = lib_env.SharedLibrary("freesteam",srcs + env.get('GSL_STATICLIBS',[]))
+env.Depends('python',lib)
+
+libs = [lib]
+
+# create local symlink for the soname stuff.
+if platform.system()=="Linux":
+	if env.get('SONAME_MAJOR'):
+		lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}",lib,Move("$TARGET","$SOURCE"))
+		#print "MAKING LINK, SONAME_MAJOR =",env.get('SONAME_MAJOR')
+		liblink = lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}"
+			,lib
+			,"ln -s $SOURCE $TARGET"
+		)
+		libs.append(liblink)
+		env.Depends('python',liblink)
+		env.Depends('test',liblink)
+
+# Store a reference to this library so that we can reference it from
+# SConscript files in subdirectories
+
+env['libfreesteam'] = lib
+
+# Create an environment variable into which locations of installed files can be
+# stored.
+
+env['installedfiles'] = []
+
+# Build the Python API for freesteam
+
+env.SConscript(["python/SConscript"],'env')
+
+# Build the ASCEND API for freesteam (TODO move this into the ASCEND project
+# once it becomes stable.
+
+env.SConscript(["ascend/SConscript"],'env')
+
+# Install the examples, but don't build them
+
+env.SConscript(["examples/SConscript"],'env')
+
+# Build the cheery little GTK GUI that everyone will like
+#env.SConscript(["python/SConscript"],'env')
+# !doesn't exist yet!
+
+# Create the test program. Currently we're not using any unit testing library;
+# this is currently just simple bespoke code.
+
+prog_env = env.Clone()
+prog_env.Append(
+	LIBS=['freesteam']
+	,LIBPATH=['#']
+	,LINKFLAGS=['-Wl,-rpath,'+str(Dir('#'))]
+)
+
+prog_env.Program("test","test.c")
+
+#-------------------------------------------------------------------------------
+# Install files, if requested.
+
+#print "INSTALL_LIB =",env.get('INSTALL_LIB')
+#print "INSTALL_PREFIX =",env.get('INSTALL_PREFIX')
+#print "INSTALL_ROOT =",env.get('INSTALL_ROOT')
 
 try:
 	umask = os.umask(022)
@@ -589,45 +422,82 @@ except OSError:
 	# ignore on systems that don't support umask
 	pass
 
-if can_install:
-	install_common = []
+
+libname = "${INSTALL_LIB}/$SONAME$SONAME_MINOR"
+if platform.system()=="Windows":
+	install_lib = env.InstallLibrary("$INSTALL_ROOT$INSTALL_LIB",[lib])
+else:
+	install_lib = env.InstallLibraryAs("${INSTALL_ROOT}"+libname, [lib])
+
+	link1 = "$INSTALL_LIB/${SHLIBPREFIX}freesteam$SHLIBSUFFIX"
+	link2 = "$INSTALL_LIB/$SONAME"
+
+	install_link1 = None
+	if env.subst(link1) != env.subst(libname):
+		install_link1 = env.Command("${INSTALL_ROOT}"+link1,install_lib,"ln -s %s $TARGET" % libname)
+
+	install_link2 = None
+	if env.get("SONAME_MINOR"):
+		install_link2 = env.Command("${INSTALL_ROOT}"+link2,install_lib,"ln -s %s $TARGET"%libname)
 	
-	libname = "$LIBDIR/$SONAME$SONAME_MINOR"
-	if platform.system()=="Windows":
-		install_lib = env.InstallLibrary("$INSTALL_ROOT$LIBDIR",[lib])
-	else:
-		install_lib = env.InstallLibraryAs("$INSTALL_ROOT"+libname, [lib])
+	env['installedfiles'] += [install_link1, install_link2]
 
-		link1 = "$LIBDIR/${SHLIBPREFIX}freesteam$SHLIBSUFFIX"
-		link2 = "$LIBDIR/$SONAME"
+env['installedfiles'] += [install_lib, install_config]
 
-		install_link1 = None
-		if env.subst(link1) != env.subst(libname):
-			install_link1 = env.Command("${INSTALL_ROOT}"+link1,install_lib,"ln -s %s $TARGET" % libname)
+import glob
+headerfiles = glob.glob("*.h")
 
-		install_link2 = None
-		if env.get("SONAME_MINOR"):
-			install_link2 = env.Command("${INSTALL_ROOT}"+link2,install_lib,"ln -s %s $TARGET"%libname)
-		
-		install_common += [install_link1, install_link2]
+if env.get('HAVE_SWIG') and env.get('HAVE_PYTHON'):
+	headerfiles += glob.glob("python/*.i")
 
-	install_config = env.InstallProgram("$INSTALL_ROOT$INSTALL_BIN",[configscript])
-	install_common += [install_lib,install_config]
-	
+#---------------
+# DISTRIBUTION TARBALL
+
+env['DISTTAR_FORMAT']='bz2'
+env.Append(
+	DISTTAR_EXCLUDEEXTS=['.o','.os','.so','.0','.1','.2','.3'
+		,'.a','.dll','.lib','.cc','.cache'
+		,'.pyc','.cvsignore','.dblite','.log','.pl','.out','.exe','.aux','.idx'
+		,'.toc','.lof','.lot','.mm','.warnings','.tm2','.swp',',tmp','.gz'
+		,'.bz2','.7z','.deb','.dsc','.changes','_wrap.c','.pyc'
+		,'.dvi','.tex','.lot','.loc','.eps'
+	]
+	, DISTTAR_EXCLUDEDIRS=['CVS','.svn','.sconf_temp', 'dist','debian']
+	, DISTTAR_EXCLUDERES=[r"_wrap\.c$", r"~$", r"python/freesteam\.py", r"/test$",r"examples/isentropic$"]
+)
+
+tar = env.DistTar("dist/"+env['DISTTAR_NAME']
+	, [env.Dir('#')]
+)
+
+#------------------------------------------------------
+
+# DEBIAN TARBALL for use with Build Service
+
+if platform.system() != "Windows":
 	import glob
-	files = glob.glob("*.h")
+	deb_files = glob.glob('debian/*.install')
+	deb_files += glob.glob('debian/*.docs')
+	deb_files += glob.glob('debian/*.dirs')
+	deb_files += glob.glob('debian/*.man')
+	deb_files += glob.glob('debian/*.manpages')
+	deb_files += ['debian/%s' % s for s in ['rules','control','changelog','compat','copyright','dirs']]
 
-	if env.get('HAVE_SWIG') and env.get('HAVE_PYTHON'):
-		files += glob.glob("*.i")
+	deb_tar = env.Tar(
+		'dist/debian.tar.gz'
+		,deb_files
+		,TARFLAGS = ['cz']
+	)
 
-	#print files
-
-	install_common += [env.InstallHeader("$INSTALL_ROOT$INCDIR/freesteam", files)]
-		
-	env.Alias('install',install_common + install_ascend + install_python)
+#---------------------------------------------------
+env['installedfiles'] += [env.InstallHeader("${INSTALL_ROOT}$INSTALL_INCLUDE/freesteam", headerfiles)]
+	
+env.Alias('install',env['installedfiles'])
 
 #------------------------------------------------------
 # WINDOWS INSTALLER
+
+with_installer = True
 
 if not env.get('NSIS'):
 	with_installer = False
@@ -647,39 +517,12 @@ if platform.system()=="Windows":
 	else:
 		print "Skipping... Windows installer isn't being built:",without_installer_reason
 
-#--------------------------------------------------------
-# DISTRIBUTION TARBALL
-
-env['DISTTAR_FORMAT']='bz2'
-env.Append(
-	DISTTAR_EXCLUDEEXTS=['.o','.os','.so','.a','.dll','.cc','.cache','.pyc','.cvsignore','.dblite','.log','.pl','.cli','.cpass','.0','.bak']
-	, DISTTAR_EXCLUDEDIRS=['CVS','.svn','.sconf_temp', 'dist']
-)
-
-if env.get('DISTTAR_NAME'):
-	tar = env.DistTar("dist/"+env.get('DISTTAR_NAME')
-		, [env.Dir('#')]
-	)
-	env.Depends(tar,"freesteam.spec")
-
-#--------------------------------------------------------
+#------------------------------------------------------
 # DEFAULT TARGETS
-
-default_targets = libs + ['example','cli','test']
-
-if env.get('HAVE_PYTHON') and env.get('HAVE_SWIG'):
-	default_targets.append('python')
-
-#if env.get('HAVE_ASCEND'):
-# above test doesn't work for case of ASCEND_SRCROOT
-default_targets.append('ascend')
-
-if env.get('NSIS'):
-	default_targets.append('installer')
 
 env.Default(default_targets)
 
 print "Building targets:"," ".join([str(i) for i in BUILD_TARGETS])
 
-# vim: set syntax=python:
+# vim:set ts=4 sw=4 noexpandtab ft=python:
 

@@ -1,131 +1,94 @@
+#ifndef FREESTEAM_COMMON_H
+#define FREESTEAM_COMMON_H
+
+#include "config.h"
+
+#define FREESTEAM_CHAR int
+
 /*
+	ASCEND code in base/generic only EXPORTS symbols, no imports.
+	The FREESTEAM_DLLSPEC macro will, depending on whether we are
+	FREESTEAM_BUILDING_LIBASCEND (building libascend.so aka ascend.dll)
+	or FREESTEAM_BUILDING_INTERFACE (building for example _ascpy.dll or
+	ascendtcl.dll), act respectively to declare symbols as being
+	*exported* or *imported*.
 
-freesteam - IAPWS-IF97 steam tables library
-Copyright (C) 2004-2005  John Pye
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
+	New versions of GCC are able to make use of these declarations
+	as well.
 */
-
-#ifndef COMMON_H
-#define COMMON_H
-
-#ifndef FREESTEAM_SWIG
-# include "units.h"
+#ifdef __WIN32__
+# define FREESTEAM_EXPORT __declspec(dllexport)
+# define FREESTEAM_IMPORT __declspec(dllimport)
 #else
-# define Pressure Measurement
-# define Temperature Measurement
-# define SpecificEnergy Measurement
-# define SpecificEntropy Measurement
-# define Density Measurement
+# ifdef HAVE_GCCVISIBILITY
+#  define FREESTEAM_EXPORT __attribute__ ((visibility("default")))
+#  define FREESTEAM_IMPORT
+# else
+#  define FREESTEAM_EXPORT
+#  define FREESTEAM_IMPORT
+# endif
 #endif
 
-// this is the precision of all the parameters used in the Steam Calculator:
-typedef double Num;
-#define NUM_DEFINED
-
-// define a method (for use in header files)
-#define METHOD_H_OBJ(funcname) Num funcname(SteamCalculator *c)
-
-const SpecificGasConstant R=0.461526 * kJ_kgK; // Specific gas constant for water from IF97
-
-#define REG4_TOL 0.001		// relative err on pressures considerd to be equal to psat.
-
-const Temperature TB_HIGH = 863.15 * Kelvin;
-const Temperature T_MIN = ZeroCelsius;
-const Temperature T_MAX = 1073.15 * Kelvin;
-const Temperature T_CRIT = 647.096 * Kelvin;	// critical-point temperature
-const Temperature T_TRIPLE = 273.16 * Kelvin;	// triple-point temperature
-const Temperature REG2_TEMP_REF = 540.0 * Kelvin;
-const Temperature REG1_TEMP_REF = 1386.0 * Kelvin;
-const Temperature REG1_T_LOW = ZeroCelsius;
-const Temperature REG2_T_LOW = ZeroCelsius;
-const Temperature REG2_T_HIGH = T_MAX;
-
-const Temperature T_REG1_REG3 = 623.15 * Kelvin;
-const Temperature TB_LOW = T_REG1_REG3;
-
-const Temperature T_MIN_VOL = fromcelsius(3.984);
-
-const Pressure P_MAX = 100.0 * MPa;
-const Pressure PB_LOW = 16.5292 * MPa;
-const Pressure P_MIN = 0.0 * Pascal;
-const Pressure P_CRIT = 22.064 * MPa;	// critical-point pressure
-const Pressure P_TRIPLE = 611.657 * Pascal;	// triple-point pressure
-const Pressure REG4_P_MIN = 611.213 * Pascal;	// minimum pressure for region 4 (IF-97 eq 31 & p 35) / [MPa]
-const Pressure REG2_P_HIGH = P_MAX;
-const Pressure REG1_P_HIGH = P_MAX;
-const Pressure REG1_PRES_REF = 16.53 * MPa;
-const Pressure REG2_PRES_REF = 1.0 * MPa;
-
-const Density RHO_CRIT = 322.0 * kg / metre3;	// critical-point density / [kg/m³]
-
-/// @see http://www.iapws.org/relguide/visc.pdf#page=7 Eq (4)
-const DynamicViscosity IAPS85_VISC_REF = 55.071 * micro * Pascal * second;
-/// @see http://www.iapws.org/relguide/visc.pdf#page=7 Eq (2)
-const Density IAPS85_DENS_REF = 317.763 * kg_m3;
-/// @see http://www.iapws.org/relguide/visc.pdf#page=7 Eq (1)
-const Temperature IAPS85_TEMP_REF = 647.226 * Kelvin;
-/// @see http://www.iapws.org/relguide/visc.pdf#page=7 Eq (4)
-const Pressure IAPS85_PRES_REF = 22.115 * MPa;	// MPa (THIS IS *NOT* EQUAL TO P_CRIT!)
-
-const Temperature IAPS85_TEMP_REG2_REF = 540.0 * Kelvin;
-
-const Pressure STEAM_P_EPS = 1.0e-5 * MPa;
-const Temperature STEAM_T_EPS = 5.0e-4 * Kelvin;
-
-const Temperature EPS_T_CRIT=0.00007 * Kelvin;
-
-const Temperature T_CRIT_PLUS=(T_CRIT + STEAM_T_EPS);
-
-const Density REG3_ZEROIN_DENS_MAX = 765.0 * kg_m3;
-const Density REG3_ZEROIN_TOL= 1e-18 * kg_m3;
-
-#define MPA_TO_BAR(PRES) (((Num)(PRES)) * 10.0      )
-#define BAR_TO_MPA(PRES) (((Num)(PRES)) * 0.1       )
-#define PA_TO_MPA(PRES)  (((Num)(PRES)) * 0.000001  )
-#define MPA_TO_PA(PRES)  (((Num)(PRES)) * 1.0E6     )
-#define KJKG_TO_JKG(JKG) (((Num)(KJKG)) * 1000.0    )
-#define BAR_TO_PA(PRES)  (((Num)(PRES)) * 100.0E3   )
-#define KPA_TO_MPA(PRES) (((Num)(PRES)) * 0.001     )
-
-#define W_TO_KW(W) (((Num)(W))*0.001)
-#define KJ_TO_J(KJ) (((Num)(KJ))*0.001)
-#define J_TO_KJ(J) (((Num)(J))*0.001)
-
-const Acceleration GRAV = 9.81 * Newton / kg;	// N/kg, gravitation acceleration
-
-#ifndef PI
-# define PI 3.14159265358
+#ifdef FREESTEAM_BUILDING_LIB
+# define FREESTEAM_DLL extern FREESTEAM_EXPORT
+#else
+# define FREESTEAM_DLL extern FREESTEAM_IMPORT
 #endif
 
-// Property 'Alternative' codes for use with SatCurve and B23Curve and Solver2
-
-const int SOLVE_IENERGY=0;
-const int SOLVE_ENTHALPY=1;
-
-const int SOLVE_ENTROPY=0;
-const int SOLVE_CV=1;
-const int SOLVE_CP=2;
-
-// square a value but only evaluate it once in GNU C's CPP.
-
-template<class T>
-T sq(const T& t){
-	return t*t;
-}
-
+#if !defined(FREESTEAM_DLL) || !defined(FREESTEAM_EXPORT) || !defined(FREESTEAM_IMPORT)
+# error "NO FREESTEAM_DLL DEFINED"
 #endif
 
+/* Constants used throughout IAPWS-IF97 */
+
+#define IAPWS97_PMAX 100e6 /* Pa */
+#define IAPWS97_TMIN 273.15 /* K */
+#define IAPWS97_TMAX 1073.15 /* K */
+
+#define IAPWS97_TCRIT 647.096 /* K */
+#define IAPWS97_PCRIT 22.064e6 /* Pa */
+#define IAPWS97_RHOCRIT 322. /* kg/mÂ³ */
+
+#define IAPWS97_PTRIPLE 611.657 /* Pa */
+
+#define IAPWS97_R 461.526 /* J/kgK */
+
+//#define IAPWS97_WARN_APPROX
+
+#ifndef __GNUC__
+# define __func__ "<function>"
+#endif
+
+//#include <stdio.h>
+
+#ifdef IAPWS97_WARN_APPROX
+# define IAPWS97_APPROXIMATE \
+	static char _warn_approx=0; \
+	if(!_warn_approx){ \
+		_warn_approx = 1; \
+		fprintf(stderr \
+			,"WARNING: %s (%s:%d): backwards or approximation function used!\n" \
+			,__func__,__FILE__,__LINE__ \
+		); \
+	}
+#else
+# define IAPWS97_APPROXIMATE
+#endif
+
+#define SQ(X) ((X)*(X))
+
+/* Basic math routines, if necesary... */
+
+FREESTEAM_DLL double freesteam_ipow(double x, int n);
+
+#ifdef FREESTEAM_BUILDING_LIB
+/* our local ipow implementation */
+# define ipow freesteam_ipow
+/* 'isnan' function for use with Windows */
+# ifdef WIN32
+#  include <float.h>
+#  define isnan _isnan
+# endif
+#endif
+
+#endif /* FREESTEAM_COMMON_H */
