@@ -65,7 +65,7 @@ Var /GLOBAL ASCENDMODELS
 Var /GLOBAL PYINSTALLED
 Var /GLOBAL ASCENDINSTALLED
 Var /GLOBAL LIBINSTALLED
-Var /GLOBAL EXAMPLEINSTALLED
+Var /GLOBAL EXAMPLESINSTALLED
 
 Function .onInit
 
@@ -107,7 +107,7 @@ uninst:
 	StrCpy $PYINSTALLED ""
 	StrCpy $ASCENDINSTALLED ""
 	StrCpy $LIBINSTALLED ""
-	StrCpy $EXAMPLEINSTALLED ""
+	StrCpy $EXAMPLESINSTALLED ""
 	
 	Call DetectPython
 	Pop $PYOK
@@ -194,17 +194,16 @@ configerror:
 
 SectionEnd
 
-;Section "Example C++ code"
-;  DetailPrint "--- EXAMPLE FILES ---"
-;	SetOutPath $INSTDIR\example
-;	File "example\example.cpp"
-;	File "example\SConstruct"
-;	File "example\Makefile"
-;	File "example\README.txt"
-;	WriteRegDWORD HKLM "SOFTWARE\freesteam" "Example" 1
-;	StrCpy $EXAMPLEINSTALLED "1"
-;	Return
-;SectionEnd
+Section "Example source code"
+	DetailPrint "--- EXAMPLE FILES ---"
+	SetOutPath $INSTDIR\examples
+	File "examples\isentropic.c"
+	File "examples\SConstruct"
+	File "examples\README.txt"
+	WriteRegDWORD HKLM "SOFTWARE\freesteam" "Examples" 1
+	StrCpy $EXAMPLESINSTALLED "1"
+	Return
+SectionEnd
 
 Section "Python language bindings"
 	${If} $PYOK == 'OK'
@@ -280,8 +279,8 @@ Section "Start Menu Shortcuts"
   CreateShortCut "$SMPROGRAMS\freesteam\README.lnk" "$INSTDIR\README.txt" "" "$INSTDIR\README.txt" 0
   CreateShortCut "$SMPROGRAMS\freesteam\CHANGELOG.lnk" "$INSTDIR\CHANGELOG.txt" "" "$INSTDIR\CHANGELOG.txt" 0
 
-  ${If} $EXAMPLEINSTALLED == "1"
-	CreateShortCut "$SMPROGRAMS\freesteam\Example code.lnk" "$INSTDIR\example" "" "$INSTDIR\example" 0
+  ${If} $EXAMPLESINSTALLED == "1"
+	CreateShortCut "$SMPROGRAMS\freesteam\Example source code.lnk" "$INSTDIR\examples" "" "$INSTDIR\examples" 0
   ${EndIf}
 
   ${If} $PYINSTALLED == "1"
@@ -314,9 +313,9 @@ Section "Uninstall"
 
 ;--- example code ---
 
-	ReadRegDWORD $0 HKLM "SOFTWARE\freesteam" "Example"
+	ReadRegDWORD $0 HKLM "SOFTWARE\freesteam" "Examples"
 	${If} $0 != 0
-			RmDir /r $INSTDIR\example
+			RmDir /r $INSTDIR\examples
 	${EndIf}
 
 ;--- python components ---
