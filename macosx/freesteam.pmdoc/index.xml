@@ -1,4 +1,4 @@
-<pkmkdoc spec="1.12"><properties><title>freesteam 2.0</title><build>/Users/john/Desktop/freesteam-2.0.mpkg</build><organization>net.sourceforge.freesteam</organization><userSees ui="easy"/><min-target os="1"/><domain system="true"/></properties><distribution><versions min-spec="1.000000"/><scripts></scripts></distribution><description>Library for calculation of steam and water properties using the IAPWS IF97 correlations.
+<pkmkdoc spec="1.12"><properties><title>freesteam-2.0</title><build>/Users/john/Desktop/freesteam-2.0.mpkg</build><organization>net.sourceforge.freesteam</organization><userSees ui="easy"/><min-target os="1"/><domain system="true"/></properties><distribution><versions min-spec="1.000000"/><scripts></scripts></distribution><description>Library for calculation of steam and water properties using the IAPWS IF97 correlations.
 
 See http://freesteam.sourceforge.net/ for more details.
 </description><contents><choice title="temp_install" id="choice0" starts_selected="true" starts_enabled="true" starts_hidden="false"><pkgref id="net.sourceforge.freesteam.freesteam20.tempinstall.pkg"/></choice></contents><resources bg-scale="none" bg-align="topleft"><locale lang="en"><resource mod="true" type="license">/Users/john/freesteam/LICENSE.txt</resource><resource mime-type="text/rtf" kind="embedded" type="conclusion"><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf540
@@ -10,6 +10,8 @@ See http://freesteam.sourceforge.net/ for more details.
 Use 'freesteam-config' from a terminal to see compiler parameters required when building/linking against freesteam.\
 \
 Use 'python' then 'from freesteam import *' from a terminal to access freesteam via its Python language bindings.\
+\
+Example code for freesteam has been installed. See /usr/local/share/freesteam/examples.\
 \
 Please use the 'freesteam-users' mailing list (see http://freesteam.sourceforge.net/) if you have any questions.\
 \

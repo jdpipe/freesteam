@@ -83,6 +83,12 @@ vars.Add(
 	,"$INSTALL_PREFIX/bin"
 )
 
+vars.Add(
+	'INSTALL_SHARE'
+	,"Location to install 'share' files, examples, etc."
+	,"$INSTALL_PREFIX/share"
+)
+
 vars.Add(PathVariable(
 	'INSTALL_ROOT'
 	,"Root onto which installation should take place. Normally only for "
@@ -306,6 +312,7 @@ subst_dict = {
 	, '@INSTALL_BIN@':env['INSTALL_BIN']
 	, '@INSTALL_INCLUDE@':env['INSTALL_INCLUDE']
 	, '@INSTALL_LIB@':env['INSTALL_LIB']
+	, '@INSTALL_SHARE@':env['INSTALL_SHARE']
 }
 
 env.Append(SUBST_DICT=subst_dict)
@@ -382,8 +389,13 @@ env.SConscript(["python/SConscript"],'env')
 
 env.SConscript(["ascend/SConscript"],'env')
 
+# Install the examples, but don't build them
+
+env.SConscript(["examples/SConscript"],'env')
+
 # Build the cheery little GTK GUI that everyone will like
 #env.SConscript(["python/SConscript"],'env')
+# !doesn't exist yet!
 
 # Create the test program. Currently we're not using any unit testing library;
 # this is currently just simple bespoke code.
