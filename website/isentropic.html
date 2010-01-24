@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>isentropic.c</title>
+<link rel="stylesheet" type="text/css" href="highlight.css">
+</head>
+<body class="hl">
+<pre class="hl"><span class="hl com">/*</span>
+<span class="hl com">This is a simple example of a C program that calculates using steam properties</span>
+<span class="hl com">from freesteam.</span>
+<span class="hl com"></span>
+<span class="hl com">It demonstrates use of a few of the basic capabilities of freesteam. It</span>
+<span class="hl com">calculates the rise in temperature seen in isentropic compression of a sample</span>
+<span class="hl com">of steam initially at 1 bar, 400 K, to a final pressure of 10 bar. It also</span>
+<span class="hl com">calculates the saturation temperature for steam at that final pressure.</span>
+<span class="hl com">*/</span>
+
+<span class="hl dir">#include &lt;freesteam/steam_ps.h&gt;</span>
+<span class="hl dir">#include &lt;freesteam/steam_pT.h&gt;</span>
+<span class="hl dir">#include &lt;freesteam/region4.h&gt;</span>
+<span class="hl dir">#include &lt;stdio.h&gt;</span>
+
+<span class="hl kwb">int</span> <span class="hl kwd">main</span><span class="hl sym">(</span><span class="hl kwb">void</span><span class="hl sym">){</span>
+
+	<span class="hl kwd">fprintf</span><span class="hl sym">(</span>stderr<span class="hl sym">,</span><span class="hl str">&quot;</span><span class="hl esc">\n</span><span class="hl str">This example demonstrates use of a few of the basic&quot;</span>
+		<span class="hl str">&quot; capabilities of freesteam. It calculates the rise in temperature&quot;</span>
+		<span class="hl str">&quot; seen in isentropic compression of a sample of steam initially at&quot;</span>
+		<span class="hl str">&quot; 1 bar, 400 K, to a final pressure of 10 bar. It also calculates&quot;</span>
+		<span class="hl str">&quot; the saturation temperature for steam at that final pressure.</span><span class="hl esc">\n\n</span><span class="hl str">&quot;</span>
+	<span class="hl sym">);</span>
+
+	<span class="hl kwb">double</span> T <span class="hl sym">=</span> <span class="hl num">400</span><span class="hl sym">.;</span> <span class="hl com">/* in Kelvin! */</span>
+	<span class="hl kwb">double</span> p <span class="hl sym">=</span> <span class="hl num">1</span>e5<span class="hl sym">;</span> <span class="hl com">/* = 1 bar */</span>
+
+	<span class="hl kwd">fprintf</span><span class="hl sym">(</span>stderr<span class="hl sym">,</span><span class="hl str">&quot;Initial temperature = %f K, pressure = %f bar</span><span class="hl esc">\n</span><span class="hl str">&quot;</span><span class="hl sym">,</span> T<span class="hl sym">,</span> p<span class="hl sym">/</span><span class="hl num">1</span>e5<span class="hl sym">);</span>
+
+	<span class="hl com">/* set a steam state of 1 bar, 400 K */</span>
+	SteamState S <span class="hl sym">=</span> <span class="hl kwd">freesteam_set_pT</span><span class="hl sym">(</span><span class="hl num">1</span>e5<span class="hl sym">,</span> <span class="hl num">400</span><span class="hl sym">);</span>
+
+	<span class="hl kwb">double</span> s <span class="hl sym">=</span> <span class="hl kwd">freesteam_s</span><span class="hl sym">(</span>S<span class="hl sym">);</span>
+	<span class="hl kwd">fprintf</span><span class="hl sym">(</span>stderr<span class="hl sym">,</span><span class="hl str">&quot;Entropy at initial state is %f kJ/kgK</span><span class="hl esc">\n</span><span class="hl str">&quot;</span><span class="hl sym">,</span>s<span class="hl sym">/</span><span class="hl num">1</span>e3<span class="hl sym">);</span>
+
+	<span class="hl com">/* calculate a steam state with entropy from above and 10 bar pressure */</span>
+	SteamState S2 <span class="hl sym">=</span> <span class="hl kwd">freesteam_set_ps</span><span class="hl sym">(</span><span class="hl num">10</span>e5<span class="hl sym">,</span> s<span class="hl sym">);</span>
+
+	<span class="hl kwb">double</span> T2 <span class="hl sym">=</span> <span class="hl kwd">freesteam_T</span><span class="hl sym">(</span>S2<span class="hl sym">);</span>
+	<span class="hl kwb">double</span> p2 <span class="hl sym">=</span> <span class="hl kwd">freesteam_p</span><span class="hl sym">(</span>S2<span class="hl sym">);</span>
+
+	<span class="hl com">/* output the new temperature */</span>
+	<span class="hl kwd">fprintf</span><span class="hl sym">(</span>stderr<span class="hl sym">,</span><span class="hl str">&quot;New temperature is %f K at %f bar</span><span class="hl esc">\n</span><span class="hl str">&quot;</span><span class="hl sym">,</span> T2<span class="hl sym">,</span> p2<span class="hl sym">/</span><span class="hl num">1</span>e5<span class="hl sym">);</span>
+
+	<span class="hl kwd">fprintf</span><span class="hl sym">(</span>stderr<span class="hl sym">,</span><span class="hl str">&quot;Check: final entropy is %f kJ/kgK</span><span class="hl esc">\n</span><span class="hl str">&quot;</span><span class="hl sym">,</span> <span class="hl kwd">freesteam_s</span><span class="hl sym">(</span>S2<span class="hl sym">)/</span><span class="hl num">1</span>e3<span class="hl sym">);</span>
+
+	<span class="hl com">/* saturation temperature at final pressure */</span>
+	<span class="hl kwb">double</span> Tsat <span class="hl sym">=</span> <span class="hl kwd">freesteam_region4_Tsat_p</span><span class="hl sym">(</span>p2<span class="hl sym">);</span>
+	<span class="hl kwd">fprintf</span><span class="hl sym">(</span>stderr<span class="hl sym">,</span><span class="hl str">&quot;Saturation temperature at %f bar is %f K.</span><span class="hl esc">\n\n</span><span class="hl str">&quot;</span><span class="hl sym">,</span>p2<span class="hl sym">/</span><span class="hl num">1</span>e5<span class="hl sym">,</span> Tsat<span class="hl sym">);</span>
+
+	<span class="hl kwa">return</span> <span class="hl num">0</span><span class="hl sym">;</span>
+<span class="hl sym">}</span>
+
+</pre>
+</body>
+</html>
+<!--HTML generated by highlight 2.10, http://www.andre-simon.de/-->

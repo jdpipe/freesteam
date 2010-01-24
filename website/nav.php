@@ -1,11 +1,11 @@
 <?php
 
-$latestversion ="0.8.1";
+$latestversion ="2.0";
 $releasedate = "15 Oct 2007";
 
 $viewsvn_base = "http://freesteam.svn.sourceforge.net/viewvc/freesteam/trunk/";
 
-$download_page = "http://sourceforge.net/project/platformdownload.php?group_id=120898";
+$download_page = "http://sourceforge.net/projects/freesteam/files/";
 
 $freesteam_home = "/";
 
@@ -38,8 +38,8 @@ function show_nav($this_page=NULL,$current_page=NULL){
 	
 	$links = array(
 		new Link("Examples", "example.php", "Code samples")
-		,new Link("Download", $download_page, "File releases at SourceForge (source code only, no binaries)")
-		,new Link("How to compile", "scons.php", "Instructions for building the software from source")
+		,new Link("Download", $download_page, "File releases at SourceForge")
+		,new Link("How to compile", "compile.php", "Instructions for building the software from source")
 		,new Link("Support", "https://lists.sourceforge.net/lists/listinfo/freesteam-users", "Get support for Freesteam (mailing list)")
 		,new Link("Changelog", "${viewsvn_base}CHANGELOG.txt?only_with_tag=HEAD&amp;view=markup", "via ViewVC on SourceForge")
 		,new Link("Report bugs", "http://ascendbugs.cheme.cmu.edu/set_project.php?project_id=3", "Mantis bug tracker at cmu.edu")

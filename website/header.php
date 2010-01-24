@@ -18,6 +18,7 @@ header("Last-Modified: " . gmdate("D, d M Y H:i:s",$t) . " GMT");
 <head>
   <title>freesteam: Steam Tables, Open Source, IAPWS-IF97</title>
   <link rel="stylesheet" media="screen" href="freesteam.css"
+  <link rel="stylesheet" media="screen" href="highlight.css"
  type="text/css">
   <meta name="KEYWORDS"
  content="steam tables, IAPWS, steam properties, steam calculator, density, water, steam, IF97, saturated, superheated, subcooled, properties, enthalpy, entropy, specific heat, thermodynamics, thermo-fluids, IAPWS-95, python, ASCEND, EMSO, EES">
