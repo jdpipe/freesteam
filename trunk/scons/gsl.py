@@ -74,10 +74,11 @@ def generate(env):
 			env['HAVE_GSL'] = True
 
 			# on Ubuntu, remove gslcblas if present 
-			if platform.system()=="Linux":
-				if platform.dist()[0]=="Ubuntu":
-					if 'gslcblas' in env['GSL_LIBS']:
-						env['GSL_LIBS'].remove('gslcblas')
+			# NO... this causes errors, unless we link gslcblas later on.
+			#if platform.system()=="Linux":
+			#	if platform.dist()[0]=="Ubuntu":
+			#		if 'gslcblas' in env['GSL_LIBS']:
+			#			env['GSL_LIBS'].remove('gslcblas')
 
 		#print "GSL_LIBS =",env.get('GSL_LIBS')
 		#print "GSL_LIBPATH =",env.get('GSL_LIBPATH')
