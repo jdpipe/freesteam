@@ -463,7 +463,7 @@ env.Append(
 		,'.dvi','.tex','.lot','.loc','.eps'
 	]
 	, DISTTAR_EXCLUDEDIRS=['CVS','.svn','.sconf_temp', 'dist','debian']
-	, DISTTAR_EXCLUDERES=[r"_wrap\.c$", r"~$", r"python/freesteam\.py", r"/test$"]
+	, DISTTAR_EXCLUDERES=[r"_wrap\.c$", r"~$", r"python/freesteam\.py", r"/test$",r"examples/isentropic$"]
 )
 
 tar = env.DistTar("dist/"+env['DISTTAR_NAME']
