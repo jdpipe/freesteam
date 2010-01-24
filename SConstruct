@@ -338,7 +338,7 @@ lib_env.Append(
 if platform.system()=="Linux":
 	lib_env.Append(LINKFLAGS=['-Wl,-soname,$SONAME'])
 
-lib = lib_env.SharedLibrary("freesteam",srcs + env.get('GSL_STATICLIBS'))
+lib = lib_env.SharedLibrary("freesteam",srcs + env.get('GSL_STATICLIBS',[]))
 env.Depends('python',lib)
 
 libs = [lib]
@@ -444,7 +444,7 @@ env.Append(
 		,'.dvi','.tex','.lot','.loc','.eps'
 	]
 	, DISTTAR_EXCLUDEDIRS=['CVS','.svn','.sconf_temp', 'dist','debian']
-	, DISTTAR_EXCLUDERES=[r"_wrap\.c$", r"~$", r"python/freesteam\.py"]
+	, DISTTAR_EXCLUDERES=[r"_wrap\.c$", r"~$", r"python/freesteam\.py", r"/test$"]
 )
 
 tar = env.DistTar("dist/"+env['DISTTAR_NAME']
