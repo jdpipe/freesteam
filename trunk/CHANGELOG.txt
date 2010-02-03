@@ -1,6 +1,12 @@
 FREESTEAM CHANGELOG
 ===================
 
+2.1
+XXXXXXXXX
+---------
+
+- Add surface tension calculation
+
 2.0
 24 Jan 2009
 -----------

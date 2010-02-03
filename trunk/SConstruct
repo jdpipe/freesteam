@@ -331,7 +331,7 @@ default_targets =['python','ascend']
 srcs = ["region1.c", "region2.c", "region3.c", "region4.c", "steam_ph.c"
 	,"steam.c", "backwards.c","b23.c", "common.c", "derivs.c", "zeroin.c"
 	,"steam_ps.c", "solver2.c","steam_pT.c","steam_pu.c","steam_Ts.c"
-	,"steam_Tx.c"
+	,"steam_Tx.c", "surftens.c"
 	,"bounds.c", "steam_pv.c", "viscosity.c", "thcond.c"
 ]
 

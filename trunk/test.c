@@ -34,6 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "region1.h"
 #include "viscosity.h"
 #include "thcond.h"
+#include "surftens.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -854,6 +855,104 @@ void testconductivitypT(void){
 
 }
 
+/*------------------------------------------------------------------------------
+  SURFACE TENSION ROUTINE
+*/
+
+typedef struct{
+	double T, sigma;
+} SurfTensData;
+
+void testsurftens(void){
+	fprintf(stderr,"SURFACE TENSION (T) TESTS\n");
+
+#define SURFTENS_RELTOL 5e-3
+#define SURFTENS_COUNT 75
+	SurfTensData td[SURFTENS_COUNT] = {
+		{0.01,	75.65}
+		,{5,	74.94}
+		,{10,	74.22}
+		,{15,	73.49}
+		,{20,	72.74}
+		,{25,	71.97}
+		,{30,	71.19}
+		,{35,	70.40}
+		,{40,	69.60}
+		,{45,	68.78}
+		,{50,	67.94}
+		,{55,	67.10}
+		,{60,	66.24}
+		,{65,	65.37}
+		,{70,	64.48}
+		,{75,	63.58}
+		,{80,	62.67}
+		,{85,	61.75}
+		,{90,	60.82}
+		,{95,	59.87}
+		,{100,	58.91}
+		,{105,	57.94}
+		,{110,	56.96}
+		,{115,	55.97}
+		,{120,	54.97}
+		,{125,	53.96}
+		,{130,	52.93}
+		,{135,	51.90}
+		,{140,	50.86}
+		,{145,	49.80}
+		,{150,	48.74}
+		,{155,	47.67}
+		,{160,	46.59}
+		,{165,	45.50}
+		,{170,	44.41}
+		,{175,	43.30}
+		,{180,	42.19}
+		,{185,	41.07}
+		,{190,	39.95}
+		,{195,	38.81}
+		,{200,	37.67}
+		,{205,	36.53}
+		,{210,	35.38}
+		,{215,	34.23}
+		,{220,	33.07}
+		,{225,	31.90}
+		,{230,	30.74}
+		,{235,	29.57}
+		,{240,	28.39}
+		,{245,	27.22}
+		,{250,	26.04}
+		,{255,	24.87}
+		,{260,	23.69}
+		,{265,	22.51}
+		,{270,	21.34}
+		,{275,	20.16}
+		,{280,	18.99}
+		,{285,	17.83}
+		,{290,	16.66}
+		,{295,	15.51}
+		,{300,	14.36}
+		,{305,	13.22}
+		,{310,	12.09}
+		,{315,	10.97}
+		,{320,	9.86}
+		,{325,	8.77}
+		,{330,	7.70}
+		,{335,	6.65}
+		,{340,	5.63}
+		,{345,	4.63}
+		,{350,	3.67}
+		,{355,	2.74}
+		,{360,	1.88}
+		,{365,	1.08}
+		,{370,	0.39}
+	};
+
+	int i;
+	for(i=0; i<SURFTENS_COUNT; ++i){
+		double sig = td[i].sigma * 1e-3;
+		double sig1 = freesteam_surftens_T(td[i].T + 273.15);
+		CHECK_VAL(sig1, sig, SURFTENS_RELTOL);
+	}
+}
 
 /*------------------------------------------------------------------------------
   MAIN ROUTINE
@@ -929,6 +1028,10 @@ int main(void){
 
 	maxrelerr = 0;
 	testconductivitypT();
+	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
+
+	maxrelerr = 0;
+	testsurftens();
 	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
 
 	
