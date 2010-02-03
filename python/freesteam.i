@@ -82,6 +82,7 @@ You may not use it in commercially-released software."
 %rename(drhofdT_T) freesteam_drhofdT_T;
 %rename(drhogdT_T) freesteam_drhogdT_T;
 %rename(dpsatdT_T) freesteam_region4_dpsatdT_T;
+%rename(surftens_T) freesteam_surftens_T;
 
 %ignore SteamState;
 %ignore freesteam_T;
@@ -116,6 +117,7 @@ You may not use it in commercially-released software."
 #include "derivs.h"
 #include "solver2.h"
 #include "bounds.h"
+#include "surftens.h"
 %}
 
 /* TODO clean up region4.h so we can just include it here */
@@ -135,6 +137,7 @@ double freesteam_region4_dpsatdT_T(double T);
 %include "steam_pv.h";
 %include "bounds.h";
 %include "derivs.h";
+%include "surftens.h";
 
 #if 0
 /* FIXME convert solver2 routines to throw exception instead of return status */
