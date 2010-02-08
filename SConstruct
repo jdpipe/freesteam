@@ -8,7 +8,7 @@
 import platform, sys, distutils.sysconfig, os 
 
 #version number for this copy of freesteam
-version = "2.0"
+version = "2.1"
 
 # version number of python
 pyversion = "%d.%d" % (sys.version_info[0],sys.version_info[1])
