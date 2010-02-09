@@ -1,7 +1,7 @@
 <?php
 
 $latestversion ="2.0";
-$releasedate = "15 Oct 2007";
+$releasedate = "24 Jan 2010";
 
 $viewsvn_base = "http://freesteam.svn.sourceforge.net/viewvc/freesteam/trunk/";
 

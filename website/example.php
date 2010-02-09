@@ -14,7 +14,7 @@ show_nav(NULL, "Examples");
 
 <p>We propose to add more examples here when time permits. If you have any examples from your own work, I'll put them here and link to your site.</p>
 
-<h2>Problem 1</h2>
+<h2>Example 1</h2>
 
 <p>This example demonstrates use of a few of the basic capabilities of freesteam via C code.<p>
 
@@ -44,7 +44,7 @@ Check: final entropy is 7.502401 kJ/kgK
 Saturation temperature at 10.000000 bar is 453.035632 K.
 </pre>
 
-<h2>Problem 2</h2>
+<h2>Example 2</h2>
 
 <p>Use freesteam's Python bindings to quickly calculate some steam properties. The Python API has changed extensively with the release of freesteam 2.0, so you need to use that version for this to work.</p>
 
@@ -80,5 +80,60 @@ print Tsat
 S3 = steam_Tx(Tsat, 0)
 print S3.h
 </pre>
+
+<h2>Example 3</h3>
+
+<p>This example demonstrates how the new <a href="http://matplotlib.sourceforge.net/mpl_toolkits/mplot3d/tutorial.html">mplot3d</a> features in Matplotlib can be used to plot properties surfaces using data from freesteam. This example plots a (T,p,s) surface.
+
+<pre>
+<i>#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Example of 3D (T,s,p) surface plotted using new Matplotlib 3D-plotting feature.
+# Contributed by Rod Stephenson. Thanks!</i>
+
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import numpy as np
+<b>import freesteam</b>
+
+def plot_tsp3d():
+    fig = plt.figure()
+    ax = Axes3D(fig)
+    pp = np.logspace(-3,3,20)
+    ss = np.linspace(0.,10., 40)
+    xdata,ydata = np.meshgrid(pp, ss)
+    zdata = np.zeros(xdata.shape)
+
+    for i, p in enumerate(pp):
+        for j, s in enumerate(ss):
+            T = None
+            if not <b>freesteam.bounds_ps(p*1e5,s*1e3,0)</b>:
+                try:
+                    T = <b>freesteam.steam_ps(p*1e5,s*1e3).T</b>
+                except:
+                    pass
+            zdata[j, i]= T
+    ax.plot_wireframe(xdata, ydata, zdata, rstride=1, cstride=1)
+    ax.set_xlabel('Pressure / [bar]')
+    ax.set_ylabel('Entropy / [kJ/kgK]')
+    ax.set_zlabel('Temperature / [K]')
+
+    TT0 = np.linspace(273.15, <b>freesteam.TCRIT</b>, 100)
+    psat = [<b>freesteam.psat_T(T)</b>/1e5 for T in TT0]
+    sf = [freesteam.region4_Tx(T,0).s/1e3 for T in TT0]
+    sg = [freesteam.region4_Tx(T,1).s/1e3 for T in TT0]
+    ax.plot(psat, sf, TT0,'k-')
+    ax.plot(psat, sg, TT0,'r-')
+    plt.show()
+
+if __name__ == '__main__':
+    plot_tsp3d()
+</pre>
+
+<p>The resulting plot can be rotated in 3D using the mouse. A screenshot is
+shown below.</p>
+
+<p><img src="example-tsp.png" /></p>
 
 <? require_once("footer.php"); ?>

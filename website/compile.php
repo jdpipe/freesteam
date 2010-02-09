@@ -11,9 +11,9 @@ show_nav(NULL, "How to compile");
 
 <h2>Building version <?php print($latestversion)?></h2>
 
-<p>The following instructions have been tested with version 2.0 on Windows XP (32 bit), Ubuntu Karmic, and Mac OS X 10.5.</p>
+<p>The following instructions have been tested with version 2.0 on Windows XP (32 bit), Ubuntu Karmic, and Mac OS X 10.5. In addition to this page, please also read <a href="http://freesteam.svn.sourceforge.net/viewvc/freesteam/trunk/README.txt">README.txt</a>, which you should have received in the source code tarball.</p>
 
-<p>To build <b>freesteam</b> you will need to have Python, SCons, and SWIG and the GCC compiler installed on your system. On Windows, you should use the MinGW toolset, together with MSYS for the command line (and make sure you have got c:\Python26 and c:\Python26\Scripts and the location of SWIG present in your PATH).
+<p>To build <b>freesteam</b> you will need to have Python, SCons, and SWIG, GSL and the GCC compiler installed on your system. On Windows, you should use the MinGW toolset, together with MSYS for the command line (and make sure you have got c:\Python26 and c:\Python26\Scripts and the location of SWIG present in your PATH). Some binaries for GSL are available to save you extra compiling: <a href="http://ascendwiki.cheme.cmu.edu/Binary_installer_for_GSL-1.13_on_Mac_OS_X">for Mac OS X</a> and <a href="http://ascendwiki.cheme.cmu.edu/Binary_installer_for_GSL-1.13_on_MinGW">for Windows</a>.
 
 <ol>
 <li>Download the source code tarball from the freesteam files page on sourceforge.net.
