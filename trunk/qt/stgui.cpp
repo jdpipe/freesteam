@@ -85,7 +85,7 @@ st_QtGUI::st_QtGUI(QWidget *parent){
 	connect( lineEdit_input_cv,		SIGNAL( editingFinished() ), this, SLOT( eval_state() ) );
 	connect( lineEdit_input_qual,	SIGNAL( editingFinished() ), this, SLOT( eval_state() ) );
 
-	connect( checkBox_sat, SIGNAL( toggled(bool) ), this, SLOT( set_solver_list() ) );
+	/* connect( checkBox_sat, SIGNAL( toggled(bool) ), this, SLOT( set_solver_list() ) ); */
 
 	connect( comboBox_solverType, SIGNAL( currentIndexChanged(int) ), this, SLOT( set_input_edit() ) );
 
@@ -97,6 +97,16 @@ st_QtGUI::st_QtGUI(QWidget *parent){
 
 
 	set_solver_list();
+}
+
+static double get_value(QLineEdit *obj){
+	QString str = obj->text();
+	bool ok;
+	double val = str.toDouble(&ok);
+	if(!ok){
+		throw std::runtime_error("Unable to calculate: invalid input");
+	}
+	return val;
 }
 
 
@@ -112,38 +122,38 @@ int st_QtGUI::eval_state(){
 
 		case SOLVE_PT:
 			//solve steam state
-			p1 = BAR * (lineEdit_input_p->text().toDouble());
-			T1 = fromcelsius(lineEdit_input_T->text().toDouble());
+			p1 = BAR * get_value(lineEdit_input_p);
+			T1 = fromcelsius(get_value(lineEdit_input_T));
 
 			S1 = freesteam_set_pT(p1, T1);
 			break;
 		case SOLVE_PH:
-			p1 = BAR * (lineEdit_input_p->text().toDouble());
-			h1 = KJ_KG * (lineEdit_input_h->text().toDouble());	
+			p1 = BAR * (get_value(lineEdit_input_p));
+			h1 = KJ_KG * (get_value(lineEdit_input_h));	
 
 			S1 = freesteam_set_ph(p1, h1);
 			break;
 		case SOLVE_PS:
-			p1 = BAR * (lineEdit_input_p->text().toDouble());
-			s1 = KJ_KGK * (lineEdit_input_s->text().toDouble());	
+			p1 = BAR * (get_value(lineEdit_input_p));
+			s1 = KJ_KGK * (get_value(lineEdit_input_s));	
 
 			S1 = freesteam_set_ps(p1, s1);
 			break;
 		case SOLVE_PV:
-			p1 = BAR * (lineEdit_input_p->text().toDouble());
-			v1 = M3_KG * (lineEdit_input_v->text().toDouble());	
+			p1 = BAR * (get_value(lineEdit_input_p));
+			v1 = M3_KG * (get_value(lineEdit_input_v));	
 
 			S1 = freesteam_set_pv(p1, v1);
 			break;
 		case SOLVE_PRHO:
-			p1 = BAR * (lineEdit_input_p->text().toDouble());
-			rho1 = KG_M3 * (lineEdit_input_rho->text().toDouble());	
+			p1 = BAR * (get_value(lineEdit_input_p));
+			rho1 = KG_M3 * (get_value(lineEdit_input_rho));	
 
 			S1 = freesteam_set_pv(p1, 1./rho1);
 			break;
 		case SOLVE_TS:
-			T1 = fromcelsius(lineEdit_input_T->text().toDouble());
-			s1 = KJ_KGK * (lineEdit_input_s->text().toDouble());	
+			T1 = fromcelsius(get_value(lineEdit_input_T));
+			s1 = KJ_KGK * (get_value(lineEdit_input_s));	
 
 			S1 = freesteam_set_Ts(T1, s1);
 			break;
@@ -167,34 +177,33 @@ int st_QtGUI::eval_state(){
 
 static const char *whichstate(SteamState S){
 	if(S.region == 4){
-		return "SATURATED";
+		return "Saturated";
 	}
 	double T = freesteam_T(S);
 	double p = freesteam_p(S);
 	if(T > IAPWS97_TCRIT && p > IAPWS97_PCRIT){
-		return "SUPERCRITICAL";
+		return "Supercrit";
 	}
 
 	double psat = freesteam_region4_psat_T(T);
-	if(p < psat){
-		return "SUBCOOLED";
+	if(p > psat){
+		return "Subcooled";
 	}
 
-	if(p > psat){
-		return "SUPERHEATED";
+	if(p < psat){
+		return "Superheated";
 	}
 
 	if(S.region!=4){
-		fprintf(stderr,"\nShould be region 4!\n");
-		abort();
+		throw std::runtime_error("Should be region 4!");
 	}
 
 	if(S.R4.x == 0){
-		return "SAT LIQUID";
+		return "Sat. liq.";
 	}
 
 	if(S.R4.x == 1){
-		return "SAT STEAM";
+		return "Sat. vap.";
 	}
 
 	return "SATURATED";
