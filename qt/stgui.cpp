@@ -24,6 +24,7 @@ extern "C"{
 #include <freesteam/steam_ps.h>
 #include <freesteam/steam_pv.h>
 #include <freesteam/steam_Ts.h>
+#include <freesteam/steam_Tx.h>
 #include <freesteam/region4.h>
 };
 
@@ -38,7 +39,7 @@ int main(int argc, char *argv[])
     return app.exec();
 }
 
-typedef enum {SOLVE_PT = 0, SOLVE_PH, SOLVE_PS, SOLVE_PV, SOLVE_PRHO, SOLVE_TS, SOLVE_NUM_TYPES} SolverEnum;
+typedef enum {SOLVE_PT = 0, SOLVE_PH, SOLVE_PS, SOLVE_PV, SOLVE_PRHO, SOLVE_TS, SOLVE_TX, SOLVE_NUM_TYPES} SolverEnum;
 
 const char *solve_descrip[SOLVE_NUM_TYPES] = {
 	 "(p,T)   Pressure - temperature"
@@ -47,6 +48,7 @@ const char *solve_descrip[SOLVE_NUM_TYPES] = {
 	,"(p,v)   Pressure - specific volume"
 	,"(p,rho) Pressure - density"
 	,"(T,s)   Temperature - entropy"
+	,"(T,x)   Temperature - quality"
 };
 
 #define SOLVER_FAILED 0
@@ -115,7 +117,7 @@ int st_QtGUI::eval_state(){
 
 	int solvertype = comboBox_solverType->currentIndex();
 
-	double p1, T1, h1, s1, v1,rho1;
+	double p1, T1, h1, s1, v1, rho1, x1;
 
 	try{
 		switch(solvertype){
@@ -157,7 +159,12 @@ int st_QtGUI::eval_state(){
 
 			S1 = freesteam_set_Ts(T1, s1);
 			break;
-		default:
+		case SOLVE_TX:
+			T1 = fromcelsius(get_value(lineEdit_input_T));
+			x1 = get_value(lineEdit_input_qual);	
+
+			S1 = freesteam_set_Tx(T1, x1);
+			break;		default:
 			throw std::runtime_error("Unknown solver type");
 		}
 
@@ -206,7 +213,7 @@ static const char *whichstate(SteamState S){
 		return "Sat. vap.";
 	}
 
-	return "SATURATED";
+	return "Saturated";
 }
 
 
@@ -296,6 +303,10 @@ int st_QtGUI::set_input_edit()
 	case SOLVE_TS:
 		lineEdit_input_T->setEnabled(1);
 		lineEdit_input_s->setEnabled(1);
+		break;
+	case SOLVE_TX:
+		lineEdit_input_T->setEnabled(1);
+		lineEdit_input_qual->setEnabled(1);
 		break;
 	default:
 		throw std::runtime_error("Unknown solver type");

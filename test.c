@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "steam.h"
-#include "steam_ph.h"
 #include "region4.h"
 #include "backwards.h"
 #include "b23.h"
@@ -26,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "zeroin.h"
 #include "region3.h"
 #include "solver2.h"
+#include "steam_ph.h"
 #include "steam_ps.h"
 #include "steam_Ts.h"
 #include "steam_pT.h"
