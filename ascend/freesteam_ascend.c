@@ -17,12 +17,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "../steam_ph.h"
+#include "../steam_pT.h"
 #include "../derivs.h"
 #include "../region4.h"
 
 #include <ascend/utilities/ascConfig.h>
 #include <ascend/utilities/error.h>
 #include <ascend/compiler/extfunc.h>
+
+#define BBOX_DEBUG
 
 /**
 	ASCEND external evaluation function
@@ -127,6 +130,56 @@ int Tvsx_ph_calc(struct BBoxInterp *bbox,
 		return 1;
 	}
 }
+
+
+/**
+	ASCEND external evaluation function
+	Outputs: mu, k, rho, cp
+	Inputs: p, T
+	@return 0 on success
+*/
+int mukrhocp_pT_calc(struct BBoxInterp *bbox,
+		int ninputs, int noutputs,
+		double *inputs, double *outputs,
+		double *jacobian
+){
+	(void)bbox; (void)jacobian; // not used
+	(void)ninputs; (void)noutputs; // not used currently
+
+	// convert inputs to freesteam dimensionful values
+	double p = inputs[0]; /* ASCEND uses SI units, so no conversion needed */
+	double T = inputs[1]; /* ASCEND uses SI units, so no conversion needed */
+
+#ifdef BBOX_DEBUG
+	ERROR_REPORTER_HERE(ASC_USER_NOTE,
+		"Evaluating with p = %f bar, T = %f K = %f C"
+		,p,T,T-273.15
+	);
+#endif
+
+	SteamState S;
+	S = freesteam_set_pT(p,T);
+	double mu = freesteam_mu(S);
+	double k = freesteam_k(S);
+	double rho = freesteam_rho(S);
+	double cp = freesteam_cp(S);
+
+#ifdef BBOX_DEBUG
+	ERROR_REPORTER_HERE(ASC_USER_NOTE,
+		"Got mu = %f, k = %f, rho = %f, cp = %f"
+		, mu, k, rho, cp
+	);
+#endif
+
+	outputs[0] = mu;
+	outputs[1] = k;
+	outputs[2] = rho;
+	outputs[3] = cp;
+
+	return 0;
+}
+
+
 
 /*============== a few quick single-input, single output routines ============*/
 
@@ -245,7 +298,18 @@ FREESTEAM_EXPORT int freesteam_register(){
 			, NULL /* deriv2 */
 			, NULL /* free */
 			, 2,4 /* inputs, outputs */
-			, "[T,v,s,x] = freesteam_Tvs_ph(p,h) (see http://freesteam.sf.net)"
+			, "[T,v,s,x] = freesteam_Tvsx_ph(p,h) (see http://freesteam.sf.net)"
+			, 0.0
+		);
+
+		result += CreateUserFunctionBlackBox("freesteam_mukrhocp_pT"
+			, NULL /* alloc */
+			, mukrhocp_pT_calc /* value */
+			, NULL /* deriv */
+			, NULL /* deriv2 */
+			, NULL /* free */
+			, 2,4 /* inputs, outputs */
+			, "[mu,k,rho,cp] = freesteam_mukrhocp_pT(p,T) (see http://freesteam.sf.net)"
 			, 0.0
 		);
 
