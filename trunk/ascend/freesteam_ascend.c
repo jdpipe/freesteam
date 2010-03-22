@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <ascend/utilities/error.h>
 #include <ascend/compiler/extfunc.h>
 
-#define BBOX_DEBUG
+/* #define BBOX_DEBUG */
 
 /**
 	ASCEND external evaluation function
