@@ -146,9 +146,7 @@ at
 It is also distributed with the source code distribution for freesteam,
 as LICENSE.txt.
 </p>
-<p>Note that under the GPL, you can sell or otherwise distribute any code that
-dynamically or statically links to the freesteam library unless your code is 
-also licensed under the GPL.<br>
+<p>Note that under the GPL, you cannot sell or otherwise distribute any code that dynamically or statically links to the freesteam library unless your code is also licensed under the GPL.
 </p>
 
 
