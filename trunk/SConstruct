@@ -150,7 +150,7 @@ if platform.system()=="Windows":
 # Set up the 'tools' the SCONS will need access to , eg compilers
 # and create the SCONS 'environment':
 
-tools = ['swig','ascend','substinfile','gsl','tar','disttar', 'nsis']
+tools = ['swig','ascend','substinfile','gsl','gtk','tar','disttar', 'nsis']
 if platform.system()=="Windows":
 	env = Environment(ENV=os.environ
 		, GSL_STATIC = default_gsl_static
@@ -236,8 +236,6 @@ def CheckSwigVersion(context):
 	else:
 		context.Result("too old, %d.%d.%d" % (maj,min,pat))
 		return False;
-
-
 
 # Check that we got all the associated stuff that we need...
 
@@ -393,9 +391,8 @@ env.SConscript(["ascend/SConscript"],'env')
 
 env.SConscript(["examples/SConscript"],'env')
 
-# Build the cheery little GTK GUI that everyone will like
-#env.SConscript(["python/SConscript"],'env')
-# !doesn't exist yet!
+# Build the cheery little GTK GUI that everyone will like :-)
+env.SConscript(["gtk/SConscript"],'env')
 
 # Create the test program. Currently we're not using any unit testing library;
 # this is currently just simple bespoke code.
