@@ -1,0 +1,4 @@
+usr/include/freesteam
+usr/lib/*.so
+usr/bin
+usr/share/freesteam
