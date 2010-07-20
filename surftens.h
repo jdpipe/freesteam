@@ -15,13 +15,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*//** @file
+	Function to calculate surface tension as a function of
+	temperature.
 */
+
 #ifndef FREESTEAM_SURFTENS_H
 #define FREESTEAM_SURFTENS_H
 
 #include "common.h"
 
-double freesteam_surftens_T(double T);
+FREESTEAM_DLL double freesteam_surftens_T(double T);
 
 #endif FREESTEAM_SURFTENS_H
 
