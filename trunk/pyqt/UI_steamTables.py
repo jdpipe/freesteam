@@ -12,7 +12,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from numpy import meshgrid, zeros, arange, linspace, concatenate, max, min, transpose, logspace, log, arctan, pi
 
 from images import images_rc
-from unidades import unidades, presion, temperatura, entalpia, entropia, volumen_especifico, config
+from units import unidades, pressure, temperature, enthalpy, entropy, specific_volume, config
 
 
 class Plot(FigureCanvasQTAgg):
@@ -263,13 +263,13 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.statusbar.addPermanentWidget(self.progresbar)
         self.actionCSV = QtGui.QAction(SteamTables)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/button/button/filesave.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/button/filesave.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionCSV.setIcon(icon)
         self.actionCSV.setShortcut("Ctrl+E")
         self.actionCSV.setEnabled(False)
         self.actionSalir = QtGui.QAction(SteamTables)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/button/button/exit.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/button/exit.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionSalir.setIcon(icon)
         self.actionSalir.setShortcut("Alt+F4")
         self.actionTipoGrafico=QtGui.QActionGroup(SteamTables)
@@ -296,7 +296,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
 
         self.actionAcerca_deQt= QtGui.QAction(SteamTables)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/button/button/AboutQt.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/button/AboutQt.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionAcerca_deQt.setIcon(icon)
         self.menuArchivo.addAction(self.actionCSV)
         self.menuArchivo.addAction(self.actionSalir)
@@ -765,7 +765,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
         SteamTables.tabifyDockWidget(self.dockWidget_Tabla, self.dockWidget_Isolineas)
         SteamTables.setTabPosition(QtCore.Qt.DockWidgetArea(1), 0)
         
-        lineas=[":/button/button/line.png", ":/button/button/dash.png", ":/button/button/line-dot.png", ":/button/button/dot.png"]
+        lineas=[":/button/line.png", ":/button/dash.png", ":/button/line-dot.png", ":/button/dot.png"]
         for i in lineas:
             self.IsotermaLinea.addItem(QtGui.QIcon(QtGui.QPixmap(i)), "")
             self.IsobaraLinea.addItem(QtGui.QIcon(QtGui.QPixmap(i)), "")
@@ -2206,7 +2206,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
 
     #Dialogos de conversión de unidades
     def unidadesPresion_clicked(self):
-        dialog=presion.Ui_presion()
+        dialog=pressure.Ui_presion()
         dialog.setupUi(dialog)
         try:
             self.p=unidades.Pressure(float(self.presion.text())).unit(config.Configuracion("Pressure").func())
@@ -2218,7 +2218,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.calcularPropiedades()
 
     def unidadesTemperatura_clicked(self):
-        dialog=temperatura.Ui_temperatura()
+        dialog=temperature.Ui_temperatura()
         dialog.setupUi(dialog)
         try:
             self.t=unidades.Temperature(float(self.temperatura.text())).unit(config.Configuracion("Temperature").func())
@@ -2230,7 +2230,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.calcularPropiedades()
           
     def unidadesVolumen_clicked(self):
-        dialog=volumen_especifico.Ui_volumen_especifico()
+        dialog=specific_volume.Ui_volumen_especifico()
         dialog.setupUi(dialog)
         try:
             self.v=unidades.SpecificVolume(float(self.volumen.text())).unit(config.Configuracion("SpecificVolume").func())
@@ -2242,7 +2242,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.calcularPropiedades()
         
     def unidadesEntalpia_clicked(self):
-        dialog=entalpia.Ui_entalpia()
+        dialog=enthalpy.Ui_entalpia()
         dialog.setupUi(dialog)
         try:
             self.h=unidades.Enthalpy(float(self.entalpia.text())).unit(config.Configuracion("Enthalpy").func())
@@ -2254,7 +2254,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.calcularPropiedades()
         
     def unidadesEntropia_clicked(self):
-        dialog=entropia.Ui_entropia()
+        dialog=entropy.Ui_entropia()
         dialog.setupUi(dialog)
         try:
             self.s=unidades.SpecificHeat(float(self.entropia.text())).unit(config.Configuracion("SpecificHeat").func())
