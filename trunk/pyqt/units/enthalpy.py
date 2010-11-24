@@ -124,12 +124,9 @@ class Ui_entalpia(QtGui.QDialog):
         QtCore.QObject.connect(self.kcalg,QtCore.SIGNAL("editingFinished()"),self.actualizar_kcalg)        
         QtCore.QObject.connect(self.calg,QtCore.SIGNAL("editingFinished()"),self.actualizar_calg)        
         QtCore.QObject.connect(self.callb,QtCore.SIGNAL("editingFinished()"),self.actualizar_callb)        
-        QtCore.QMetaObject.connectSlotsByName(entalpia)
-
 
     def retranslateUi(self, entalpia):
         entalpia.setWindowTitle(QtGui.QApplication.translate("entalpia", "Entalpia", None, QtGui.QApplication.UnicodeUTF8))
-
 
     def actualizar_Jkg(self):
         valido=True
@@ -137,7 +134,7 @@ class Ui_entalpia(QtGui.QDialog):
             try:
                 self.Jkg.setText(str(float(self.Jkg.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("entalpia", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("entalpia", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.Jkg.setFocus()
                 self.Jkg.selectAll()
                 valido=False
@@ -151,7 +148,7 @@ class Ui_entalpia(QtGui.QDialog):
             try:
                 self.kJkg.setText(str(float(self.kJkg.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("entalpia", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("entalpia", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.kJkg.setFocus()
                 self.kJkg.selectAll()
                 valido=False
@@ -165,7 +162,7 @@ class Ui_entalpia(QtGui.QDialog):
             try:
                 self.MJkg.setText(str(float(self.MJkg.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("entalpia", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("entalpia", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.MJkg.setFocus()
                 self.MJkg.selectAll()
                 valido=False
@@ -179,7 +176,7 @@ class Ui_entalpia(QtGui.QDialog):
             try:
                 self.kWhkg.setText(str(float(self.kWhkg.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("entalpia", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("entalpia", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.kWhkg.setFocus()
                 self.kWhkg.selectAll()
                 valido=False
@@ -193,7 +190,7 @@ class Ui_entalpia(QtGui.QDialog):
             try:
                 self.Btulb.setText(str(float(self.Btulb.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("entalpia", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("entalpia", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.Btulb.setFocus()
                 self.Btulb.selectAll()
                 valido=False
@@ -207,7 +204,7 @@ class Ui_entalpia(QtGui.QDialog):
             try:
                 self.calkg.setText(str(float(self.calkg.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("entalpia", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("entalpia", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.calkg.setFocus()
                 self.calkg.selectAll()
                 valido=False
@@ -221,7 +218,7 @@ class Ui_entalpia(QtGui.QDialog):
             try:
                 self.kcalkg.setText(str(float(self.kcalkg.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("entalpia", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("entalpia", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.kcalkg.setFocus()
                 self.kcalkg.selectAll()
                 valido=False
@@ -235,7 +232,7 @@ class Ui_entalpia(QtGui.QDialog):
             try:
                 self.kcalg.setText(str(float(self.kcalg.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("entalpia", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("entalpia", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.kcalg.setFocus()
                 self.kcalg.selectAll()
                 valido=False
@@ -249,7 +246,7 @@ class Ui_entalpia(QtGui.QDialog):
             try:
                 self.callb.setText(str(float(self.callb.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("entalpia", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("entalpia", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.callb.setFocus()
                 self.callb.selectAll()
                 valido=False
@@ -263,7 +260,7 @@ class Ui_entalpia(QtGui.QDialog):
             try:
                 self.calg.setText(str(float(self.calg.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("entalpia", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("entalpia", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.calg.setFocus()
                 self.calg.selectAll()
                 valido=False

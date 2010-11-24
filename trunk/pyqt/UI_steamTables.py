@@ -28,9 +28,6 @@ class Plot(FigureCanvasQTAgg):
         else:
             self.axes3D = Axes3D(self.fig)
         
-#        self.axes3D.hold(True)
-#        self.axes3D.set_axisbelow(True)
-        
         FigureCanvasQTAgg.setSizePolicy(self, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 
@@ -3159,34 +3156,37 @@ class Ui_SteamTables(QtGui.QMainWindow):
         y_label=[]
         label=[]
         angle=[]
-        pos=int(pos/100.*len(x[0]))
         for i in range(len(isolineas)):
-            if x[i][pos]<float(self.ejeX_min.text()):
+            j=int(pos/100.*len(x[i]))
+            if x[i][j]<float(self.ejeX_min.text()):
                 x_label.append(float(self.ejeX_min.text()))
-            elif x[i][pos]>float(self.ejeX_max.text()):
+            elif x[i][j]>float(self.ejeX_max.text()):
                 x_label.append(float(self.ejeX_max.text()))
             else:
-                x_label.append(x[i][pos])
-            if y[i][pos]<float(self.ejeY_min.text()):
+                x_label.append(x[i][j])
+            if y[i][j]<float(self.ejeY_min.text()):
                 y_label.append(float(self.ejeY_min.text()))
-            elif y[i][pos]>float(self.ejeY_max.text()):
+            elif y[i][j]>float(self.ejeY_max.text()):
                 y_label.append(float(self.ejeY_max.text()))
             else:
-                y_label.append(y[i][pos])
+                y_label.append(y[i][j])
             label.append(config.representacion(isolineas[i]))
             if self.ejeX_escala.isChecked():
-                fraccionx=(log(x[i][pos+5])-log(x[i][pos]))/(log(float(self.ejeX_max.text()))-log(float(self.ejeX_min.text())))
+                fraccionx=(log(x[i][j+1])-log(x[i][j]))/(log(float(self.ejeX_max.text()))-log(float(self.ejeX_min.text())))
             else:
-                fraccionx=(x[i][pos+5]-x[i][pos])/(float(self.ejeX_max.text())-float(self.ejeX_min.text()))
+                fraccionx=(x[i][j+1]-x[i][j])/(float(self.ejeX_max.text())-float(self.ejeX_min.text()))
             if self.ejeY_escala.isChecked():
-                fracciony=(log(y[i][pos+5])-log(y[i][pos]))/(log(float(self.ejeY_max.text()))-log(float(self.ejeY_min.text())))
+                fracciony=(log(y[i][j+1])-log(y[i][j]))/(log(float(self.ejeY_max.text()))-log(float(self.ejeY_min.text())))
             else:
-                fracciony=(y[i][pos+5]-y[i][pos])/(float(self.ejeY_max.text())-float(self.ejeY_min.text()))
+                fracciony=(y[i][j+1]-y[i][j])/(float(self.ejeY_max.text())-float(self.ejeY_min.text()))
             try:
                 angle.append(arctan(fracciony/fraccionx)*360/2/pi)
             except ZeroDivisionError:
                 angle.append(90)
         return x_label, y_label, label, angle
+        
+    def limits3D(self):
+        pass
 
     def calcularIsoentropica(self, start=85, rango=5):
         """Método que actualiza los datos de isoentrópicas"""
@@ -3204,6 +3204,24 @@ class Ui_SteamTables(QtGui.QMainWindow):
             S=concatenate((S, [SCRIT]))   
         X= logspace(-3, 3, 100)*1e5
         x, y, z, x2, y2=self.isolineas(S, X, steam_ps, start, rango)
+        for i in range(len(S)-1, -1, -1):
+            for j in range(len(X)-1, -1, -1):
+                if bounds_ps(X[j], S[i], 0)<>0:
+                    del x[i][j]
+                    del y[i][j]
+                    del z[i][j]
+                    del x2[i][j]
+                    del y2[i][j]
+        for i in range(len(S)-1, -1, -1):
+            for j in range(len(x[i])-1, -1, -1):
+                if x[i][j]<self.xdata[0][0] or x[i][j]>self.xdata[-1][-1] or y[i][j]<self.ydata[0][0] or y[i][j]>self.ydata[-1][-1]:
+                    del x[i][j]
+                    del y[i][j]
+                    del z[i][j]
+            if len(x[i])==0:
+                del x[i]
+                del y[i]
+                del z[i]                    
         x_label, y_label, label, angle=self.labels([unidades.SpecificHeat(i).config("Entropy") for i in S], x2, y2, self.PosIsoEntrLabel.value())
         self.isoentropica=[x, y, z]
         self.isoentropica2=[x2, y2, x_label, y_label, ["S="+i+config.Configuracion("SpecificHeat", "Entropy").text() for i in label], angle]
@@ -3222,9 +3240,26 @@ class Ui_SteamTables(QtGui.QMainWindow):
         if self.IsoentalpicaCritica.isChecked():
             HCRIT=steam_pT(PCRIT, TCRIT).h
             H=concatenate((H, [HCRIT]))
-            
         X= logspace(-3, 3, 100)*1e5
         x, y, z, x2, y2=self.isolineas(H, X, steam_ph, start, rango)
+        for i in range(len(H)-1, -1, -1):
+            for j in range(len(X)-1, -1, -1):
+                if bounds_ph(X[j], H[i], 0)<>0:
+                    del x[i][j]
+                    del y[i][j]
+                    del z[i][j]
+                    del x2[i][j]
+                    del y2[i][j]
+        for i in range(len(H)-1, -1, -1):
+            for j in range(len(x[i])-1, -1, -1):
+                if x[i][j]<self.xdata[0][0] or x[i][j]>self.xdata[-1][-1] or y[i][j]<self.ydata[0][0] or y[i][j]>self.ydata[-1][-1]:
+                    del x[i][j]
+                    del y[i][j]
+                    del z[i][j]
+            if len(x[i])==0:
+                del x[i]
+                del y[i]
+                del z[i]                    
         x_label, y_label, label, angle=self.labels([unidades.Enthalpy(i).config for i in H], x2, y2, self.PosIsoEnthLabel.value())
         self.isoentalpica=[x, y, z]
         self.isoentalpica2=[x2, y2, x_label, y_label, ["H="+i+config.Configuracion("Enthalpy").text() for i in label], angle]
@@ -3244,9 +3279,25 @@ class Ui_SteamTables(QtGui.QMainWindow):
             P=concatenate((P, [PCRIT]))
         X= linspace(273, 1073.15, 100)
         x, y, z, x2, y2=self.isolineas(X, P, steam_pT, start, rango)
-        x_label, y_label, label, angle=self.labels([unidades.Pressure(i).config for i in P], transpose(x2), transpose(y2), self.PosIsoBarLabel.value())
-        self.isobara=[transpose(x), transpose(y), transpose(z)]
-        self.isobara2=[transpose(x2), transpose(y2), x_label, y_label, ["P="+i+config.Configuracion("Pressure").text() for i in label], angle]
+        x=transpose(x)
+        y=transpose(y)
+        z=transpose(z)
+        x2=transpose(x2)
+        y2=transpose(y2)
+#        for i in range(len(P)-1, -1, -1):
+#            for j in range(len(x[i])-1, -1, -1):
+#                if x[i][j]<self.xdata[0][0] or x[i][j]>self.xdata[-1][-1] or y[i][j]<self.ydata[0][0] or y[i][j]>self.ydata[-1][-1]:
+#                    del x[i][j]
+#                    del y[i][j]
+#                    del z[i][j]
+#            if len(x[i])==0:
+#                del x[i]
+#                del y[i]
+#                del z[i]
+
+        x_label, y_label, label, angle=self.labels([unidades.Pressure(i).config for i in P], x2, y2, self.PosIsoBarLabel.value())
+        self.isobara=[x, y, z]
+        self.isobara2=[x2, y2, x_label, y_label, ["P="+i+config.Configuracion("Pressure").text() for i in label], angle]
 
     def calcularIsoterma(self, start=75, rango=5):
         """Método que actualiza los datos de isotermas"""
@@ -3268,6 +3319,16 @@ class Ui_SteamTables(QtGui.QMainWindow):
                 X=concatenate((X, [ps*0.999, ps*1.001]))
         X.sort()
         x, y, z, x2, y2=self.isolineas(T, X, steam_pT, start, rango)
+        for i in range(len(T)-1, -1, -1):
+            for j in range(len(x[i])-1, -1, -1):
+                if x[i][j]<self.xdata[0][0] or x[i][j]>self.xdata[-1][-1] or y[i][j]<self.ydata[0][0] or y[i][j]>self.ydata[-1][-1]:
+                    del x[i][j]
+                    del y[i][j]
+                    del z[i][j]
+            if len(x[i])==0:
+                del x[i]
+                del y[i]
+                del z[i]
         x_label, y_label, label, angle=self.labels([unidades.Temperature(i).config for i in T], x2, y2, self.PosIsoThermLabel.value())
         self.isoterma=[x, y, z]
         self.isoterma2=[x2, y2, x_label, y_label, ["T="+i+config.Configuracion("Temperature").text() for i in label], angle]
@@ -3286,18 +3347,29 @@ class Ui_SteamTables(QtGui.QMainWindow):
         if self.IsocoraCritica.isChecked():
             VCRIT=steam_pT(PCRIT, TCRIT).v
             V=concatenate((V, [VCRIT]))
-        X= logspace(-3, 3, 100)*1e5
+        X= logspace(-3, 3, 300)*1e5
         x, y, z, x2, y2=self.isolineas(V, X, steam_pv, start, rango)
-        x2_corr=[]
-        y2_corr=[]
-        for i in range(len(x2)):
-            for j in range(len(x2[i])):
-                if bounds_pv(x2[i][j], y2[i][j], 0)==0:
-                    x2_corr.append(x2[i])
-                    y2_corr.append(y2[i])
-        x_label, y_label, label, angle=self.labels([unidades.SpecificVolume(i).config for i in V], x2_corr, y2_corr, self.PosIsoVolLabel.value())
+        for i in range(len(V)-1, -1, -1):
+            for j in range(len(x[i])-1, -1, -1):
+                if bounds_pv(X[j], V[i], 0)<>0:
+                    del x[i][j]
+                    del y[i][j]
+                    del z[i][j]
+                    del x2[i][j]
+                    del y2[i][j]
+        for i in range(len(V)-1, -1, -1):
+            for j in range(len(x[i])-1, -1, -1):
+                if x[i][j]<self.xdata[0][0] or x[i][j]>self.xdata[-1][-1] or y[i][j]<self.ydata[0][0] or y[i][j]>self.ydata[-1][-1]:
+                    del x[i][j]
+                    del y[i][j]
+                    del z[i][j]
+            if len(x[i])==0:
+                del x[i]
+                del y[i]
+                del z[i]
+        x_label, y_label, label, angle=self.labels([unidades.SpecificVolume(i).config for i in V], x2, y2, self.PosIsoVolLabel.value())
         self.isocora=[x, y, z]        
-        self.isocora2=[x2_corr, y2_corr, x_label, y_label, ["v="+i+config.Configuracion("SpecificVolume").text() for i in label], angle]
+        self.isocora2=[x2, y2, x_label, y_label, ["v="+i+config.Configuracion("SpecificVolume").text() for i in label], angle]
         
     def calcularIsoX(self, start=95, rango=5):
         """Método que actualiza los datos de isocalidad"""
@@ -3310,6 +3382,12 @@ class Ui_SteamTables(QtGui.QMainWindow):
             X=arange(float(self.X_ini.text()), float(self.X_fin.text()), float(self.X_intervalo.text()))
         T= linspace(273.15, TCRIT, 100)
         x, y, z, x2, y2=self.isolineas(X, T, steam_Tx, start, rango)
+        for i in range(len(X)-1, -1, -1):
+            for j in range(len(T)-1, -1, -1):
+                if x[i][j]<self.xdata[0][0] or x[i][j]>self.xdata[-1][-1] or y[i][j]<self.ydata[0][0] or y[i][j]>self.xdata[-1][-1]:
+                    del x[i][j]
+                    del y[i][j]
+                    del z[i][j]
         x_label, y_label, label, angle=self.labels(X, x2, y2, self.PosIsoXLabel.value())
         self.isoX=[x, y, z]        
         self.isoX2=[x2, y2, x_label, y_label, ["x="+i for i in label], angle]

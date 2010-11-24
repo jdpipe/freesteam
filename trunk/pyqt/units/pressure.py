@@ -198,84 +198,41 @@ class Ui_presion(QtGui.QDialog):
         QtCore.QObject.connect(self.ftH2O,QtCore.SIGNAL("editingFinished()"),self.actualizar_ftH2O)
         QtCore.QObject.connect(self.inHg,QtCore.SIGNAL("editingFinished()"),self.actualizar_inHg)
         QtCore.QObject.connect(self.inH2O,QtCore.SIGNAL("editingFinished()"),self.actualizar_inH2O)
-        QtCore.QMetaObject.connectSlotsByName(presion)
-
-
+        
     def retranslateUi(self, presion):
         presion.setWindowTitle(QtGui.QApplication.translate("presion", "Presión", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setToolTip(QtGui.QApplication.translate("presion", "bar", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setWhatsThis(QtGui.QApplication.translate("presion", 'Se denomina bar a una unidad de presión equivalente a un millón de barias, aproximadamente igual a una atmósfera (1 Atm). Su símbolo es "bar". La palabra bar tiene su origen en báros, que en griego significa peso', None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setToolTip(QtGui.QApplication.translate("presion", "atmósferas", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setWhatsThis(QtGui.QApplication.translate("presion", "La unidad de presión denominada atmósfera equivale a la presión de la atmósfera terrestre sobre el nivel del mar. Es utilizada para medir presiones elevadas como la de los gases comprimidos.", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_3.setToolTip(QtGui.QApplication.translate("presion", "Pascal", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setWhatsThis(QtGui.QApplication.translate("presion", "El pascal (símbolo Pa) es la unidad de presión del Sistema Internacional de Unidades. Se define como la presión que ejerce una fuerza de 1 newton sobre una superficie de 1 metro cuadrado normal a la misma", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setToolTip(QtGui.QApplication.translate("presion", "kilopascal", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setWhatsThis(QtGui.QApplication.translate("presion", "1000 Pa", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setToolTip(QtGui.QApplication.translate("presion", "megapascal", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setWhatsThis(QtGui.QApplication.translate("presion", "1e6 Pa", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_6.setToolTip(QtGui.QApplication.translate("presion", "milibares", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_6.setWhatsThis(QtGui.QApplication.translate("presion", "0.001 bar", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_7.setToolTip(QtGui.QApplication.translate("presion", "centímetros de agua", None, QtGui.QApplication.UnicodeUTF8))
         self.label_7.setWhatsThis(QtGui.QApplication.translate("presion", "Presión ejercida por una columna de agua de altura dada en centímetros", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_8.setToolTip(QtGui.QApplication.translate("presion", "kilogramo fuerza por centímetro cuadrado", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_8.setWhatsThis(QtGui.QApplication.translate("presion", "unidad muy usada en ingenierías", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_9.setToolTip(QtGui.QApplication.translate("presion", "libras por pulgada cudrada absoluta", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_9.setWhatsThis(QtGui.QApplication.translate("presion", "presión en pulgadas por pulgada cuadrada", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_10.setToolTip(QtGui.QApplication.translate("presion", "milimetros de agua", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_9.setWhatsThis(QtGui.QApplication.translate("presion", "La libra-fuerza por pulgada cuadrada, más conocida como psi (del inglés pounds per square inch) es una unidad de presión en el sistema anglosajón de unidades. Equivale a 6894,75 pascales", None, QtGui.QApplication.UnicodeUTF8))
         self.label_10.setWhatsThis(QtGui.QApplication.translate("presion", "Presión ejercida por una columna de agua de altura dada en milímetros", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_11.setToolTip(QtGui.QApplication.translate("presion", "bares con respecto a la presión atmósfera", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_11.setWhatsThis(QtGui.QApplication.translate("presion", "Presión en bares por encima de la presión ambiente", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_12.setToolTip(QtGui.QApplication.translate("presion", "torr", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_11.setWhatsThis(QtGui.QApplication.translate("presion", "Presión en bares por encima de la presión atmosférica", None, QtGui.QApplication.UnicodeUTF8))
         self.label_12.setWhatsThis(QtGui.QApplication.translate("presion", "El torr es una unidad de presión, denominada así en honor de Evangelista Torricelli. Se define como la presión ejercida en la base de una columna de un milímetro de mercurio, cuya densidad es de 13,5951 g/cm³ en un lugar donde la aceleración de la gravedad es de 9,80665 m/s³ y como 1/760 de atmósfera.", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_13.setToolTip(QtGui.QApplication.translate("presion", "milimetros de mercurio", None, QtGui.QApplication.UnicodeUTF8))
         self.label_13.setWhatsThis(QtGui.QApplication.translate("presion", "Presión ejercida por una columna de mercurio de altura dada en milimetros", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_14.setToolTip(QtGui.QApplication.translate("presion", "kilogramos por centímetros cuadrados con respecto a la presión ambiente", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_14.setWhatsThis(QtGui.QApplication.translate("presion", "Presión en kg por centimetro cuadrado referidas a la presión ambiente", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_15.setToolTip(QtGui.QApplication.translate("presion", "pulgadas de mercurio", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_14.setWhatsThis(QtGui.QApplication.translate("presion", "Presión en kg por centimetro cuadrado por encima de la presión atmosférica", None, QtGui.QApplication.UnicodeUTF8))
         self.label_15.setWhatsThis(QtGui.QApplication.translate("presion", "Presión ejercida por una columna de mercurio de altura dada en pulgadas", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_16.setToolTip(QtGui.QApplication.translate("presion", "libras por pulgada cuadrada con respecto a la presión ambiente", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_16.setWhatsThis(QtGui.QApplication.translate("presion", "presion en libras por pulgada cuadrada por encima de la presión ambiente", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_17.setToolTip(QtGui.QApplication.translate("presion", "pulgadas de agua", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_16.setWhatsThis(QtGui.QApplication.translate("presion", "Presion en libras por pulgada cuadrada por encima de la presión atmosférica", None, QtGui.QApplication.UnicodeUTF8))
         self.label_17.setWhatsThis(QtGui.QApplication.translate("presion", "Presión ejercida por una columna de agua de altura dada en pulgadas", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_18.setToolTip(QtGui.QApplication.translate("presion", "pies de agua", None, QtGui.QApplication.UnicodeUTF8))
         self.label_18.setWhatsThis(QtGui.QApplication.translate("presion", "Presión ejercida por una columna de agua de altura dada en pies", None, QtGui.QApplication.UnicodeUTF8))
         self.bar.setToolTip(QtGui.QApplication.translate("presion", "bar", None, QtGui.QApplication.UnicodeUTF8))
-        self.bar.setWhatsThis(QtGui.QApplication.translate("presion", 'Se denomina bar a una unidad de presión equivalente a un millón de barias, aproximadamente igual a una atmósfera (1 Atm). Su símbolo es "bar". La palabra bar tiene su origen en báros, que en griego significa peso', None, QtGui.QApplication.UnicodeUTF8))
-        self.mbar.setToolTip(QtGui.QApplication.translate("presion", "milibares", None, QtGui.QApplication.UnicodeUTF8))
-        self.mbar.setWhatsThis(QtGui.QApplication.translate("presion", "0.001 bar", None, QtGui.QApplication.UnicodeUTF8))
-        self.atm.setToolTip(QtGui.QApplication.translate("presion", "atmósferas", None, QtGui.QApplication.UnicodeUTF8))
-        self.atm.setWhatsThis(QtGui.QApplication.translate("presion", "La unidad de presión denominada atmósfera equivale a la presión de la atmósfera terrestre sobre el nivel del mar. Es utilizada para medir presiones elevadas como la de los gases comprimidos.", None, QtGui.QApplication.UnicodeUTF8))
+        self.mbar.setToolTip(QtGui.QApplication.translate("presion", "milibar", None, QtGui.QApplication.UnicodeUTF8))
+        self.atm.setToolTip(QtGui.QApplication.translate("presion", "atmósfera", None, QtGui.QApplication.UnicodeUTF8))
         self.Pa.setToolTip(QtGui.QApplication.translate("presion", "Pascal", None, QtGui.QApplication.UnicodeUTF8))
-        self.Pa.setWhatsThis(QtGui.QApplication.translate("presion", "El pascal (símbolo Pa) es la unidad de presión del Sistema Internacional de Unidades. Se define como la presión que ejerce una fuerza de 1 newton sobre una superficie de 1 metro cuadrado normal a la misma.", None, QtGui.QApplication.UnicodeUTF8))
         self.kPa.setToolTip(QtGui.QApplication.translate("presion", "kilopascal", None, QtGui.QApplication.UnicodeUTF8))
-        self.kPa.setWhatsThis(QtGui.QApplication.translate("presion", "1000 Pa", None, QtGui.QApplication.UnicodeUTF8))
         self.MPa.setToolTip(QtGui.QApplication.translate("presion", "megapascal", None, QtGui.QApplication.UnicodeUTF8))
-        self.MPa.setWhatsThis(QtGui.QApplication.translate("presion", "1e6 Pa", None, QtGui.QApplication.UnicodeUTF8))
-        self.mmH2O.setToolTip(QtGui.QApplication.translate("presion", "milimetros de agua", None, QtGui.QApplication.UnicodeUTF8))
-        self.mmH2O.setWhatsThis(QtGui.QApplication.translate("presion", "Presión ejercida por una columna de agua de altura dada en milímetros", None, QtGui.QApplication.UnicodeUTF8))
-        self.cmH2O.setToolTip(QtGui.QApplication.translate("presion", "centímetros de agua", None, QtGui.QApplication.UnicodeUTF8))
-        self.cmH2O.setWhatsThis(QtGui.QApplication.translate("presion", "Presión ejercida por una columna de agua de altura dada en centímetros", None, QtGui.QApplication.UnicodeUTF8))
-        self.mmHg.setToolTip(QtGui.QApplication.translate("presion", "milimetros de mercurio", None, QtGui.QApplication.UnicodeUTF8))
-        self.mmHg.setWhatsThis(QtGui.QApplication.translate("presion", "Presión ejercida por una columna de mercurio de altura dada en milimetros", None, QtGui.QApplication.UnicodeUTF8))
+        self.mmH2O.setToolTip(QtGui.QApplication.translate("presion", "milimetro de agua", None, QtGui.QApplication.UnicodeUTF8))
+        self.cmH2O.setToolTip(QtGui.QApplication.translate("presion", "centímetro de agua", None, QtGui.QApplication.UnicodeUTF8))
+        self.mmHg.setToolTip(QtGui.QApplication.translate("presion", "milimetro de mercurio", None, QtGui.QApplication.UnicodeUTF8))
         self.torr.setToolTip(QtGui.QApplication.translate("presion", "torr", None, QtGui.QApplication.UnicodeUTF8))
-        self.torr.setWhatsThis(QtGui.QApplication.translate("presion", "El torr es una unidad de presión, denominada así en honor de Evangelista Torricelli. Se define como la presión ejercida en la base de una columna de un milímetro de mercurio, cuya densidad es de 13,5951 g/cm³ en un lugar donde la aceleración de la gravedad es de 9,80665 m/s² y como 1/760 de atmósfera.", None, QtGui.QApplication.UnicodeUTF8))
         self.kgcm2.setToolTip(QtGui.QApplication.translate("presion", "kilogramo fuerza por centímetro cuadrado", None, QtGui.QApplication.UnicodeUTF8))
-        self.kgcm2.setWhatsThis(QtGui.QApplication.translate("presion", "unidad muy usada en ingenierías", None, QtGui.QApplication.UnicodeUTF8))
-        self.psi.setToolTip(QtGui.QApplication.translate("presion", "libras por pulgada cudrada absoluta", None, QtGui.QApplication.UnicodeUTF8))
-        self.psi.setWhatsThis(QtGui.QApplication.translate("presion", "presión en pulgadas por pulgada cuadrada", None, QtGui.QApplication.UnicodeUTF8))
-        self.psig.setToolTip(QtGui.QApplication.translate("presion", "libras por pulgada cuadrada con respecto a la presión ambiente", None, QtGui.QApplication.UnicodeUTF8))
-        self.psig.setWhatsThis(QtGui.QApplication.translate("presion", "presion en libras por pulgada cuadrada por encima de la presión ambiente", None, QtGui.QApplication.UnicodeUTF8))
-        self.barg.setToolTip(QtGui.QApplication.translate("presion", "bares con respecto a la presión atmósfera", None, QtGui.QApplication.UnicodeUTF8))
-        self.barg.setWhatsThis(QtGui.QApplication.translate("presion", "bares con respecto a la presión atmósfera", None, QtGui.QApplication.UnicodeUTF8))
-        self.kgcm2g.setToolTip(QtGui.QApplication.translate("presion", "kilogramos por centímetros cuadrados con respecto a la presión ambiente", None, QtGui.QApplication.UnicodeUTF8))
-        self.kgcm2g.setWhatsThis(QtGui.QApplication.translate("presion", "Presión en kg por centimetro cuadrado referidas a la presión ambiente", None, QtGui.QApplication.UnicodeUTF8))
-        self.ftH2O.setToolTip(QtGui.QApplication.translate("presion", "pies de agua", None, QtGui.QApplication.UnicodeUTF8))
-        self.ftH2O.setWhatsThis(QtGui.QApplication.translate("presion", "Presión ejercida por una columna de agua de altura dada en pies", None, QtGui.QApplication.UnicodeUTF8))
-        self.inH2O.setToolTip(QtGui.QApplication.translate("presion", "pulgadas de agua", None, QtGui.QApplication.UnicodeUTF8))
-        self.inH2O.setWhatsThis(QtGui.QApplication.translate("presion", "Presión ejercida por una columna de agua de altura dada en pulgadas", None, QtGui.QApplication.UnicodeUTF8))
-        self.inHg.setToolTip(QtGui.QApplication.translate("presion", "pulgadas de mercurio", None, QtGui.QApplication.UnicodeUTF8))
-        self.inHg.setWhatsThis(QtGui.QApplication.translate("presion", "Presión ejercida por una columna de mercurio de altura dada en pulgadas", None, QtGui.QApplication.UnicodeUTF8))
-
+        self.psi.setToolTip(QtGui.QApplication.translate("presion", "libra por pulgada cudrada absoluta", None, QtGui.QApplication.UnicodeUTF8))
+        self.psig.setToolTip(QtGui.QApplication.translate("presion", "libra por pulgada cuadrada por encima de la presión atmosférica", None, QtGui.QApplication.UnicodeUTF8))
+        self.barg.setToolTip(QtGui.QApplication.translate("presion", "bar por encima de la presión atmosférica", None, QtGui.QApplication.UnicodeUTF8))
+        self.kgcm2g.setToolTip(QtGui.QApplication.translate("presion", "kilogramo por centímetro cuadrado por encima de la presión atmosférica", None, QtGui.QApplication.UnicodeUTF8))
+        self.ftH2O.setToolTip(QtGui.QApplication.translate("presion", "pie de agua", None, QtGui.QApplication.UnicodeUTF8))
+        self.inH2O.setToolTip(QtGui.QApplication.translate("presion", "pulgada de agua", None, QtGui.QApplication.UnicodeUTF8))
+        self.inHg.setToolTip(QtGui.QApplication.translate("presion", "pulgada de mercurio", None, QtGui.QApplication.UnicodeUTF8))
 
     def actualizar_bar(self):
         valido=True
@@ -283,7 +240,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.bar.setText(str(float(self.bar.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.bar.setFocus()
                 self.bar.selectAll()
                 valido=False
@@ -297,7 +254,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.mbar.setText(str(float(self.mbar.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.mbar.setFocus()
                 self.mbar.selectAll()
                 valido=False
@@ -311,7 +268,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.atm.setText(str(float(self.atm.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.atm.setFocus()
                 self.atm.selectAll()
                 valido=False
@@ -325,7 +282,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.Pa.setText(str(float(self.Pa.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.Pa.setFocus()
                 self.Pa.selectAll()
                 valido=False
@@ -339,7 +296,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.kPa.setText(str(float(self.kPa.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.kPa.setFocus()
                 self.kPa.selectAll()
                 valido=False
@@ -353,7 +310,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.MPa.setText(str(float(self.MPa.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.MPa.setFocus()
                 self.MPa.selectAll()
                 valido=False
@@ -367,7 +324,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.mmH2O.setText(str(float(self.mmH2O.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.mmH2O.setFocus()
                 self.mmH2O.selectAll()
                 valido=False
@@ -381,7 +338,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.cmH2O.setText(str(float(self.cmH2O.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.cmH2O.setFocus()
                 self.cmH2O.selectAll()
                 valido=False
@@ -395,7 +352,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.mmHg.setText(str(float(self.mmHg.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.mmHg.setFocus()
                 self.mmHg.selectAll()
                 valido=False
@@ -409,7 +366,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.torr.setText(str(float(self.torr.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.torr.setFocus()
                 self.torr.selectAll()
                 valido=False
@@ -423,7 +380,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.kgcm2.setText(str(float(self.kgcm2.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.kgcm2.setFocus()
                 self.kgcm2.selectAll()
                 valido=False
@@ -437,7 +394,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.psi.setText(str(float(self.psi.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.psi.setFocus()
                 self.psi.selectAll()
                 valido=False
@@ -451,7 +408,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.psig.setText(str(float(self.psig.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.psig.setFocus()
                 self.psig.selectAll()
                 valido=False
@@ -465,7 +422,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.barg.setText(str(float(self.barg.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.barg.setFocus()
                 self.barg.selectAll()
                 valido=False
@@ -479,7 +436,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.kgcm2g.setText(str(float(self.kgcm2g.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.kgcm2g.setFocus()
                 self.kgcm2g.selectAll()
                 valido=False
@@ -493,7 +450,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.ftH2O.setText(str(float(self.ftH2O.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.ftH2O.setFocus()
                 self.ftH2O.selectAll()
                 valido=False
@@ -507,7 +464,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.inHg.setText(str(float(self.inHg.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.inHg.setFocus()
                 self.inHg.selectAll()
                 valido=False
@@ -521,7 +478,7 @@ class Ui_presion(QtGui.QDialog):
             try:
                 self.inH2O.setText(str(float(self.inH2O.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("presion", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("presion", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.inH2O.setFocus()
                 self.inH2O.selectAll()
                 valido=False
