@@ -14,41 +14,41 @@ class Ui_volumen_especifico(QtGui.QDialog):
         volumen_especifico.resize(volumen_especifico.minimumSize())
         self.semaforo=QtCore.QSemaphore(1)
         self.gridLayout = QtGui.QGridLayout(volumen_especifico)
-        self.label_8 = QtGui.QLabel(volumen_especifico)
-        self.label_8.setAlignment(QtCore.Qt.AlignRight)
-        self.label_8.setText("l/gr")
-        self.gridLayout.addWidget(self.label_8,1,1,1,1)
-        self.label_10 = QtGui.QLabel(volumen_especifico)
-        self.label_10.setAlignment(QtCore.Qt.AlignRight)
-        self.label_10.setText("ft³/lb")
-        self.gridLayout.addWidget(self.label_10,2,1,1,1)
-        self.label_11 = QtGui.QLabel(volumen_especifico)
-        self.label_11.setAlignment(QtCore.Qt.AlignRight)
-        self.label_11.setText("gal(US)/lb")
-        self.gridLayout.addWidget(self.label_11,3,1,1,1)
-        self.label_7 = QtGui.QLabel(volumen_especifico)
-        self.label_7.setAlignment(QtCore.Qt.AlignRight)
-        self.label_7.setText("l/kg")
-        self.gridLayout.addWidget(self.label_7,4,1,1,1)
-        self.label_13 = QtGui.QLabel(volumen_especifico)
-        self.label_13.setAlignment(QtCore.Qt.AlignRight)
-        self.label_13.setText("ft³/Ton(US)")
-        self.gridLayout.addWidget(self.label_13,5,1,1,1)
-        self.label_9 = QtGui.QLabel(volumen_especifico)
-        self.label_9.setAlignment(QtCore.Qt.AlignRight)
-        self.label_9.setText("cm³/gr")
-        self.gridLayout.addWidget(self.label_9,6,1,1,1)
         self.label_6 = QtGui.QLabel(volumen_especifico)
         self.label_6.setAlignment(QtCore.Qt.AlignRight)
-        self.label_6.setText("m³/kg")
-        self.gridLayout.addWidget(self.label_6,7,1,1,1)
+        self.label_6.setText(u"m³/kg")
+        self.gridLayout.addWidget(self.label_6,1,1,1,1)
+        self.label_7 = QtGui.QLabel(volumen_especifico)
+        self.label_7.setAlignment(QtCore.Qt.AlignRight)
+        self.label_7.setText(u"l/kg")
+        self.gridLayout.addWidget(self.label_7,2,1,1,1)
+        self.label_8 = QtGui.QLabel(volumen_especifico)
+        self.label_8.setAlignment(QtCore.Qt.AlignRight)
+        self.label_8.setText(u"l/gr")
+        self.gridLayout.addWidget(self.label_8,3,1,1,1)
+        self.label_9 = QtGui.QLabel(volumen_especifico)
+        self.label_9.setAlignment(QtCore.Qt.AlignRight)
+        self.label_9.setText(u"cm³/gr")
+        self.gridLayout.addWidget(self.label_9,4,1,1,1)
+        self.label_10 = QtGui.QLabel(volumen_especifico)
+        self.label_10.setAlignment(QtCore.Qt.AlignRight)
+        self.label_10.setText(u"ft³/lb")
+        self.gridLayout.addWidget(self.label_10,5,1,1,1)
+        self.label_11 = QtGui.QLabel(volumen_especifico)
+        self.label_11.setAlignment(QtCore.Qt.AlignRight)
+        self.label_11.setText(u"gal(US)/lb")
+        self.gridLayout.addWidget(self.label_11,6,1,1,1)
         self.label_12 = QtGui.QLabel(volumen_especifico)
         self.label_12.setAlignment(QtCore.Qt.AlignRight)
-        self.label_12.setText("gal(UK)/lb")
-        self.gridLayout.addWidget(self.label_12,8,1,1,1)
+        self.label_12.setText(u"gal(UK)/lb")
+        self.gridLayout.addWidget(self.label_12,7,1,1,1)
+        self.label_13 = QtGui.QLabel(volumen_especifico)
+        self.label_13.setAlignment(QtCore.Qt.AlignRight)
+        self.label_13.setText(u"ft³/Ton(US)")
+        self.gridLayout.addWidget(self.label_13,8,1,1,1)
         self.label_14 = QtGui.QLabel(volumen_especifico)
         self.label_14.setAlignment(QtCore.Qt.AlignRight)
-        self.label_14.setText("ft³/Ton(UK)")
+        self.label_14.setText(u"ft³/Ton(UK)")
         self.gridLayout.addWidget(self.label_14,9,1,1,1)
         
         self.m3kg = QtGui.QLineEdit(volumen_especifico)
@@ -99,7 +99,6 @@ class Ui_volumen_especifico(QtGui.QDialog):
         self.buttonBox.setCenterButtons(True)        
         self.gridLayout.addWidget(self.buttonBox,11,1,1,2)
 
-
         self.retranslateUi(volumen_especifico)
         QtCore.QObject.connect(self.buttonBox,QtCore.SIGNAL("accepted()"),volumen_especifico.accept)
         QtCore.QObject.connect(self.buttonBox,QtCore.SIGNAL("rejected()"),volumen_especifico.reject)
@@ -112,26 +111,22 @@ class Ui_volumen_especifico(QtGui.QDialog):
         QtCore.QObject.connect(self.galUKlb,QtCore.SIGNAL("editingFinished()"),self.actualizar_galUK)
         QtCore.QObject.connect(self.ft3tonUS,QtCore.SIGNAL("editingFinished()"),self.actualizar_tonUS)
         QtCore.QObject.connect(self.ft3tonUK,QtCore.SIGNAL("editingFinished()"),self.actualizar_tonUK)
-        QtCore.QMetaObject.connectSlotsByName(volumen_especifico)
-
 
     def retranslateUi(self, volumen_especifico):
         volumen_especifico.setWindowTitle(QtGui.QApplication.translate("volumen_especifico", "Volumen_especifico", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_8.setToolTip(QtGui.QApplication.translate("volumen_especifico", "litros por gramo", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_10.setToolTip(QtGui.QApplication.translate("volumen_especifico", "pie cúbico por libra", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_11.setToolTip(QtGui.QApplication.translate("volumen_especifico", "galón estadounidense por libra", None, QtGui.QApplication.UnicodeUTF8))
+        self.lg.setToolTip(QtGui.QApplication.translate("volumen_especifico", "litro por gramo", None, QtGui.QApplication.UnicodeUTF8))
+        self.ft3lb.setToolTip(QtGui.QApplication.translate("volumen_especifico", "pie cúbico por libra", None, QtGui.QApplication.UnicodeUTF8))
+        self.galUSlb.setToolTip(QtGui.QApplication.translate("volumen_especifico", "galón estadounidense por libra", None, QtGui.QApplication.UnicodeUTF8))
         self.label_11.setWhatsThis(QtGui.QApplication.translate("volumen_especifico", "El galón usado en Estados Unidos o internacional equivale a 231 pulgadas cúbicas o 3,7854 litros", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_7.setToolTip(QtGui.QApplication.translate("volumen_especifico", "litro por kilogramo", None, QtGui.QApplication.UnicodeUTF8))
-        self.galUKlb.setToolTip(QtGui.QApplication.translate("volumen_especifico", "galón (reino unido) por libra", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_13.setToolTip(QtGui.QApplication.translate("volumen_especifico", "pies cúbicos por tonelada americana", None, QtGui.QApplication.UnicodeUTF8))
+        self.lkg.setToolTip(QtGui.QApplication.translate("volumen_especifico", "litro por kilogramo", None, QtGui.QApplication.UnicodeUTF8))
+        self.ft3tonUS.setToolTip(QtGui.QApplication.translate("volumen_especifico", "pie cúbico por tonelada americana", None, QtGui.QApplication.UnicodeUTF8))
         self.label_13.setWhatsThis(QtGui.QApplication.translate("volumen_especifico", "Tonelada corta: equivale a 907,18474 kg, y en inglés se llama 'short ton' aunque en el uso habitual de Estados Unidos se le llama tonelada (ton), como la métrica, y hasta se abrevia t", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_9.setToolTip(QtGui.QApplication.translate("volumen_especifico", "centímetro cúbico por gramo", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_6.setToolTip(QtGui.QApplication.translate("volumen_especifico", "metros cúbicos por kilogramo", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_12.setToolTip(QtGui.QApplication.translate("volumen_especifico", "galones británicos por libra", None, QtGui.QApplication.UnicodeUTF8))
+        self.ccg.setToolTip(QtGui.QApplication.translate("volumen_especifico", "centímetro cúbico por gramo", None, QtGui.QApplication.UnicodeUTF8))
+        self.m3kg.setToolTip(QtGui.QApplication.translate("volumen_especifico", "metro cúbico por kilogramo", None, QtGui.QApplication.UnicodeUTF8))
+        self.galUKlb.setToolTip(QtGui.QApplication.translate("volumen_especifico", "galón británico por libra", None, QtGui.QApplication.UnicodeUTF8))
         self.label_12.setWhatsThis(QtGui.QApplication.translate("volumen_especifico", "El galón usado en el Reino Unido o imperial equivale a 277,41945 pulgadas cúbicas o 4,5461 litros", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_14.setToolTip(QtGui.QApplication.translate("volumen_especifico", "pies cúbicos por tonelada británica", None, QtGui.QApplication.UnicodeUTF8))
+        self.ft3tonUK.setToolTip(QtGui.QApplication.translate("volumen_especifico", "pie cúbico por tonelada imperial", None, QtGui.QApplication.UnicodeUTF8))
         self.label_14.setWhatsThis(QtGui.QApplication.translate("volumen_especifico", "La tonelada larga equivale a 1.016,0469088 kg, y en inglés se llama long ton o weight ton", None, QtGui.QApplication.UnicodeUTF8))
-
 
     def actualizar_m3kg(self):
         valido=True
@@ -139,7 +134,7 @@ class Ui_volumen_especifico(QtGui.QDialog):
             try:
                 self.m3kg.setText(str(float(self.m3kg.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("volumen_especifico", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("volumen_especifico", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.m3kg.setFocus()
                 self.m3kg.selectAll()
                 valido=False
@@ -153,7 +148,7 @@ class Ui_volumen_especifico(QtGui.QDialog):
             try:
                 self.lkg.setText(str(float(self.lkg.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("volumen_especifico", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("volumen_especifico", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.lkg.setFocus()
                 self.lkg.selectAll()
                 valido=False
@@ -167,7 +162,7 @@ class Ui_volumen_especifico(QtGui.QDialog):
             try:
                 self.lg.setText(str(float(self.lg.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("volumen_especifico", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("volumen_especifico", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.lg.setFocus()
                 self.lg.selectAll()
                 valido=False
@@ -181,7 +176,7 @@ class Ui_volumen_especifico(QtGui.QDialog):
             try:
                 self.ccg.setText(str(float(self.ccg.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("volumen_especifico", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("volumen_especifico", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.ccg.setFocus()
                 self.ccg.selectAll()
                 valido=False
@@ -195,7 +190,7 @@ class Ui_volumen_especifico(QtGui.QDialog):
             try:
                 self.ft3lb.setText(str(float(self.ft3lb.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("volumen_especifico", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("volumen_especifico", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.ft3lb.setFocus()
                 self.ft3lb.selectAll()
                 valido=False
@@ -209,7 +204,7 @@ class Ui_volumen_especifico(QtGui.QDialog):
             try:
                 self.galUSlb.setText(str(float(self.galUSlb.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("volumen_especifico", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("volumen_especifico", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.galUSlb.setFocus()
                 self.galUSlb.selectAll()
                 valido=False
@@ -223,7 +218,7 @@ class Ui_volumen_especifico(QtGui.QDialog):
             try:
                 self.galUKlb.setText(str(float(self.galUKlb.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("volumen_especifico", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("volumen_especifico", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.galUKlb.setFocus()
                 self.galUKlb.selectAll()
                 valido=False
@@ -237,7 +232,7 @@ class Ui_volumen_especifico(QtGui.QDialog):
             try:
                 self.ft3tonUS.setText(str(float(self.ft3tonUS.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("volumen_especifico", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("volumen_especifico", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.ft3tonUS.setFocus()
                 self.ft3tonUS.selectAll()
                 valido=False
@@ -251,7 +246,7 @@ class Ui_volumen_especifico(QtGui.QDialog):
             try:
                 self.ft3tonUK.setText(str(float(self.ft3tonUK.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("volumen_especifico", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("volumen_especifico", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.ft3tonUK.setFocus()
                 self.ft3tonUK.selectAll()
                 valido=False

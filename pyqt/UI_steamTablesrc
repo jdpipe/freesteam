@@ -2,21 +2,21 @@
 end = 2.2598e+12
 color = #0000ff
 list = 1000.0,2000.0,5000.0,1.0000e+04,2.0000e+04,5.0000e+04,1.0000e+05,2.0000e+05,5.0000e+05,1.0000e+06,2.0000e+06,5.0000e+06,1.0000e+07,2.0000e+07,5.0000e+07
-critic = False
+step = 112990000000.0
 custom = True
 start = 2259800000.0
-step = 112990000000.0
+critic = False
 linewidth = 0.3
 linestyle = 0
 
 [Isoentropic]
-end = 10000.0
+end = 10000.2
 color = #ff0000
 list = 
-critic = 0
+step = 499.9
 custom = False
-start = 1000.0
-step = 500.0
+start = 999.8
+critic = 0
 linewidth = 1.0
 linestyle = 2
 
@@ -24,56 +24,55 @@ linestyle = 2
 end = 1000.0
 color = #ff00ff
 list = 
-critic = 0
+step = 50.0
 custom = 0
 start = 300.0
-step = 50.0
+critic = 0
 linewidth = 0.3
-linestyle = 3
+linestyle = 0
 
 [2D]
-yvariable = T
-isochorlabelpos = 94
-yscale = False
-isobarlabelpos = 63
-xmin = 0.0
-ymin = 250.0
+yvariable = h
+isochorlabelpos = 95
+yscale = True
+isobarlabelpos = 50
+xmin = 4
+ymin = 2000
 isoxlabel = True
-ymax = 1000.0
+ymax = 4000
 isoentrlabel = False
 isothermlabel = True
-isochorlabel = True
+isochorlabel = False
 xscale = False
-isoentrlabelpos = 25
+isoentrlabelpos = 60
 xvariable = s
-grid = True
-isoenthlabel = True
+grid = False
+isoenthlabel = False
 isoenthlabelpos = 40
-isobarlabel = True
+isothermlabelpos = 35
 xup = True
 yup = True
-xmax = 11.0
-isoxlabelpos = 0
-isothermlabelpos = 20
+xmax = 10
+isoxlabelpos = 15
+isobarlabel = True
 
-[Units]
-temperature = 0
-density = 0
-viscosity = 0
-enthalpy = 2
-specificvolume = 0
-pressure = 4
-specificheat = 1
-entropy = 1
-thermalconductivity = 0
-speed = 0
+[Isoquality]
+end = 0.99
+color = #000000
+list = 0.5
+step = 0.02
+custom = False
+start = 0.76
+critic = 0
+linewidth = 1.0
+linestyle = 3
 
 [Points]
-variable = 0
+variable = 2
 1 = 1,800.0,5000000.0
 0 = 1,500.0,5000000.0
 3 = 0,600.0,0.5
-2 = 1,700.0,49999998.6008
+2 = 1,700.0,49999998.3478
 5 = 0,600.0,0.1
 4 = 0,600.0,0.3
 7 = 1,400.0,5000000.0
@@ -84,56 +83,57 @@ variable = 0
 [Isochor]
 end = 62.4262
 color = #007900
-list = 1.0000e-03,0.002,0.005,0.01,0.02,0.05,0.1,0.2,0.5,1.0,2.0,5.0,10.0
-critic = False
+list = 9.9885e-04,0.002,0.005,0.01,0.02,0.05,0.1,0.2,0.5,1.0,2.0,5.0,10.0
+step = 2.4971
 custom = 1
 start = 18.7284
-step = 2.4971
+critic = False
 linewidth = 0.5
 linestyle = 1
 
 [Isoenthalpic]
-end = 4000000.0
+end = 4000000.1
 color = #aa0000
 list = 
-critic = False
+step = 199999.9
 custom = 0
-start = 200000.0
-step = 200000.0
+start = 199999.9
+critic = False
 linewidth = 1.0
 linestyle = 3
 
-[Isoquality]
-end = 0.99
-color = #000000
-list = 0.5
-critic = 0
-custom = False
-start = 0.05
-step = 0.05
-linewidth = 1.0
-linestyle = 3
+[Units]
+temperature = 0
+density = 0
+viscosity = 0
+enthalpy = 1
+specificvolume = 0
+pressure = 4
+specificheat = 1
+entropy = 1
+thermalconductivity = 0
+speed = 0
 
 [Table]
 x_start = 1
-x_step = 020
+x_step = 10
 calculate = 0
 x_end = 500
-y_end = 1
-y_start = 0.001
-y_step = 0.01
-axis = 3
+y_end = 8
+y_start = 0.1
+y_step = 0.05
+axis = 2
 
 [General]
 plot = True
 isobar = True
 isoentropic = False
-isotherm = False
+isotherm = True
 2d = True
 points = False
 isochor = True
-isoenthalpic = True
+isoenthalpic = False
 isoquality = True
-toolbar = True
+toolbar = False
 sat = True
 

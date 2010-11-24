@@ -87,8 +87,6 @@ class Ui_entropia(QtGui.QDialog):
         QtCore.QObject.connect(self.kcalgK,QtCore.SIGNAL("editingFinished()"),self.actualizar_kcalgK)
         QtCore.QObject.connect(self.kWhkgK,QtCore.SIGNAL("editingFinished()"),self.actualizar_kWhkgK)
         QtCore.QObject.connect(self.BtulbF,QtCore.SIGNAL("editingFinished()"),self.actualizar_BtulbF)
-        QtCore.QMetaObject.connectSlotsByName(entropia)
-
 
     def retranslateUi(self, entropia):
         entropia.setWindowTitle(QtGui.QApplication.translate("entropia", "Entropia", None, QtGui.QApplication.UnicodeUTF8))
@@ -99,7 +97,7 @@ class Ui_entropia(QtGui.QDialog):
             try:
                 self.kJkgK.setText(str(float(self.kJkgK.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("entropia", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("entropia", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.kJkgK.setFocus()
                 self.kJkgK.selectAll()
                 valido=False
@@ -113,7 +111,7 @@ class Ui_entropia(QtGui.QDialog):
             try:
                 self.JkgK.setText(str(float(self.JkgK.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("entropia", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("entropia", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.JkgK.setFocus()
                 self.JkgK.selectAll()
                 valido=False
@@ -127,7 +125,7 @@ class Ui_entropia(QtGui.QDialog):
             try:
                 self.kcalkgK.setText(str(float(self.kcalkgK.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("entropia", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("entropia", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.kcalkgK.setFocus()
                 self.kcalkgK.selectAll()
                 valido=False
@@ -141,7 +139,7 @@ class Ui_entropia(QtGui.QDialog):
             try:
                 self.kcalgK.setText(str(float(self.kcalgK.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("entropia", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("entropia", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.kcalgK.setFocus()
                 self.kcalgK.selectAll()
                 valido=False
@@ -155,7 +153,7 @@ class Ui_entropia(QtGui.QDialog):
             try:
                 self.kWhkgK.setText(str(float(self.kWhkgK.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("entropia", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("entropia", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.kWhkgK.setFocus()
                 self.kWhkgK.selectAll()
                 valido=False
@@ -169,7 +167,7 @@ class Ui_entropia(QtGui.QDialog):
             try:
                 self.BtulbF.setText(str(float(self.BtulbF.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("entropia", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("entropia", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.BtulbF.setFocus()
                 self.BtulbF.selectAll()
                 valido=False

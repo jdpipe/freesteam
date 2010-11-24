@@ -79,7 +79,6 @@ class Ui_temperatura(QtGui.QDialog):
         QtCore.QObject.connect(self.fahrenheit,QtCore.SIGNAL("editingFinished()"),self.actualizar_f)
         QtCore.QObject.connect(self.rankine,QtCore.SIGNAL("editingFinished()"),self.actualizar_r)
         QtCore.QObject.connect(self.reaumur,QtCore.SIGNAL("editingFinished()"),self.actualizar_re)
-        QtCore.QMetaObject.connectSlotsByName(Temperatura)
 
     def retranslateUi(self, Temperatura):
         Temperatura.setWindowTitle(QtGui.QApplication.translate("Temperatura", "Temperatura", None, QtGui.QApplication.UnicodeUTF8))
@@ -110,7 +109,7 @@ class Ui_temperatura(QtGui.QDialog):
             try:
                 self.kelvin.setText(str(float(self.kelvin.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("Temperatura", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("Temperatura", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.kelvin.setFocus()
                 self.kelvin.selectAll()
                 valido=False
@@ -124,7 +123,7 @@ class Ui_temperatura(QtGui.QDialog):
             try:
                 self.celsius.setText(str(float(self.celsius.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("Temperatura", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("Temperatura", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.celsius.setFocus()
                 self.celsius.selectAll()
                 valido=False
@@ -138,7 +137,7 @@ class Ui_temperatura(QtGui.QDialog):
             try:
                 self.fahrenheit.setText(str(float(self.fahrenheit.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("Temperatura", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("Temperatura", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.fahrenheit.setFocus()
                 self.fahrenheit.selectAll()
                 valido=False
@@ -152,7 +151,7 @@ class Ui_temperatura(QtGui.QDialog):
             try:
                 self.rankine.setText(str(float(self.rankine.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("Temperatura", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("Temperatura", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.rankine.setFocus()
                 self.rankine.selectAll()
                 valido=False
@@ -166,7 +165,7 @@ class Ui_temperatura(QtGui.QDialog):
             try:
                 self.reaumur.setText(str(float(self.reaumur.text())))
             except ValueError:
-                QtGui.QMessageBox.warning(self,"Error de entrada", u"Valor no numérico")
+                QtGui.QMessageBox.warning(self,QtGui.QApplication.translate("Temperatura", "Error de entrada", None, QtGui.QApplication.UnicodeUTF8), QtGui.QApplication.translate("Temperatura", "Valor no numérico", None, QtGui.QApplication.UnicodeUTF8))
                 self.reaumur.setFocus()
                 self.reaumur.selectAll()
                 valido=False
