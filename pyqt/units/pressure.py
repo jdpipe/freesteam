@@ -1,21 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
 from PyQt4 import QtCore, QtGui
 
 from unidades import Pressure
 from config import representacion
 
-
-
 class Ui_presion(QtGui.QDialog):
     def setupUi(self, presion):
-        
         self.semaforo=QtCore.QSemaphore(1)
         presion.resize(350, presion.minimumHeight())
-        
         self.gridLayout = QtGui.QGridLayout(presion)
+        
         self.label = QtGui.QLabel(presion)
         self.label.setAlignment(QtCore.Qt.AlignRight)
         self.label.setText("bar")

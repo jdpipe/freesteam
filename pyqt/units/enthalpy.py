@@ -1,19 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
 from PyQt4 import QtCore, QtGui
 
 from unidades import Enthalpy
 from config import representacion
-
 
 class Ui_entalpia(QtGui.QDialog):
     def setupUi(self, entalpia):
         entalpia.resize(350, entalpia.minimumHeight())
         self.semaforo=QtCore.QSemaphore(1)
         self.gridLayout = QtGui.QGridLayout(entalpia)
-        
 
         self.label = QtGui.QLabel(entalpia)
         self.label.setText("J/kg")
@@ -291,4 +288,3 @@ if __name__ == "__main__":
     entalpia.setupUi(entalpia)
     entalpia.show()
     sys.exit(app.exec_())
-
