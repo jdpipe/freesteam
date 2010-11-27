@@ -1,12 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
 from PyQt4 import QtCore, QtGui
 
 from unidades import Temperature
 from config import representacion
-
 
 class Ui_temperatura(QtGui.QDialog):
     def setupUi(self, Temperatura):

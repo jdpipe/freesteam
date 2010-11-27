@@ -1,19 +1,16 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
 from PyQt4 import QtCore, QtGui
 
 from unidades import SpecificHeat
 from config import representacion
-
 
 class Ui_entropia(QtGui.QDialog):
     def setupUi(self, entropia):
         entropia.resize(entropia.minimumSize())
         self.semaforo=QtCore.QSemaphore(1)
         self.gridLayout = QtGui.QGridLayout(entropia)
-
 
         self.label = QtGui.QLabel(entropia)
         self.label.setAlignment(QtCore.Qt.AlignRight)
@@ -40,7 +37,6 @@ class Ui_entropia(QtGui.QDialog):
         self.label_12.setText("kcal/kgK")
         self.gridLayout.addWidget(self.label_12,6,1,1,1)
 
-        
         self.JkgK = QtGui.QLineEdit(entropia)
         self.JkgK.setAlignment(QtCore.Qt.AlignRight)
         self.JkgK.setValidator(QtGui.QDoubleValidator(entropia))
@@ -186,7 +182,6 @@ class Ui_entropia(QtGui.QDialog):
             self.kWhkgK.setText(representacion(self.dato.kWhkgK))
             self.semaforo.release(1)
 
-
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
@@ -194,4 +189,3 @@ if __name__ == "__main__":
     entropia.setupUi(entropia)
     entropia.show()
     sys.exit(app.exec_())
-

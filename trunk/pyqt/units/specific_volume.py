@@ -1,12 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
 from PyQt4 import QtCore, QtGui
 
 from unidades import SpecificVolume
 from config import representacion
-
 
 class Ui_volumen_especifico(QtGui.QDialog):
     def setupUi(self, volumen_especifico):
@@ -113,7 +111,7 @@ class Ui_volumen_especifico(QtGui.QDialog):
         QtCore.QObject.connect(self.ft3tonUK,QtCore.SIGNAL("editingFinished()"),self.actualizar_tonUK)
 
     def retranslateUi(self, volumen_especifico):
-        volumen_especifico.setWindowTitle(QtGui.QApplication.translate("volumen_especifico", "Volumen_especifico", None, QtGui.QApplication.UnicodeUTF8))
+        volumen_especifico.setWindowTitle(QtGui.QApplication.translate("volumen_especifico", "Volumen especifico", None, QtGui.QApplication.UnicodeUTF8))
         self.lg.setToolTip(QtGui.QApplication.translate("volumen_especifico", "litro por gramo", None, QtGui.QApplication.UnicodeUTF8))
         self.ft3lb.setToolTip(QtGui.QApplication.translate("volumen_especifico", "pie cúbico por libra", None, QtGui.QApplication.UnicodeUTF8))
         self.galUSlb.setToolTip(QtGui.QApplication.translate("volumen_especifico", "galón estadounidense por libra", None, QtGui.QApplication.UnicodeUTF8))

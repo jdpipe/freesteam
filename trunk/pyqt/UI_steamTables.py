@@ -175,7 +175,6 @@ class Ventana_Lista_Puntos(QtGui.QDialog):
         self.tablaPropiedades.setVerticalHeaderItem(15, QtGui.QTableWidgetItem(QtGui.QApplication.translate("Dialog", "Región", None, QtGui.QApplication.UnicodeUTF8)))
 
     def rellenarLista(self):
-        #TODO: Mejorar el método de iconizar los puntos mediante otro método que no use svg sino codigos de colores simplemente
         self.listWidget.clear()
         for i, punto in enumerate(self.puntos):
             self.listWidget.addItem(str(i+1)+" - "+config.representacion(unidades.Temperature(punto.T).config)+" "+config.Configuracion("Temperature").text()+", "+config.representacion(unidades.Pressure(punto.p).config)+" "+config.Configuracion("Pressure").text()+", x="+config.representacion(punto.x))
@@ -930,58 +929,70 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.gridLayout_14 = QtGui.QGridLayout(self.groupBox_2)
         self.checkIsoThermLabel=QtGui.QCheckBox(self.groupBox_2)
         self.gridLayout_14.addWidget(self.checkIsoThermLabel,0,0,1,1)
+        self.checkIsoThermunit=QtGui.QCheckBox(self.groupBox_2)
+        self.gridLayout_14.addWidget(self.checkIsoThermunit,0,1,1,1)
         self.label_41=QtGui.QLabel(self.groupBox_2)
         self.label_41.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-        self.gridLayout_14.addWidget(self.label_41,0,1,1,1)
+        self.gridLayout_14.addWidget(self.label_41,0,2,1,1)
         self.PosIsoThermLabel=QtGui.QSpinBox(self.groupBox_2)
         self.PosIsoThermLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
         self.PosIsoThermLabel.setFixedWidth(45)
-        self.gridLayout_14.addWidget(self.PosIsoThermLabel,0,2,1,1)
+        self.gridLayout_14.addWidget(self.PosIsoThermLabel,0,3,1,1)
         self.checkIsoBarLabel=QtGui.QCheckBox(self.groupBox_2)
         self.gridLayout_14.addWidget(self.checkIsoBarLabel,1,0,1,1)
+        self.checkIsoBarunit=QtGui.QCheckBox(self.groupBox_2)
+        self.gridLayout_14.addWidget(self.checkIsoBarunit,1,1,1,1)
         self.label_42=QtGui.QLabel(self.groupBox_2)
         self.label_42.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-        self.gridLayout_14.addWidget(self.label_42,1,1,1,1)
+        self.gridLayout_14.addWidget(self.label_42,1,2,1,1)
         self.PosIsoBarLabel=QtGui.QSpinBox(self.groupBox_2)
         self.PosIsoBarLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
         self.PosIsoBarLabel.setFixedWidth(45)
-        self.gridLayout_14.addWidget(self.PosIsoBarLabel,1,2,1,1)
+        self.gridLayout_14.addWidget(self.PosIsoBarLabel,1,3,1,1)
         self.checkIsoEnthLabel=QtGui.QCheckBox(self.groupBox_2)
         self.gridLayout_14.addWidget(self.checkIsoEnthLabel,2,0,1,1)
+        self.checkIsoEnthunit=QtGui.QCheckBox(self.groupBox_2)
+        self.gridLayout_14.addWidget(self.checkIsoEnthunit,2,1,1,1)
         self.label_43=QtGui.QLabel(self.groupBox_2)
         self.label_43.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-        self.gridLayout_14.addWidget(self.label_43,2,1,1,1)
+        self.gridLayout_14.addWidget(self.label_43,2,2,1,1)
         self.PosIsoEnthLabel=QtGui.QSpinBox(self.groupBox_2)
         self.PosIsoEnthLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
         self.PosIsoEnthLabel.setFixedWidth(45)
-        self.gridLayout_14.addWidget(self.PosIsoEnthLabel,2,2,1,1)
+        self.gridLayout_14.addWidget(self.PosIsoEnthLabel,2,3,1,1)
         self.checkIsoEntrLabel=QtGui.QCheckBox(self.groupBox_2)
         self.gridLayout_14.addWidget(self.checkIsoEntrLabel,3,0,1,1)
+        self.checkIsoEntrunit=QtGui.QCheckBox(self.groupBox_2)
+        self.gridLayout_14.addWidget(self.checkIsoEntrunit,3,1,1,1)
         self.label_44=QtGui.QLabel(self.groupBox_2)
         self.label_44.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-        self.gridLayout_14.addWidget(self.label_44,3,1,1,1)
+        self.gridLayout_14.addWidget(self.label_44,3,2,1,1)
         self.PosIsoEntrLabel=QtGui.QSpinBox(self.groupBox_2)
         self.PosIsoEntrLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
         self.PosIsoEntrLabel.setFixedWidth(45)
-        self.gridLayout_14.addWidget(self.PosIsoEntrLabel,3,2,1,1)
+        self.gridLayout_14.addWidget(self.PosIsoEntrLabel,3,3,1,1)
         self.checkIsoVolLabel=QtGui.QCheckBox(self.groupBox_2)
         self.gridLayout_14.addWidget(self.checkIsoVolLabel,4,0,1,1)
+        self.checkIsoVolunit=QtGui.QCheckBox(self.groupBox_2)
+        self.gridLayout_14.addWidget(self.checkIsoVolunit,4,1,1,1)
         self.label_45=QtGui.QLabel(self.groupBox_2)
         self.label_45.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-        self.gridLayout_14.addWidget(self.label_45,4,1,1,1)
+        self.gridLayout_14.addWidget(self.label_45,4,2,1,1)
         self.PosIsoVolLabel=QtGui.QSpinBox(self.groupBox_2)
         self.PosIsoVolLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
         self.PosIsoVolLabel.setFixedWidth(45)
-        self.gridLayout_14.addWidget(self.PosIsoVolLabel,4,2,1,1)
+        self.gridLayout_14.addWidget(self.PosIsoVolLabel,4,3,1,1)
         self.checkIsoXLabel=QtGui.QCheckBox(self.groupBox_2)
         self.gridLayout_14.addWidget(self.checkIsoXLabel,5,0,1,1)
+        self.checkIsoXunit=QtGui.QCheckBox(self.groupBox_2)
+        self.gridLayout_14.addWidget(self.checkIsoXunit,5,1,1,1)
         self.label_46=QtGui.QLabel(self.groupBox_2)
         self.label_46.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-        self.gridLayout_14.addWidget(self.label_46,5,1,1,1)
+        self.gridLayout_14.addWidget(self.label_46,5,2,1,1)
         self.PosIsoXLabel=QtGui.QSpinBox(self.groupBox_2)
         self.PosIsoXLabel.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
         self.PosIsoXLabel.setFixedWidth(45)
-        self.gridLayout_14.addWidget(self.PosIsoXLabel,5,2,1,1)
+        self.gridLayout_14.addWidget(self.PosIsoXLabel,5,3,1,1)
         self.tabEjes.addTab(self.groupBox_2, "")
 
         self.dockWidget_2D.setWidget(self.tabEjes)
@@ -1267,16 +1278,22 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.rejilla.setChecked(Config.getboolean("2D", "Grid"))
             self.checkIsoThermLabel.setChecked(Config.getboolean("2D", "IsothermLabel"))
             self.PosIsoThermLabel.setValue(Config.getfloat("2D", "IsothermLabelPos"))
+            self.checkIsoThermunit.setChecked(Config.getboolean("2D", "IsothermLabelunits"))
             self.checkIsoBarLabel.setChecked(Config.getboolean("2D", "IsobarLabel"))
             self.PosIsoBarLabel.setValue(Config.getfloat("2D", "IsobarLabelPos"))
+            self.checkIsoBarunit.setChecked(Config.getboolean("2D", "IsobarLabelunits"))
             self.checkIsoEnthLabel.setChecked(Config.getboolean("2D", "IsoenthLabel"))
             self.PosIsoEnthLabel.setValue(Config.getfloat("2D", "IsoenthLabelPos"))
+            self.checkIsoEnthunit.setChecked(Config.getboolean("2D", "IsoenthLabelunits"))
             self.checkIsoEntrLabel.setChecked(Config.getboolean("2D", "IsoentrLabel"))
             self.PosIsoEntrLabel.setValue(Config.getfloat("2D", "IsoentrLabelPos"))
+            self.checkIsoEntrunit.setChecked(Config.getboolean("2D", "IsoentrLabelunits"))
             self.checkIsoVolLabel.setChecked(Config.getboolean("2D", "IsochorLabel"))
             self.PosIsoVolLabel.setValue(Config.getfloat("2D", "IsochorLabelPos"))
+            self.checkIsoVolunit.setChecked(Config.getboolean("2D", "IsochorLabelunits"))
             self.checkIsoXLabel.setChecked(Config.getboolean("2D", "IsoXLabel"))
             self.PosIsoXLabel.setValue(Config.getfloat("2D", "IsoXLabelPos"))
+            self.checkIsoXunit.setChecked(Config.getboolean("2D", "IsoXLabelunits"))
         if Config.has_section("Isotherm"):
             self.T_ini.setText(str(unidades.Temperature(Config.getfloat("Isotherm", 'Start')).config))
             self.T_fin.setText(str(unidades.Temperature(Config.getfloat("Isotherm", 'End')).config))
@@ -1652,6 +1669,12 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.checkIsoEntrLabel.setText(QtGui.QApplication.translate("SteamTables", "Isoentrópica", None, QtGui.QApplication.UnicodeUTF8))
         self.checkIsoVolLabel.setText(QtGui.QApplication.translate("SteamTables", "Isocora", None, QtGui.QApplication.UnicodeUTF8))
         self.checkIsoXLabel.setText(QtGui.QApplication.translate("SteamTables", "Isocalidad", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkIsoBarunit.setText(QtGui.QApplication.translate("SteamTables", "Txt", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkIsoEnthunit.setText(QtGui.QApplication.translate("SteamTables", "Txt", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkIsoEntrunit.setText(QtGui.QApplication.translate("SteamTables", "Txt", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkIsoThermunit.setText(QtGui.QApplication.translate("SteamTables", "Txt", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkIsoVolunit.setText(QtGui.QApplication.translate("SteamTables", "Txt", None, QtGui.QApplication.UnicodeUTF8))
+        self.checkIsoXunit.setText(QtGui.QApplication.translate("SteamTables", "Txt", None, QtGui.QApplication.UnicodeUTF8))
         self.label_41.setText(QtGui.QApplication.translate("SteamTables", "Posición", None, QtGui.QApplication.UnicodeUTF8))
         self.label_42.setText(QtGui.QApplication.translate("SteamTables", "Posición", None, QtGui.QApplication.UnicodeUTF8))
         self.label_43.setText(QtGui.QApplication.translate("SteamTables", "Posición", None, QtGui.QApplication.UnicodeUTF8))
@@ -1714,16 +1737,22 @@ class Ui_SteamTables(QtGui.QMainWindow):
         Config.set("2D", "Grid", self.rejilla.isChecked())
         Config.set("2D", "IsothermLabel", self.checkIsoThermLabel.isChecked())
         Config.set("2D", "IsothermLabelPos", self.PosIsoThermLabel.value())
+        Config.set("2D", "IsothermLabelUnits", self.checkIsoThermunit.isChecked())
         Config.set("2D", "IsobarLabel", self.checkIsoBarLabel.isChecked())
         Config.set("2D", "IsobarLabelPos", self.PosIsoBarLabel.value())
+        Config.set("2D", "IsobarLabelUnits", self.checkIsoBarunit.isChecked())
         Config.set("2D", "IsoenthLabel", self.checkIsoEnthLabel.isChecked())
         Config.set("2D", "IsoenthLabelPos", self.PosIsoEnthLabel.value())
+        Config.set("2D", "IsoenthLabelUnits", self.checkIsoEnthunit.isChecked())
         Config.set("2D", "IsoentrLabel", self.checkIsoEntrLabel.isChecked())
         Config.set("2D", "IsoentrLabelPos", self.PosIsoEntrLabel.value())
+        Config.set("2D", "IsoentrLabelUnits", self.checkIsoEntrunit.isChecked())
         Config.set("2D", "IsochorLabel", self.checkIsoVolLabel.isChecked())
         Config.set("2D", "IsochorLabelPos", self.PosIsoVolLabel.value())
+        Config.set("2D", "IsochorLabelUnits", self.checkIsoVolunit.isChecked())
         Config.set("2D", "IsoXLabel", self.checkIsoXLabel.isChecked())
         Config.set("2D", "IsoXLabelPos", self.PosIsoXLabel.value())
+        Config.set("2D", "IsoXLabelUnits", self.checkIsoXunit.isChecked())
         if not Config.has_section("Isotherm"):
             Config.add_section("Isotherm")
         Config.set("Isotherm", "Start", unidades.Temperature(self.T_ini.text()).unit(config.Configuracion("Temperature").func()))
@@ -2206,7 +2235,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
         dialog=pressure.Ui_presion()
         dialog.setupUi(dialog)
         try:
-            self.p=unidades.Pressure(float(self.presion.text())).unit(config.Configuracion("Pressure").func())
+            self.p=unidades.Pressure(float(self.presion.text().replace(',', '.'))).unit(config.Configuracion("Pressure").func())
             dialog.Pa.setText(str(self.p))
             dialog.actualizar_Pa()
         except ValueError: pass
@@ -2570,6 +2599,8 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.label_27.setText(QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Temperature").text())
             self.checkIsoBar.setEnabled(False)
             self.checkIsoTherm.setEnabled(False)
+            self.checkIsoBar.setChecked(False)
+            self.checkIsoTherm.setChecked(False)
             self.checkIsoEntr.setEnabled(True)
             self.checkIsoEnth.setEnabled(True)
             self.checkIsoVol.setEnabled(True)
@@ -2578,17 +2609,21 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.label_26.setText(QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Pressure").text())
             self.label_27.setText(QtGui.QApplication.translate("SteamTables", "Entalpía", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Enthalpy").text())
             self.checkIsoBar.setEnabled(False)
+            self.checkIsoBar.setChecked(False)
             self.checkIsoTherm.setEnabled(True)
             self.checkIsoEntr.setEnabled(True)
             self.checkIsoEnth.setEnabled(False)
+            self.checkIsoEnth.setChecked(False)
             self.checkIsoVol.setEnabled(True)
         elif indice==2:
             self.rellenar_variableTabla(0, 4)
             self.label_26.setText(QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Pressure").text())
             self.label_27.setText(QtGui.QApplication.translate("SteamTables", "Entropía", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("SpecificHeat", "Entropy").text())
             self.checkIsoBar.setEnabled(False)
+            self.checkIsoBar.setChecked(False)
             self.checkIsoTherm.setEnabled(True)
             self.checkIsoEntr.setEnabled(False)
+            self.checkIsoEntr.setChecked(False)
             self.checkIsoEnth.setEnabled(True)
             self.checkIsoVol.setEnabled(True)
         elif indice==3:
@@ -2596,17 +2631,21 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.label_26.setText(QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Pressure").text())
             self.label_27.setText(QtGui.QApplication.translate("SteamTables", "Volumen", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("SpecificVolume").text())
             self.checkIsoBar.setEnabled(False)
+            self.checkIsoBar.setChecked(False)
             self.checkIsoTherm.setEnabled(True)
             self.checkIsoEntr.setEnabled(True)
             self.checkIsoEnth.setEnabled(True)
             self.checkIsoVol.setEnabled(False)
+            self.checkIsoVol.setChecked(False)
         elif indice==4:
             self.rellenar_variableTabla(1, 4)
             self.label_26.setText(QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("Temperature").text())
             self.label_27.setText(QtGui.QApplication.translate("SteamTables", "Entropía", None, QtGui.QApplication.UnicodeUTF8)+", %s" %config.Configuracion("SpecificHeat", "Entropy").text())
             self.checkIsoBar.setEnabled(True)
             self.checkIsoTherm.setEnabled(False)
+            self.checkIsoTherm.setChecked(False)
             self.checkIsoEntr.setEnabled(False)
+            self.checkIsoEntr.setChecked(False)
             self.checkIsoEnth.setEnabled(True)
             self.checkIsoVol.setEnabled(True)
         elif indice==5:
@@ -2615,6 +2654,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.label_27.setText(QtGui.QApplication.translate("SteamTables", "Calidad", None, QtGui.QApplication.UnicodeUTF8))
             self.checkIsoBar.setEnabled(True)
             self.checkIsoTherm.setEnabled(False)
+            self.checkIsoTherm.setChecked(False)
             self.checkIsoEntr.setEnabled(True)
             self.checkIsoEnth.setEnabled(True)
             self.checkIsoVol.setEnabled(True)
@@ -2902,8 +2942,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
 
     def calcularSaturacion(self):
         """Método que calcula datos de la línea de saturación"""
-#TODO: Es mejor opción dibujar solo las puntos de la linea de saturación en los ejes, de momento se dibujara toda la linea aunque se salga de los ejes del gráfico
-        TT0 = linspace(273.15, TCRIT, 100)
+        TT0 = linspace(273.15, TCRIT, 200)
         psat = [psat_T(T) for T in TT0]
         
         if self.ejesTabla.currentIndex()==0:
@@ -2955,6 +2994,13 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.zsat=[[(region4_Tx(T,0).h-T*region4_Tx(T,0).s)/self.factorz for T in TT0], [(region4_Tx(T,1).h-T*region4_Tx(T,1).s)/self.factorz for T in TT0]]
         elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía de Helmholtz", None, QtGui.QApplication.UnicodeUTF8):
             self.zsat=[[(region4_Tx(T,0).u-T*region4_Tx(T,0).s)/self.factorz for T in TT0], [(region4_Tx(T,1).u-T*region4_Tx(T,1).s)/self.factorz for T in TT0]]
+        
+        for i in range(len(self.xsat)):
+            for j in range(len(self.xsat[i])-1, -1, -1):
+                if self.xsat[i][j]<self.xdata[0][0] or self.xsat[i][j]>self.xdata[-1][-1] or self.ysat[i][j]<self.ydata[0][0] or self.ysat[i][j]>self.ydata[-1][-1]:
+                    del self.xsat[i][j]
+                    del self.ysat[i][j]
+                    del self.zsat[i][j]
     
         if self.ejeX.currentText()=="p":
             self.xsat2=[[P/self.factorx2 for P in psat], [P/self.factorx2 for P in psat]]
@@ -3158,18 +3204,8 @@ class Ui_SteamTables(QtGui.QMainWindow):
         angle=[]
         for i in range(len(isolineas)):
             j=int(pos/100.*len(x[i]))
-            if x[i][j]<float(self.ejeX_min.text()):
-                x_label.append(float(self.ejeX_min.text()))
-            elif x[i][j]>float(self.ejeX_max.text()):
-                x_label.append(float(self.ejeX_max.text()))
-            else:
-                x_label.append(x[i][j])
-            if y[i][j]<float(self.ejeY_min.text()):
-                y_label.append(float(self.ejeY_min.text()))
-            elif y[i][j]>float(self.ejeY_max.text()):
-                y_label.append(float(self.ejeY_max.text()))
-            else:
-                y_label.append(y[i][j])
+            x_label.append(x[i][j])
+            y_label.append(y[i][j])
             label.append(config.representacion(isolineas[i]))
             if self.ejeX_escala.isChecked():
                 fraccionx=(log(x[i][j+1])-log(x[i][j]))/(log(float(self.ejeX_max.text()))-log(float(self.ejeX_min.text())))
@@ -3185,9 +3221,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
                 angle.append(90)
         return x_label, y_label, label, angle
         
-    def limits3D(self):
-        pass
-
+        
     def calcularIsoentropica(self, start=85, rango=5):
         """Método que actualiza los datos de isoentrópicas"""
         self.statusbar.showMessage(QtGui.QApplication.translate("SteamTables", "Calculando isoentrópicas...", None, QtGui.QApplication.UnicodeUTF8))
@@ -3224,7 +3258,10 @@ class Ui_SteamTables(QtGui.QMainWindow):
                 del z[i]                    
         x_label, y_label, label, angle=self.labels([unidades.SpecificHeat(i).config("Entropy") for i in S], x2, y2, self.PosIsoEntrLabel.value())
         self.isoentropica=[x, y, z]
-        self.isoentropica2=[x2, y2, x_label, y_label, ["S="+i+config.Configuracion("SpecificHeat", "Entropy").text() for i in label], angle]
+        if self.checkIsoEntrunit.isChecked():
+            self.isoentropica2=[x2, y2, x_label, y_label, ["S="+i+config.Configuracion("SpecificHeat", "Entropy").text() for i in label], angle]
+        else:
+            self.isoentropica2=[x2, y2, x_label, y_label, label, angle]
 
     def calcularIsoentalpica(self, start=90, rango=5):
         """Método que actualiza los datos de isoentálpicas"""
@@ -3262,7 +3299,10 @@ class Ui_SteamTables(QtGui.QMainWindow):
                 del z[i]                    
         x_label, y_label, label, angle=self.labels([unidades.Enthalpy(i).config for i in H], x2, y2, self.PosIsoEnthLabel.value())
         self.isoentalpica=[x, y, z]
-        self.isoentalpica2=[x2, y2, x_label, y_label, ["H="+i+config.Configuracion("Enthalpy").text() for i in label], angle]
+        if self.checkIsoEnthunit.isChecked():
+            self.isoentalpica2=[x2, y2, x_label, y_label, ["H="+i+config.Configuracion("Enthalpy").text() for i in label], angle]
+        else:
+            self.isoentalpica2=[x2, y2, x_label, y_label, label, angle]
 
     def calcularIsobara(self, start=80, rango=5):
         """Método que actualiza los datos de isobaras"""
@@ -3277,27 +3317,35 @@ class Ui_SteamTables(QtGui.QMainWindow):
             P=arange(unidades.Pressure(float(self.P_ini.text())).unit(config.Configuracion("Pressure").func()), unidades.Pressure(float(self.P_fin.text())).unit(config.Configuracion("Pressure").func()), unidades.Pressure(float(self.P_intervalo.text())).unit(config.Configuracion("Pressure").func()))
         if self.IsobaraCritica.isChecked():
             P=concatenate((P, [PCRIT]))
-        X= linspace(273, 1073.15, 100)
-        x, y, z, x2, y2=self.isolineas(X, P, steam_pT, start, rango)
+            
+        X=linspace(0, 10000, 100)
+        x, y, z, x2, y2=self.isolineas(X, P, steam_ps, start, rango)
         x=transpose(x)
         y=transpose(y)
         z=transpose(z)
         x2=transpose(x2)
         y2=transpose(y2)
-#        for i in range(len(P)-1, -1, -1):
-#            for j in range(len(x[i])-1, -1, -1):
-#                if x[i][j]<self.xdata[0][0] or x[i][j]>self.xdata[-1][-1] or y[i][j]<self.ydata[0][0] or y[i][j]>self.ydata[-1][-1]:
-#                    del x[i][j]
-#                    del y[i][j]
-#                    del z[i][j]
-#            if len(x[i])==0:
-#                del x[i]
-#                del y[i]
-#                del z[i]
+        x=[list(i) for i in x]
+        y=[list(i) for i in y]
+        z=[list(i) for i in z]
+        #Eliminamos puntos del grafico 3D fuera de los ejes
+        for i in range(len(P)-1, -1, -1):
+            for j in range(len(x[i])-1, -1, -1):
+                if x[i][j]<self.xdata[0][0] or x[i][j]>self.xdata[-1][-1] or y[i][j]<self.ydata[0][0] or y[i][j]>self.ydata[-1][-1]:
+                    del x[i][j]
+                    del y[i][j]
+                    del z[i][j]
+            if len(x[i])==0:
+                del x[i]
+                del y[i]
+                del z[i]
 
         x_label, y_label, label, angle=self.labels([unidades.Pressure(i).config for i in P], x2, y2, self.PosIsoBarLabel.value())
         self.isobara=[x, y, z]
-        self.isobara2=[x2, y2, x_label, y_label, ["P="+i+config.Configuracion("Pressure").text() for i in label], angle]
+        if self.checkIsoBarunit.isChecked():
+            self.isobara2=[x2, y2, x_label, y_label, ["P="+i+config.Configuracion("Pressure").text() for i in label], angle]
+        else:
+            self.isobara2=[x2, y2, x_label, y_label, label, angle]
 
     def calcularIsoterma(self, start=75, rango=5):
         """Método que actualiza los datos de isotermas"""
@@ -3312,13 +3360,22 @@ class Ui_SteamTables(QtGui.QMainWindow):
             T=arange(unidades.Temperature(float(self.T_ini.text())).unit(config.Configuracion("Temperature").func()), unidades.Temperature(float(self.T_fin.text())).unit(config.Configuracion("Temperature").func()), unidades.DeltaT(float(self.T_intervalo.text())).unit(config.Configuracion("Temperature").func()))
         if self.IsotermaCritica.isChecked():
             T=concatenate((T, [TCRIT]))
-        X= logspace(-3, 3, 100)*1e5
-        for i in T:
-            if i<TCRIT:
-                ps=psat_T(i)
-                X=concatenate((X, [ps*0.999, ps*1.001]))
-        X.sort()
+        X= logspace(-3, 3, 200)*1e5
         x, y, z, x2, y2=self.isolineas(T, X, steam_pT, start, rango)
+        
+        #Añadimos puntos interiores de la campana de saturación
+        X=linspace(1, 0, 50)
+        for i , t in enumerate(T):
+            if t<TCRIT:
+                xi, yi, zi, xi2, yi2=self.isolineas(X, [t], steam_Tx, start+rango, 0)
+                temp=x2[i]+xi2[0]
+                temp.sort(reverse=True)
+                indice=temp.index(xi2[0][0])
+                for j in range(len(xi2)):
+                    x2[i].insert(indice+j, xi2[j][0])
+                    y2[i].insert(indice+j, yi2[j][0])
+                    
+        #Eliminamos puntos del grafico 3D fuera de los ejes
         for i in range(len(T)-1, -1, -1):
             for j in range(len(x[i])-1, -1, -1):
                 if x[i][j]<self.xdata[0][0] or x[i][j]>self.xdata[-1][-1] or y[i][j]<self.ydata[0][0] or y[i][j]>self.ydata[-1][-1]:
@@ -3329,9 +3386,13 @@ class Ui_SteamTables(QtGui.QMainWindow):
                 del x[i]
                 del y[i]
                 del z[i]
+        
         x_label, y_label, label, angle=self.labels([unidades.Temperature(i).config for i in T], x2, y2, self.PosIsoThermLabel.value())
         self.isoterma=[x, y, z]
-        self.isoterma2=[x2, y2, x_label, y_label, ["T="+i+config.Configuracion("Temperature").text() for i in label], angle]
+        if self.checkIsoThermunit.isChecked():
+            self.isoterma2=[x2, y2, x_label, y_label, ["T="+i+config.Configuracion("Temperature").text() for i in label], angle]
+        else:
+            self.isoterma2=[x2, y2, x_label, y_label, label, angle]
 
     def calcularIsocora(self, start=95, rango=5):
         """Método que actualiza los datos de isocoras"""
@@ -3368,8 +3429,11 @@ class Ui_SteamTables(QtGui.QMainWindow):
                 del y[i]
                 del z[i]
         x_label, y_label, label, angle=self.labels([unidades.SpecificVolume(i).config for i in V], x2, y2, self.PosIsoVolLabel.value())
-        self.isocora=[x, y, z]        
-        self.isocora2=[x2, y2, x_label, y_label, ["v="+i+config.Configuracion("SpecificVolume").text() for i in label], angle]
+        self.isocora=[x, y, z]     
+        if self.checkIsoVolunit.isChecked():
+            self.isocora2=[x2, y2, x_label, y_label, ["v="+i+config.Configuracion("SpecificVolume").text() for i in label], angle]
+        else:
+            self.isocora2=[x2, y2, x_label, y_label, label, angle]
         
     def calcularIsoX(self, start=95, rango=5):
         """Método que actualiza los datos de isocalidad"""
@@ -3390,7 +3454,10 @@ class Ui_SteamTables(QtGui.QMainWindow):
                     del z[i][j]
         x_label, y_label, label, angle=self.labels(X, x2, y2, self.PosIsoXLabel.value())
         self.isoX=[x, y, z]        
-        self.isoX2=[x2, y2, x_label, y_label, ["x="+i for i in label], angle]
+        if self.checkIsoXunit.isChecked():
+            self.isoX2=[x2, y2, x_label, y_label, ["x="+i for i in label], angle]
+        else:
+            self.isoX2=[x2, y2, x_label, y_label, label, angle]
 
 
     def dibujar(self):
