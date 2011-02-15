@@ -1,917 +1,581 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="en">
-<context>
-    <name>Dialog</name>
-    <message>
-        <location filename="pyqt/UI_steamTables.py" line="157"/>
-        <source>Puntos individuales</source>
-        <translation>Specific points</translation>
-    </message>
-    <message>
-        <location filename="pyqt/UI_steamTables.py" line="158"/>
-        <source>Borrar</source>
-        <translation>Delete</translation>
-    </message>
-    <message>
-        <location filename="pyqt/UI_steamTables.py" line="159"/>
-        <source>Propiedades</source>
-        <translation>Properties</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="160"/>
-        <source>Presión</source>
-        <translation>Pressure</translation>
-    </message>
-    <message>
-        <location filename="pyqt/UI_steamTables.py" line="161"/>
-        <source>Temperatura</source>
-        <translation>Temperature</translation>
-    </message>
-    <message>
-        <location filename="pyqt/UI_steamTables.py" line="162"/>
-        <source>Volumen</source>
-        <translation>Volume</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="163"/>
-        <source>Entalpía</source>
-        <translation>Enthalpy</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="164"/>
-        <source>Entropía</source>
-        <translation>Entropy</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="166"/>
-        <source>Energía interna</source>
-        <translation>Internal energy</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="167"/>
-        <source>Energía de Gibbs</source>
-        <translation>Gibbs free energy</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="168"/>
-        <source>Energía de Helmholtz</source>
-        <translation>Helmholtz free energy</translation>
-    </message>
-    <message>
-        <location filename="pyqt/UI_steamTables.py" line="169"/>
-        <source>Densidad</source>
-        <translation>Density</translation>
-    </message>
-    <message>
-        <location filename="pyqt/UI_steamTables.py" line="170"/>
-        <source>Cp</source>
-        <translation>Cp</translation>
-    </message>
-    <message>
-        <location filename="pyqt/UI_steamTables.py" line="171"/>
-        <source>Cv</source>
-        <translation>Cv</translation>
-    </message>
-    <message>
-        <location filename="pyqt/UI_steamTables.py" line="172"/>
-        <source>Conductividad</source>
-        <translation>Conductivity</translation>
-    </message>
-    <message>
-        <location filename="pyqt/UI_steamTables.py" line="173"/>
-        <source>Viscosidad</source>
-        <translation>Viscosity</translation>
-    </message>
-    <message>
-        <location filename="pyqt/UI_steamTables.py" line="174"/>
-        <source>Velocidad del sonido</source>
-        <translation>Speed of sound</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="175"/>
-        <source>Región</source>
-        <translation>Region</translation>
-    </message>
-</context>
+<!DOCTYPE TS><TS version="1.1" language="en">
 <context>
     <name>SteamTables</name>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1531"/>
+        <location filename="pyqt/UI_steamTables.py" line="239"/>
         <source>Tablas de Vapor</source>
         <translation>Steam Tables</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1641"/>
+        <location filename="pyqt/UI_steamTables.py" line="387"/>
         <source>Ejes</source>
         <translation>Axes</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1533"/>
+        <location filename="pyqt/UI_steamTables.py" line="524"/>
         <source>Datos conocidos</source>
         <translation>Known variables</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1536"/>
-        <source>p	Presión
-T	Temperatura
-h	Entalpía
-s	Entropía
-v	Volumen específico
-x	Calidad (cuando es vapor saturado)</source>
-        <translation>p	Pressure
-T	Temperature
-h	Enthalpy
-s	Entropy
-v	Specific volumen (mass base)
-x	Quality (when it&apos;s saturated steam)</translation>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="528"/>
+        <source>p<byte value="x9"/>Presión
+T<byte value="x9"/>Temperatura
+h<byte value="x9"/>Entalpía
+s<byte value="x9"/>Entropía
+v<byte value="x9"/>Volumen específico
+x<byte value="x9"/>Calidad (cuando es vapor saturado)</source>
+        <translation>p<byte value="x9"/>Pressure
+T<byte value="x9"/>Temperature
+h<byte value="x9"/>Enthalpy
+s<byte value="x9"/>Entropy
+v<byte value="x9"/>Specific volumen (mass base)
+x<byte value="x9"/>Quality (when it&apos;s saturated steam)</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1537"/>
+        <location filename="pyqt/UI_steamTables.py" line="529"/>
         <source>Definir variables impuestas</source>
         <translation>Define known variables</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1538"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="355"/>
         <source>Isoentrópicas</source>
         <translation>Isoentropic</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1539"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="356"/>
         <source>Dibujar curvas isoentrópicas</source>
         <translation>Plot isoentropic lines</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1540"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="351"/>
         <source>Isoentálpicas</source>
         <translation>Isoenthalpic</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1541"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="352"/>
         <source>Dibujar curvas isoentálpicas</source>
         <translation>Plot isoenthalpic lines</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1542"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="347"/>
         <source>Isobáricas</source>
         <translation>Isobaric</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1543"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="348"/>
         <source>Dibujar curvas isobáricas</source>
         <translation>Plot isobaric lines</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1544"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="343"/>
         <source>Isotérmicas</source>
         <translation>Isothermic</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1545"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="344"/>
         <source>Dibujar curvas isotérmicas</source>
         <translation>Plot isothermic lines</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1546"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="359"/>
         <source>Isocóricas</source>
         <translation>Isochoric</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1547"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="360"/>
         <source>Dibujar curvas isocóricas</source>
         <translation>Plot isochoric lines</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1637"/>
+        <location filename="pyqt/units/UI.py" line="500"/>
         <source>Intervalo</source>
         <translation>Step</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1635"/>
+        <location filename="pyqt/units/UI.py" line="488"/>
         <source>Inicio</source>
         <translation>Start</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1636"/>
+        <location filename="pyqt/units/UI.py" line="494"/>
         <source>Fin</source>
         <translation>End</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1575"/>
+        <location filename="pyqt/UI_steamTables.py" line="508"/>
         <source>Calcular</source>
         <translation>Calculate</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1554"/>
-        <source>Actualizar</source>
-        <translation>Update</translation>
-    </message>
-    <message>
-        <location filename="pyqt/UI_steamTables.py" line="1555"/>
+        <location filename="pyqt/UI_steamTables.py" line="377"/>
         <source>Tablas</source>
         <translation>Table</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1556"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="378"/>
         <source>Gráfico</source>
         <translation>Plot</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="3116"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="299"/>
         <source>Presión</source>
         <translation>Pressure</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="3126"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="1801"/>
         <source>Energía interna</source>
         <translation>Internal energy</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="3132"/>
+        <location filename="pyqt/units/UI.py" line="324"/>
         <source>Densidad</source>
         <translation>Density</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="3118"/>
+        <location filename="pyqt/units/UI.py" line="304"/>
         <source>Temperatura</source>
         <translation>Temperature</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="2621"/>
+        <location filename="pyqt/units/UI.py" line="309"/>
         <source>Volumen</source>
         <translation>Volume</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="3120"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="1795"/>
         <source>Volumen específico</source>
         <translation>Specific volume</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1569"/>
+        <location filename="pyqt/UI_steamTables.py" line="554"/>
         <source>Entalpia</source>
         <translation>Enthalpy</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="3122"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="314"/>
         <source>Entalpía</source>
         <translation>Enthalpy</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="3124"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="319"/>
         <source>Entropía</source>
         <translation>Entropy</translation>
     </message>
-    <message>
-        <location filename="pyqt/UI_steamTables.py" line="1572"/>
-        <source>Entropia</source>
-        <translation>Entropy</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="3140"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="1815"/>
         <source>Fracción de vapor</source>
         <translation>Quality</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1576"/>
+        <location filename="pyqt/UI_steamTables.py" line="399"/>
         <source>Definir variables a calcular</source>
         <translation>Define calculate variable</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1577"/>
+        <location filename="pyqt/UI_steamTables.py" line="251"/>
         <source>Archivo</source>
         <translation>File</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1578"/>
+        <location filename="pyqt/UI_steamTables.py" line="255"/>
         <source>Ayuda</source>
         <translation>Help</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1579"/>
+        <location filename="pyqt/UI_steamTables.py" line="268"/>
         <source>Guardar</source>
         <translation>Export</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1526"/>
+        <location filename="pyqt/units/UI.py" line="759"/>
         <source>Salir</source>
         <translation>Exit</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1580"/>
+        <location filename="pyqt/UI_steamTables.py" line="308"/>
         <source>Acerca de freesteam</source>
         <translation>About freesteam</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1581"/>
+        <location filename="pyqt/UI_steamTables.py" line="312"/>
         <source>Acerca de Qt</source>
         <translation>About Qt</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="3128"/>
+        <location filename="pyqt/UI_steamTables.py" line="1803"/>
         <source>Cp</source>
         <translation>Cp</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="3130"/>
+        <location filename="pyqt/UI_steamTables.py" line="1805"/>
         <source>Cv</source>
         <translation>Cv</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1584"/>
+        <location filename="pyqt/units/UI.py" line="329"/>
         <source>Conductividad</source>
         <translation>Conductivity</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1588"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="638"/>
         <source>Añadir</source>
         <translation>Add</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1589"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="639"/>
         <source>Añadir a la lista de puntos representados en la gráfica</source>
         <translation>Add to list of specific points</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1590"/>
+        <location filename="pyqt/UI_steamTables.py" line="644"/>
         <source>Lista</source>
         <translation>List</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1591"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="645"/>
         <source>Mostrar lista de puntos específicos representados en la gráfica</source>
         <translation>Show specific point list</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1593"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="746"/>
         <source>Isolíneas</source>
         <translation>Isolines</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1594"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="520"/>
         <source>Puntos específicos</source>
         <translation>Specific points</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1596"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="455"/>
         <source>Gráfico 2D</source>
         <translation>Plot 2D</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1597"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="578"/>
         <source>Energía Interna</source>
         <translation>Internal energy</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1598"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="369"/>
         <source>Pinchar y arrastrar para mover la orientación del gráfico</source>
         <translation>Drag and drop to rotate plot</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1600"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="602"/>
         <source>Capacidad calorífica a presión constante</source>
         <translation>Isobaric specific heat</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1601"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="608"/>
         <source>Capacidad calorífica a volumen constante</source>
         <translation>Isochoric specific heat</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="3134"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="1809"/>
         <source>Conductividad térmica</source>
         <translation>Thermal conductivity</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1603"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="620"/>
         <source>Viscosidad dinámica</source>
         <translation>Dinamic viscosity</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="3138"/>
+        <location filename="pyqt/UI_steamTables.py" line="1813"/>
         <source>Velocidad del sonido</source>
         <translation>Speed of sound</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1638"/>
+        <location filename="pyqt/units/UI.py" line="509"/>
         <source>Personalizar</source>
         <translation>Customize</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1633"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="520"/>
         <source>Incluir linea del punto crítico</source>
         <translation>Plot critic point line</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1661"/>
+        <location filename="pyqt/units/UI.py" line="699"/>
         <source>Isoterma</source>
         <translation>isotherm</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1662"/>
+        <location filename="pyqt/units/UI.py" line="700"/>
         <source>Isobara</source>
         <translation>isobar</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1663"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="701"/>
         <source>Isoentálpica</source>
         <translation>Isoenthalpy</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1664"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="702"/>
         <source>Isoentrópica</source>
         <translation>Isoentropy</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1665"/>
+        <location filename="pyqt/units/UI.py" line="703"/>
         <source>Isocora</source>
         <translation>isochor</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1586"/>
+        <location filename="pyqt/UI_steamTables.py" line="623"/>
         <source>V sonido</source>
         <translation>Speed of sound</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1595"/>
+        <location filename="pyqt/units/UI.py" line="740"/>
         <source>Unidades</source>
         <translation>Units</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1525"/>
+        <location filename="pyqt/UI_steamTables.py" line="294"/>
         <source>Mostrar barra de herramientas</source>
         <translation>Show toolbar</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1527"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="300"/>
         <source>Dibujar línea de saturación</source>
         <translation>Plot saturation line</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1529"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="288"/>
         <source>Gráfico 3D</source>
         <translation>Plot 3D</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1530"/>
+        <location filename="pyqt/UI_steamTables.py" line="306"/>
         <source>Mostrar puntos definidos por el usuario</source>
         <translation>Show specific points</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="2923"/>
+        <location filename="pyqt/UI_steamTables.py" line="1592"/>
         <source>Tabla</source>
         <translation>Table</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1643"/>
+        <location filename="pyqt/units/UI.py" line="286"/>
         <source>Sistema de unidades</source>
         <translation>Units System</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1644"/>
+        <location filename="pyqt/units/UI.py" line="290"/>
         <source>SI</source>
         <translation>SI</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1645"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="294"/>
         <source>Inglés</source>
         <translation>English</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="2639"/>
+        <location filename="pyqt/UI_steamTables.py" line="889"/>
         <source>Calidad</source>
         <translation>Quality</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="3142"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="1817"/>
         <source>Energía de Gibbs</source>
         <translation>Gibbs free energy</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="3136"/>
+        <location filename="pyqt/units/UI.py" line="339"/>
         <source>Viscosidad</source>
         <translation>Viscosity</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="3144"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="1819"/>
         <source>Energía de Helmholtz</source>
         <translation>Helmholtz free energy</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1559"/>
+        <location filename="pyqt/UI_steamTables.py" line="581"/>
         <source>E. Gibbs</source>
         <translation>Gibbs  energy</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1560"/>
+        <location filename="pyqt/UI_steamTables.py" line="587"/>
         <source>E. Helmholtz</source>
         <translation>Helmholtz energy</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="2673"/>
+        <location filename="pyqt/UI_steamTables.py" line="1098"/>
         <source>Listo</source>
         <translation>Ok</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="2650"/>
+        <location filename="pyqt/UI_steamTables.py" line="1075"/>
         <source>Calculando matriz...</source>
         <translation>Calculating grid...</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="2655"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="1080"/>
         <source>Calculando línea de saturación...</source>
         <translation>Calculating saturated line...</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="2659"/>
+        <location filename="pyqt/UI_steamTables.py" line="1084"/>
         <source>Calculando puntos personalizados...</source>
         <translation>Calculating customized points...</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="3342"/>
+        <location filename="pyqt/UI_steamTables.py" line="2004"/>
         <source>Calculando isotermas...</source>
         <translation>Calculating isotherms...</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="3299"/>
+        <location filename="pyqt/UI_steamTables.py" line="1966"/>
         <source>Calculando isobaras...</source>
         <translation>Calculating isobars...</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="3217"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="1880"/>
         <source>Calculando isoentrópicas...</source>
         <translation>Calculating isoentropics...</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="3258"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="1923"/>
         <source>Calculando isoentálpicas...</source>
         <translation>Calculating isoenthalpics...</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="3379"/>
+        <location filename="pyqt/UI_steamTables.py" line="2047"/>
         <source>Calculando isocoras...</source>
         <translation>Calculating isochors...</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="3446"/>
+        <location filename="pyqt/UI_steamTables.py" line="1226"/>
         <source>Dibujando...</source>
         <translation>Plotting...</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1587"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="629"/>
         <source>Región</source>
         <translation>Region</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1650"/>
+        <location filename="pyqt/UI_steamTables.py" line="481"/>
         <source>Variable</source>
         <translation>Variable</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1647"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="499"/>
         <source>Escala logarítmica</source>
         <translation>Logarithmic scale</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1656"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="524"/>
         <source>Estilo de línea</source>
         <translation>Line style</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="3496"/>
+        <location filename="pyqt/UI_steamTables.py" line="1275"/>
         <source>Listo...</source>
         <translation>Ok...</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1666"/>
+        <location filename="pyqt/units/UI.py" line="704"/>
         <source>Isocalidad</source>
         <translation>Isoquality</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1549"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="364"/>
         <source>Dibujar curvas con igual fracción de vapor</source>
         <translation>Plot lines with equal vapor fraction</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1648"/>
+        <location filename="pyqt/UI_steamTables.py" line="503"/>
         <source>Rejilla</source>
         <translation>Grid</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1659"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="487"/>
         <source>Mínimo</source>
         <translation>Lower</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1660"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/UI_steamTables.py" line="493"/>
         <source>Máximo</source>
         <translation>Upper</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="3420"/>
+        <location filename="pyqt/UI_steamTables.py" line="2090"/>
         <source>Calculando isocalidades...</source>
         <translation>Calculating isoquality...</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1640"/>
+        <location filename="pyqt/units/UI.py" line="737"/>
         <source>General</source>
         <translation>General</translation>
     </message>
-    <message>
-        <location filename="pyqt/UI_steamTables.py" line="1642"/>
-        <source>Etiquetas</source>
-        <translation>Labels</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/UI_steamTables.py" line="1678"/>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="554"/>
         <source>Posición</source>
         <translation>Position</translation>
     </message>
     <message>
-        <location filename="pyqt/UI_steamTables.py" line="1672"/>
-        <source>Txt</source>
-        <translation>Txt</translation>
-    </message>
-</context>
-<context>
-    <name>Temperatura</name>
-    <message>
-        <location filename="pyqt/units/temperature.py" line="82"/>
-        <source>Temperatura</source>
-        <translation>Temperature</translation>
+        <location filename="pyqt/UI_steamTables.py" line="124"/>
+        <source>Puntos individuales</source>
+        <translation>Specific points</translation>
     </message>
     <message>
-        <location filename="pyqt/units/temperature.py" line="92"/>
-        <source>Kelvin</source>
-        <translation>Kelvin</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/temperature.py" line="93"/>
-        <source>Denominada así en honor del matemático y físico inglés William Thomson Kelvin (1824-1907). Es la unidad básica de la temperatura en termodinámica y en el SI de unidades.</source>
-        <translation>Named after the English mathematician and physicist William Thomson Kelvin (1824-1907). The basic unit of thermodynamic temperature adopted under the System International d&apos;Unites.</translation>
+        <location filename="pyqt/UI_steamTables.py" line="151"/>
+        <source>Borrar</source>
+        <translation>Delete</translation>
     </message>
     <message>
-        <location filename="pyqt/units/temperature.py" line="94"/>
-        <source>Celsius</source>
-        <translation>Celsius</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/temperature.py" line="95"/>
-        <source>Denominada así en honor del astrónomo y físico sueco Anders Celsius (1701-1744). La escala Celsius, también denominado centigrada, marca 0º en el punto de fusión del agua y 100º en su punto de ebullición.</source>
-        <translation>Named after the Swedish astronomer and physicist Anders Celsius (1701-1744). The Celsius thermometer or scale. It is the same as the centigrade thermometer or scale. 0° marks the freezing point of water and 100° marks the boiling point of water.  </translation>
+        <location filename="pyqt/UI_steamTables.py" line="156"/>
+        <source>Propiedades</source>
+        <translation>Properties</translation>
     </message>
     <message>
-        <location filename="pyqt/units/temperature.py" line="96"/>
-        <source>Fahrenheit</source>
-        <translation>Fahrenheit</translation>
+        <location filename="pyqt/units/UI.py" line="721"/>
+        <source>Preferencias</source>
+        <translation>Preferences</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/units/temperature.py" line="97"/>
-        <source>Denominada así en honor del físico alemán Gabriel Daniel Fahrenheit (1686-1736). El termómetro Fahrenheit está graduado de tal forma que el punto de congelación es 32º, y el punto de ebullición 212º. Es de uso común en Estados Unidos y Reino Unido así como en ingnierías.</source>
-        <translation>Named after the German physicist Gabriel Daniel Fahrenheit (1686-1736). The Fahrenheit thermometer is so graduated that the freezing point of water is at 32° above the zero of its scale, and the boiling point at 212° above. It is commonly used in the United States and in England.</translation>
-    </message>
-    <message>
-        <location filename="pyqt/units/temperature.py" line="98"/>
-        <source>Rankine</source>
-        <translation>Rankine</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/temperature.py" line="99"/>
-        <source>Denominada así en honor del físico e ingeniero británico William Rankine (1820-1872). Una escala de temperatura absoluta en grados Fahrenheit.</source>
-        <translation>Named after the British physicist and engineer William Rankine (1820-1872). An absolute temperature scale in Fahrenheit degrees.</translation>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="334"/>
+        <source>Capacidad calorífica</source>
+        <translation>Specific heat</translation>
     </message>
     <message>
-        <location filename="pyqt/units/temperature.py" line="100"/>
-        <source>Reaumur</source>
-        <translation>Reaumur</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/temperature.py" line="101"/>
-        <source>Denominados así en honor del científico frances René-Antoine Ferchault de Réaumur (1683-1757) de acuerdo con una escala creada por él según la cual 0º marca el punto de fusión y 80º el punto de ebullición del agua.</source>
-        <translation>Named after the French scientist René-Antoine Ferchault de Réaumur (1683-1757). Conformed to the scale adopted by Réaumur in graduating the thermometer he invented. The Réaumur thermometer is so graduated that 0° marks the freezing point and 80° the boiling point of water.</translation>
+        <location filename="pyqt/units/UI.py" line="344"/>
+        <source>Velocidad</source>
+        <translation>Speed</translation>
     </message>
     <message>
-        <location filename="pyqt/units/temperature.py" line="166"/>
-        <source>Error de entrada</source>
-        <translation>Input error</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/temperature.py" line="166"/>
-        <source>Valor no numérico</source>
-        <translation>Not numeric value</translation>
-    </message>
-</context>
-<context>
-    <name>entalpia</name>
-    <message>
-        <location filename="pyqt/units/enthalpy.py" line="126"/>
-        <source>Entalpia</source>
-        <translation>Enthalpy</translation>
+        <location filename="pyqt/units/UI.py" line="548"/>
+        <source>Etiqueta</source>
+        <translation>Label</translation>
     </message>
     <message>
-        <location filename="pyqt/units/enthalpy.py" line="260"/>
-        <source>Error de entrada</source>
-        <translation>Input error</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/enthalpy.py" line="260"/>
-        <source>Valor no numérico</source>
-        <translation>Not numeric value</translation>
-    </message>
-</context>
-<context>
-    <name>entropia</name>
-    <message>
-        <location filename="pyqt/units/entropy.py" line="88"/>
-        <source>Entropia</source>
-        <translation>Entropy</translation>
+        <location filename="pyqt/units/UI.py" line="551"/>
+        <source>Unidades en las etiquetas</source>
+        <translation>Units in labels</translation>
     </message>
     <message>
-        <location filename="pyqt/units/entropy.py" line="166"/>
-        <source>Error de entrada</source>
-        <translation>Input error</translation>
+        <location filename="pyqt/units/UI.py" line="636"/>
+        <source>Color del resaltado:</source>
+        <translation>Highlight color:</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/units/entropy.py" line="166"/>
-        <source>Valor no numérico</source>
-        <translation>Not numeric value</translation>
-    </message>
-</context>
-<context>
-    <name>presion</name>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="199"/>
-        <source>Presión</source>
-        <translation>Pressure</translation>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="643"/>
+        <source>Tamaño gráficos</source>
+        <translation>Plot size</translation>
     </message>
     <message>
-        <location filename="pyqt/units/pressure.py" line="214"/>
-        <source>bar</source>
-        <translation>bar</translation>
+        <location filename="pyqt/units/UI.py" line="743"/>
+        <source>Unidades emergentes</source>
+        <translation>Tooltips</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="200"/>
-        <source>Se denomina bar a una unidad de presión equivalente a un millón de barias, aproximadamente igual a una atmósfera (1 Atm). Su símbolo es &quot;bar&quot;. La palabra bar tiene su origen en báros, que en griego significa peso</source>
-        <translation>The bar (symbol: bar) is a unit of pressure equal to 100 kilopascals, and roughly equal to the atmospheric pressure on Earth at sea level. The word bar has its origin in the Greek word βάρος (baros), meaning weight</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="201"/>
-        <source>La unidad de presión denominada atmósfera equivale a la presión de la atmósfera terrestre sobre el nivel del mar. Es utilizada para medir presiones elevadas como la de los gases comprimidos.</source>
-        <translation>The average pressure of the Earth&apos;s atmosphere at sea level. The standard atmosphere (symbol: atm) is an international reference pressure defined as 101,325 Pa and formerly used as unit of pressure.</translation>
-    </message>
-    <message>
-        <location filename="pyqt/units/pressure.py" line="217"/>
-        <source>Pascal</source>
-        <translation>Pascal</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="202"/>
-        <source>El pascal (símbolo Pa) es la unidad de presión del Sistema Internacional de Unidades. Se define como la presión que ejerce una fuerza de 1 newton sobre una superficie de 1 metro cuadrado normal a la misma</source>
-        <translation>Named after the French philosopher and mathematician Blaise Pascal (1623 - 1662). Equal to one newton per square meter</translation>
-    </message>
-    <message>
-        <location filename="pyqt/units/pressure.py" line="218"/>
-        <source>kilopascal</source>
-        <translation>kilopascal</translation>
-    </message>
-    <message>
-        <location filename="pyqt/units/pressure.py" line="219"/>
-        <source>megapascal</source>
-        <translation>megapascal</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="203"/>
-        <source>Presión ejercida por una columna de agua de altura dada en centímetros</source>
-        <translation>the pressure exerted at the base of a column of fluid exactly 1 cm water</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="224"/>
-        <source>kilogramo fuerza por centímetro cuadrado</source>
-        <translation>kilogram force per square centimeter</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="205"/>
-        <source>Presión ejercida por una columna de agua de altura dada en milímetros</source>
-        <translation>the pressure exerted at the base of a column of fluid exactly 1 mm water</translation>
-    </message>
-    <message>
-        <location filename="pyqt/units/pressure.py" line="223"/>
-        <source>torr</source>
-        <translation>torr</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="207"/>
-        <source>El torr es una unidad de presión, denominada así en honor de Evangelista Torricelli. Se define como la presión ejercida en la base de una columna de un milímetro de mercurio, cuya densidad es de 13,5951 g/cm³ en un lugar donde la aceleración de la gravedad es de 9,80665 m/s³ y como 1/760 de atmósfera.</source>
-        <translation>Named after Italian physicist and mathematician Evangelista Torricelli, (1608-1647). A unit of pressure equal to 0.001316 atmosphere.</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="208"/>
-        <source>Presión ejercida por una columna de mercurio de altura dada en milimetros</source>
-        <translation>the pressure exerted at the base of a column of fluid exactly 1 mm Hg</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="210"/>
-        <source>Presión ejercida por una columna de mercurio de altura dada en pulgadas</source>
-        <translation>the pressure exerted at the base of a column of fluid exactly 1 feet Hg</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="212"/>
-        <source>Presión ejercida por una columna de agua de altura dada en pulgadas</source>
-        <translation>the pressure exerted at the base of a column of fluid exactly 1 inch water</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="213"/>
-        <source>Presión ejercida por una columna de agua de altura dada en pies</source>
-        <translation>the pressure exerted at the base of a column of fluid exactly 1 foot water</translation>
-    </message>
-    <message>
-        <location filename="pyqt/units/pressure.py" line="477"/>
-        <source>Error de entrada</source>
-        <translation>Input error</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="477"/>
-        <source>Valor no numérico</source>
-        <translation>Not numeric value</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="204"/>
-        <source>La libra-fuerza por pulgada cuadrada, más conocida como psi (del inglés pounds per square inch) es una unidad de presión en el sistema anglosajón de unidades. Equivale a 6894,75 pascales</source>
-        <translation>The pound per square inch or, more accurately, pound-force per square inch (symbol: psi or lbf/in2 or lbf/in2 or lbf/sq in or lbf/sq in) is a unit of pressure or of stress based on avoirdupois units. It is the pressure resulting from a force of one pound-force applied to an area of one square inch: 1 psi approximately equals 6894.75 Pa</translation>
-    </message>
-    <message>
-        <location filename="pyqt/units/pressure.py" line="215"/>
-        <source>milibar</source>
-        <translation>millibar</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="216"/>
-        <source>atmósfera</source>
-        <translation>atmosphere</translation>
-    </message>
-    <message>
-        <location filename="pyqt/units/pressure.py" line="220"/>
-        <source>milimetro de agua</source>
-        <translation>milimeter of water column</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="221"/>
-        <source>centímetro de agua</source>
-        <translation>centimeter of water column</translation>
-    </message>
-    <message>
-        <location filename="pyqt/units/pressure.py" line="222"/>
-        <source>milimetro de mercurio</source>
-        <translation>milimeter of Hg column</translation>
-    </message>
-    <message>
-        <location filename="pyqt/units/pressure.py" line="225"/>
-        <source>libra por pulgada cudrada absoluta</source>
-        <translation>pound-force per square inch, psi</translation>
-    </message>
-    <message>
-        <location filename="pyqt/units/pressure.py" line="229"/>
-        <source>pie de agua</source>
-        <translation>feet of water column</translation>
-    </message>
-    <message>
-        <location filename="pyqt/units/pressure.py" line="230"/>
-        <source>pulgada de agua</source>
-        <translation>inch of water column</translation>
-    </message>
-    <message>
-        <location filename="pyqt/units/pressure.py" line="231"/>
-        <source>pulgada de mercurio</source>
-        <translation>inch of Hg column</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="227"/>
-        <source>bar por encima de la presión atmosférica</source>
-        <translation>barg (bar gauge) is a unit of pressure relative to the surrounding atmosphere</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="228"/>
-        <source>kilogramo por centímetro cuadrado por encima de la presión atmosférica</source>
-        <translation>kgfcm²g (kilogram-force per square centimeter gauge) is a unit of pressure relative to the surrounding atmosphere</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="226"/>
-        <source>libra por pulgada cuadrada por encima de la presión atmosférica</source>
-        <translation>Psig (pound-force per square inch gauge) is a unit of pressure relative to the surrounding atmosphere</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="206"/>
-        <source>Presión en bares por encima de la presión atmosférica</source>
-        <translation>barg (bar gauge) is a unit of pressure relative to the surrounding atmosphere</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="209"/>
-        <source>Presión en kg por centimetro cuadrado por encima de la presión atmosférica</source>
-        <translation>kgfcm²g (kilogram-force per square centimeter gauge) is a unit of pressure relative to the surrounding atmosphere</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/pressure.py" line="211"/>
-        <source>Presion en libras por pulgada cuadrada por encima de la presión atmosférica</source>
-        <translation>Psig (pound-force per square inch gauge) is a unit of pressure relative to the surrounding atmosphere</translation>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="759"/>
+        <source>¿Guardar cambios?</source>
+        <translation>Save changes?</translation>
     </message>
 </context>
 <context>
@@ -986,7 +650,7 @@ x	Quality (when it&apos;s saturated steam)</translation>
         <source>Entropy</source>
         <translation type="unfinished"></translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="qt/ST.ui" line="324"/>
         <source>°C</source>
         <translation type="unfinished"></translation>
@@ -1077,87 +741,57 @@ x	Quality (when it&apos;s saturated steam)</translation>
         <translation type="unfinished"></translation>
     </message>
 </context>
-<context>
-    <name>volumen_especifico</name>
-    <message utf8="true">
-        <location filename="pyqt/units/specific_volume.py" line="116"/>
-        <source>pie cúbico por libra</source>
-        <translation>cubic foot per pound</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/specific_volume.py" line="117"/>
-        <source>galón estadounidense por libra</source>
-        <translation>gallon US per pound</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/specific_volume.py" line="118"/>
-        <source>El galón usado en Estados Unidos o internacional equivale a 231 pulgadas cúbicas o 3,7854 litros</source>
-        <translation>The US liquid gallon is legally defined as 231 cubic inches, and is equal to exactly 3.785411784 litres</translation>
+<context encoding="UTF-8">
+    <name>unidades</name>
+    <message>
+        <location filename="pyqt/units/UI.py" line="241"/>
+        <source>Temperatura</source>
+        <translation>Temperature</translation>
     </message>
     <message>
-        <location filename="pyqt/units/specific_volume.py" line="119"/>
-        <source>litro por kilogramo</source>
-        <translation>liter per kilogram</translation>
+        <location filename="pyqt/units/UI.py" line="245"/>
+        <source>Velocidad</source>
+        <translation>Speed</translation>
     </message>
-    <message utf8="true">
-        <location filename="pyqt/units/specific_volume.py" line="121"/>
-        <source>Tonelada corta: equivale a 907,18474 kg, y en inglés se llama &apos;short ton&apos; aunque en el uso habitual de Estados Unidos se le llama tonelada (ton), como la métrica, y hasta se abrevia t</source>
-        <translation>The short ton is a unit of weight equal to 2,000 pounds (907.18474 kg).In the United States it is often called simply ton without distinguishing it from the metric ton (tonne, 1,000 kilograms) or the long ton (2,240 pounds / 1,016.0469088 kilograms); rather, the other two are specifically noted</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/specific_volume.py" line="122"/>
-        <source>centímetro cúbico por gramo</source>
-        <translation>cubic centimeter per gram</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/specific_volume.py" line="125"/>
-        <source>El galón usado en el Reino Unido o imperial equivale a 277,41945 pulgadas cúbicas o 4,5461 litros</source>
-        <translation>The imperial (UK) gallon was legally defined as 4.54609 litres</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/specific_volume.py" line="127"/>
-        <source>La tonelada larga equivale a 1.016,0469088 kg, y en inglés se llama long ton o weight ton</source>
-        <translation>Long ton (weight ton or imperial ton) is the name for the unit called the &quot;ton&quot; in the avoirdupois or Imperial system of measurements, as used in the United Kingdom and several other Commonwealth countries. One long ton is equal to 2,240 pounds (1,016 kg), 1.12 times as a short ton</translation>
-    </message>
-    <message>
-        <location filename="pyqt/units/specific_volume.py" line="115"/>
-        <source>litro por gramo</source>
-        <translation>liter per gram</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/specific_volume.py" line="120"/>
-        <source>pie cúbico por tonelada americana</source>
-        <translation>cubic foot per short ton</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/specific_volume.py" line="123"/>
-        <source>metro cúbico por kilogramo</source>
-        <translation>cubic meter per kilogram</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/specific_volume.py" line="124"/>
-        <source>galón británico por libra</source>
-        <translation>gallon UK per pound</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/specific_volume.py" line="126"/>
-        <source>pie cúbico por tonelada imperial</source>
-        <translation>cubic foot per long ton</translation>
-    </message>
-    <message>
-        <location filename="pyqt/units/specific_volume.py" line="247"/>
-        <source>Error de entrada</source>
-        <translation>Input error</translation>
-    </message>
-    <message utf8="true">
-        <location filename="pyqt/units/specific_volume.py" line="247"/>
-        <source>Valor no numérico</source>
-        <translation>Not numeric value</translation>
-    </message>
-    <message>
-        <location filename="pyqt/units/specific_volume.py" line="114"/>
-        <source>Volumen especifico</source>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="249"/>
+        <source>Volumen específico</source>
         <translation>Specific volume</translation>
+    </message>
+    <message>
+        <location filename="pyqt/units/UI.py" line="253"/>
+        <source>Densidad</source>
+        <translation>Density</translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="257"/>
+        <source>Presión</source>
+        <translation>Pressure</translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="261"/>
+        <source>Entalpía</source>
+        <translation>Enthalpy</translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="265"/>
+        <source>Calor específico</source>
+        <translation>Specific heat</translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="269"/>
+        <source>Conductividad térmica</source>
+        <translation>Thermal conductivity</translation>
+    </message>
+    <message encoding="UTF-8">
+        <location filename="pyqt/units/UI.py" line="273"/>
+        <source>Tensión superficial</source>
+        <translation>Surface tension</translation>
+    </message>
+    <message>
+        <location filename="pyqt/units/UI.py" line="277"/>
+        <source>Viscosidad</source>
+        <translation>Viscosity</translation>
     </message>
 </context>
 </TS>

@@ -28,9 +28,11 @@ class Configuracion():
         return self.unidades[self.index]
 
 
-def representacion(float, decimales=4):
-    """Función que expresa un valor de tipo float en la forma apropiada en función de su valor"""
-    if 0.001<float<10000 or -10000<float<-0.001:
+def representacion(float, decimales=4, tol=1e4):
+    """Función que expresa un valor de tipo float en la forma apropiada en función de su valor
+    decimales: numero de decimales a usar en la representación del número
+    tolerancia: valor por encima del cual se usa notacion científica"""
+    if 0.001<float<tol or -tol<float<-0.001:
         return str(round(float, decimales))
     elif float==0.0:
         return str(round(float, 1))
