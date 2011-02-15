@@ -2,60 +2,50 @@
 # -*- coding: utf-8 -*-
 
 import scipy.constants as k
-
 from ConfigParser import ConfigParser
 
-
-#Definiendo factores de conversion no disponibles en scipy
 k.tonUS=2000*k.lb
 k.tonUK = 2240*k.lb
-k.kiloton = 4.184e12
-k.BarrilOil=5.8e6*k.Btu
-k.TmOil= 4.1868e10
-k.TmCoal= 2.93e10
 k.slug = k.lb*k.g/k.foot
-k.debye=1./k.c*k.zepto
-k.pdl = k.foot*k.lb
-k.ozf = k.oz * k.g
 k.Rankine = 1/1.8 #only for differences
 k.Reaumur=1/0.8
-k.milla=1609.344
-k.milla_nau=1852
-k.acre=4840*k.yard**2
-k.qtUSliq=0.25*k.gallon
-k.qtUSdry=67.2*k.inch**3
-k.qtUK=0.25*k.gallon_imp
-k.cwtUS=112*k.lb
-k.cwtUK=100*k.lb
-k.CV=k.kgf*75
-k.TonfUK=k.g*k.tonUK
-k.TonfUS=k.g*k.tonUS
 
 
 texto=dict(
-            Temperature=['K','C','R','F','Re'], 
-            Pressure=['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'mbar', 'psi', 'atm', u'kg/cm²', 'mmH2O', 'cmH2O', 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', u'lb/cm²',u'lb/ft²', u'dyn/cm²' ], 
+            Temperature=['K',u'ºC',u'ºR',u'ºF',u'ºRe'], 
+            Pressure=['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'bar g', 'mbar', 'psi', 'psi g', 'atm', u'kg/cm²', u'kg/cm² g', 'mmH2O', 'cmH2O', 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', u'lb/cm²',u'lb/ft²', u'dyn/cm²' ], 
             Speed=['m/s', 'cm/s', 'mm/s', 'km/s', 'ft/s', 'ft/min',  'm/min', 'km/min','km/h',  'km/day', 'mph', 'nudo'], 
             Viscosity=[u'Pa·s', u'mPa·s', u'µPa·s', 'P', 'cP', u'dyn/s·cm²', u'µP', 'reyn', u'lb/ft·s', u'lbf/ft²', u'lbf/in²', u'lb/ft·h'], 
             Density=[u'kg/m³', u'g/cm³', u'g/m³', u'kg/cm³', u'lb/ft³',u'lb/inch³' , 'lb/galUK', 'lb/galUS', 'lb/barril'], 
             ThermalConductivity=[u'W/m·K', u'J/h·m·K', u'cal/s·cm·K', u'cal/h·cm·K',u'kcal/h·m·K' , u'lbf/s·F', u'lb/ft·s³·F',u'Btu/h·ft·F'], 
             SpecificHeat=[u'J/kg·K', u'kJ/kg·K', u'kcal/kg·K', u'kcal/g·K', u'kWh/kg·K', u'Btu/lb·F'], 
             Enthalpy=['J/kg', 'kJ/kg', 'MJ/kg','cal/kg' , 'kcal/kg', 'cal/lb', 'Btu/lb'], 
-            SpecificVolume=[u'm³/kg',u'cm³/g' , u'm³/g', u'cm³/kg', u'ft³/lb', u'in³/lb', 'gal UK/lb', 'gal US/lb', 'barril/lb'],
+            SpecificVolume=[u'm³/kg',u'cm³/g' , u'm³/g', u'cm³/kg', u'ft³/lb', u'in³/lb', 'gallon UK/lb', 'gallon US/lb', 'barril/lb', u'ft³/ton UK', u'ft³/ton US', u'ft³/slug', u'ft³/onza', u'in³/onza', 'gallon UK/onza', 'gallon US/onza'], 
            )
            
 units=dict(
            Temperature=['K','C','R','F','Re'], 
-           Pressure=['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'mbar', 'psi', 'atm', 'kgcm2', 'mmH2O', 'cmH2O', 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2','lbft2', 'dyncm2' ], 
+           Pressure=['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'barg', 'mbar', 'psi', 'psig', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2','lbft2', 'dyncm2' ], 
            Speed=['ms', 'cms', 'mms', 'kms', 'fts', 'ftmin',  'mmin', 'kmmin','kmh',  'kmday', 'mph', 'kt'], 
            Viscosity=['Pas', 'mPas', 'muPas', 'P', 'cP', 'dynscm2', 'microP', 'reyn', 'lbfts', 'lbfft2', 'lbfinch2', 'lbfth'], 
            Density=['kgm3', 'gcc', 'gm3', 'kgcc', 'lbft3','lbin3' , 'lbgalUK', 'lbgalUS', 'lbbbl'], 
            ThermalConductivity=['WmK', 'JhmK', 'calscmK', 'calhcmK','kcalhmK' , 'lbfsF', 'lbfts3F','BtuhftF'], 
            SpecificHeat=['JkgK', 'kJkgK', 'kcalkgK', 'kcalgK', 'kWhkgK', 'BtulbF'], 
            Enthalpy=['Jkg', 'kJkg', 'MJkg','calkg' , 'kcalkg', 'callb', 'Btulb'], 
-           SpecificVolume=['m3kg','lkg' , 'm3g', 'cckg', 'ft3lb', 'inch3lb', 'galUKlb', 'galUSlb', 'bbllb', ],
+           SpecificVolume=['m3kg','lkg' , 'm3g', 'cckg', 'ft3lb', 'inch3lb', 'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK', 'ft3tonUS', 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz'], 
         )
         
+tooltip=dict(
+            Temperature=['Kelvin','Celsius','Rankine','Fahrenheit','Reaumur'], 
+           Pressure=['Pascal', '', '', '', 'bar', '', '', 'libras por pulgada cuadrada', '', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2','lbft2', 'dyncm2' ], 
+            Speed=['m/s', 'cm/s', 'mm/s', 'km/s', 'ft/s', 'ft/min',  'm/min', 'km/min','km/h',  'km/day', 'millas por hora', 'nudo'], 
+            Viscosity=[u'Pa·s', u'mPa·s', u'µPa·s', 'Poise', 'centipoise', u'dyn/s·cm²', u'µP', 'reyn', u'lb/ft·s', u'lbf/ft²', u'lbf/in²', u'lb/ft·h'], 
+            Density=[u'kg/m³', u'g/cm³', u'g/m³', u'kg/cm³', u'lb/ft³',u'lb/inch³' , 'lb/galUK', 'lb/galUS', 'lb/barril'], 
+            ThermalConductivity=[u'W/m·K', u'J/h·m·K', u'cal/s·cm·K', u'cal/h·cm·K',u'kcal/h·m·K' , u'lbf/s·F', u'lb/ft·s³·F',u'Btu/h·ft·F'], 
+            SpecificHeat=[u'J/kg·K', u'kJ/kg·K', u'kcal/kg·K', u'kcal/g·K', u'kWh/kg·K', u'Btu/lb·F'], 
+            Enthalpy=['J/kg', 'kJ/kg', 'MJ/kg','cal/kg' , 'kcal/kg', 'cal/lb', 'Btu/lb'], 
+           SpecificVolume=['m3kg','lkg' , 'm3g', 'cckg', 'ft3lb', 'inch3lb', 'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK', 'ft3tonUS', 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz'], 
+           )
 
 class Temperature(float):
     """Clase que modela la magnitud temperatura
@@ -140,16 +130,19 @@ class Temperature(float):
     def Re(self):
         return self.__factory(self.K2Re(self.data))
     @property
-    def config(self):
+    def list(self):
+        return self.K, self.C, self.R, self.F, self.Re
+        
+    def config(self, magnitud="Temperature"):
         Config=ConfigParser()
         Config.read("UI_steamTablesrc")
-        if Config.getint('Units','Temperature')==1:
+        if Config.getint('Units',magnitud)==1:
             return self.C
-        elif Config.getint('Units','Temperature')==2:
+        elif Config.getint('Units',magnitud)==2:
             return self.R
-        elif Config.getint('Units','Temperature')==3:
+        elif Config.getint('Units',magnitud)==3:
             return self.F
-        elif Config.getint('Units','Temperature')==4:
+        elif Config.getint('Units',magnitud)==4:
             return self.Re
         else:
             return self.K
@@ -204,16 +197,19 @@ class DeltaT(float):
     def Re(self):
         return self.__factory(self.data/k.Reaumur)
     @property
-    def config(self):
+    def list(self):
+        return self.K, self.C, self.R, self.F, self.Re
+        
+    def config(self, magnitud="Temperature"):
         Config=ConfigParser()
         Config.read("UI_steamTablesrc")
-        if Config.getint('Units','Temperature')==1:
+        if Config.getint('Units',magnitud)==1:
             return self.C
-        elif Config.getint('Units','Temperature')==2:
+        elif Config.getint('Units',magnitud)==2:
             return self.R
-        elif Config.getint('Units','Temperature')==3:
+        elif Config.getint('Units',magnitud)==3:
             return self.F
-        elif Config.getint('Units','Temperature')==4:
+        elif Config.getint('Units',magnitud)==4:
             return self.Re
         else:
             return self.K
@@ -253,13 +249,13 @@ class Speed(float):
         elif units == 'cms':
             return self.__factory(self.data*k.centi)
         elif units == 'mms':
-            return self.__factory(self.data*k.mili)
+            return self.__factory(self.data*k.milli)
         elif units == 'kms':
             return self.__factory(self.data*k.kilo)
         elif units == 'mmin':
             return self.__factory(self.data/k.minute)
         elif units == 'kmmin':
-            return self.__factory(self.data*k.kilo/k.min)
+            return self.__factory(self.data*k.kilo/k.minute)
         elif units == 'kmh':
             return self.__factory(self.data*k.kilo/k.hour)
         elif units == 'mday':
@@ -293,7 +289,7 @@ class Speed(float):
         return self.__factory(self.data/k.centi)
     @property
     def mms(self):
-        return self.__factory(self.data/k.mili)
+        return self.__factory(self.data/k.milli)
     @property
     def kms(self):
         return self.__factory(self.data/k.kilo)
@@ -302,7 +298,7 @@ class Speed(float):
         return self.__factory(self.data*k.minute)
     @property
     def kmmin(self):
-        return self.__factory(self.data/k.kilo*k.min)
+        return self.__factory(self.data/k.kilo*k.minute)
     @property
     def kmh(self):
         return self.__factory(self.data/k.kilo*k.hour)
@@ -337,31 +333,33 @@ class Speed(float):
     def kt(self):
         return self.__factory(self.data/k.nautical_mile*k.hour)        
     @property
-    def config(self):
+    def list(self):
+        return self.ms, self.cms, self.mms, self.kms, self.fts, self.ftmin, self.mmin, self.kmmin, self.kmh, self.kmday, self.mph, self.kt
+
+    def config(self, magnitud="Speed"):
         Config=ConfigParser()
         Config.read("UI_steamTablesrc")
-
-        if Config.getint('Units','Speed')==1:
+        if Config.getint('Units',magnitud)==1:
             return self.cms
-        elif Config.getint('Units','Speed')==2:
+        elif Config.getint('Units',magnitud)==2:
             return self.mms
-        elif Config.getint('Units','Speed')==3:
+        elif Config.getint('Units',magnitud)==3:
             return self.kms
-        elif Config.getint('Units','Speed')==4:
+        elif Config.getint('Units',magnitud)==4:
             return self.fts
-        elif Config.getint('Units','Speed')==5:
+        elif Config.getint('Units',magnitud)==5:
             return self.ftmin
-        elif Config.getint('Units','Speed')==6:
+        elif Config.getint('Units',magnitud)==6:
             return self.mmin
-        elif Config.getint('Units','Speed')==7:
+        elif Config.getint('Units',magnitud)==7:
             return self.kmmin
-        elif Config.getint('Units','Speed')==8:
+        elif Config.getint('Units',magnitud)==8:
             return self.kmh
-        elif Config.getint('Units','Speed')==9:
+        elif Config.getint('Units',magnitud)==9:
             return self.kmday
-        elif Config.getint('Units','Speed')==10:
+        elif Config.getint('Units',magnitud)==10:
             return self.mph
-        elif Config.getint('Units','Speed')==11:
+        elif Config.getint('Units',magnitud)==11:
             return self.kt
         else:
             return self.ms
@@ -425,7 +423,7 @@ class SpecificVolume(float):
             return self.__factory(self.data/k.slug*k.foot**3)
         elif units == 'ft3oz':
             return self.__factory(self.data/k.oz*k.foot**3)
-        elif units == 'in3oz':
+        elif units == 'inch3oz':
             return self.__factory(self.data/k.oz*k.inch**3)
         elif units == 'galUKoz':
             return self.__factory(self.data/k.oz*k.gallon_imp)
@@ -492,39 +490,41 @@ class SpecificVolume(float):
     def galUSoz(self):
         return self.__factory(self.data/k.gallon*k.oz)
     @property
-    def config(self):
+    def list(self):
+        return self.m3kg, self.lkg, self.m3g, self.cckg, self.ft3lb, self.inch3lb, self.galUKlb, self.galUSlb, self.bbllb, self.ft3tonUK, self.ft3tonUS, self.ft3slug, self.ft3oz, self.inch3oz, self.galUKoz, self.galUSoz
+
+    def config(self, magnitud="SpecificVolume"):
         Config=ConfigParser()
         Config.read("UI_steamTablesrc")
-
-        if Config.getint('Units','SpecificVolume')==1:
+        if Config.getint('Units',magnitud)==1:
             return self.lkg
-        elif Config.getint('Units','SpecificVolume')==2:
+        elif Config.getint('Units',magnitud)==2:
             return self.m3g
-        elif Config.getint('Units','SpecificVolume')==3:
+        elif Config.getint('Units',magnitud)==3:
             return self.cckg
-        elif Config.getint('Units','SpecificVolume')==4:
+        elif Config.getint('Units',magnitud)==4:
             return self.ft3lb
-        elif Config.getint('Units','SpecificVolume')==5:
+        elif Config.getint('Units',magnitud)==5:
             return self.inch3lb
-        elif Config.getint('Units','SpecificVolume')==6:
+        elif Config.getint('Units',magnitud)==6:
             return self.galUKlb
-        elif Config.getint('Units','SpecificVolume')==7:
+        elif Config.getint('Units',magnitud)==7:
             return self.galUSlb
-        elif Config.getint('Units','SpecificVolume')==8:
+        elif Config.getint('Units',magnitud)==8:
             return self.bbllb            
-        elif Config.getint('Units','SpecificVolume')==9:
+        elif Config.getint('Units',magnitud)==9:
             return self.ft3tonUK
-        elif Config.getint('Units','SpecificVolume')==10:
+        elif Config.getint('Units',magnitud)==10:
             return self.ft3tonUS
-        elif Config.getint('Units','SpecificVolume')==11:
+        elif Config.getint('Units',magnitud)==11:
             return self.ft3slug
-        elif Config.getint('Units','SpecificVolume')==12:
+        elif Config.getint('Units',magnitud)==12:
             return self.ft3oz
-        elif Config.getint('Units','SpecificVolume')==13:
+        elif Config.getint('Units',magnitud)==13:
             return self.in3oz
-        elif Config.getint('Units','SpecificVolume')==14:
+        elif Config.getint('Units',magnitud)==14:
             return self.galUKoz
-        elif Config.getint('Units','SpecificVolume')==15:
+        elif Config.getint('Units',magnitud)==15:
             return self.galUSoz
         else:
             return self.m3kg
@@ -657,39 +657,41 @@ class Density(float):
     def ozgalUS(self):
         return self.__factory(self.data*k.gallon/k.oz)
     @property
-    def config(self):
+    def list(self):
+        return self.kgm3, self.gcc, self.gm3, self.kgcc, self.lbft3, self.lbin3, self.lbgalUK,  self.lbgalUS,  self.lbbbl, self.tonUKft3, self.tonUSft3, self.slugft3, self.ozft3, self.ozin3, self.ozgalUK, self.ozgalUS
+
+    def config(self, magnitud='Density'):
         Config=ConfigParser()
         Config.read("UI_steamTablesrc")
-
-        if Config.getint('Units','Density')==1:
+        if Config.getint('Units',magnitud)==1:
             return self.gcc
-        elif Config.getint('Units','Density')==2:
+        elif Config.getint('Units',magnitud)==2:
             return self.gm3
-        elif Config.getint('Units','Density')==3:
+        elif Config.getint('Units',magnitud)==3:
             return self.kgcc
-        elif Config.getint('Units','Density')==4:
+        elif Config.getint('Units',magnitud)==4:
             return self.lbft3
-        elif Config.getint('Units','Density')==5:
+        elif Config.getint('Units',magnitud)==5:
             return self.lbin3
-        elif Config.getint('Units','Density')==6:
+        elif Config.getint('Units',magnitud)==6:
             return self.lbgalUK
-        elif Config.getint('Units','Density')==7:
+        elif Config.getint('Units',magnitud)==7:
             return self.lbgalUS
-        elif Config.getint('Units','Density')==8:
+        elif Config.getint('Units',magnitud)==8:
             return self.lbbbl
-        elif Config.getint('Units','Density')==9:
+        elif Config.getint('Units',magnitud)==9:
             return self.tonUKft3
-        elif Config.getint('Units','Density')==10:
+        elif Config.getint('Units',magnitud)==10:
             return self.tonUSft3
-        elif Config.getint('Units','Density')==11:
+        elif Config.getint('Units',magnitud)==11:
             return self.slugft3
-        elif Config.getint('Units','Density')==12:
+        elif Config.getint('Units',magnitud)==12:
             return self.ozft3
-        elif Config.getint('Units','Density')==13:
+        elif Config.getint('Units',magnitud)==13:
             return self.ozin3
-        elif Config.getint('Units','Density')==14:
+        elif Config.getint('Units',magnitud)==14:
             return self.ozgalUK
-        elif Config.getint('Units','Density')==15:
+        elif Config.getint('Units',magnitud)==15:
             return self.ozgalUS
         else:
             return self.kgm3
@@ -871,52 +873,61 @@ class Pressure(float):
     def dyncm2(self):
         return self.__factory((self.data)/(k.dyn/k.centi**2))
     @property
-    def config(self):
+    def list(self):
+        return self.Pa, self.hPa, self.kPa, self.MPa, self.bar, self.barg, self.mbar, self.psi, self.psig, self.atm, self.kgcm2, self.kgcm2g, self.mmH2O, self.cmH2O, self.mH2O, self.inH2O, self.ftH2O, self.mmHg, self.cmHg, self.inHg, self.ftHg, self.lbcm2, self.lbft2, self.dyncm2
+
+    def config(self, magnitud="Pressure"):
         Config=ConfigParser()
         Config.read("UI_steamTablesrc")
-        if Config.getint('Units','Pressure')==1:
+        if Config.getint('Units',magnitud)==1:
             return self.hPa
-        elif Config.getint('Units','Pressure')==2:
+        elif Config.getint('Units',magnitud)==2:
             return self.kPa
-        elif Config.getint('Units','Pressure')==3:
+        elif Config.getint('Units',magnitud)==3:
             return self.MPa
-        elif Config.getint('Units','Pressure')==4:
+        elif Config.getint('Units',magnitud)==4:
             return self.bar
-        elif Config.getint('Units','Pressure')==5:
+        elif Config.getint('Units',magnitud)==5:
+            return self.barg
+        elif Config.getint('Units',magnitud)==6:
             return self.mbar
-        elif Config.getint('Units','Pressure')==6:
+        elif Config.getint('Units',magnitud)==7:
             return self.psi
-        elif Config.getint('Units','Pressure')==7:
+        elif Config.getint('Units',magnitud)==8:
+            return self.psig
+        elif Config.getint('Units',magnitud)==9:
             return self.atm
-        elif Config.getint('Units','Pressure')==8:
+        elif Config.getint('Units',magnitud)==10:
             return self.kgcm2
-        elif Config.getint('Units','Pressure')==9:
+        elif Config.getint('Units',magnitud)==11:
+            return self.kgcm2g
+        elif Config.getint('Units',magnitud)==12:
             return self.mmH2O
-        elif Config.getint('Units','Pressure')==10:
+        elif Config.getint('Units',magnitud)==13:
             return self.cmH2O
-        elif Config.getint('Units','Pressure')==11:
+        elif Config.getint('Units',magnitud)==14:
             return self.mH2O
-        elif Config.getint('Units','Pressure')==12:
+        elif Config.getint('Units',magnitud)==15:
             return self.inH2O
-        elif Config.getint('Units','Pressure')==13:
+        elif Config.getint('Units',magnitud)==16:
             return self.ftH2O
-        elif Config.getint('Units','Pressure')==14:
+        elif Config.getint('Units',magnitud)==17:
             return self.mmHg
-        elif Config.getint('Units','Pressure')==15:
+        elif Config.getint('Units',magnitud)==18:
             return self.cmHg
-        elif Config.getint('Units','Pressure')==16:
+        elif Config.getint('Units',magnitud)==19:
             return self.inHg
-        elif Config.getint('Units','Pressure')==17:
+        elif Config.getint('Units',magnitud)==20:
             return self.ftHg
-        elif Config.getint('Units','Pressure')==18:
+        elif Config.getint('Units',magnitud)==21:
             return self.lbcm2
-        elif Config.getint('Units','Pressure')==19:
+        elif Config.getint('Units',magnitud)==22:
             return self.lbft2
-        elif Config.getint('Units','Pressure')==20:
+        elif Config.getint('Units',magnitud)==23:
             return self.dyncm2
         else:
             return self.Pa
-            
+
 
 class Enthalpy(float):
     """
@@ -1001,21 +1012,23 @@ class Enthalpy(float):
     def Btulb(self):
         return self.__factory(self.data*k.lb/k.Btu)
     @property
-    def config(self):
+    def list(self):
+        return self.Jkg, self.kJkg, self.MJkg, self.calkg, self.kcalkg, self.callb, self.Btulb
+    
+    def config(self, magnitud='Enthalpy'):
         Config=ConfigParser()
         Config.read("UI_steamTablesrc")
-
-        if Config.getint('Units','Enthalpy')==1:
+        if Config.getint('Units',magnitud)==1:
             return self.kJkg
-        elif Config.getint('Units','Enthalpy')==2:
+        elif Config.getint('Units',magnitud)==2:
             return self.MJkg
-        elif Config.getint('Units','Enthalpy')==3:
+        elif Config.getint('Units',magnitud)==3:
             return self.calkg
-        elif Config.getint('Units','Enthalpy')==4:
+        elif Config.getint('Units',magnitud)==4:
             return self.kcalkg
-        elif Config.getint('Units','Enthalpy')==5:
+        elif Config.getint('Units',magnitud)==5:
             return self.callb
-        elif Config.getint('Units','Enthalpy')==6:
+        elif Config.getint('Units',magnitud)==6:
             return self.Btulb
         else:
             return self.Jkg        
@@ -1085,11 +1098,13 @@ class SpecificHeat(float):
     @property
     def BtulbF(self):
         return self.__factory(self.data*k.lb*k.Rankine/k.Btu)
-
-    def config(self, magnitud='SpecificHeat'):
+    @property
+    def list(self):
+        return self.JkgK, self.kJkgK, self.kcalkgK, self.kcalgK, self.kWhkgK, self.BtulbF
+        
+    def config(self, magnitud="SpecificHeat"):
         Config=ConfigParser()
         Config.read("UI_steamTablesrc")
-
         if Config.getint('Units',magnitud)==1:
             return self.kJkgK
         elif Config.getint('Units',magnitud)==2:
@@ -1186,23 +1201,25 @@ class ThermalConductivity(float):
     def BtuhftF(self):
         return self.__factory(self.data*k.hour*k.foot*k.Rankine/k.Btu)
     @property
-    def config(self):
+    def list(self):
+        return self.WmK, self.JhmK, self.calscmK, self.calhcmK, self.kcalhmK, self.lbfsF, self.lbfts3F, self.BtuhftF
+        
+    def config(self, magnitud='ThermalConductivity'):
         Config=ConfigParser()
         Config.read("UI_steamTablesrc")
-
-        if Config.getint('Units','ThermalConductivity')==1:
+        if Config.getint('Units',magnitud)==1:
             return self.JhmK
-        elif Config.getint('Units','ThermalConductivity')==2:
+        elif Config.getint('Units',magnitud)==2:
             return self.calscmK
-        elif Config.getint('Units','ThermalConductivity')==3:
+        elif Config.getint('Units',magnitud)==3:
             return self.calhcmK
-        elif Config.getint('Units','ThermalConductivity')==4:
+        elif Config.getint('Units',magnitud)==4:
             return self.kcalhmK
-        elif Config.getint('Units','ThermalConductivity')==5:
+        elif Config.getint('Units',magnitud)==5:
             return self.lbfsF
-        elif Config.getint('Units','ThermalConductivity')==6:
+        elif Config.getint('Units',magnitud)==6:
             return self.lbfts3F
-        elif Config.getint('Units','ThermalConductivity')==7:
+        elif Config.getint('Units',magnitud)==7:
             return self.BtuhftF
         else:
             return self.WmK        
@@ -1298,31 +1315,33 @@ class Viscosity(float):
     def lbfth(self):
         return self.__factory(self.data/(k.pound/k.foot/k.hour))
     @property
-    def config(self):
+    def list(self):
+        return self.Pas, self.mPas, self.muPas, self.P, self.cP, self.dynscm2, self.microP, self.reyn, self.lbfts, self.lbfft2, self.lbfinch2, self.lbfth
+        
+    def config(self, magnitud="Viscosity"):
         Config=ConfigParser()
         Config.read("UI_steamTablesrc")
-
-        if Config.getint('Units','Viscosity')==1:
+        if Config.getint('Units',magnitud)==1:
             return self.mPas
-        elif Config.getint('Units','Viscosity')==2:
+        elif Config.getint('Units',magnitud)==2:
             return self.muPas
-        elif Config.getint('Units','Viscosity')==3:
+        elif Config.getint('Units',magnitud)==3:
             return self.P
-        elif Config.getint('Units','Viscosity')==4:
+        elif Config.getint('Units',magnitud)==4:
             return self.cP
-        elif Config.getint('Units','Viscosity')==5:
+        elif Config.getint('Units',magnitud)==5:
             return self.dynscm2
-        elif Config.getint('Units','Viscosity')==6:
+        elif Config.getint('Units',magnitud)==6:
             return self.microP
-        elif Config.getint('Units','Viscosity')==7:
+        elif Config.getint('Units',magnitud)==7:
             return self.reyn
-        elif Config.getint('Units','Viscosity')==8:
+        elif Config.getint('Units',magnitud)==8:
             return self.lbfts
-        elif Config.getint('Units','Viscosity')==9:
+        elif Config.getint('Units',magnitud)==9:
             return self.lbfft2
-        elif Config.getint('Units','Viscosity')==10:
+        elif Config.getint('Units',magnitud)==10:
             return self.lbfinch2
-        elif Config.getint('Units','Viscosity')==11:
+        elif Config.getint('Units',magnitud)==11:
             return self.lbfth
         else:
             return self.Pas        
