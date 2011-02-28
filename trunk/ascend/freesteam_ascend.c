@@ -20,8 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../steam_pT.h"
 #include "../derivs.h"
 #include "../region4.h"
+#include "../viscosity.h"
 
-#include <ascend/utilities/ascConfig.h>
+#include <ascend/general/platform.h>
 #include <ascend/utilities/error.h>
 #include <ascend/compiler/extfunc.h>
 
@@ -179,7 +180,21 @@ int mukrhocp_pT_calc(struct BBoxInterp *bbox,
 	return 0;
 }
 
+int mu_Tv_calc(struct BBoxInterp *bbox, int ninputs, int noutputs,
+	double *inputs, double *outputs, double *jacobian
+){
+	(void)bbox; (void)jacobian; // not used
+	(void)ninputs; (void)noutputs; // not used currently
 
+	double T = inputs[0];
+	double rho = 1./inputs[1];
+
+	/* TODO make checks of two-phase region, act accordingly */
+	double mu = freesteam_mu_rhoT(rho,T);
+
+	outputs[0] = mu;
+	return 0;
+}
 
 /*============== a few quick single-input, single output routines ============*/
 
@@ -310,6 +325,17 @@ FREESTEAM_EXPORT int freesteam_register(){
 			, NULL /* free */
 			, 2,4 /* inputs, outputs */
 			, "[mu,k,rho,cp] = freesteam_mukrhocp_pT(p,T) (see http://freesteam.sf.net)"
+			, 0.0
+		);
+
+		result += CreateUserFunctionBlackBox("freesteam_mu_Tv"
+			, NULL /* alloc */
+			, mu_Tv_calc /* value */
+			, NULL /* deriv */
+			, NULL /* deriv2 */
+			, NULL /* free */
+			, 2,1 /* inputs, outputs */
+			, "[mu] = freesteam_mu_Tv(T,v) (see http://freesteam.sf.net)"
 			, 0.0
 		);
 
