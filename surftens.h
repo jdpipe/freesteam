@@ -27,5 +27,5 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 FREESTEAM_DLL double freesteam_surftens_T(double T);
 
-#endif FREESTEAM_SURFTENS_H
+#endif /* FREESTEAM_SURFTENS_H */
 
