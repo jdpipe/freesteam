@@ -4,7 +4,6 @@
 from ConfigParser import ConfigParser
 from unidades import texto, units
 
-
 class Configuracion():
     """Clase que define los valores de las unidades, a partir del archivo de configuración"""
     def __init__(self, magnitud, propiedad=0):
