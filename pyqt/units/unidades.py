@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from PyQt4.QtGui import QApplication
 import scipy.constants as k
 from ConfigParser import ConfigParser
 
@@ -10,17 +11,16 @@ k.slug = k.lb*k.g/k.foot
 k.Rankine = 1/1.8 #only for differences
 k.Reaumur=1/0.8
 
-
 texto=dict(
             Temperature=['K',u'ºC',u'ºR',u'ºF',u'ºRe'], 
             Pressure=['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'bar g', 'mbar', 'psi', 'psi g', 'atm', u'kg/cm²', u'kg/cm² g', 'mmH2O', 'cmH2O', 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', u'lb/cm²',u'lb/ft²', u'dyn/cm²' ], 
-            Speed=['m/s', 'cm/s', 'mm/s', 'km/s', 'ft/s', 'ft/min',  'm/min', 'km/min','km/h',  'km/day', 'mph', 'nudo'], 
+            Speed=['m/s', 'cm/s', 'mm/s', 'km/s', 'ft/s', 'ft/min',  'm/min', 'km/min','km/h',  'km/day', 'mph', QApplication.translate("unidades", "nudo", None, QApplication.UnicodeUTF8)], 
             Viscosity=[u'Pa·s', u'mPa·s', u'µPa·s', 'P', 'cP', u'dyn/s·cm²', u'µP', 'reyn', u'lb/ft·s', u'lbf/ft²', u'lbf/in²', u'lb/ft·h'], 
-            Density=[u'kg/m³', u'g/cm³', u'g/m³', u'kg/cm³', u'lb/ft³',u'lb/inch³' , 'lb/galUK', 'lb/galUS', 'lb/barril'], 
+            Density=[u'kg/m³', u'g/cm³', u'g/m³', u'kg/cm³', u'lb/ft³',u'lb/inch³' , 'lb/galUK', 'lb/galUS', 'lb/bbl'], 
             ThermalConductivity=[u'W/m·K', u'J/h·m·K', u'cal/s·cm·K', u'cal/h·cm·K',u'kcal/h·m·K' , u'lbf/s·F', u'lb/ft·s³·F',u'Btu/h·ft·F'], 
             SpecificHeat=[u'J/kg·K', u'kJ/kg·K', u'kcal/kg·K', u'kcal/g·K', u'kWh/kg·K', u'Btu/lb·F'], 
             Enthalpy=['J/kg', 'kJ/kg', 'MJ/kg','cal/kg' , 'kcal/kg', 'cal/lb', 'Btu/lb'], 
-            SpecificVolume=[u'm³/kg',u'cm³/g' , u'm³/g', u'cm³/kg', u'ft³/lb', u'in³/lb', 'gallon UK/lb', 'gallon US/lb', 'barril/lb', u'ft³/ton UK', u'ft³/ton US', u'ft³/slug', u'ft³/onza', u'in³/onza', 'gallon UK/onza', 'gallon US/onza'], 
+            SpecificVolume=[u'm³/kg',u'cm³/g' , u'm³/g', u'cm³/kg', u'ft³/lb', u'in³/lb', 'gallon UK/lb', 'gallon US/lb', 'barril/lb', u'ft³/ton UK', u'ft³/ton US', u'ft³/slug', u'ft³/'+QApplication.translate("unidades", "onza", None, QApplication.UnicodeUTF8), u'in³/'+QApplication.translate("unidades", "onza", None, QApplication.UnicodeUTF8), 'gallon UK/'+QApplication.translate("unidades", "onza", None, QApplication.UnicodeUTF8), 'gallon US/'+QApplication.translate("unidades", "onza", None, QApplication.UnicodeUTF8)], 
            )
            
 units=dict(
@@ -37,8 +37,8 @@ units=dict(
         
 tooltip=dict(
             Temperature=['Kelvin','Celsius','Rankine','Fahrenheit','Reaumur'], 
-           Pressure=['Pascal', '', '', '', 'bar', '', '', 'libras por pulgada cuadrada', '', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2','lbft2', 'dyncm2' ], 
-            Speed=['m/s', 'cm/s', 'mm/s', 'km/s', 'ft/s', 'ft/min',  'm/min', 'km/min','km/h',  'km/day', 'millas por hora', 'nudo'], 
+           Pressure=['Pascal', '', '', '', 'bar', '', '', QApplication.translate("unidades", "libras por pulgada cuadrada", None, QApplication.UnicodeUTF8), '', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2','lbft2', 'dyncm2' ], 
+            Speed=['m/s', 'cm/s', 'mm/s', 'km/s', 'ft/s', 'ft/min',  'm/min', 'km/min','km/h',  'km/day', QApplication.translate("unidades", "millas por hora", None, QApplication.UnicodeUTF8), QApplication.translate("unidades", "nudo", None, QApplication.UnicodeUTF8)], 
             Viscosity=[u'Pa·s', u'mPa·s', u'µPa·s', 'Poise', 'centipoise', u'dyn/s·cm²', u'µP', 'reyn', u'lb/ft·s', u'lbf/ft²', u'lbf/in²', u'lb/ft·h'], 
             Density=[u'kg/m³', u'g/cm³', u'g/m³', u'kg/cm³', u'lb/ft³',u'lb/inch³' , 'lb/galUK', 'lb/galUS', 'lb/barril'], 
             ThermalConductivity=[u'W/m·K', u'J/h·m·K', u'cal/s·cm·K', u'cal/h·cm·K',u'kcal/h·m·K' , u'lbf/s·F', u'lb/ft·s³·F',u'Btu/h·ft·F'], 
@@ -46,6 +46,7 @@ tooltip=dict(
             Enthalpy=['J/kg', 'kJ/kg', 'MJ/kg','cal/kg' , 'kcal/kg', 'cal/lb', 'Btu/lb'], 
            SpecificVolume=['m3kg','lkg' , 'm3g', 'cckg', 'ft3lb', 'inch3lb', 'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK', 'ft3tonUS', 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz'], 
            )
+
 
 class Temperature(float):
     """Clase que modela la magnitud temperatura

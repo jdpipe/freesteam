@@ -47,11 +47,12 @@ isotherm = True
 2d = True
 color = #ffff02
 points = True
+fontsize = small
 toolbar = True
 isochor = False
-isoenthalpic = True
+isoenthalpic = False
 isoquality = True
-dpi = 60
+dpi = 80
 sat = True
 
 [2D]
@@ -81,7 +82,7 @@ speed = 0
 1 = 1,800.0,5000000.0
 0 = 1,500.0,5000000.0
 3 = 0,600.0,0.5
-2 = 1,700.0,49999997.3578
+2 = 1,700.0,49999997.2874
 5 = 0,600.0,0.1
 4 = 0,600.0,0.3
 7 = 1,400.0,5000000.0
@@ -151,7 +152,7 @@ custom = False
 start = 300.0
 step = 20.0
 position = 38
-units = True
+units = False
 label = True
 linestyle = 0
 
