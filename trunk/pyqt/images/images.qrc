@@ -10,5 +10,6 @@
     <file>steamTables.png</file>
     <file>configure.png</file>
     <file>calculate.png</file>
+    <file>help.png</file>
   </qresource>
 </RCC>
