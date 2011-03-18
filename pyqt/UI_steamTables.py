@@ -4,6 +4,8 @@
 from PyQt4 import QtCore, QtGui
 from csv import writer
 from ConfigParser import ConfigParser
+from webbrowser import open_new_tab
+
 
 from freesteam import *
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg, NavigationToolbar2QT
@@ -247,12 +249,9 @@ class Ui_SteamTables(QtGui.QMainWindow):
         #menus
         self.menubar = QtGui.QMenuBar()
         self.menubar.setGeometry(QtCore.QRect(0,0,700,30))
-        self.menuArchivo = QtGui.QMenu(self.menubar)
-        self.menuArchivo.setTitle(QtGui.QApplication.translate("SteamTables", "Archivo", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuGrafico = QtGui.QMenu(self.menubar)
-        self.menuGrafico.setTitle(QtGui.QApplication.translate("SteamTables", "Gráfico", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuAyuda = QtGui.QMenu(self.menubar)
-        self.menuAyuda.setTitle(QtGui.QApplication.translate("SteamTables", "Ayuda", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuArchivo = QtGui.QMenu(QtGui.QApplication.translate("SteamTables", "Archivo", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuGrafico = QtGui.QMenu(QtGui.QApplication.translate("SteamTables", "Gráfico", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuAyuda = QtGui.QMenu(QtGui.QApplication.translate("SteamTables", "Ayuda", None, QtGui.QApplication.UnicodeUTF8))
         self.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar()
         self.setStatusBar(self.statusbar)
@@ -260,57 +259,45 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.progresbar.setVisible(False)
         self.progresbar.setFixedSize(80, 15)
         self.statusbar.addPermanentWidget(self.progresbar)
-        self.Preferencias = QtGui.QAction(self)
-        self.Preferencias.setText(QtGui.QApplication.translate("SteamTables", "Preferencias", None, QtGui.QApplication.UnicodeUTF8))
-        self.Preferencias.setIcon(QtGui.QIcon(QtGui.QPixmap(":/button/configure.png")))
+        self.Preferencias = QtGui.QAction(QtGui.QIcon(QtGui.QPixmap(":/button/configure.png")), QtGui.QApplication.translate("SteamTables", "Preferencias", None, QtGui.QApplication.UnicodeUTF8), self)
         self.Preferencias.triggered.connect(self.preferencias)
-        self.actionCSV = QtGui.QAction(self)
-        self.actionCSV.setText(QtGui.QApplication.translate("SteamTables", "Guardar", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionCSV.setIcon(QtGui.QIcon(QtGui.QPixmap(":/button/filesave.png")))
+        self.actionCSV = QtGui.QAction(QtGui.QIcon(QtGui.QPixmap(":/button/filesave.png")), QtGui.QApplication.translate("SteamTables", "Guardar", None, QtGui.QApplication.UnicodeUTF8), self)
         self.actionCSV.setShortcut("Ctrl+E")
         self.actionCSV.setEnabled(False)
         self.actionCSV.triggered.connect(self.exporttoCSV)
-        self.actionSalir = QtGui.QAction(self)
-        self.actionSalir.setIcon(QtGui.QIcon(QtGui.QPixmap(":/button/exit.png")))
+        self.actionSalir = QtGui.QAction(QtGui.QIcon(QtGui.QPixmap(":/button/exit.png")), QtGui.QApplication.translate("SteamTables", "Salir", None, QtGui.QApplication.UnicodeUTF8), self)
         self.actionSalir.setShortcut("Alt+F4")
-        self.actionSalir.setText(QtGui.QApplication.translate("SteamTables", "Salir", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSalir.triggered.connect(self.close)
         self.actionTipoGrafico=QtGui.QActionGroup(self)
-        self.action2D = QtGui.QAction(self.actionTipoGrafico)
+        self.action2D = QtGui.QAction(QtGui.QApplication.translate("SteamTables", "Gráfico 2D", None, QtGui.QApplication.UnicodeUTF8), self.actionTipoGrafico)
         self.action2D.setCheckable(True)
         self.action2D.setShortcut("Ctrl+2")
-        self.action2D.setText(QtGui.QApplication.translate("SteamTables", "Gráfico 2D", None, QtGui.QApplication.UnicodeUTF8))
         self.action2D.toggled.connect(self.d2)
-        self.action3D = QtGui.QAction(self.actionTipoGrafico)
+        self.action3D = QtGui.QAction(QtGui.QApplication.translate("SteamTables", "Gráfico 3D", None, QtGui.QApplication.UnicodeUTF8), self.actionTipoGrafico)
         self.action3D.setCheckable(True)
         self.action3D.setChecked(True)
         self.action3D.setShortcut("Ctrl+3")
-        self.action3D.setText(QtGui.QApplication.translate("SteamTables", "Gráfico 3D", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionMostrarBarra = QtGui.QAction(self)
+        self.actionMostrarBarra = QtGui.QAction(QtGui.QApplication.translate("SteamTables", "Mostrar barra de herramientas", None, QtGui.QApplication.UnicodeUTF8), self)
         self.actionMostrarBarra.setCheckable(True)
         self.actionMostrarBarra.setChecked(False)
         self.actionMostrarBarra.setShortcut("Ctrl+T")
         self.actionMostrarBarra.triggered.connect(self.mostrarBarra)
-        self.actionMostrarBarra.setText(QtGui.QApplication.translate("SteamTables", "Mostrar barra de herramientas", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionDibujarSaturacion = QtGui.QAction(self)
+        self.actionDibujarSaturacion = QtGui.QAction(QtGui.QApplication.translate("SteamTables", "Dibujar línea de saturación", None, QtGui.QApplication.UnicodeUTF8), self)
         self.actionDibujarSaturacion.setCheckable(True)
         self.actionDibujarSaturacion.setChecked(True)
         self.actionDibujarSaturacion.setShortcut("Ctrl+S")
         self.actionDibujarSaturacion.triggered.connect(self.mostrarSaturacion)
-        self.actionDibujarSaturacion.setText(QtGui.QApplication.translate("SteamTables", "Dibujar línea de saturación", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionMostrarPuntos = QtGui.QAction(self)
+        self.actionMostrarPuntos = QtGui.QAction(QtGui.QApplication.translate("SteamTables", "Mostrar puntos definidos por el usuario", None, QtGui.QApplication.UnicodeUTF8), self)
         self.actionMostrarPuntos.setCheckable(True)
         self.actionMostrarPuntos.setChecked(True)
         self.actionMostrarPuntos.setShortcut("Ctrl+P")
         self.actionMostrarPuntos.triggered.connect(self.mostrarPuntos)
-        self.actionMostrarPuntos.setText(QtGui.QApplication.translate("SteamTables", "Mostrar puntos definidos por el usuario", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionAcerca_de = QtGui.QAction(self)
-        self.actionAcerca_de.setIcon(QtGui.QIcon(QtGui.QPixmap(":/button/steamTables.png")))
-        self.actionAcerca_de.setText(QtGui.QApplication.translate("SteamTables", "Acerca de freesteam", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAyuda = QtGui.QAction(QtGui.QIcon(QtGui.QPixmap(":/button/help.png")), QtGui.QApplication.translate("SteamTables", "Ayuda", None, QtGui.QApplication.UnicodeUTF8), self)
+        self.actionAyuda.setShortcut("F1")
+        self.actionAyuda.triggered.connect(self.ayuda)
+        self.actionAcerca_de = QtGui.QAction(QtGui.QIcon(QtGui.QPixmap(":/button/steamTables.png")), QtGui.QApplication.translate("SteamTables", "Acerca de freesteam", None, QtGui.QApplication.UnicodeUTF8), self)
         self.actionAcerca_de.triggered.connect(self.acerca)
-        self.actionAcerca_deQt= QtGui.QAction(self)
-        self.actionAcerca_deQt.setIcon(QtGui.QIcon(QtGui.QPixmap(":/button/AboutQt.png")))
-        self.actionAcerca_deQt.setText(QtGui.QApplication.translate("SteamTables", "Acerca de Qt", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAcerca_deQt= QtGui.QAction(QtGui.QIcon(QtGui.QPixmap(":/button/AboutQt.png")), QtGui.QApplication.translate("SteamTables", "Acerca de Qt", None, QtGui.QApplication.UnicodeUTF8), self)
         self.actionAcerca_deQt.triggered.connect(self.acercaQt)
         self.menuArchivo.addAction(self.Preferencias)
         self.menuArchivo.addAction(self.actionCSV)
@@ -322,6 +309,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.menuGrafico.addAction(self.actionMostrarBarra)
         self.menuGrafico.addAction(self.actionDibujarSaturacion)
         self.menuGrafico.addAction(self.actionMostrarPuntos)
+        self.menuAyuda.addAction(self.actionAyuda)
         self.menuAyuda.addAction(self.actionAcerca_de)
         self.menuAyuda.addAction(self.actionAcerca_deQt)
         self.menubar.addAction(self.menuArchivo.menuAction())
@@ -332,13 +320,12 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.gridLayout = QtGui.QGridLayout(self.centralwidget)
         self.toolBox = QtGui.QToolBox()
         self.page_1 = QtGui.QWidget()
-        self.page_1.setGeometry(QtCore.QRect(0,0,302,390))
         self.gridLayout_2 = QtGui.QGridLayout(self.page_1)
         self.tabla = QtGui.QTableWidget(self.page_1)
         self.gridLayout_2.addWidget(self.tabla,0, 0, 1, 1)
-        self.toolBox.addItem(self.page_1,"")
+        self.toolBox.addItem(self.page_1,QtGui.QApplication.translate("SteamTables", "Tablas", None, QtGui.QApplication.UnicodeUTF8))
+
         self.page_Plot = QtGui.QWidget()
-        self.page_Plot.setGeometry(QtCore.QRect(0,0,274,406))
         self.gridLayout_3 = QtGui.QGridLayout(self.page_Plot)
         self.checkIsoTherm=QtGui.QCheckBox(self.page_Plot)
         self.checkIsoTherm.setText(QtGui.QApplication.translate("SteamTables", "Isotérmicas", None, QtGui.QApplication.UnicodeUTF8))
@@ -373,10 +360,8 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.gridLayout_3.addWidget(self.toolbar2D,3,0,1,6)
         self.toolbar3D=NavigationToolbar2QT(self.diagrama3D, self.diagrama3D)
         self.gridLayout_3.addWidget(self.toolbar3D,3,0,1,6)
-        self.toolBox.addItem(self.page_Plot,"")
+        self.toolBox.addItem(self.page_Plot,QtGui.QApplication.translate("SteamTables", "Gráfico", None, QtGui.QApplication.UnicodeUTF8))
         self.gridLayout.addWidget(self.toolBox,0,0,1,1)
-        self.toolBox.setItemText(self.toolBox.indexOf(self.page_1), QtGui.QApplication.translate("SteamTables", "Tablas", None, QtGui.QApplication.UnicodeUTF8))
-        self.toolBox.setItemText(self.toolBox.indexOf(self.page_Plot), QtGui.QApplication.translate("SteamTables", "Gráfico", None, QtGui.QApplication.UnicodeUTF8))
 
         #Toolbox parámetros Tabla
         self.setTabPosition(QtCore.Qt.DockWidgetArea(1), 0)
@@ -430,11 +415,11 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.ordenadaIntervalo.setAlignment(QtCore.Qt.AlignRight)        
         self.gridLayout_4.addWidget(self.ordenadaIntervalo,6,2,1,1)
         self.botonCalcular = QtGui.QPushButton()
-        self.botonCalcular.setMaximumWidth(80)
         self.botonCalcular.setText(QtGui.QApplication.translate("SteamTables", "Calcular", None, QtGui.QApplication.UnicodeUTF8))
         self.botonCalcular.setIcon(QtGui.QIcon(QtGui.QPixmap(":/button/calculate.png")))
         self.botonCalcular.clicked.connect(self.botonCalcular_clicked)
-        self.gridLayout_4.addWidget(self.botonCalcular,7,2,1,1)
+        self.botonCalcular.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        self.gridLayout_4.addWidget(self.botonCalcular,7,0,1,3)
         self.dockWidget_Tabla.setWidget(self.dockWidgetContents)
         self.dockWidget_Tabla.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
         self.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_Tabla)
@@ -450,6 +435,8 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.ejeX = QtGui.QComboBox()
         self.ejeX.setFixedWidth(50)
         self.gridLayout_13.addWidget(self.ejeX,0,1,1,1)
+        self.labelUnitEjex=QtGui.QLabel()
+        self.gridLayout_13.addWidget(self.labelUnitEjex,0,3,1,1)
         self.gridLayout_13.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Mínimo", None, QtGui.QApplication.UnicodeUTF8)),1,0,1,1)
         self.ejeX_min = Entrada_con_unidades(None, float, None)
         self.ejeX_min.entrada.editingFinished.connect(self.diagrama2D_ejeX)
@@ -467,6 +454,8 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.ejeY.setFixedWidth(50)
         self.gridLayout_13.addWidget(self.ejeY,3,1,1,1)
         self.gridLayout_13.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Mínimo", None, QtGui.QApplication.UnicodeUTF8)),4,0,1,1)
+        self.labelUnitEjey=QtGui.QLabel()
+        self.gridLayout_13.addWidget(self.labelUnitEjey,3,3,1,1)
         self.ejeY_min = Entrada_con_unidades(None, float, None)
         self.ejeY_min.entrada.editingFinished.connect(self.diagrama2D_ejeY)
         self.gridLayout_13.addWidget(self.ejeY_min,4,1,1,1)
@@ -652,6 +641,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.ejeX_min.setValue(self.Config.getfloat("2D", "XMin"))
             self.ejeX_max.setValue(self.Config.getfloat("2D", "XMax"))
             self.ejeY.setCurrentIndex(self.ejeY.findText(self.Config.get("2D", "Yvariable")))
+            self.ejeYChanged()
             self.ejeY_escala.setChecked(self.Config.getboolean("2D", "YScale"))
             self.ejeY_min.setValue(self.Config.getfloat("2D", "YMin"))
             self.ejeY_max.setValue(self.Config.getfloat("2D", "YMax"))
@@ -686,12 +676,17 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.variablesCalculo.currentIndexChanged.connect(self.variablesCalculo_currentIndexChanged)
         self.variableTabla.currentIndexChanged.connect(self.Calcular_Propiedades)
         self.ejeX.currentIndexChanged.connect(self.rellenar_ejeY)
+        self.ejeY.currentIndexChanged.connect(self.ejeYChanged)
         self.checkIsoTherm.toggled.connect(self.mostrarIsoterma)
         self.checkIsoBar.toggled.connect(self.mostrarIsobara)
         self.checkIsoEnth.toggled.connect(self.mostrarIsoentalpica)
         self.checkIsoEntr.toggled.connect(self.mostrarIsoentropica)
         self.checkIsoVol.toggled.connect(self.mostrarIsocora)
         self.checkIsoX.toggled.connect(self.mostrarIsoX)
+
+
+    def ayuda(self):
+        open_new_tab("http://freesteam.sourceforge.net/example.php")
 
 
     def acerca(self):
@@ -1047,7 +1042,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
         """Se ejecuta si se cambia el modo de gráfico a 2D"""
         self.dockWidget_Tabla.setVisible(not activado)
         self.dockWidget_2D.setVisible(activado)
-        self.tabla.setEnabled(not activado)
+        self.tabla.setVisible(not activado)
         self.diagrama2D.setVisible(activado)
         self.toolbar2D.setVisible(self.actionMostrarBarra.isChecked() and activado)
         self.diagrama3D.setVisible(not activado)
@@ -1164,6 +1159,22 @@ class Ui_SteamTables(QtGui.QMainWindow):
         del Ejes2D[int]
         for i in Ejes2D:
             self.ejeY.addItem(i)
+
+        magnitudes=["Pressure", "Temperature", "SpecificHeat", "Enthalpy", "Enthalpy", "SpecificVolume"]
+        if int==2:
+            self.labelUnitEjex.setText(config.Configuracion(magnitudes[int], "Entropy").text())
+        else:
+            self.labelUnitEjex.setText(config.Configuracion(magnitudes[int]).text())
+        
+            
+    def ejeYChanged(self):
+        unit=["p", "T", "s", "h", "u", "v"]
+        i=unit.index(self.ejeY.currentText())
+        magnitudes=["Pressure", "Temperature", "SpecificHeat", "Enthalpy", "Enthalpy", "SpecificVolume"]
+        if i==2:
+            self.labelUnitEjey.setText(config.Configuracion(magnitudes[i], "Entropy").text())
+        else:
+            self.labelUnitEjey.setText(config.Configuracion(magnitudes[i]).text())
             
     def dibujar(self):
         """Método que dibuja todos los datos pedidos"""
@@ -1311,12 +1322,12 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.factory=0
         elif self.ejesTabla.currentIndex()==1:
             abcisa="P, %s" % config.Configuracion("Pressure").text()
-            ordenada="H, %s" % config.Configuracion("Enthalpy").text()
+            ordenada="h, %s" % config.Configuracion("Enthalpy").text()
             self.factorx=unidades.Pressure(1).unit(config.Configuracion("Pressure").func())
             self.factory=unidades.Enthalpy(1).unit(config.Configuracion("Enthalpy").func())
         elif self.ejesTabla.currentIndex()==2:
             abcisa="P, %s" % config.Configuracion("Pressure").text()
-            ordenada="S, %s" % config.Configuracion("SpecificHeat","Entropy").text()
+            ordenada="s, %s" % config.Configuracion("SpecificHeat","Entropy").text()
             self.factorx=unidades.Pressure(1).unit(config.Configuracion("Pressure").func())
             self.factory=unidades.SpecificHeat(1).unit(config.Configuracion("SpecificHeat","Entropy").func())
         elif self.ejesTabla.currentIndex()==3:
@@ -1326,7 +1337,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.factory=unidades.SpecificVolume(1).unit(config.Configuracion("SpecificVolume").func())
         elif self.ejesTabla.currentIndex()==4:
             abcisa="T, %s" % config.Configuracion("Temperature").text()
-            ordenada="S, %s" % config.Configuracion("SpecificHeat","Entropy").text()
+            ordenada="s, %s" % config.Configuracion("SpecificHeat","Entropy").text()
             self.factorx=0
             self.factory=unidades.SpecificHeat(1).unit(config.Configuracion("SpecificHeat","Entropy").func())
         elif self.ejesTabla.currentIndex()==5:
@@ -1336,44 +1347,44 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.factory=1
             
         if self.ejeX.currentText()=="p":
-            abcisa2="P, %s" % config.Configuracion("Pressure").text()
+            abcisa2="p, %s" % config.Configuracion("Pressure").text()
             self.factorx2=unidades.Pressure(1).unit(config.Configuracion("Pressure").func())
         elif self.ejeX.currentText()=="T":
             abcisa2="T, %s" % config.Configuracion("Temperature").text()
             self.factorx2=0
         elif self.ejeX.currentText()=="h":
-            abcisa2="H, %s" % config.Configuracion("Enthalpy").text()
+            abcisa2="h, %s" % config.Configuracion("Enthalpy").text()
             self.factorx2=unidades.Enthalpy(1).unit(config.Configuracion("Enthalpy").func())
         elif self.ejeX.currentText()=="v":
             abcisa2="v, %s" % config.Configuracion("SpecificVolume").text()
             self.factorx2=unidades.SpecificVolume(1).unit(config.Configuracion("SpecificVolume").func())
         elif self.ejeX.currentText()=="s":
-            abcisa2="S, %s" % config.Configuracion("SpecificHeat","Entropy").text()
+            abcisa2="s, %s" % config.Configuracion("SpecificHeat","Entropy").text()
             self.factorx2=unidades.SpecificHeat(1).unit(config.Configuracion("SpecificHeat","Entropy").func())
         elif self.ejeX.currentText()=="u":
-            abcisa2="U, %s" %config.Configuracion("Enthalpy").text()
+            abcisa2="u, %s" %config.Configuracion("Enthalpy").text()
             self.factorx2=unidades.Enthalpy(1).unit(config.Configuracion("Enthalpy").func())
         if self.ejeY.currentText()=="p":
-            ordenada2="P, %s" % config.Configuracion("Pressure").text()
+            ordenada2="p, %s" % config.Configuracion("Pressure").text()
             self.factory2=unidades.Pressure(1).unit(config.Configuracion("Pressure").func())
         elif self.ejeY.currentText()=="T":
             ordenada2="T, %s" % config.Configuracion("Temperature").text()
             self.factory2=0
         elif self.ejeY.currentText()=="h":
-            ordenada2="H, %s" % config.Configuracion("Enthalpy").text()
+            ordenada2="h, %s" % config.Configuracion("Enthalpy").text()
             self.factory2=unidades.Enthalpy(1).unit(config.Configuracion("Enthalpy").func())
         elif self.ejeY.currentText()=="v":
             ordenada2="v, %s" % config.Configuracion("SpecificVolume").text()
             self.factory2=unidades.SpecificVolume(1).unit(config.Configuracion("SpecificVolume").func())
         elif self.ejeY.currentText()=="s":
-            ordenada2="S, %s" % config.Configuracion("SpecificHeat","Entropy").text()
+            ordenada2="s, %s" % config.Configuracion("SpecificHeat","Entropy").text()
             self.factory2=unidades.SpecificHeat(1).unit(config.Configuracion("SpecificHeat","Entropy").func())
         elif self.ejeY.currentText()=="u":
-            ordenada2="U, %s" %config.Configuracion("Enthalpy").text()
+            ordenada2="u, %s" %config.Configuracion("Enthalpy").text()
             self.factory2=unidades.Enthalpy(1).unit(config.Configuracion("Enthalpy").func())
 
         if self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8):
-            texto="P, %s" %config.Configuracion("Pressure").text()
+            texto="p, %s" %config.Configuracion("Pressure").text()
             self.factorz=unidades.Pressure(1).unit(config.Configuracion("Pressure").func())
         elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8):
             texto="T, %s" %config.Configuracion("Temperature").text()
@@ -1382,13 +1393,13 @@ class Ui_SteamTables(QtGui.QMainWindow):
             texto="v, %s" %config.Configuracion("SpecificVolume").text()
             self.factorz=unidades.SpecificVolume(1).unit(config.Configuracion("SpecificVolume").func())
         elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Entalpía", None, QtGui.QApplication.UnicodeUTF8):
-            texto="H, %s" %config.Configuracion("Enthalpy").text()
+            texto="h, %s" %config.Configuracion("Enthalpy").text()
             self.factorz=unidades.Enthalpy(1).unit(config.Configuracion("Enthalpy").func())
         elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Entropía", None, QtGui.QApplication.UnicodeUTF8):
-            texto="S, %s" %config.Configuracion("SpecificHeat", "Entropy").text()
+            texto="s, %s" %config.Configuracion("SpecificHeat", "Entropy").text()
             self.factorz=unidades.SpecificHeat(1).unit(config.Configuracion("SpecificHeat", "Entropy").func())
         elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Energía interna", None, QtGui.QApplication.UnicodeUTF8):
-            texto="U, %s" %config.Configuracion("Enthalpy").text()
+            texto="u, %s" %config.Configuracion("Enthalpy").text()
             self.factorz=unidades.Enthalpy(1).unit(config.Configuracion("Enthalpy").func())
         elif self.variableTabla.currentText()==QtGui.QApplication.translate("SteamTables", "Cp", None, QtGui.QApplication.UnicodeUTF8):
             texto="Cp, %s" %config.Configuracion("SpecificHeat").text()

@@ -35,6 +35,7 @@ class Entrada_con_unidades(QtGui.QWidget):
         self.magnitud=magnitud
         self.decimales=decimales
         self.tolerancia=tolerancia
+        self.boton=boton
         self.color=color
         if UIconfig:
             self.UIconfig=UIconfig
@@ -42,23 +43,24 @@ class Entrada_con_unidades(QtGui.QWidget):
             self.UIconfig=magnitud
         self.retornar=not readOnly
         self.value=value
-        self.horizontalLayout = QtGui.QHBoxLayout(self)
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout.setSpacing(0)
+        layout = QtGui.QGridLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
         self.entrada = QtGui.QLineEdit()
         self.entrada.setFixedSize(width, 24)
         self.entrada.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
         self.entrada.setValidator(QtGui.QDoubleValidator(self))
         self.setReadOnly(readOnly)
         self.setRetornar(self.retornar)
-        self.horizontalLayout.addWidget(self.entrada)
+        layout.addWidget(self.entrada, 0, 1)
         if magnitud:
             if boton:
                 self.unidades = QtGui.QToolButton()
-                self.unidades.setFixedSize(24, 24)
-                self.unidades.setText("...")
+                self.unidades.setFixedSize(12, 24)
+                self.unidades.setText(".")
+                self.unidades.setVisible(False)
                 self.unidades.clicked.connect(self.unidades_clicked)
-                self.horizontalLayout.addWidget(self.unidades)
+                layout.addWidget(self.unidades, 0, 1)
             if texto:
                 self.texto = QtGui.QLabel()
                 self.texto.setAlignment(QtCore.Qt.AlignVCenter)
@@ -67,10 +69,10 @@ class Entrada_con_unidades(QtGui.QWidget):
                     self.texto.setText(Configuracion(self.magnitud, UIconfig).text())
                 else:
                     self.texto.setText(Configuracion(self.magnitud).text())
-                self.horizontalLayout.addWidget(self.texto)
+                layout.addWidget(self.texto, 0, 2)
             else:
                 self.texto=None
-        self.horizontalLayout.addItem(QtGui.QSpacerItem(10,0,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Fixed))
+        layout.addItem(QtGui.QSpacerItem(10,0,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Fixed), 0, 3)
         self.setResaltado(resaltado)
 
     def unidades_clicked(self):
@@ -140,6 +142,14 @@ class Entrada_con_unidades(QtGui.QWidget):
             for i in lista:
                 valores.append(representacion(self.value.list[i], self.decimales, self.tolerancia)+" "+texto[self.magnitud][i])
             self.entrada.setToolTip( "\n".join(valores))
+            
+    def enterEvent(self, event):
+        if self.magnitud and self.boton:
+            self.unidades.setVisible(True)
+        
+    def leaveEvent(self, event):
+        if self.magnitud and self.boton:
+            self.unidades.setVisible(False)
 
 
 class CellEditor(QtGui.QItemDelegate):
