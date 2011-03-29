@@ -6,12 +6,12 @@ from csv import writer
 from ConfigParser import ConfigParser
 from webbrowser import open_new_tab
 
-
 from freesteam import *
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib import pyplot
 from mpl_toolkits.mplot3d import Axes3D
 from numpy import meshgrid, zeros, arange, linspace, concatenate, max, min, transpose, logspace, log, arctan, pi
+from scipy.optimize import fsolve
 
 from images import images_rc
 from units import unidades,  config
@@ -28,9 +28,11 @@ class Plot(FigureCanvasQTAgg):
         if dim==2:
             self.axes2D = self.fig.add_subplot(111)
             self.axes2D.figure.subplots_adjust(left=0.09, right=0.98, bottom=0.08, top=0.98)
+            self.lineDelta=self.axes2D.annotate("", xy=(0, 0), xycoords="data", xytext=(0, 0), textcoords="data", arrowprops=dict(arrowstyle="-|>", connectionstyle="arc3"))
+
         else:
             self.axes3D = Axes3D(self.fig)
-        
+
         FigureCanvasQTAgg.setSizePolicy(self, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 
@@ -58,6 +60,8 @@ class Plot(FigureCanvasQTAgg):
         self.axes2D.grid(bool)        
         self.axes2D.axes.set_xlabel(labels[0], size='12')
         self.axes2D.axes.set_ylabel(labels[1], size='12')
+        self.axes2D.add_artist(self.lineDelta)
+
         
     def plot_labels(self, tipo, x, y, label, angle=0, size="xx-small"):
         linea=[]
@@ -119,14 +123,138 @@ class Plot(FigureCanvasQTAgg):
         elif tipo =="X":
             self.IsoX=linea
 
+class DeltaWidget(QtGui.QWidget):
+    def __init__(self, punto1=None, punto2=None, parent=None):
+        self.punto1=None
+        self.punto2=None
+        self.parent=parent
+        super(DeltaWidget, self).__init__(parent)
+        layout=QtGui.QGridLayout(self)
+        self.buttonDelete1=QtGui.QToolButton()
+        self.buttonDelete1.clicked.connect(self.DeletePunto1)
+        self.buttonDelete1.setIcon(QtGui.QIcon(QtGui.QPixmap(":/button/remove.png")))
+        layout.addWidget(self.buttonDelete1,1,0,1,1)
+        self.buttonDelete2=QtGui.QToolButton()
+        self.buttonDelete2.clicked.connect(self.DeletePunto2)
+        self.buttonDelete2.setIcon(QtGui.QIcon(QtGui.QPixmap(":/button/remove.png")))
+        layout.addWidget(self.buttonDelete2,2,0,1,1)
+        self.check1=QtGui.QRadioButton(QtGui.QApplication.translate("SteamTables", "Punto", None, QtGui.QApplication.UnicodeUTF8)+" 1:")
+        layout.addWidget(self.check1,1,1,1,1)
+        self.check2=QtGui.QRadioButton(QtGui.QApplication.translate("SteamTables", "Punto", None, QtGui.QApplication.UnicodeUTF8)+" 2:")
+        self.check2.toggled.connect(self.setFoco)
+        layout.addWidget(self.check2,2,1,1,1)
+        self.labelPunto1=QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Hacer click en el dibujo o usar lista de puntos", None, QtGui.QApplication.UnicodeUTF8))
+        layout.addWidget(self.labelPunto1,1,3,1,1)
+        self.labelPunto2=QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Hacer click en el dibujo o usar lista de puntos", None, QtGui.QApplication.UnicodeUTF8))
+        layout.addWidget(self.labelPunto2,2,3,1,1)
+        layout.addItem(QtGui.QSpacerItem(50, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed), 1, 4, 2, 1)
+        
+        self.labelEntalpia=QtGui.QLabel(u"Δh")
+        layout.addWidget(self.labelEntalpia,1,5,1,1)
+        self.entalpia=Entrada_con_unidades(UI_enthalpy, unidades.Enthalpy, "Enthalpy", readOnly=True, boton=False, frame=False, width=70)
+        layout.addWidget(self.entalpia,1,6,1,1)
+        self.labelEntropia=QtGui.QLabel(u"Δs")
+        layout.addWidget(self.labelEntropia,2,5,1,1)
+        self.entropia=Entrada_con_unidades(UI_specificHeat, unidades.SpecificHeat, "SpecificHeat", "Entropy", readOnly=True, boton=False, frame=False, width=70)
+        layout.addWidget(self.entropia,2,6,1,1)
+        
+        self.labelGibbs=QtGui.QLabel(u"Δg")
+        layout.addWidget(self.labelGibbs,1,8,1,1)
+        self.gibbs=Entrada_con_unidades(UI_enthalpy, unidades.Enthalpy, "Enthalpy", readOnly=True, boton=False, frame=False, width=70)
+        layout.addWidget(self.gibbs,1,9,1,1)
+        self.labelEnergiaInterna=QtGui.QLabel(u"Δu")
+        layout.addWidget(self.labelEnergiaInterna,2,8,1,1)
+        self.energiaInterna=Entrada_con_unidades(UI_enthalpy, unidades.Enthalpy, "Enthalpy", readOnly=True, boton=False, frame=False, width=70)
+        layout.addWidget(self.energiaInterna,2,9,1,1)
+        if punto1:
+            self.setPunto(0, punto1)
+        else:
+            self.buttonDelete1.setDisabled(True)
+        if punto2:
+            self.setPunto(1, punto2)
+            self.setFoco(1)
+        else:
+            self.setFoco(0)
+            self.buttonDelete2.setDisabled(True)
+        if punto1 and punto2:
+            self.set_visible(True)
+        else:
+            self.set_visible(False)
+    
+    def setFoco(self, i):
+        self.foco=i
+        if i:
+            self.check2.setChecked(True)
+        else:
+            self.check1.setChecked(True)
+
+    def addPunto(self, punto):
+        if self.foco:
+            self.setPunto(1, punto)
+        else:
+            self.setPunto(0, punto)
+            
+    def setPunto(self, i, punto):
+        if i==0:
+            self.punto1=punto
+            self.labelPunto1.setText(config.representacion(unidades.Temperature(punto.T).config())+" "+config.Configuracion("Temperature").text()+", "+config.representacion(unidades.Pressure(punto.p).config())+" "+config.Configuracion("Pressure").text()+", x="+config.representacion(punto.x))
+            self.buttonDelete1.setEnabled(True)
+        else:
+            self.punto2=punto
+            self.labelPunto2.setText(config.representacion(unidades.Temperature(punto.T).config())+" "+config.Configuracion("Temperature").text()+", "+config.representacion(unidades.Pressure(punto.p).config())+" "+config.Configuracion("Pressure").text()+", x="+config.representacion(punto.x))
+            self.buttonDelete2.setEnabled(True)
+        self.calculo()
+    
+    def DeletePunto1(self):
+        self.punto1=None
+        self.labelPunto1.setText(QtGui.QApplication.translate("SteamTables", "Hacer click en el dibujo o usar lista de puntos", None, QtGui.QApplication.UnicodeUTF8))
+        self.buttonDelete1.setEnabled(False)
+        self.set_visible(False)
+        
+    def DeletePunto2(self):
+        self.punto2=None
+        self.labelPunto2.setText(QtGui.QApplication.translate("SteamTables", "Hacer click en el dibujo o usar lista de puntos", None, QtGui.QApplication.UnicodeUTF8))
+        self.buttonDelete2.setEnabled(False)
+        self.set_visible(False)
+        
+    def set_visible(self, bool):
+        self.labelEntalpia.setVisible(bool)
+        self.entalpia.setVisible(bool)
+        self.labelEntropia.setVisible(bool)
+        self.entropia.setVisible(bool)
+        self.labelGibbs.setVisible(bool)
+        self.gibbs.setVisible(bool)
+        self.labelEnergiaInterna.setVisible(bool)
+        self.energiaInterna.setVisible(bool)
+        self.parent.diagrama2D.lineDelta.set_visible(bool)
+        self.parent.diagrama2D.draw()
+
+    def calculo(self):
+        """Método que calcula los incrementos de propiedades y los muestra"""
+        if self.punto1 and self.punto2:
+            self.set_visible(True)
+            self.entalpia.setValue(self.punto2.h-self.punto1.h)
+            self.entropia.setValue(self.punto2.s-self.punto1.s)
+            self.energiaInterna.setValue(self.punto2.u-self.punto1.u)
+            self.gibbs.setValue((self.punto2.h-self.punto2.T*self.punto2.s)-(self.punto1.h-self.punto1.T*self.punto1.s))
+        else:
+            self.set_visible(False)
+        
+        
 class Ventana_Lista_Puntos(QtGui.QDialog):
     """Dialogo que muestra la lísta de puntos especificados por el usuario así como sus propiedades"""
     def __init__(self, puntos, parent=None):
         super(Ventana_Lista_Puntos, self).__init__(parent)
+        self.setFixedSize(500, self.minimumHeight())
         self.setWindowTitle(QtGui.QApplication.translate("SteamTables", "Puntos individuales", None, QtGui.QApplication.UnicodeUTF8))
         self.puntos=puntos
         self.gridLayout = QtGui.QGridLayout(self)
-        self.listWidget = QtGui.QListWidget()
+        self.listWidget = QtGui.QTableWidget(len(puntos), 3)
+        self.listWidget.setHorizontalHeaderLabels([QtCore.QString(u"Δ1"), QtCore.QString(u"Δ2"), QtGui.QApplication.translate("SteamTables", "Definición", None, QtGui.QApplication.UnicodeUTF8)])
+        self.listWidget.resizeColumnsToContents()
+        self.listWidget.horizontalHeader().setStretchLastSection(True)
+        self.listWidget.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.listWidget.setCornerButtonEnabled(False)
         self.gridLayout.addWidget(self.listWidget, 0, 0, 3, 1)
         self.tablaPropiedades=QtGui.QTableWidget()
         self.tablaPropiedades.setVisible(False)
@@ -164,20 +292,34 @@ class Ventana_Lista_Puntos(QtGui.QDialog):
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         self.gridLayout.addWidget(self.buttonBox, 2, 1, 1, 1)
-        self.setFixedSize(500, self.minimumHeight())
         
         self.colores=config.colors(len(self.puntos))
         self.rellenarLista()
         self.rellenarTabla()
 
     def rellenarLista(self):
-        self.listWidget.clear()
+#        self.listWidget.clearContents()
+        self.listWidget.setRowCount(len(self.puntos))
+        self.group1=QtGui.QButtonGroup()
+        self.group2=QtGui.QButtonGroup()
+        self.delta1=[]
+        self.delta2=[]
         for i, punto in enumerate(self.puntos):
-            self.listWidget.addItem(str(i+1)+" - "+config.representacion(unidades.Temperature(punto.T).config())+" "+config.Configuracion("Temperature").text()+", "+config.representacion(unidades.Pressure(punto.p).config())+" "+config.Configuracion("Pressure").text()+", x="+config.representacion(punto.x))
+            self.listWidget.setItem(i, 2, QtGui.QTableWidgetItem(str(i+1)+" - "+config.representacion(unidades.Temperature(punto.T).config())+" "+config.Configuracion("Temperature").text()+", "+config.representacion(unidades.Pressure(punto.p).config())+" "+config.Configuracion("Pressure").text()+", x="+config.representacion(punto.x)))
+            self.delta1.append(QtGui.QRadioButton(self))
+            self.delta2.append(QtGui.QRadioButton(self))
+            self.group1.addButton(self.delta1[-1])
+            self.group2.addButton(self.delta2[-1])
+            self.listWidget.setCellWidget(i, 0, self.delta1[-1])
+            self.listWidget.setCellWidget(i, 1, self.delta2[-1])
+            
+            self.listWidget.setRowHeight(i, 20)
+            self.listWidget.setVerticalHeaderItem(i, QtGui.QTableWidgetItem(""))
             pixmap=QtGui.QPixmap(10, 10)
             pixmap.fill(QtGui.QColor(self.colores[i]))
-            self.listWidget.item(i).setIcon(QtGui.QIcon(pixmap))
-            
+            self.listWidget.verticalHeaderItem(i).setIcon(QtGui.QIcon(pixmap))
+
+
     def rellenarTabla(self):
         if len(self.puntos)==0:
             self.tablaPropiedades.setFixedHeight(404)
@@ -277,6 +419,11 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.action3D.setCheckable(True)
         self.action3D.setChecked(True)
         self.action3D.setShortcut("Ctrl+3")
+        self.actionMostrarDelta = QtGui.QAction(QtGui.QApplication.translate("SteamTables", "Mostrar cambio de estado", None, QtGui.QApplication.UnicodeUTF8), self)
+        self.actionMostrarDelta.setCheckable(True)
+        self.actionMostrarDelta.setChecked(False)
+        self.actionMostrarDelta.setShortcut("Ctrl+D")
+        self.actionMostrarDelta.triggered.connect(self.mostrarDelta)
         self.actionMostrarBarra = QtGui.QAction(QtGui.QApplication.translate("SteamTables", "Mostrar barra de herramientas", None, QtGui.QApplication.UnicodeUTF8), self)
         self.actionMostrarBarra.setCheckable(True)
         self.actionMostrarBarra.setChecked(False)
@@ -306,6 +453,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.menuGrafico.addAction(self.action2D)
         self.menuGrafico.addAction(self.action3D)
         self.menuGrafico.addSeparator()
+        self.menuGrafico.addAction(self.actionMostrarDelta)
         self.menuGrafico.addAction(self.actionMostrarBarra)
         self.menuGrafico.addAction(self.actionDibujarSaturacion)
         self.menuGrafico.addAction(self.actionMostrarPuntos)
@@ -352,21 +500,24 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.checkIsoX.setStatusTip(QtGui.QApplication.translate("SteamTables", "Dibujar curvas con igual fracción de vapor", None, QtGui.QApplication.UnicodeUTF8))
         self.gridLayout_3.addWidget(self.checkIsoX,0,5,1,1)
         self.diagrama2D = Plot(self.page_Plot, dpi=self.Config.getfloat("General","Dpi"), dim=2)
+        self.diagrama2D.fig.canvas.mpl_connect('button_press_event', self.click)
         self.gridLayout_3.addWidget(self.diagrama2D,1,0,1,6)
         self.diagrama3D = Plot(self.page_Plot, dpi=self.Config.getfloat("General","Dpi"), dim=3)
         self.diagrama3D.setStatusTip(QtGui.QApplication.translate("SteamTables", "Pinchar y arrastrar para mover la orientación del gráfico", None, QtGui.QApplication.UnicodeUTF8))
         self.gridLayout_3.addWidget(self.diagrama3D,1,0,1,6)
+        self.delta=DeltaWidget(parent=self)
+        self.gridLayout_3.addWidget(self.delta,3,0,1,6)
         self.toolbar2D=NavigationToolbar2QT(self.diagrama2D, self.diagrama2D)
-        self.gridLayout_3.addWidget(self.toolbar2D,3,0,1,6)
+        self.gridLayout_3.addWidget(self.toolbar2D,4,0,1,6)
         self.toolbar3D=NavigationToolbar2QT(self.diagrama3D, self.diagrama3D)
-        self.gridLayout_3.addWidget(self.toolbar3D,3,0,1,6)
+        self.gridLayout_3.addWidget(self.toolbar3D,4,0,1,6)
         self.toolBox.addItem(self.page_Plot,QtGui.QApplication.translate("SteamTables", "Gráfico", None, QtGui.QApplication.UnicodeUTF8))
         self.gridLayout.addWidget(self.toolBox,0,0,1,1)
 
         #Toolbox parámetros Tabla
-        self.setTabPosition(QtCore.Qt.DockWidgetArea(1), 0)
-        self.dockWidget_Tabla = QtGui.QDockWidget()
-        self.dockWidget_Tabla.setWindowTitle(QtGui.QApplication.translate("SteamTables", "Tabla", None, QtGui.QApplication.UnicodeUTF8))
+        self.dockWidget_Tabla = QtGui.QDockWidget(QtGui.QApplication.translate("SteamTables", "Tabla", None, QtGui.QApplication.UnicodeUTF8))
+        self.dockWidget_Tabla.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+
         self.dockWidgetContents = QtGui.QWidget()
         self.gridLayout_4 = QtGui.QGridLayout(self.dockWidgetContents)
         self.gridLayout_4.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Ejes", None, QtGui.QApplication.UnicodeUTF8)),0,0,1,1)
@@ -380,13 +531,14 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.variableTabla.setFixedWidth(150)
         self.variableTabla.setStatusTip(QtGui.QApplication.translate("SteamTables", "Definir variables a calcular", None, QtGui.QApplication.UnicodeUTF8))
         self.gridLayout_4.addWidget(self.variableTabla,1,1,1,2)
-        self.gridLayout_4.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Minimum,QtGui.QSizePolicy.Minimum),2,0,4,1)
         self.label_26 = QtGui.QLabel()
+        self.label_26.setFixedHeight(30)
+        self.label_26.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignBottom)
         self.gridLayout_4.addWidget(self.label_26,3,1,1,1)
-        self.label_26.setAlignment(QtCore.Qt.AlignCenter)
         self.label_27 = QtGui.QLabel()
+        self.label_27.setFixedHeight(30)
+        self.label_27.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignBottom)
         self.gridLayout_4.addWidget(self.label_27,3,2,1,1)
-        self.label_27.setAlignment(QtCore.Qt.AlignCenter)
         self.gridLayout_4.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Intervalo", None, QtGui.QApplication.UnicodeUTF8)),6,0,1,1)
         self.abscisaInicio = QtGui.QLineEdit()
         self.abscisaInicio.setMaximumSize(QtCore.QSize(80,16777215))
@@ -421,72 +573,80 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.botonCalcular.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         self.gridLayout_4.addWidget(self.botonCalcular,7,0,1,3)
         self.dockWidget_Tabla.setWidget(self.dockWidgetContents)
-        self.dockWidget_Tabla.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
-        self.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_Tabla)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.dockWidget_Tabla)
         self.dockWidget_Tabla.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
 
 
         #Toolbox graficos 2D
-        self.dockWidget_2D = QtGui.QDockWidget()
-        self.dockWidget_2D.setWindowTitle(QtGui.QApplication.translate("SteamTables", "Gráfico 2D", None, QtGui.QApplication.UnicodeUTF8))
+        self.dockWidget_2D = QtGui.QDockWidget(QtGui.QApplication.translate("SteamTables", "Gráfico 2D", None, QtGui.QApplication.UnicodeUTF8))
+        self.dockWidget_2D.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         self.Dock_2D= QtGui.QWidget()
         self.gridLayout_13 = QtGui.QGridLayout(self.Dock_2D)
-        self.gridLayout_13.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Variable", None, QtGui.QApplication.UnicodeUTF8)),0,0,1,1)
+        self.gridLayout_13.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Eje X:", None, QtGui.QApplication.UnicodeUTF8)),0,0,1,1)
         self.ejeX = QtGui.QComboBox()
         self.ejeX.setFixedWidth(50)
         self.gridLayout_13.addWidget(self.ejeX,0,1,1,1)
-        self.labelUnitEjex=QtGui.QLabel()
-        self.gridLayout_13.addWidget(self.labelUnitEjex,0,3,1,1)
-        self.gridLayout_13.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Mínimo", None, QtGui.QApplication.UnicodeUTF8)),1,0,1,1)
-        self.ejeX_min = Entrada_con_unidades(None, float, None)
-        self.ejeX_min.entrada.editingFinished.connect(self.diagrama2D_ejeX)
-        self.gridLayout_13.addWidget(self.ejeX_min,1,1,1,1)
-        self.gridLayout_13.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Máximo", None, QtGui.QApplication.UnicodeUTF8)),1,2,1,1)
-        self.ejeX_max = Entrada_con_unidades(None, float, None)
-        self.ejeX_max.entrada.editingFinished.connect(self.diagrama2D_ejeX)
-        self.gridLayout_13.addWidget(self.ejeX_max,1,3,1,1)
         self.ejeX_escala=QtGui.QCheckBox()
         self.ejeX_escala.setText(QtGui.QApplication.translate("SteamTables", "Escala logarítmica", None, QtGui.QApplication.UnicodeUTF8))
         self.ejeX_escala.toggled.connect(self.ejeX_log)
-        self.gridLayout_13.addWidget(self.ejeX_escala,2,0,1,4)
-        self.gridLayout_13.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Variable", None, QtGui.QApplication.UnicodeUTF8)),3,0,1,1)
+        self.gridLayout_13.addWidget(self.ejeX_escala,0,2,1,2)
+        self.gridLayout_13.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Mínimo", None, QtGui.QApplication.UnicodeUTF8)),1,1,1,1)
+        self.ejeX_min=[Entrada_con_unidades(UI_pressure, unidades.Pressure, "Pressure"), Entrada_con_unidades(UI_temperature, unidades.Temperature, "Temperature"), Entrada_con_unidades(UI_specificHeat, unidades.SpecificHeat, "SpecificHeat","Entropy"), Entrada_con_unidades(UI_enthalpy, unidades.Enthalpy, "Enthalpy"), Entrada_con_unidades(UI_enthalpy, unidades.Enthalpy, "Enthalpy"), Entrada_con_unidades(UI_specificVolume, unidades.SpecificVolume, "SpecificVolume")]
+        for i in self.ejeX_min:
+            i.valueChanged.connect(self.diagrama2D_ejeX)
+            self.gridLayout_13.addWidget(i,1,2,1,2)
+        
+        self.gridLayout_13.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Máximo", None, QtGui.QApplication.UnicodeUTF8)),2,1,1,1)
+        self.ejeX_max=[Entrada_con_unidades(UI_pressure, unidades.Pressure, "Pressure"), Entrada_con_unidades(UI_temperature, unidades.Temperature, "Temperature"), Entrada_con_unidades(UI_specificHeat, unidades.SpecificHeat, "SpecificHeat","Entropy"), Entrada_con_unidades(UI_enthalpy, unidades.Enthalpy, "Enthalpy"), Entrada_con_unidades(UI_enthalpy, unidades.Enthalpy, "Enthalpy"), Entrada_con_unidades(UI_specificVolume, unidades.SpecificVolume, "SpecificVolume")]
+        for i in self.ejeX_max:
+            i.valueChanged.connect(self.diagrama2D_ejeX)
+            self.gridLayout_13.addWidget(i,2,2,1,2)
+
+        self.gridLayout_13.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Eje Y:", None, QtGui.QApplication.UnicodeUTF8)),3,0,1,1)
         self.ejeY = QtGui.QComboBox()
         self.ejeY.setFixedWidth(50)
         self.gridLayout_13.addWidget(self.ejeY,3,1,1,1)
-        self.gridLayout_13.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Mínimo", None, QtGui.QApplication.UnicodeUTF8)),4,0,1,1)
-        self.labelUnitEjey=QtGui.QLabel()
-        self.gridLayout_13.addWidget(self.labelUnitEjey,3,3,1,1)
-        self.ejeY_min = Entrada_con_unidades(None, float, None)
-        self.ejeY_min.entrada.editingFinished.connect(self.diagrama2D_ejeY)
-        self.gridLayout_13.addWidget(self.ejeY_min,4,1,1,1)
-        self.gridLayout_13.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Máximo", None, QtGui.QApplication.UnicodeUTF8)),4,2,1,1)
-        self.ejeY_max = Entrada_con_unidades(None, float, None)
-        self.ejeY_max.entrada.editingFinished.connect(self.diagrama2D_ejeY)
-        self.gridLayout_13.addWidget(self.ejeY_max,4,3,1,1)
         self.ejeY_escala=QtGui.QCheckBox()
         self.ejeY_escala.setText(QtGui.QApplication.translate("SteamTables", "Escala logarítmica", None, QtGui.QApplication.UnicodeUTF8))
         self.ejeY_escala.toggled.connect(self.ejeY_log)
-        self.gridLayout_13.addWidget(self.ejeY_escala,5,0,1,4)
+        self.gridLayout_13.addWidget(self.ejeY_escala,3,2,1,2)
+        self.gridLayout_13.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Mínimo", None, QtGui.QApplication.UnicodeUTF8)),4,1,1,1)
+        self.ejeY_min=[Entrada_con_unidades(UI_pressure, unidades.Pressure, "Pressure"), Entrada_con_unidades(UI_temperature, unidades.Temperature, "Temperature"), Entrada_con_unidades(UI_specificHeat, unidades.SpecificHeat, "SpecificHeat","Entropy"), Entrada_con_unidades(UI_enthalpy, unidades.Enthalpy, "Enthalpy"), Entrada_con_unidades(UI_enthalpy, unidades.Enthalpy, "Enthalpy"), Entrada_con_unidades(UI_specificVolume, unidades.SpecificVolume, "SpecificVolume")]
+        for i in self.ejeY_min:
+            i.valueChanged.connect(self.diagrama2D_ejeY)
+            self.gridLayout_13.addWidget(i,4,2,1,2)
+        self.gridLayout_13.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Máximo", None, QtGui.QApplication.UnicodeUTF8)),5,1,1,1)
+        self.ejeY_max=[Entrada_con_unidades(UI_pressure, unidades.Pressure, "Pressure"), Entrada_con_unidades(UI_temperature, unidades.Temperature, "Temperature"), Entrada_con_unidades(UI_specificHeat, unidades.SpecificHeat, "SpecificHeat","Entropy"), Entrada_con_unidades(UI_enthalpy, unidades.Enthalpy, "Enthalpy"), Entrada_con_unidades(UI_enthalpy, unidades.Enthalpy, "Enthalpy"), Entrada_con_unidades(UI_specificVolume, unidades.SpecificVolume, "SpecificVolume")]
+        for i in self.ejeY_max:
+            i.valueChanged.connect(self.diagrama2D_ejeY)
+            self.gridLayout_13.addWidget(i,5,2,1,2)
+
         self.rejilla=QtGui.QCheckBox()
         self.rejilla.setText(QtGui.QApplication.translate("SteamTables", "Rejilla", None, QtGui.QApplication.UnicodeUTF8))
         self.rejilla.toggled.connect(self.rejilla_toggled)
         self.gridLayout_13.addWidget(self.rejilla,6,0,1,2)
-        self.botonCalcular2 = QtGui.QPushButton()
-        self.botonCalcular2.setMaximumWidth(80)
-        self.botonCalcular2.setText(QtGui.QApplication.translate("SteamTables", "Calcular", None, QtGui.QApplication.UnicodeUTF8))
-        self.botonCalcular2.setIcon(QtGui.QIcon(QtGui.QPixmap(":/button/calculate.png")))
+        self.botonCalcular2 = QtGui.QPushButton(QtGui.QIcon(QtGui.QPixmap(":/button/calculate.png")), QtGui.QApplication.translate("SteamTables", "Calcular", None, QtGui.QApplication.UnicodeUTF8))
         self.botonCalcular2.clicked.connect(self.botonCalcular_clicked)
-        self.gridLayout_13.addWidget(self.botonCalcular2,6,3,1,1)
+        self.gridLayout_13.addWidget(self.botonCalcular2,6,2,1,1)
+        self.gridLayout_13.addItem(QtGui.QSpacerItem(72, 34, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding), 6, 3, 1, 1)
+
         self.dockWidget_2D.setWidget(self.Dock_2D)
-        self.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_2D)
-        self.dockWidget_2D.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.dockWidget_2D)
         self.dockWidget_2D.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
 
-        
         #Toolbox parámetros Puntos individuales
-        self.dockWidget_Puntos = QtGui.QDockWidget()
-        self.dockWidget_Puntos.setWindowTitle(QtGui.QApplication.translate("SteamTables", "Puntos específicos", None, QtGui.QApplication.UnicodeUTF8))
-        self.dockWidgetContents_2 = QtGui.QWidget()
+        self.dockWidget_Puntos = QtGui.QDockWidget(QtGui.QApplication.translate("SteamTables", "Puntos específicos", None, QtGui.QApplication.UnicodeUTF8))
+        self.widget = QtGui.QWidget()
+        self.verticalLayout = QtGui.QVBoxLayout(self.widget)
+        self.scrollArea = QtGui.QScrollArea(self.widget)
+        self.scrollArea.setFrameShape(QtGui.QFrame.NoFrame)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.dockWidgetContents_2 = QtGui.QWidget(self.scrollArea)
+        self.scrollArea.setWidget(self.dockWidgetContents_2)
+        self.verticalLayout.addWidget(self.scrollArea)
+        self.dockWidget_Puntos.setWidget(self.widget)
+        
         self.gridLayout_1 = QtGui.QGridLayout(self.dockWidgetContents_2)
         self.gridLayout_1.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Datos conocidos", None, QtGui.QApplication.UnicodeUTF8)),0,0,1,1)
         self.variablesCalculo = QtGui.QComboBox()
@@ -496,34 +656,34 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.gridLayout_1.addWidget(self.variablesCalculo,0,1,1,2)
         self.gridLayout_1.addItem(QtGui.QSpacerItem(50, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed), 1, 0, 1, 3)
         self.gridLayout_1.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8)),6,0,1,1)
-        self.presion=Entrada_con_unidades(UI_pressure, unidades.Pressure, "Pressure", color=self.Config.get("General","Color"))
+        self.presion=Entrada_con_unidades(UI_pressure, unidades.Pressure, "Pressure")
         self.presion.setStatusTip(QtGui.QApplication.translate("SteamTables", "Presión", None, QtGui.QApplication.UnicodeUTF8))
-        self.presion.entrada.editingFinished.connect(self.presion_editingFinished)
+        self.presion.valueChanged.connect(self.presion_editingFinished)
         self.gridLayout_1.addWidget(self.presion,6,1,1,2)
         self.gridLayout_1.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8)),7,0,1,1)
-        self.temperatura=Entrada_con_unidades(UI_temperature, unidades.Temperature, "Temperature", color=self.Config.get("General","Color"))
+        self.temperatura=Entrada_con_unidades(UI_temperature, unidades.Temperature, "Temperature", spinbox=True, max=1080, step=1)
         self.temperatura.setStatusTip(QtGui.QApplication.translate("SteamTables", "Temperatura", None, QtGui.QApplication.UnicodeUTF8))
-        self.temperatura.entrada.editingFinished.connect(self.temperatura_editingFinished)
+        self.temperatura.valueChanged.connect(self.temperatura_editingFinished)
         self.gridLayout_1.addWidget(self.temperatura,7,1,1,2)
         self.gridLayout_1.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Volumen", None, QtGui.QApplication.UnicodeUTF8)),8,0,1,1)
-        self.volumen=Entrada_con_unidades(UI_specificVolume, unidades.SpecificVolume, "SpecificVolume", color=self.Config.get("General","Color"))
+        self.volumen=Entrada_con_unidades(UI_specificVolume, unidades.SpecificVolume, "SpecificVolume", spinbox=True)
         self.volumen.setStatusTip(QtGui.QApplication.translate("SteamTables", "Volumen específico", None, QtGui.QApplication.UnicodeUTF8))
-        self.volumen.entrada.editingFinished.connect(self.volumen_editingFinished)
+        self.volumen.valueChanged.connect(self.volumen_editingFinished)
         self.gridLayout_1.addWidget(self.volumen,8,1,1,2)
         self.gridLayout_1.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Entalpia", None, QtGui.QApplication.UnicodeUTF8)),9,0,1,1)
-        self.entalpia=Entrada_con_unidades(UI_enthalpy, unidades.Enthalpy, "Enthalpy", color=self.Config.get("General","Color"))
+        self.entalpia=Entrada_con_unidades(UI_enthalpy, unidades.Enthalpy, "Enthalpy")
         self.entalpia.setStatusTip(QtGui.QApplication.translate("SteamTables", "Entalpía", None, QtGui.QApplication.UnicodeUTF8))
-        self.entalpia.entrada.editingFinished.connect(self.entalpia_editingFinished)
+        self.entalpia.valueChanged.connect(self.entalpia_editingFinished)
         self.gridLayout_1.addWidget(self.entalpia,9,1,1,2)
         self.gridLayout_1.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Entropía", None, QtGui.QApplication.UnicodeUTF8)),10,0,1,1)
-        self.entropia=Entrada_con_unidades(UI_specificHeat, unidades.SpecificHeat, "SpecificHeat","Entropy", color=self.Config.get("General","Color"))
+        self.entropia=Entrada_con_unidades(UI_specificHeat, unidades.SpecificHeat, "SpecificHeat","Entropy", spinbox=True)
         self.entropia.setStatusTip(QtGui.QApplication.translate("SteamTables", "Entropía", None, QtGui.QApplication.UnicodeUTF8))
-        self.entropia.entrada.editingFinished.connect(self.entropia_editingFinished)
+        self.entropia.valueChanged.connect(self.entropia_editingFinished)
         self.gridLayout_1.addWidget(self.entropia,10,1,1,2)
         self.gridLayout_1.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Fracción de vapor", None, QtGui.QApplication.UnicodeUTF8)),11,0,1,1)
-        self.fraccionVapor = Entrada_con_unidades(None, float, None, color=self.Config.get("General","Color"))
+        self.fraccionVapor = Entrada_con_unidades(None, float, None, spinbox=True, max=1)
         self.fraccionVapor.setStatusTip(QtGui.QApplication.translate("SteamTables", "Fracción de vapor", None, QtGui.QApplication.UnicodeUTF8))
-        self.fraccionVapor.entrada.editingFinished.connect(self.fraccionVapor_editingFinished)
+        self.fraccionVapor.valueChanged.connect(self.fraccionVapor_editingFinished)
         self.gridLayout_1.addWidget(self.fraccionVapor,11,1,1,1)
         self.gridLayout_1.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Energía interna", None, QtGui.QApplication.UnicodeUTF8)),12,0,1,1)
         self.energiaInterna=Entrada_con_unidades(UI_enthalpy, unidades.Enthalpy, "Enthalpy", readOnly=True, retornar=False)
@@ -562,10 +722,11 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.velocidad.setStatusTip(QtGui.QApplication.translate("SteamTables", "Velocidad del sonido", None, QtGui.QApplication.UnicodeUTF8))
         self.gridLayout_1.addWidget(self.velocidad,20,1,1,1)
         self.gridLayout_1.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Región", None, QtGui.QApplication.UnicodeUTF8)),21,0,1,1)
-        self.region = QtGui.QLineEdit()
-        self.region.setFixedSize(QtCore.QSize(85,24))
-        self.region.setReadOnly(True)
-        self.region.setAlignment(QtCore.Qt.AlignRight)
+        self.region=Entrada_con_unidades(None, int, None, readOnly=True)
+#        self.region = QtGui.QLineEdit()
+#        self.region.setFixedSize(QtCore.QSize(85,24))
+#        self.region.setReadOnly(True)
+#        self.region.setAlignment(QtCore.Qt.AlignRight)
         self.gridLayout_1.addWidget(self.region,21,1,1,1)
         self.botonAdd=QtGui.QPushButton()
         self.botonAdd.setEnabled(False)
@@ -579,13 +740,10 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.botonLista.setStatusTip(QtGui.QApplication.translate("SteamTables", "Mostrar lista de puntos específicos representados en la gráfica", None, QtGui.QApplication.UnicodeUTF8))
         self.botonLista.clicked.connect(self.botonLista_clicked)
         self.gridLayout_1.addWidget(self.botonLista,22,1,1,2)
-        spacerItem = QtGui.QSpacerItem(72, 34, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.gridLayout_1.addItem(spacerItem, 23, 1, 1, 3)
+        self.gridLayout_1.addItem(QtGui.QSpacerItem(72, 34, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding), 23, 1, 1, 3)
         self.mostrarUnidades()
-        self.dockWidget_Puntos.setWidget(self.dockWidgetContents_2)
-        self.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_Puntos)
+        self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.dockWidget_Puntos)
         self.dockWidget_Puntos.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
-        self.dockWidget_Puntos.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea)
         
         #Iniciar valores de widgets
         Ejes=["p,T", "p,h", "p,s", "p,v", "T,s", "T,x"]
@@ -606,6 +764,8 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.isocora=[]
         self.isoX=[]
         self.factorx, self.factory, self.factorz, self.factorx2, self.factory2=(0, 0, 0, 0, 0)
+        self.ejeY_visible=0
+
         
         #Cargar configuración
         if self.Config.has_section("Table"):
@@ -624,6 +784,8 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.actionMostrarBarra.setChecked(self.Config.getboolean("General","Toolbar"))
             self.toolbar2D.setVisible(self.actionMostrarBarra.isChecked())
             self.toolbar3D.setVisible(self.actionMostrarBarra.isChecked())
+            self.actionMostrarDelta.setChecked(self.Config.getboolean("General","Delta"))
+            self.delta.setVisible(self.actionMostrarDelta.isChecked())
             self.action2D.setChecked(self.Config.getboolean("General","2D"))
             self.d2(self.action2D.isChecked())
             if self.Config.getboolean("General","Plot"):
@@ -636,15 +798,15 @@ class Ui_SteamTables(QtGui.QMainWindow):
             self.checkIsoX.setChecked(self.Config.getboolean("General","Isoquality"))
         if self.Config.has_section("2D"):
             self.ejeX.setCurrentIndex(self.ejeX.findText(self.Config.get("2D", "Xvariable")))
-            self.rellenar_ejeY(self.ejeX.currentIndex())
+            self.ejeXChanged(self.ejeX.currentIndex())
             self.ejeX_escala.setChecked(self.Config.getboolean("2D", "XScale"))
-            self.ejeX_min.setValue(self.Config.getfloat("2D", "XMin"))
-            self.ejeX_max.setValue(self.Config.getfloat("2D", "XMax"))
+            self.ejeX_min[self.ejeX.currentIndex()].setValue(self.Config.getfloat("2D", "XMin"))
+            self.ejeX_max[self.ejeX.currentIndex()].setValue(self.Config.getfloat("2D", "XMax"))
             self.ejeY.setCurrentIndex(self.ejeY.findText(self.Config.get("2D", "Yvariable")))
             self.ejeYChanged()
             self.ejeY_escala.setChecked(self.Config.getboolean("2D", "YScale"))
-            self.ejeY_min.setValue(self.Config.getfloat("2D", "YMin"))
-            self.ejeY_max.setValue(self.Config.getfloat("2D", "YMax"))
+            self.ejeY_min[self.ejeY_visible].setValue(self.Config.getfloat("2D", "YMin"))
+            self.ejeY_max[self.ejeY_visible].setValue(self.Config.getfloat("2D", "YMax"))
             self.rejilla.setChecked(self.Config.getboolean("2D", "Grid"))
         if self.Config.has_section("Points"):
             self.variablesCalculo.setCurrentIndex(self.Config.getint("Points", 'Variable'))
@@ -675,7 +837,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.ejesTabla.currentIndexChanged.connect(self.ejesTabla_currentIndexChanged)
         self.variablesCalculo.currentIndexChanged.connect(self.variablesCalculo_currentIndexChanged)
         self.variableTabla.currentIndexChanged.connect(self.Calcular_Propiedades)
-        self.ejeX.currentIndexChanged.connect(self.rellenar_ejeY)
+        self.ejeX.currentIndexChanged.connect(self.ejeXChanged)
         self.ejeY.currentIndexChanged.connect(self.ejeYChanged)
         self.checkIsoTherm.toggled.connect(self.mostrarIsoterma)
         self.checkIsoBar.toggled.connect(self.mostrarIsobara)
@@ -731,6 +893,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
         Config.set("General", "Sat", self.actionDibujarSaturacion.isChecked())
         Config.set("General", "Points", self.actionMostrarPuntos.isChecked())
         Config.set("General", "Toolbar", self.actionMostrarBarra.isChecked())
+        Config.set("General", "Delta", self.actionMostrarDelta.isChecked())
         Config.set("General", "2D", self.action2D.isChecked())
         Config.set("General", "Plot", self.page_Plot.isVisible())
         Config.set("General", "Isotherm", self.checkIsoTherm.isChecked())
@@ -743,12 +906,12 @@ class Ui_SteamTables(QtGui.QMainWindow):
             Config.add_section("2D")
         Config.set("2D", "Xvariable", self.ejeX.currentText())
         Config.set("2D", "XScale", self.ejeX_escala.isChecked())
-        Config.set("2D", "XMin", self.ejeX_min.value)
-        Config.set("2D", "XMax", self.ejeX_max.value)
+        Config.set("2D", "XMin", self.ejeX_min[self.ejeX.currentIndex()].value)
+        Config.set("2D", "XMax", self.ejeX_max[self.ejeX.currentIndex()].value)
         Config.set("2D", "Yvariable", self.ejeY.currentText())
         Config.set("2D", "YScale", self.ejeY_escala.isChecked())
-        Config.set("2D", "YMin", self.ejeY_min.value)
-        Config.set("2D", "YMax", self.ejeY_max.value)
+        Config.set("2D", "YMin", self.ejeY_min[self.ejeY_visible].value)
+        Config.set("2D", "YMax", self.ejeY_max[self.ejeY_visible].value)
         Config.set("2D", "Grid", self.rejilla.isChecked())
         if len(self.puntos)>0:
             Config.remove_section("Points")
@@ -761,6 +924,7 @@ class Ui_SteamTables(QtGui.QMainWindow):
             Config.set("Points", "Variable", self.variablesCalculo.currentIndex())
         Config.write(open("UI_steamTablesrc", "w"))
         event.accept()
+        
                 
                 
     #Controles
@@ -1003,9 +1167,15 @@ class Ui_SteamTables(QtGui.QMainWindow):
     
     def botonLista_clicked(self):
         """Muestra la lista de puntos especificados por el usuario"""
-        dialog=Ventana_Lista_Puntos(self.puntos)
+        dialog=Ventana_Lista_Puntos(self.puntos, self)
         if dialog.exec_():
             self.puntos=dialog.puntos
+            if dialog.group1.checkedId()!=-1:
+                self.delta.setPunto(0, self.puntos[-2-dialog.group1.checkedId()])
+            if dialog.group2.checkedId()!=-1:
+                self.delta.setPunto(1, self.puntos[-2-dialog.group2.checkedId()])
+            if self.delta.punto1 and self.delta.punto2:    
+                self.plot_Delta()
             self.calcularPuntos()
             self.dibujar()
 
@@ -1053,11 +1223,144 @@ class Ui_SteamTables(QtGui.QMainWindow):
         self.checkIsoEnth.setEnabled(True)
         self.checkIsoVol.setEnabled(True)
 
+    def click(self, event):
+        if event.xdata and event.ydata:
+            if self.ejeX.currentText()=="p":
+                if self.ejeY.currentText()=="T":
+                    vapor=steam_pT(event.xdata*self.factorx2, self.conv_T_inv(event.ydata))
+                elif self.ejeY.currentText()=="s":
+                    vapor=steam_ps(event.xdata*self.factorx2, event.ydata*self.factory2)
+                elif self.ejeY.currentText()=="h":
+                    vapor=steam_ph(event.xdata*self.factorx2, event.ydata*self.factory2)
+                elif self.ejeY.currentText()=="u":
+                    vapor=self.definirVapor(steam_ps, event.xdata*self.factorx2, lambda z: steam_ps(event.xdata*self.factorx2, float(z)).u-event.ydata*self.factory2, 5000., 1)
+                elif self.ejeY.currentText()=="v":
+                    vapor=steam_pv(event.xdata*self.factorx2, event.ydata*self.factory2)
+            elif self.ejeX.currentText()=="T":
+                if self.ejeY.currentText()=="p":
+                    vapor=steam_pT(event.ydata*self.factory2, self.conv_T_inv(event.xdata))
+                elif self.ejeY.currentText()=="s":
+                    vapor=steam_Ts(self.conv_T_inv(event.xdata), event.ydata*self.factory2)
+                elif self.ejeY.currentText()=="h":
+                    vapor=self.definirVapor(steam_ph, event.ydata*self.factory2, lambda z: steam_ph(float(z), event.ydata*self.factory2).T-self.conv_T_inv(event.xdata), 100.)
+                elif self.ejeY.currentText()=="u":
+                    if steam_Tx(self.conv_T_inv(event.xdata), 0).u<event.ydata*self.factory2<steam_Tx(self.conv_T_inv(event.xdata), 1).u:
+                        vapor=self.definirVapor(steam_Tx, self.conv_T_inv(event.xdata), lambda z: steam_Tx(self.conv_T_inv(event.xdata), float(z)).u-event.ydata*self.factory2, 0.5, 1)
+                    else:
+                        vapor=self.definirVapor(steam_pT, self.conv_T_inv(event.xdata), lambda z: steam_pT(float(z), self.conv_T_inv(event.xdata)).u-event.ydata*self.factory2, 100.)
+                elif self.ejeY.currentText()=="v":
+                    vapor=self.definirVapor(steam_pv, event.ydata*self.factory2, lambda z: steam_pv(float(z), event.ydata*self.factory2).T-self.conv_T_inv(event.xdata), 100.)
+            elif self.ejeX.currentText()=="s":
+                if self.ejeY.currentText()=="p":
+                    vapor=steam_ps(event.ydata*self.factory2, event.xdata*self.factorx2)
+                elif self.ejeY.currentText()=="T":
+                    vapor=steam_Ts(self.conv_T_inv(event.ydata), event.xdata*self.factorx2)
+                elif self.ejeY.currentText()=="h":
+                    vapor=self.definirVapor(steam_ph, event.ydata*self.factory2, lambda z: steam_ph(float(z), event.ydata*self.factory2).s-event.xdata*self.factorx2, 100.)
+                elif self.ejeY.currentText()=="u":
+                    vapor=self.definirVapor(steam_ps, event.xdata*self.factorx2, lambda z: steam_ps(float(z), event.xdata*self.factorx2).u-event.ydata*self.factory2, 100.)
+                elif self.ejeY.currentText()=="v":
+                    vapor=self.definirVapor(steam_pv, event.ydata*self.factory2, lambda z: steam_pv(float(z), event.ydata*self.factory2).s-event.xdata*self.factorx2, 100.)
+            elif self.ejeX.currentText()=="h":
+                if self.ejeY.currentText()=="p":
+                    vapor=steam_ph(event.ydata*self.factory2, event.xdata*self.factorx2)
+                elif self.ejeY.currentText()=="T":
+                    vapor=self.definirVapor(steam_ph, event.xdata*self.factorx2, lambda z: steam_ph(float(z), event.xdata*self.factorx2).T-self.conv_T_inv(event.ydata), 100.)
+                elif self.ejeY.currentText()=="s":
+                    vapor=self.definirVapor(steam_ph, event.xdata*self.factorx2, lambda z: steam_ph(float(z), event.xdata*self.factorx2).s-event.ydata*self.factory2, 100.)
+                elif self.ejeY.currentText()=="u":
+                    vapor=self.definirVapor(steam_ph, event.xdata*self.factorx2, lambda z: steam_ph(float(z), event.xdata*self.factorx2).u-event.ydata*self.factory2, 100.)
+                elif self.ejeY.currentText()=="v":
+                    vapor=self.definirVapor(steam_pv, event.ydata*self.factory2, lambda z: steam_pv(float(z), event.ydata*self.factory2).h-event.xdata*self.factorx2, 100.)
+            elif self.ejeX.currentText()=="u":
+                if self.ejeY.currentText()=="p":
+                    vapor=self.definirVapor(steam_ps, event.ydata*self.factory2, lambda z: steam_ps(event.ydata*self.factory2, float(z)).u-event.xdata*self.factorx2, 5000., 1)
+                elif self.ejeY.currentText()=="T":
+                    if steam_Tx(self.conv_T_inv(event.ydata), 0).u<event.xdata*self.factorx2<steam_Tx(self.conv_T_inv(event.ydata), 1).u:
+                        vapor=self.definirVapor(steam_Tx, self.conv_T_inv(event.ydata), lambda z: steam_Tx(self.conv_T_inv(event.ydata), float(z)).u-event.xdata*self.factorx2, 0.5, 1)
+                    else:
+                        vapor=self.definirVapor(steam_pT, self.conv_T_inv(event.ydata), lambda z: steam_pT(float(z), self.conv_T_inv(event.ydata)).u-event.xdata*self.factorx2, 100.)
+                elif self.ejeY.currentText()=="s":
+                    vapor=self.definirVapor(steam_ps, event.ydata*self.factory2, lambda z: steam_ps(float(z), event.ydata*self.factory2).u-event.xdata*self.factorx2, 100.)
+                elif self.ejeY.currentText()=="h":
+                    vapor=self.definirVapor(steam_ph, event.ydata*self.factory2, lambda z: steam_ph(float(z), event.ydata*self.factory2).u-event.xdata*self.factorx2, 100.)
+                elif self.ejeY.currentText()=="v":
+                    vapor=self.definirVapor(steam_pv, event.ydata*self.factory2, lambda z: steam_pv(float(z), event.ydata*self.factory2).u-event.xdata*self.factorx2, 100.)
+            elif self.ejeX.currentText()=="v":
+                if self.ejeY.currentText()=="p":
+                    vapor=steam_pv(event.ydata*self.factory2, event.xdata*self.factorx2)
+                elif self.ejeY.currentText()=="T":
+                    vapor=self.definirVapor(steam_pv, event.xdata*self.factorx2, lambda z: steam_pv(float(z), event.xdata*self.factoryx).T-self.conv_T_inv(event.ydata), 100.)
+                elif self.ejeY.currentText()=="s":
+                    vapor=self.definirVapor(steam_pv, event.xdata*self.factorx2, lambda z: steam_pv(float(z), event.xdata*self.factorx2).s-event.ydata*self.factory2, 100.)
+                elif self.ejeY.currentText()=="h":
+                    vapor=self.definirVapor(steam_pv, event.xdata*self.factorx2, lambda z: steam_pv(float(z), event.xdata*self.factorx2).h-event.ydata*self.factory2, 100.)
+                elif self.ejeY.currentText()=="u":
+                    vapor=self.definirVapor(steam_pv, event.xdata*self.factorx2, lambda z: steam_pv(float(z), event.xdata*self.factorx2).u-event.ydata*self.factory2, 100.)
+                    
+            self.delta.addPunto(vapor)
+            
+            if self.delta.punto1 and self.delta.punto2:
+                self.plot_Delta()
+
+    def plot_Delta(self):
+        if self.ejeX.currentText()=="p":
+            x=[punto.p/self.factorx2 for punto in [self.delta.punto1, self.delta.punto2]]
+        elif self.ejeX.currentText()=="T":
+            x=[self.conv_T_inv(punto.T) for punto in [self.delta.punto1, self.delta.punto2]]
+        elif self.ejeX.currentText()=="h":
+            x=[punto.h/self.factorx2 for punto in [self.delta.punto1, self.delta.punto2]]
+        elif self.ejeX.currentText()=="v":
+            x=[punto.v/self.factorx2 for punto in [self.delta.punto1, self.delta.punto2]]
+        elif self.ejeX.currentText()=="s":
+            x=[punto.s/self.factorx2 for punto in [self.delta.punto1, self.delta.punto2]]
+        elif self.ejeX.currentText()=="u":
+            x=[punto.u/self.factorx2 for punto in [self.delta.punto1, self.delta.punto2]]
+        if self.ejeY.currentText()=="p":
+            y=[punto.p/self.factory2 for punto in [self.delta.punto1, self.delta.punto2]]
+        elif self.ejeY.currentText()=="T":
+            y=[self.conv_T_inv(punto.T) for punto in [self.delta.punto1, self.delta.punto2]]
+        elif self.ejeY.currentText()=="h":
+            y=[punto.h/self.factory2 for punto in [self.delta.punto1, self.delta.punto2]]
+        elif self.ejeY.currentText()=="v":
+            y=[punto.v/self.factory2 for punto in [self.delta.punto1, self.delta.punto2]]
+        elif self.ejeY.currentText()=="s":
+            y=[punto.s/self.factory2 for punto in [self.delta.punto1, self.delta.punto2]]
+        elif self.ejeY.currentText()=="u":
+            y=[punto.u/self.factory2 for punto in [self.delta.punto1, self.delta.punto2]]
+
+        self.diagrama2D.lineDelta.xytext=(x[0], y[0])
+        self.diagrama2D.lineDelta.xy=(x[1], y[1])
+        self.diagrama2D.draw() 
+            
+    def definirVapor(self, definicion, y, iteracion=None, Zo=None, orden=0):
+        """Define el vapor a partir de las coordenadas en el gráfico y de las magnitudes de los ejes del gráfico
+        definicion: función de definición del vapor (steam_pT, steam_Tx...), si no está disponible será necesario indicar la función de iteración y aqui irían las variables de los ejes del diagrama
+        y: valor de la variable conocida del gráfico
+        iteracion: función de definición del vapor usada en la iteración
+        Zo: valor inicial de iteración
+        orden: indice que indica la posición de la variable de iteración
+        """
+        z=fsolve(iteracion, Zo)
+        if orden:
+            vapor=definicion(y, z)
+        else:
+            vapor=definicion(z, y)
+        return vapor
+            
+        
+        
+        
+
     def mostrarBarra(self, bool):
         """Muestra la toolbar de matplotlib"""
         self.toolbar2D.setVisible(bool and self.action2D.isChecked())
         self.toolbar3D.setVisible(bool and self.action3D.isChecked())
 
+    def mostrarDelta(self, bool):
+        """Muestra las opciones de incremento de propiedades entre puntos"""
+        self.delta.setVisible(bool)
+        
     def mostrarPuntos(self, bool):
         """Muestra los puntos específicos"""
         for i in self.diagrama3D.puntos:
@@ -1152,29 +1455,34 @@ class Ui_SteamTables(QtGui.QMainWindow):
         for nombre in variables:
             self.variableTabla.addItem(nombre)
 
-    def rellenar_ejeY(self, int):
+    def ejeXChanged(self, int):
         """Rellena las variables disponibles para el ejeY en el gráfico 2D, todos menos el que este activo en el ejeX"""
         self.ejeY.clear()
         Ejes2D=["p", "T", "s", "h", "u", "v"]
         del Ejes2D[int]
         for i in Ejes2D:
             self.ejeY.addItem(i)
-
-        magnitudes=["Pressure", "Temperature", "SpecificHeat", "Enthalpy", "Enthalpy", "SpecificVolume"]
-        if int==2:
-            self.labelUnitEjex.setText(config.Configuracion(magnitudes[int], "Entropy").text())
-        else:
-            self.labelUnitEjex.setText(config.Configuracion(magnitudes[int]).text())
-        
             
+        for i in self.ejeX_min:
+            i.setVisible(False)
+        self.ejeX_min[int].setVisible(True)
+        for i in self.ejeX_max:
+            i.setVisible(False)
+        self.ejeX_max[int].setVisible(True)
+
+
     def ejeYChanged(self):
         unit=["p", "T", "s", "h", "u", "v"]
-        i=unit.index(self.ejeY.currentText())
-        magnitudes=["Pressure", "Temperature", "SpecificHeat", "Enthalpy", "Enthalpy", "SpecificVolume"]
-        if i==2:
-            self.labelUnitEjey.setText(config.Configuracion(magnitudes[i], "Entropy").text())
-        else:
-            self.labelUnitEjey.setText(config.Configuracion(magnitudes[i]).text())
+        int=unit.index(self.ejeY.currentText())
+        self.ejeY_visible=int
+        
+        for i in self.ejeY_min:
+            i.setVisible(False)
+        self.ejeY_min[int].setVisible(True)
+        for i in self.ejeY_max:
+            i.setVisible(False)
+        self.ejeY_max[int].setVisible(True)
+        
             
     def dibujar(self):
         """Método que dibuja todos los datos pedidos"""
@@ -1237,9 +1545,9 @@ class Ui_SteamTables(QtGui.QMainWindow):
         
     def diagrama2D_ejeX(self):
         """Define la orientación del eje x, creciente o decreciente"""
-        if self.ejeX_min.value and self.ejeX_max.value:
-            xmin=self.ejeX_min.value
-            xmax=self.ejeX_max.value
+        if self.ejeX_min[self.ejeX.currentIndex()].value and self.ejeX_max[self.ejeX.currentIndex()].value:
+            xmin=self.ejeX_min[self.ejeX.currentIndex()].value.config()
+            xmax=self.ejeX_max[self.ejeX.currentIndex()].value.config()
             self.diagrama2D.axes2D.set_xlim(xmin, xmax)
             self.diagrama2D.axes2D.set_autoscalex_on(False)
         else:
@@ -1248,9 +1556,9 @@ class Ui_SteamTables(QtGui.QMainWindow):
 
     def diagrama2D_ejeY(self):
         """Define la orientación del eje y, creciente o decreciente"""
-        if self.ejeY_min.value and self.ejeY_max.value:
-            ymin=self.ejeY_min.value
-            ymax=self.ejeY_max.value
+        if self.ejeY_min[self.ejeY_visible].value and self.ejeY_max[self.ejeY_visible].value:
+            ymin=self.ejeY_min[self.ejeY_visible].value.config()
+            ymax=self.ejeY_max[self.ejeY_visible].value.config()
             self.diagrama2D.axes2D.set_ylim(ymin, ymax)
             self.diagrama2D.axes2D.set_autoscaley_on(False)
         else:
@@ -1817,13 +2125,13 @@ class Ui_SteamTables(QtGui.QMainWindow):
             y_label.append(y[i][j])
             label.append(config.representacion(isolineas[i]))
             if self.ejeX_escala.isChecked():
-                fraccionx=(log(x[i][j+1])-log(x[i][j]))/(log(self.ejeX_max.value)-log(self.ejeX_min.value))
+                fraccionx=(log(x[i][j+1])-log(x[i][j]))/(log(self.ejeX_max[self.ejeX.currentIndex()].value.config())-log(self.ejeX_min[self.ejeX.currentIndex()].value.config()))
             else:
-                fraccionx=(x[i][j+1]-x[i][j])/(self.ejeX_max.value-self.ejeX_min.value)
+                fraccionx=(x[i][j+1]-x[i][j])/(self.ejeX_max[self.ejeX.currentIndex()].value.config()-self.ejeX_min[self.ejeX.currentIndex()].value.config())
             if self.ejeY_escala.isChecked():
-                fracciony=(log(y[i][j+1])-log(y[i][j]))/(log(self.ejeY_max.value)-log(self.ejeY_min.value))
+                fracciony=(log(y[i][j+1])-log(y[i][j]))/(log(self.ejeY_max[self.ejeY_visible].value.config())-log(self.ejeY_min[self.ejeY_visible].value.config()))
             else:
-                fracciony=(y[i][j+1]-y[i][j])/(self.ejeY_max.value-self.ejeY_min.value)
+                fracciony=(y[i][j+1]-y[i][j])/(self.ejeY_max[self.ejeY_visible].value.config()-self.ejeY_min[self.ejeY_visible].value.config())
             try:
                 angle.append(arctan(fracciony/fraccionx)*360/2/pi)
             except ZeroDivisionError:
@@ -1972,9 +2280,9 @@ class Ui_SteamTables(QtGui.QMainWindow):
         for i , t in enumerate(T):
             if t<TCRIT:
                 xi, yi, zi, xi2, yi2=self.isolineas(X, [t], steam_Tx, start+rango, 0)
-                temp=x2[i]+xi2[0]
-                temp.sort(reverse=True)
-                indice=temp.index(xi2[0][0])
+                temp=x2[i]+xi2[i]
+                temp.sort(reverse=x2[i][0]>x2[i][-1])
+                indice=temp.index(xi2[i][0])
                 for j in range(len(xi2)):
                     x2[i].insert(indice+j, xi2[j][0])
                     y2[i].insert(indice+j, yi2[j][0])
@@ -2115,15 +2423,15 @@ class Ui_SteamTables(QtGui.QMainWindow):
             else:
                 self.velocidad.clear()
             if self.punto.region =='\x01':
-                self.region.setText("1")
+                self.region.setValue(1)
             elif self.punto.region =='\x02':
-                self.region.setText("2")
+                self.region.setValue(2)
             elif self.punto.region =='\x03':
-                self.region.setText("3")
+                self.region.setValue(3)
             elif self.punto.region =='\x04':
-                self.region.setText("4")
+                self.region.setValue(4)
             elif self.punto.region =='\x05':
-                self.region.setText("5")
+                self.region.setValue(5)
                 
     def actualizarConfiguracion(self):
         """Actualiza los diferentes parámetros que puedan cambiar al cerrar el dialogo de preferencias
@@ -2134,31 +2442,31 @@ class Ui_SteamTables(QtGui.QMainWindow):
         #TODO: Añadir tareas al cambiar la configuración
         self.factores_conversion()
         if self.factorx2==0:  #El eje x es la temperatura
-            xmax=unidades.Temperature(self.ejeX_max.value).unit(config.Configuracion("Temperature").func())
-            xmin=unidades.Temperature(self.ejeX_min.value).unit(config.Configuracion("Temperature").func())
-            self.ejeX_max.setValue(config.representacion(xmax.config()))
-            self.ejeX_min.setValue(config.representacion(xmin.config()))
+            xmax=unidades.Temperature(self.ejeX_max[self.ejeX.currentIndex()].value).unit(config.Configuracion("Temperature").func())
+            xmin=unidades.Temperature(self.ejeX_min[self.ejeX.currentIndex()].value).unit(config.Configuracion("Temperature").func())
+            self.ejeX_max[self.ejeX.currentIndex()].setValue(config.representacion(xmax.config()))
+            self.ejeX_min[self.ejeX.currentIndex()].setValue(config.representacion(xmin.config()))
         else: #En cualquier otro caso basta con usar el factor de correción para ese eje
-            xmax=float(self.ejeX_max.value)*self.factorx2
-            xmin=float(self.ejeX_min.value)*self.factorx2
-            self.ejeX_max.setValue(config.representacion(xmax/self.factorx2))
-            self.ejeX_min.setValue(config.representacion(xmin/self.factorx2))
+            xmax=float(self.ejeX_max[self.ejeX.currentIndex()].value)*self.factorx2
+            xmin=float(self.ejeX_min[self.ejeX.currentIndex()].value)*self.factorx2
+            self.ejeX_max[self.ejeX.currentIndex()].setValue(config.representacion(xmax/self.factorx2))
+            self.ejeX_min[self.ejeX.currentIndex()].setValue(config.representacion(xmin/self.factorx2))
         if self.factory2==0:  
-            ymax=unidades.Temperature(self.ejeY_max.value).unit(config.Configuracion("Temperature").func())
-            ymin=unidades.Temperature(self.ejeY_min.value).unit(config.Configuracion("Temperature").func())
-            self.ejeY_max.setValue(config.representacion(ymax.config()))
-            self.ejeY_min.setValue(config.representacion(ymin.config()))
+            ymax=unidades.Temperature(self.ejeY_max[self.ejeY_visible].value).unit(config.Configuracion("Temperature").func())
+            ymin=unidades.Temperature(self.ejeY_min[self.ejeY_visible].value).unit(config.Configuracion("Temperature").func())
+            self.ejeY_max[self.ejeY_visible].setValue(config.representacion(ymax.config()))
+            self.ejeY_min[self.ejeY_visible].setValue(config.representacion(ymin.config()))
         else: 
-            ymax=float(self.ejeY_max.value)*self.factory2
-            ymin=float(self.ejeY_min.value)*self.factory2      
-            self.ejeY_max.setValue(config.representacion(ymax/self.factory2))
-            self.ejeY_min.setValue(config.representacion(ymin/self.factory2))
+            ymax=float(self.ejeY_max[self.ejeY_visible].value)*self.factory2
+            ymin=float(self.ejeY_min[self.ejeY_visible].value)*self.factory2      
+            self.ejeY_max[self.ejeY_visible].setValue(config.representacion(ymax/self.factory2))
+            self.ejeY_min[self.ejeY_visible].setValue(config.representacion(ymin/self.factory2))
         if self.factory2==0:  
-            self.ejeY_max.setValue(config.representacion(ymax.config))
-            self.ejeY_min.setValue(config.representacion(ymin.config))
+            self.ejeY_max[self.ejeY_visible].setValue(config.representacion(ymax.config))
+            self.ejeY_min[self.ejeY_visible].setValue(config.representacion(ymin.config))
         else: 
-            self.ejeY_max.setValue(config.representacion(ymax/self.factory2))
-            self.ejeY_min.setValue(config.representacion(ymin/self.factory2))
+            self.ejeY_max[self.ejeY_visible].setValue(config.representacion(ymax/self.factory2))
+            self.ejeY_min[self.ejeY_visible].setValue(config.representacion(ymin/self.factory2))
             
         self.mostrarUnidades()
 

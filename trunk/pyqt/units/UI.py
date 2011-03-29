@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from PyQt4 import QtCore, QtGui
+from os import linesep
 from ConfigParser import ConfigParser
 
 from unidades import *
@@ -13,8 +14,10 @@ Config.read("UI_steamTablesrc")
 
 class Entrada_con_unidades(QtGui.QWidget):
     """Clase que define el widget con entrada de datos y boton de dialogo de unidades"""
-    def __init__(self, dialogo, unidad, magnitud, UIconfig=None, retornar=True, readOnly=False, boton=True, texto=True, value=None, decimales=4, tolerancia=1e4, parent=None, width=85, resaltado=False, color="#FFFF00"):
-        """Dialogo: el dialogo de unidades usado por el conversor de unidades
+    valueChanged = QtCore.pyqtSignal("value")
+    def __init__(self, dialogo, unidad, magnitud, UIconfig=None, retornar=True, readOnly=False, boton=True, texto=True, textounidad="", value=None, start=0, max=float("inf"), min=0, decimales=4, tolerancia=4, parent=None, width=85, resaltado=False, spinbox=False, suffix="", step=0.01, colorReadOnly=None, colorResaltado=None, frame=True):
+        """
+        Dialogo: el dialogo de unidades usado por el conversor de unidades
         unidad: la unidad que se va a usar
         magnitud: la magnitud para obtener la configuración
         UIconfig: magnitud secundaria en el caso de que sea diferente a la magnitud principal, por ejemplo entropia que usa la unidad del calor específico pero en la configuración puede definirse diferente que el propio calor específico
@@ -22,12 +25,21 @@ class Entrada_con_unidades(QtGui.QWidget):
         readOnly: boolean que indica si la entrada es editable
         boton: boolean que indica si se muestra el botón de unidades
         texto: boolean que indica si se muestra a la derecha del botón el texto con la unidad
+        textounidad: texto a usar en el caso de unidades no habituales, magnitues adimensionales...
         value: opcionalmente se puede definir el valor inicial del widget
+        start: valor inicial en el caso de que se use spinbox
+        max: valor máximo que puede tomar el valor
+        min: valor minimo que puede tomar el valor
         decimales: indica el número de decimales a mostrar en la entrada
-        tolerancia: valor por encima del cual se usará notación científica
+        tolerancia: valor del exponente de la notación cientifica por encima del cual se usara notación cientifica
         width: anchura de la entrada de texto
         resaltado: boolean que indica si se debe mostrar la entrada resaltada
-        color: color del resaltado"""
+        spinbox: boolean que indica si se debe responder a las flechas arriba y abajo como si fuera un spinbox
+        step: valor que indica el incremento que tendrá el valor al presionar las techas de fecha arriba y abajo, como el step de un spinbox
+        colorResaltado: color del resaltado
+        colorReadOnly: color de las entradas con readOnly
+        frame: booleano que indica si se muestra frame
+        """
         super(Entrada_con_unidades, self).__init__(parent)
         self.resize(self.minimumSize())
         self.dialogo=dialogo
@@ -35,24 +47,48 @@ class Entrada_con_unidades(QtGui.QWidget):
         self.magnitud=magnitud
         self.decimales=decimales
         self.tolerancia=tolerancia
-        self.boton=boton
-        self.color=color
+        self.step=step
+        self.spinbox=spinbox
+        self.max=max
+        self.suffix=suffix
+        self.min=min
+        self.start=start
+        self.textounidad=textounidad
+        if colorReadOnly:
+            self.colorReadOnly=colorReadOnly
+        else:
+            self.colorReadOnly=QtGui.QColor(Config.get("General", 'ColorReadOnly'))
+        if colorResaltado:
+            self.colorResaltado=colorResaltado
+        else:
+            self.colorResaltado=QtGui.QColor(Config.get("General", 'ColorResaltado'))
         if UIconfig:
             self.UIconfig=UIconfig
         else:
             self.UIconfig=magnitud
-        self.retornar=not readOnly
-        self.value=value
+        self.retornar=retornar
         layout = QtGui.QGridLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         self.entrada = QtGui.QLineEdit()
         self.entrada.setFixedSize(width, 24)
+        self.entrada.editingFinished.connect(self.entrada_editingFinished)
         self.entrada.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-        self.entrada.setValidator(QtGui.QDoubleValidator(self))
+        if unidad==int:
+            if max==float("inf"):
+                max=1000000000
+            self.entrada.setValidator(QtGui.QIntValidator(min, max, self))
+        else:
+            self.entrada.setValidator(QtGui.QDoubleValidator(min, max, decimales, self))
         self.setReadOnly(readOnly)
         self.setRetornar(self.retornar)
+        self.setFrame(frame)
+        self.boton=boton
         layout.addWidget(self.entrada, 0, 1)
+        if value==None:
+            self.value=None
+        else:
+            self.setValue(value)
         if magnitud:
             if boton:
                 self.unidades = QtGui.QToolButton()
@@ -61,44 +97,48 @@ class Entrada_con_unidades(QtGui.QWidget):
                 self.unidades.setVisible(False)
                 self.unidades.clicked.connect(self.unidades_clicked)
                 layout.addWidget(self.unidades, 0, 1)
-            if texto:
-                self.texto = QtGui.QLabel()
-                self.texto.setAlignment(QtCore.Qt.AlignVCenter)
-                self.texto.setIndent(5)
-                if UIconfig:
-                    self.texto.setText(Configuracion(self.magnitud, UIconfig).text())
-                else:
-                    self.texto.setText(Configuracion(self.magnitud).text())
-                layout.addWidget(self.texto, 0, 2)
+                
+        if texto:
+            self.texto = QtGui.QLabel()
+            self.texto.setAlignment(QtCore.Qt.AlignVCenter)
+            self.texto.setIndent(5)
+            if UIconfig:
+                self.texto.setText(Configuracion(self.magnitud, UIconfig).text())
+            elif magnitud:
+                self.texto.setText(Configuracion(self.magnitud).text())
             else:
-                self.texto=None
-        layout.addItem(QtGui.QSpacerItem(10,0,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Fixed), 0, 3)
+                self.texto.setText(textounidad)
+            layout.addWidget(self.texto, 0, 2)
+                
+        layout.addItem(QtGui.QSpacerItem(0,0,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Fixed), 0, 3)
         self.setResaltado(resaltado)
 
     def unidades_clicked(self):
-        if self.entrada.text()!="":
-            self.value=self.unidad(float(self.entrada.text())).unit(Configuracion(self.magnitud, self.UIconfig).func())
-            dialog=self.dialogo(self.value)
+        if self.magnitud=="Currency":
+            dialog=self.dialogo.Dialog(self.value)
         else:
-            dialog=self.dialogo()
+            dialog=self.dialogo(self.value)
+        
         if dialog.exec_() and self.retornar:
-            self.entrada.setText(representacion(dialog.value.config(self.UIconfig)))
+            self.entrada.setText(config.representacion(dialog.value.config(self.UIconfig))+self.suffix)
             self.value=dialog.value
-            if self.retornar:
-                self.entrada.editingFinished.emit()
+            self.valueChanged.emit(self.value)
             
     def entrada_editingFinished(self):
-        self.entrada.setText(representacion(float(self.entrada.text().replace(',', '.')), self.decimales, self.tolerancia))
-        if self.unidad==float:
-            self.value=float(self.entrada.text())
-        else:
-            self.value=self.unidad(float(self.entrada.text())).unit(Configuracion(self.magnitud).func())
-        self.setToolTip()
+        if not self.readOnly:
+            if self.unidad<>int:
+                self.entrada.setText(representacion(float(self.entrada.text().replace(',', '.')), self.decimales, self.tolerancia))
+            if self.magnitud:
+                self.value=self.unidad(float(self.entrada.text())).unit(Configuracion(self.magnitud, self.UIconfig).func())
+            else:
+                self.value=self.unidad(self.entrada.text())
+            self.valueChanged.emit(self.value)
+            self.setToolTip()
         
     def actualizar(self):
         if self.value:
             self.value=self.unidad(self.value)
-            self.entrada.setText(representacion(self.value.config(), self.decimales, self.tolerancia))
+            self.entrada.setText(representacion(self.value.config(), self.decimales, self.tolerancia)+self.suffix)
         if  self.magnitud and self.texto:
             self.texto.setText(Configuracion(self.magnitud).text())
         
@@ -107,31 +147,35 @@ class Entrada_con_unidades(QtGui.QWidget):
         self.value=None
 
     def setResaltado(self, bool):
-            paleta = QtGui.QPalette()
-            if bool:
-                paleta.setColor(QtGui.QPalette.Base, QtGui.QColor(self.color))
-            else:
-                paleta.setColor(QtGui.QPalette.Base, QtGui.QColor("white"))
-            self.entrada.setPalette(paleta)        
+        paleta = QtGui.QPalette()
+        if bool:
+            paleta.setColor(QtGui.QPalette.Base, QtGui.QColor(self.colorResaltado))
+        elif self.readOnly:
+            paleta.setColor(QtGui.QPalette.Base, QtGui.QColor(self.colorReadOnly))
+        else:
+            paleta.setColor(QtGui.QPalette.Base, QtGui.QColor("white"))
+        self.entrada.setPalette(paleta)        
 
     def setReadOnly(self, readOnly):
         self.entrada.setReadOnly(readOnly)
-        
+        self.readOnly=readOnly
+
     def setRetornar(self, retornar):
-        if retornar:
-            self.entrada.editingFinished.connect(self.entrada_editingFinished)
-        else:
-            try:
-                self.entrada.editingFinished.disconnect(self.entrada_editingFinished)
-            except: pass
-        
+        self.retornar=retornar
+            
     def setValue(self, value):
         self.value=self.unidad(value)
         if self.magnitud:
-            self.entrada.setText(representacion(self.value.config(self.UIconfig), self.decimales, self.tolerancia))
+            self.entrada.setText(representacion(self.value.config(self.UIconfig), self.decimales, self.tolerancia)+self.suffix)
+        elif self.unidad==float:
+            self.entrada.setText(representacion(self.value, self.decimales, self.tolerancia)+self.suffix)
         else:
-            self.entrada.setText(representacion(self.value, self.decimales, self.tolerancia))
+            self.entrada.setText(str(self.value)+self.suffix)
         self.setToolTip()
+
+    def setFrame(self, frame):
+        self.entrada.setFrame(frame)
+        self.frame=frame
 
     def setToolTip(self):
         try:
@@ -141,7 +185,26 @@ class Entrada_con_unidades(QtGui.QWidget):
             valores=[]
             for i in lista:
                 valores.append(representacion(self.value.list[i], self.decimales, self.tolerancia)+" "+texto[self.magnitud][i])
-            self.entrada.setToolTip( "\n".join(valores))
+            self.entrada.setToolTip(linesep.join(valores))
+            
+    def keyPressEvent(self, e):
+        """Metodo para poder manejar la pulsación de las techas arriba y abajo tal y como si fuera un spinbox"""
+        if self.spinbox and not self.readOnly:
+            if not self.value:
+                self.value=self.start
+            if e.key()==QtCore.Qt.Key_Up:
+                valor=self.value+self.step
+                if valor>self.max:
+                    self.setValue(self.max)
+                else:
+                    self.setValue(valor)
+            elif e.key()==QtCore.Qt.Key_Down:
+                valor=self.value-self.step
+                if valor<self.min:
+                    self.setValue(self.min)
+                else:
+                    self.setValue(valor)
+            self.valueChanged.emit(self.value)
             
     def enterEvent(self, event):
         if self.magnitud and self.boton:
@@ -171,7 +234,6 @@ class CheckEditor(QtGui.QItemDelegate):
     def createEditor(self, parent, option, index):
         widget=QtGui.QCheckBox(parent)
         return widget
-
 
 class Converter(QtGui.QDialog):
     """Clase genérica de conversor de unidades"""
@@ -610,9 +672,13 @@ class General(QtGui.QDialog):
         self.Layout = QtGui.QGridLayout(self)
         self.Layout.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed), 0, 1, 1, 4)        
         self.Layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Color del resaltado:", None, QtGui.QApplication.UnicodeUTF8)), 1, 1, 1, 1)
-        self.ColorButton = QtGui.QToolButton()
-        self.ColorButton.clicked.connect(self.ColorButtonClicked)
-        self.Layout.addWidget(self.ColorButton, 1, 2, 1, 1)
+        self.ColorButtonResaltado = QtGui.QToolButton()
+        self.ColorButtonResaltado.clicked.connect(self.ColorButtonResaltadoClicked)
+        self.Layout.addWidget(self.ColorButtonResaltado, 1, 2, 1, 1)
+        self.Layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Color no editables:", None, QtGui.QApplication.UnicodeUTF8)), 2, 1, 1, 1)
+        self.ColorButtonReadOnly = QtGui.QToolButton()
+        self.ColorButtonReadOnly.clicked.connect(self.ColorButtonReadOnlyClicked)
+        self.Layout.addWidget(self.ColorButtonReadOnly, 2, 2, 1, 1)
         self.Layout.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Fixed,QtGui.QSizePolicy.Fixed), 2, 1, 1, 4)        
         self.Layout.addWidget(QtGui.QLabel(QtGui.QApplication.translate("SteamTables", "Tamaño gráficos", None, QtGui.QApplication.UnicodeUTF8)),3,1,1,1)
         self.tamano=QtGui.QSlider(QtCore.Qt.Horizontal)
@@ -638,25 +704,34 @@ class General(QtGui.QDialog):
         self.Layout.addItem(QtGui.QSpacerItem(10,0,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Expanding), 14, 1, 1, 4)
         
         if Config.has_section("General"):
-            self.Color=QtGui.QColor(Config.get("General", 'Color'))
-            self.ColorButton.setPalette(QtGui.QPalette(self.Color))
+            self.ColorResaltado=QtGui.QColor(Config.get("General", 'ColorResaltado'))
+            self.ColorButtonResaltado.setPalette(QtGui.QPalette(self.ColorResaltado))
+            self.ColorReadOnly=QtGui.QColor(Config.get("General", 'ColorReadOnly'))
+            self.ColorButtonReadOnly.setPalette(QtGui.QPalette(self.ColorReadOnly))
             self.tamano.setValue(Config.getint("General", 'dpi'))
             self.PointSize.setCurrentIndex(self.PointSize.findText(Config.get("General", 'fontSize')))
         
     def PosicionChanged(self, valor):
         self.label.setText(str(self.tamano.value()))
         
-    def ColorButtonClicked(self):
+    def ColorButtonResaltadoClicked(self):
         """Dialogo de selección de color"""
-        dialog=QtGui.QColorDialog(self.Color, self)
+        dialog=QtGui.QColorDialog(self.ColorResaltado, self)
         if dialog.exec_():
-            self.ColorButton.setPalette(QtGui.QPalette(dialog.currentColor()))
-            self.Color=dialog.currentColor()
-            
+            self.ColorButtonResaltado.setPalette(QtGui.QPalette(dialog.currentColor()))
+            self.ColorResaltado=dialog.currentColor()
+
+    def ColorButtonReadOnlyClicked(self):
+        dialog=QtGui.QColorDialog(self.ColorReadOnly, self)
+        if dialog.exec_():
+            self.ColorButtonReadOnly.setPalette(QtGui.QPalette(dialog.currentColor()))
+            self.ColorReadOnly=dialog.currentColor()
+
     def aceptar(self, Config):
         if not Config.has_section("General"):
             Config.add_section("General")
-        Config.set("General", "Color", self.Color.name())
+        Config.set("General", "ColorResaltado", self.ColorResaltado.name())
+        Config.set("General", "ColorReadOnly", self.ColorReadOnly.name())
         Config.set("General", "dpi", self.tamano.value())
         Config.set("General", "fontSize", self.PointSize.currentText())
 

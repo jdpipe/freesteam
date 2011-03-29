@@ -27,16 +27,19 @@ class Configuracion():
         return self.unidades[self.index]
 
 
-def representacion(float, decimales=4, tol=1e4):
+def representacion(float, decimales=4, tol=4):
     """Función que expresa un valor de tipo float en la forma apropiada en función de su valor
     decimales: numero de decimales a usar en la representación del número
     tolerancia: valor por encima del cual se usa notacion científica"""
-    if 0.001<float<tol or -tol<float<-0.001:
-        return str(round(float, decimales))
-    elif float==0.0:
-        return str(round(float, 1))
+    if decimales>0:
+        if 1*10**-tol<float<1*10**tol or -1*10**-tol>float>-1*10**tol:
+            return str(round(float, decimales))
+        elif float==0.0:
+            return str(round(float, 1))
+        else:
+            return "%0.4e" % (float)
     else:
-        return "%0.4e" % (float)
+        return str(int(float))
 
 def colors(int):
     """Función que devuelve una lista de colores con el número de elementos indicados"""
