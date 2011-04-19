@@ -154,7 +154,7 @@ void test_region3_point(double T,double rho, double p,double h,double u, double 
 	CHECK_VAL(freesteam_u(S),u*1e3,RELTOL);
 	CHECK_VAL(freesteam_s(S),s*1e3,RELTOL);
 	CHECK_VAL(freesteam_cp(S),cp*1e3,RELTOL);
-	/* CHECK_VAL(freesteam_w(S),w,RELTOL); */
+	CHECK_VAL(freesteam_w(S),w,RELTOL);
 }
 
 void testregion3(void){

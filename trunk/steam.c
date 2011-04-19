@@ -248,9 +248,9 @@ double freesteam_w(SteamState S){
 			return freesteam_region1_w_pT(S.R1.p, S.R1.T);
 		case 2:
 			return freesteam_region2_w_pT(S.R2.p, S.R2.T);
-#if 0
 		case 3:
 			return freesteam_region3_w_rhoT(S.R3.rho,S.R3.T);
+#if 0
 		case 4:
 			return freesteam_region4_w_Tx(S.R4.T, S.R4.x);
 #endif

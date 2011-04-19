@@ -74,6 +74,17 @@ double freesteam_region3_cv_rhoT(double rho, double T){
 	return R * (-SQ(tau) * phitautau(del,tau));
 }
 
+double freesteam_region3_w_rhoT(double rho, double T){
+	DEFINE_DELTAU(rho,T);
+	return sqrt(R * T * (
+						 2 * del * phidel(del,tau) + SQ(del) * phideldel(del,tau)
+						 - (
+							ipow (del * phidel(del,tau) - del * tau * phideltau(del,tau), 2)
+							/ (SQ(tau) * phitautau(del,tau))
+							)
+						 ));
+}
+
 double freesteam_region3_alphap_rhoT(double rho, double T){
 	DEFINE_DELTAU(rho,T);
 	return 1./T * (1. - tau*phideltau(del,tau)/phidel(del,tau));
