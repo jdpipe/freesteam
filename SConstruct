@@ -5,7 +5,7 @@
 # We don't currently propose to support building freesteam from MSVS but
 # that shouldn't be necessary, as you should be able to use the MinGW-generated
 # DLL even with MSVS, because it only uses C code.
-import platform, sys, distutils.sysconfig, os 
+import platform, sys, distutils.sysconfig, os, os.path
 
 #version number for this copy of freesteam
 version = "2.1"
@@ -431,11 +431,11 @@ else:
 
 	install_link1 = None
 	if env.subst(link1) != env.subst(libname):
-		install_link1 = env.Command("${INSTALL_ROOT}"+link1,install_lib,"ln -s %s $TARGET" % libname)
+		install_link1 = env.Command("${INSTALL_ROOT}"+link1,install_lib,"ln -s %s $TARGET" % os.path.basename(libname))
 
 	install_link2 = None
 	if env.get("SONAME_MINOR"):
-		install_link2 = env.Command("${INSTALL_ROOT}"+link2,install_lib,"ln -s %s $TARGET"%libname)
+		install_link2 = env.Command("${INSTALL_ROOT}"+link2,install_lib,"ln -s %s $TARGET"%os.path.basename(libname))
 	
 	env['installedfiles'] += [install_link1, install_link2]
 
