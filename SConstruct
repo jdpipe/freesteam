@@ -240,7 +240,7 @@ def CheckSwigVersion(context):
 # Check that we got all the associated stuff that we need...
 
 if not env.get('HAVE_GSL'):
-	print "GSL was not found... install GSL (package 'gsl-dev' in Ubuntu)."
+	print "GSL was not found... install GSL (package 'libgsl0-dev' or similar in Ubuntu)."
 	Exit(1)
 
 # TODO: detect PYTHON properly.
