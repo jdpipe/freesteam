@@ -8,7 +8,7 @@ if env.get('HAVE_GTK'):
 	gtk_env.Append(
 		LIBPATH=["#"]+env.get('GTK_LIBPATH')
 		,LIBS=['freesteam'] + env.get('GTK_LIBS')
-		,CPPPATH=env.get('GTK_CPPPATH')
+		,CPPPATH=['#',env.get('GTK_CPPPATH')]
 	)
 
 	gtk_env.Program("freesteam-gtk",['freesteam-gtk.c','callbacks.c'])
