@@ -26,30 +26,73 @@ try:
 except:
 	pass
 
+def winpath(path):
+	"""
+	Convert a MSYS path to a native Windows path, so that we can pass values correctly to GCC
+	"""
+	import subprocess
+	import os
+	#print "path = %s"%path
+	fn = "scons%d" % os.getpid()
+	while os.path.exists(fn):
+		fn = fn + "0"
+	try:
+		f = file(fn,"w")
+		f.write("#!python\nimport sys\nprint sys.argv[1]")
+		f.close()
+		#print "FILE %s FOUND? %d"%(fn,os.path.exists(fn))
+		p1 = subprocess.Popen(["sh.exe","-c","%s %s"%(fn,path)], stdout=subprocess.PIPE)
+		#p1 = subprocess.Popen(["sh.exe","-c","echo hello"], stdout=subprocess.PIPE)
+		out = p1.communicate()[0].strip()
+		#print "NEW PATH IS '%s'" % out
+	except Exception,e:
+		print "FAILED: %s"%str(e)
+	finally:
+		#print "Deleting %s" % fn
+		os.unlink(fn)
+	return out
+
+
 def generate(env):
 	"""
 	Detect GSL settings and add them to the environment.
 	"""
 	try:
 		if platform.system()=="Windows":
-			import _winreg
-			x=_winreg.ConnectRegistry(None,_winreg.HKEY_LOCAL_MACHINE)
-			y= _winreg.OpenKey(x,r"SOFTWARE\gsl")
-			BIN,t = _winreg.QueryValueEx(y,"INSTALL_BIN")
-			LIB,t = _winreg.QueryValueEx(y,"INSTALL_LIB")
-			INCLUDE,t = _winreg.QueryValueEx(y,"INSTALL_INCLUDE")
+			try:
+				import _winreg
+				x=_winreg.ConnectRegistry(None,_winreg.HKEY_LOCAL_MACHINE)
+				y= _winreg.OpenKey(x,r"SOFTWARE\gsl")
+				BIN,t = _winreg.QueryValueEx(y,"INSTALL_BIN")
+				LIB,t = _winreg.QueryValueEx(y,"INSTALL_LIB")
+				INCLUDE,t = _winreg.QueryValueEx(y,"INSTALL_INCLUDE")
 
-			env['GSL_CPPPATH'] = [munge(INCLUDE)]
-			env['GSL_LIBPATH'] = [munge(LIB)]
-			env['HAVE_GSL'] = True		
-			if env.get('GSL_STATIC'):
-				env['GSL_STATICLIBS'] = [os.path.join(munge(LIB),"lib%s.a"%i) for i in ["gsl","gslcblas"]]
-				# not sure when the following is needing, so ignoring for now:
-				#env['GSL_LIBS_CBLAS'] = env['GSL_LIBS'] + [os.path.join(munge(LIB),"libgslcblas.a")]
-			else:
-				env['GSL_LIBS'] = ['gsl']
-				# not sure when the following is needing, so ignoring for now:
-				#env['GSL_LIBS_CBLAS'] = ['gslcblas','gsl']
+				env['GSL_CPPPATH'] = [munge(INCLUDE)]
+				env['GSL_LIBPATH'] = [munge(LIB)]
+				env['HAVE_GSL'] = True		
+				if env.get('GSL_STATIC'):
+					env['GSL_STATICLIBS'] = [os.path.join(munge(LIB),"lib%s.a"%i) for i in ["gsl","gslcblas"]]
+					# not sure when the following is needing, so ignoring for now:
+					#env['GSL_LIBS_CBLAS'] = env['GSL_LIBS'] + [os.path.join(munge(LIB),"libgslcblas.a")]
+				else:
+					env['GSL_LIBS'] = ['gsl']
+					# not sure when the following is needing, so ignoring for now:
+					#env['GSL_LIBS_CBLAS'] = ['gslcblas','gsl']
+			except WindowsError:
+					
+				# if someone has installed GSL with ./configure --prefix=/mingw using MSYS, then
+				# this should work, but we would like to make this a lot more robust!
+				cmd = ['sh.exe','-c','"/mingw/bin/gsl-config --libs --cflags"']
+				env1 = env.Clone()
+				env1['CPPPATH'] = None
+				env1['LIBPATH'] = None
+				env1['LIBS'] = None
+				print "RUNNING gsl-config"
+				env1.ParseConfig(cmd)
+				env['GSL_CPPPATH'] = winpath(env1.get('CPPPATH')[0])
+				env['GSL_LIBPATH'] = winpath(env1.get('LIBPATH')[0])
+				env['GSL_LIBS'] = env1.get('LIBS')
+				env['HAVE_GSL'] = True						
 		else:
 			cmd = ['gsl-config','--cflags','--libs']
 			old_env = env.Clone()
@@ -80,9 +123,9 @@ def generate(env):
 			#		if 'gslcblas' in env['GSL_LIBS']:
 			#			env['GSL_LIBS'].remove('gslcblas')
 
-		#print "GSL_LIBS =",env.get('GSL_LIBS')
-		#print "GSL_LIBPATH =",env.get('GSL_LIBPATH')
-		#print "GSL_CPPPATH =",env.get('GSL_CPPPATH')
+		print "GSL_LIBS =",env.get('GSL_LIBS')
+		print "GSL_LIBPATH =",env.get('GSL_LIBPATH')
+		print "GSL_CPPPATH =",env.get('GSL_CPPPATH')
 
 	except Exception,e:
 		print "Checking for GSL... not found! (%s)" % str(e)

@@ -127,9 +127,15 @@ vars.Add(
 )
 
 vars.Add(
+	'HOST_PREFIX'
+	,"Host prefix, for use in cross-compiling. Defaults to empty"
+	,""
+)
+
+vars.Add(
 	'CC'
 	,'C Compiler command'
-	,None
+	,"${HOST_PREFIX}gcc"
 )
 
 vars.Add(
@@ -231,6 +237,9 @@ def CheckSwigVersion(context):
 			min > 3
 			or (min == 3 and pat >= 24)
 		):
+		context.Result("ok, %d.%d.%d" % (maj,min,pat))
+		return True;
+	elif maj >= 2:
 		context.Result("ok, %d.%d.%d" % (maj,min,pat))
 		return True;
 	else:
