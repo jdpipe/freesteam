@@ -98,6 +98,15 @@ It is also possible to define the state of steam within a particular region, if
 you're sure you know which IAPWS-IF97 region you need. See the region*.h files
 for this functionality.
 
+** Special note: use with C++
+
+Currently, the freesteam header files do not include the 'extern "C"{...}'
+brackets around the functions declared. This means that, if you are linking to
+freesteam from C++ code, you must add those 'extern "C"{...}' statements
+around your '#include' statements for freesteam. Otherwise you will get
+linker errors because C++ munges function names, but C does not. In future we
+make incorporate the 'extern' statements into the freesteam header files, but
+we have not yet done so.
 
 Accessing freesteam from ASCEND
 -------------------------------
@@ -195,6 +204,25 @@ path, and then after that add the path to the ASCEND models belonging to
 freesteam. Note that if you have got a customised ASCENDLIBRARY environment
 variable already, this might cause problems in certain cases (but we considered
 it to be very unlikely).
+
+
+Test suite for freesteam
+------------------------
+
+There is a small test suite for freesteam that aims to (1) assure conformance
+to the sample data points given by IAPWS and (2) to exercise the the code
+over a broader range of data points, including some checks made against data
+from other steam tables software, and (3) to test some of the additional
+property solver routines developed specifically for the freesteam project.
+
+To run the tests, type
+
+ scons test
+ ./test
+
+The relevant test code is in the file 'test.c'. Please don't take our word for
+it: have a look at test code and if there is a result there that is not
+accurate to your required precision, let us know.
 
 
 Special tips for Ubuntu 9.10 users
