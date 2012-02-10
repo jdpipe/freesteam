@@ -24,6 +24,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <gtk/gtk.h>
 
+#ifdef FREESTEAM_LOCAL
+#include <steam_ph.h>
+#include <steam_ps.h>
+#include <steam_pT.h>
+#include <steam_pu.h>
+#include <steam_pv.h>
+#include <steam_Ts.h>
+#include <steam_Tx.h>
+#include <steam_uv.h>
+#include <region4.h>
+#else
 #include <freesteam/steam_ph.h>
 #include <freesteam/steam_ps.h>
 #include <freesteam/steam_pT.h>
@@ -33,6 +44,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <freesteam/steam_Tx.h>
 #include <freesteam/steam_uv.h>
 #include <freesteam/region4.h>
+#endif
+
 #include <stdlib.h>
 
 /* glade xml user interface file */
@@ -84,7 +97,7 @@ enum
     SOLVER_PS ,
     SOLVER_PU ,
     SOLVER_PV,
-    SOLVER_TS 
+    SOLVER_TS
   };
 
 enum
