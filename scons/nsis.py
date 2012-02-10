@@ -2,7 +2,6 @@
 # Written by Mike Elkins, January 2004
 # Provided 'as-is', it works for me!
 
-
 """
 This tool provides SCons support for the Nullsoft Scriptable Install System
 a windows installer builder available at http://nsis.sourceforge.net/home
@@ -19,21 +18,10 @@ In addition, if you set NSISDEFINES to a dictionary, those variables will be pas
 to NSIS.
 """
 
-
-
 import SCons.Builder
 import SCons.Util
 import SCons.Scanner
-# NOTE (4 September 2007):  The following import line was part of the original
-# code on this wiki page before this date.  It's not used anywhere below and
-# therefore unnecessary.  The SCons.Sig module is going away after 0.97.0d20070809,
-# so the line should be removed from your copy of this module.  There may be a
-# do-nothing SCons.Sig module that generates a warning message checked in, so existing
-# configurations won't break and can help point people to the line that needs removing.
-#import SCons.Sig
-import os.path
-import glob
-
+import os.path, glob, platform
 
 def nsis_parse( sources, keyword, multiple ):
   """
@@ -186,11 +174,16 @@ def find_nsis(env):
   Try and figure out if NSIS is installed on this machine, and if so,
   where.
   """
+  if platform.architecture()[0] == "64bit":
+  	regpath = 'SOFTWARE\\Wow6432Node\\NSIS'
+  else:
+    regpath = 'SOFTWARE\\NSIS'
   if SCons.Util.can_read_reg:
     # If we can read the registry, get the NSIS command from it
     try:
-      k = SCons.Util.RegOpenKeyEx(SCons.Util.hkey_mod.HKEY_LOCAL_MACHINE,
-                                  'SOFTWARE\\NSIS')
+      k = SCons.Util.RegOpenKeyEx(
+        SCons.Util.hkey_mod.HKEY_LOCAL_MACHINE,regpath
+      )
       val, tok = SCons.Util.RegQueryValueEx(k,None)
       ret = val + os.path.sep + 'makensis.exe'
       if os.path.exists(ret):

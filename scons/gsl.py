@@ -53,6 +53,8 @@ def winpath(path):
 	return out
 
 
+# TODO detect if static libs are actually available...
+
 def generate(env):
 	"""
 	Detect GSL settings and add them to the environment.
@@ -70,18 +72,9 @@ def generate(env):
 				env['GSL_CPPPATH'] = [munge(INCLUDE)]
 				env['GSL_LIBPATH'] = [munge(LIB)]
 				env['HAVE_GSL'] = True		
-				if env.get('GSL_STATIC'):
-					env['GSL_STATICLIBS'] = [os.path.join(munge(LIB),"lib%s.a"%i) for i in ["gsl","gslcblas"]]
-					# not sure when the following is needing, so ignoring for now:
-					#env['GSL_LIBS_CBLAS'] = env['GSL_LIBS'] + [os.path.join(munge(LIB),"libgslcblas.a")]
-				else:
-					env['GSL_LIBS'] = ['gsl']
-					# not sure when the following is needing, so ignoring for now:
-					#env['GSL_LIBS_CBLAS'] = ['gslcblas','gsl']
-			except WindowsError:
-					
-				# if someone has installed GSL with ./configure --prefix=/mingw using MSYS, then
-				# this should work, but we would like to make this a lot more robust!
+				env['GSL_STATICLIBS'] = [os.path.join(munge(LIB),"lib%s.a"%i) for i in ["gsl","gslcblas"]]
+				env['GSL_LIBS'] = ['gsl']
+			except WindowsError:					
 				cmd = ['sh.exe','-c','"/mingw/bin/gsl-config --libs --cflags"']
 				env1 = env.Clone()
 				env1['CPPPATH'] = None
@@ -92,6 +85,7 @@ def generate(env):
 				env['GSL_CPPPATH'] = winpath(env1.get('CPPPATH')[0])
 				env['GSL_LIBPATH'] = winpath(env1.get('LIBPATH')[0])
 				env['GSL_LIBS'] = env1.get('LIBS')
+				env['GSL_STATICLIBS'] = [os.path.normcase(os.path.join(winpath(env1.get('LIBPATH')[0]),"lib%s.a"%i)) for i in ["gsl","gslcblas"]]
 				env['HAVE_GSL'] = True						
 		else:
 			cmd = ['gsl-config','--cflags','--libs']
@@ -126,6 +120,7 @@ def generate(env):
 		print "GSL_LIBS =",env.get('GSL_LIBS')
 		print "GSL_LIBPATH =",env.get('GSL_LIBPATH')
 		print "GSL_CPPPATH =",env.get('GSL_CPPPATH')
+		print "GSL_STATICLIBS =",env.get('GSL_STATICLIBS')
 
 	except Exception,e:
 		print "Checking for GSL... not found! (%s)" % str(e)

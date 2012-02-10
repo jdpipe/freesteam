@@ -13,6 +13,9 @@ version = "2.1"
 # version number of python
 pyversion = "%d.%d" % (sys.version_info[0],sys.version_info[1])
 
+# architecture
+instarch = ("","-amd64")[platform.architecture()[0] == "64bit"]
+
 # Set up some platform-specific defaults
 if platform.system()=="Windows":
 	default_emso_location = "c:\\Program Files\\EMSO\\interface"
@@ -148,7 +151,7 @@ if platform.system()=="Windows":
 	vars.Add(
 		'WIN_INSTALLER_NAME'
 		,"Name of the installer .exe to create under Windows (minus the '.exe')"
-		,"freesteam-"+version+"-py"+pyversion+".exe"
+		,"freesteam-"+version+instarch+"-py"+pyversion+".exe"
 	)
 
 # TODO work out a way to set gsl_static via options...?
@@ -349,17 +352,22 @@ lib_env.Append(
 	LIBS = ['m']
 )
 lib_env.Append(
-	LIBS = env.get('GSL_LIBS')
-	,LIBPATH = env.get('GSL_LIBPATH')
-	,CPPPATH = env.get('GSL_CPPPATH')
+	CPPPATH = env.get('GSL_CPPPATH')
 )
-
-# Create the shared library
-
+lib_srcs = srcs
+if not lib_env['GSL_STATIC']:
+	lib_env.Append(
+		LIBS = env.get('GSL_LIBS')
+		,LIBPATH = env.get('GSL_LIBPATH')
+	)
+else:
+	lib_srcs = srcs + env.get('GSL_STATICLIBS',[])
 if platform.system()=="Linux":
 	lib_env.Append(LINKFLAGS=['-Wl,-soname,$SONAME'])
 
-lib = lib_env.SharedLibrary("freesteam",srcs + env.get('GSL_STATICLIBS',[]))
+# Create the shared library
+
+lib = lib_env.SharedLibrary("freesteam",lib_srcs)
 env.Depends('python',lib)
 
 libs = [lib]
@@ -511,10 +519,12 @@ if not env.get('NSIS'):
 
 if platform.system()=="Windows":
 	if with_installer:
+		inst64 = (0,1)[platform.architecture()[0] == "64bit"]
 		env.Append(NSISDEFINES={
 			'OUTFILE':"#dist/"+env['WIN_INSTALLER_NAME']
 			,"VERSION":version
 			,'PYVERSION':pyversion
+			,'INST64':inst64
 		})
 		installer = env.Installer('installer.nsi')
 		Depends(installer,["python","ascend"])

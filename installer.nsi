@@ -16,10 +16,15 @@
 !define VERSION 0.cvs
 !endif
 
+!if ${INST64}
+Name "freesteam ${VERSION} (amd64)"
+!else
 Name "freesteam ${VERSION}"
+!endif
 
 !include LogicLib.nsh
 !include nsis\EnvVarUpdate.nsh
+!include x64.nsh
 
 ; The file to write
 !ifdef OUTFILE
@@ -36,7 +41,12 @@ OutFile freesteam-${VERSION}-py${PYVERSION}-setup.exe
 SetCompressor /SOLID lzma
 
 ; The default installation directory
-InstallDir $PROGRAMFILES\freesteam
+; The default installation directory
+!if ${INST64}
+InstallDir $PROGRAMFILES64\freesteam
+!else
+InstallDir $PROGRAMFILES32\freesteam
+!endif
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
@@ -68,6 +78,13 @@ Var /GLOBAL LIBINSTALLED
 Var /GLOBAL EXAMPLESINSTALLED
 
 Function .onInit
+!if ${INST64}
+	${If} ${RunningX64}
+	${Else}
+		MessageBox MB_OK "This freesteam installer is for 64-bit Windows versions only.\n\nVisit http://freesteam.sf.net for a 32-bit version."
+	${EndIf}
+	SetRegView 64
+!endif
 
 	; Check for previous version that needs uninstalling first
 
@@ -128,6 +145,10 @@ FunctionEnd
 Section "freesteam (required)"
   SectionIn RO
 
+!if ${INST64}
+  SetRegView 64
+!endif
+
   DetailPrint "--- COMMON FILES ---"
   
   ; Set output path to the installation directory.
@@ -155,13 +176,17 @@ SectionEnd
 ;--------------------------------
 
 Section "Static library and header files"
-  DetailPrint "--- HEADER FILES ---"
+!if ${INST64}
+	SetRegView 64
+!endif
+
+	DetailPrint "--- HEADER FILES ---"
   	SetOutPath $INSTDIR
   	File "freesteam-config"
 
 	SetOutPath $INSTDIR\lib
 	File "libfreesteam.a"
-	File "freesteam.def"
+	;File "freesteam.def"
 	SetOutPath "$INSTDIR\include\freesteam"
 	File "*.h"
 	File "python\freesteam.i"
@@ -240,6 +265,10 @@ Section "Python language bindings"
 SectionEnd
 
 Section "ASCEND hooks"
+!if ${INST64}
+	SetRegView 64
+!endif
+
 	${If} $ASCENDOK == 'OK'
 		DetailPrint "--- ASCEND HOOKS ---"
 		SetOutPath $INSTDIR\ascend
@@ -261,6 +290,9 @@ Section "ASCEND hooks"
 SectionEnd
 
 Section "Add to PATH"
+!if ${INST64}
+	SetRegView 64
+!endif
 	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR"
 	WriteRegDWORD HKLM "SOFTWARE\freesteam" "AddedToPATH" 1	
 	Return
@@ -270,6 +302,9 @@ SectionEnd
 
 ; Optional section (can be disabled by the user)
 Section "Start Menu Shortcuts"
+!if ${INST64}
+  SetRegView 64
+!endif
   
   WriteRegDWORD HKLM "SOFTWARE\freesteam" "StartMenu" 1
 
@@ -298,6 +333,9 @@ SectionEnd
 ; UNINSTALLER
 
 Section "Uninstall"
+!if ${INST64}
+	SetRegView 64
+!endif
 
 ;--- header files & static lib ---
 
@@ -389,6 +427,9 @@ SectionEnd
 ; UTILITY ROUTINES
 
 Function DetectPython
+!if ${INST64}
+	SetRegView 64
+!endif
 	ReadRegStr $R6 HKCU "SOFTWARE\Python\PythonCore\${PYVERSION}\InstallPath" ""
 	${If} $R6 == ''
 		ReadRegStr $R6 HKLM "SOFTWARE\Python\PythonCore\${PYVERSION}\InstallPath" ""
@@ -412,6 +453,9 @@ FunctionEnd
 ; Detect ASCEND
 
 Function DetectASCEND
+!if ${INST64}
+	SetRegView 64
+!endif
 	ReadRegStr $R6 HKCU "SOFTWARE\ASCEND" "Install_Dir"
 	${If} $R6 == ''
 		ReadRegStr $R6 HKLM "SOFTWARE\ASCEND" "Install_Dir"
@@ -432,6 +476,9 @@ Function DetectASCEND
 FunctionEnd
 
 Function DetectASCENDModels
+!if ${INST64}
+	SetRegView 64
+!endif
 	ReadRegStr $R6 HKCU "SOFTWARE\ASCEND" "INSTALL_MODELS"
 	${If} $R6 == ''
 		ReadRegStr $R6 HKLM "SOFTWARE\ASCEND" "INSTALL_MODELS"
