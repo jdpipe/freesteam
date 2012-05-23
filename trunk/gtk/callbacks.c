@@ -60,7 +60,7 @@ void status_bar_update(int code, TableData *data)
 {
   if (code==DOMAIN_ERROR)
     {
-      gtk_statusbar_push( data->solver_status, 0, "ERROR! Indipendent variable out of domain");
+      gtk_statusbar_push( data->solver_status, 0, "ERROR! Independent variable out of domain");
     }
   else if (code==READY)
     {
@@ -92,7 +92,7 @@ void reset_table (TableData *data)
 
 
 /*
- * setup the solver class and relative options for the indipendent variables 
+ * setup the solver class and relative options for the independent variables 
  */
 
 G_MODULE_EXPORT
@@ -100,8 +100,8 @@ void on_solver_class_changed (GtkComboBox *widget, gpointer user_data)
 {
   TableData *data = (TableData *) user_data;
 
-  gtk_entry_set_text (data->indip_var1_entry, "");
-  gtk_entry_set_text (data->indip_var2_entry, "");
+  gtk_entry_set_text (data->indep_var1_entry, "");
+  gtk_entry_set_text (data->indep_var2_entry, "");
 
   if( gtk_combo_box_get_active( data->SolverClassCombo ) == SINGLE_PHASE_SOLVER )
     {
@@ -123,16 +123,16 @@ void on_solver_class_changed (GtkComboBox *widget, gpointer user_data)
 }
 
 /*
- * Put correct description in the indipendent variables labels
+ * Put correct description in the independent variables labels
  */
 
 G_MODULE_EXPORT
-void on_indip_variables_combo_changed (GtkComboBox *widget, gpointer user_data)
+void on_indep_variables_combo_changed (GtkComboBox *widget, gpointer user_data)
 {
   TableData *data = (TableData *) user_data;
 
-  gtk_entry_set_text (data->indip_var1_entry, "");
-  gtk_entry_set_text (data->indip_var2_entry, "");
+  gtk_entry_set_text (data->indep_var1_entry, "");
+  gtk_entry_set_text (data->indep_var2_entry, "");
 
   /* the single phase solvers list is active */
   if( gtk_combo_box_get_active( data->SolverClassCombo ) == SINGLE_PHASE_SOLVER )
@@ -140,28 +140,28 @@ void on_indip_variables_combo_changed (GtkComboBox *widget, gpointer user_data)
 
     if( gtk_combo_box_get_active( data->IndVariablesCombo ) == SOLVER_PT )
       {
-        gtk_label_set_text( data->IndVar1Label, "Pressure [bar(a)]" );
-        gtk_label_set_text( data->IndVar2Label, "Temperature [deg C]" );
+        gtk_label_set_text( data->IndVar1Label, "Pressure [bar]" );
+        gtk_label_set_text( data->IndVar2Label, "Temperature [°C]" );
       }
     else if( gtk_combo_box_get_active( data->IndVariablesCombo ) == SOLVER_PH )
       {
-        gtk_label_set_text( data->IndVar1Label, "Pressure [bar(a)]" );
-        gtk_label_set_text( data->IndVar2Label, "Enthalpy [kJ / kg]" );
+        gtk_label_set_text( data->IndVar1Label, "Pressure [bar]" );
+        gtk_label_set_text( data->IndVar2Label, "Enthalpy [kJ/kg]" );
       }
     else if( gtk_combo_box_get_active( data->IndVariablesCombo ) == SOLVER_PS )
       {
-        gtk_label_set_text( data->IndVar1Label, "Pressure [bar(a)]" );
-        gtk_label_set_text( data->IndVar2Label, "Entropy [kJ / kg K]" );
+        gtk_label_set_text( data->IndVar1Label, "Pressure [bar]" );
+        gtk_label_set_text( data->IndVar2Label, "Entropy [kJ/kg·K]" );
       }
     else if( gtk_combo_box_get_active( data->IndVariablesCombo ) == SOLVER_PU )
       {
-        gtk_label_set_text( data->IndVar1Label, "Pressure [bar(a)]" );
-        gtk_label_set_text( data->IndVar2Label, "Internal Energy [kJ / kg]" );
+        gtk_label_set_text( data->IndVar1Label, "Pressure [bar]" );
+        gtk_label_set_text( data->IndVar2Label, "Internal energy [kJ/kg]" );
       }
     else if (gtk_combo_box_get_active( data->IndVariablesCombo ) == SOLVER_TS)
       {
-        gtk_label_set_text( data->IndVar1Label, "Temperature [bar(a)]" );
-        gtk_label_set_text( data->IndVar2Label, "Entropy [kJ / kg K]" );
+        gtk_label_set_text( data->IndVar1Label, "Temperature [°C]" );
+        gtk_label_set_text( data->IndVar2Label, "Entropy [kJ/kg·K]" );
       }
   }
 
@@ -170,13 +170,13 @@ void on_indip_variables_combo_changed (GtkComboBox *widget, gpointer user_data)
   {
     if( gtk_combo_box_get_active( data->IndVariablesCombo ) == SAT_SOLVER_TX )
       {
-        gtk_label_set_text( data->IndVar1Label, "Temperature [deg C]" );
-        gtk_label_set_text( data->IndVar2Label, "Vapour Fraction [ - ]" );
+        gtk_label_set_text( data->IndVar1Label, "Temperature [°C]" );
+        gtk_label_set_text( data->IndVar2Label, "Quality [-]" );
       }
     else if( gtk_combo_box_get_active( data->IndVariablesCombo ) == SAT_SOLVER_PX )
       {
-        gtk_label_set_text( data->IndVar1Label, "Pressure [bar(a)]" );
-        gtk_label_set_text( data->IndVar2Label, "Vapour Fraction [ - ]" );
+        gtk_label_set_text( data->IndVar1Label, "Pressure [bar]" );
+        gtk_label_set_text( data->IndVar2Label, "Quality [-]" );
       }
     }
 
@@ -242,8 +242,8 @@ int eval_state (TableData *data)
   int active_sol;
 
   /* read input without units conversion */
-  var1 = atof (gtk_entry_get_text (data->indip_var1_entry) );
-  var2 = atof (gtk_entry_get_text (data->indip_var2_entry) );
+  var1 = atof (gtk_entry_get_text (data->indep_var1_entry) );
+  var2 = atof (gtk_entry_get_text (data->indep_var2_entry) );
 
   active_sol_class = gtk_combo_box_get_active (data->SolverClassCombo);
   active_sol = gtk_combo_box_get_active (data->IndVariablesCombo);
@@ -407,11 +407,11 @@ int eval_state (TableData *data)
 
 
 /*
- * when the indipendent variable 1 is modified
+ * when the independent variable 1 is modified
  */
 
 G_MODULE_EXPORT
-void on_indip_var1_entry_editing_done(GtkEntry *cell_editable,
+void on_indep_var1_entry_editing_done(GtkEntry *cell_editable,
                                       gpointer  user_data)
 {
   TableData *data = (TableData *) user_data;
@@ -427,11 +427,11 @@ void on_indip_var1_entry_editing_done(GtkEntry *cell_editable,
 
 
 /*
- * when the indipendent variable 2 is modified
+ * when the independent variable 2 is modified
  */
 
 G_MODULE_EXPORT
-void on_indip_var2_entry_editing_done(GtkEntry *cell_editable,
+void on_indep_var2_entry_editing_done(GtkEntry *cell_editable,
                                       gpointer  user_data)
 {  
   TableData *data = (TableData *) user_data;
