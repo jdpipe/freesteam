@@ -39,18 +39,18 @@ main (int argc, char *argv[])
     data.iter = &iter;
     data.solver_status = GTK_STATUSBAR( gtk_builder_get_object (builder, "statusbar"));
 
-    data.indip_var1_entry = GTK_ENTRY( gtk_builder_get_object (builder, "indip_var1_entry"));
-    data.indip_var2_entry = GTK_ENTRY( gtk_builder_get_object (builder, "indip_var2_entry"));
+    data.indep_var1_entry = GTK_ENTRY( gtk_builder_get_object (builder, "indep_var1_entry"));
+    data.indep_var2_entry = GTK_ENTRY( gtk_builder_get_object (builder, "indep_var2_entry"));
 
     data.SolverClassCombo  = GTK_COMBO_BOX( gtk_builder_get_object (builder, "solver_class_combo") );
-    data.IndVariablesCombo = GTK_COMBO_BOX( gtk_builder_get_object (builder, "indip_variables_combo") );
+    data.IndVariablesCombo = GTK_COMBO_BOX( gtk_builder_get_object (builder, "indep_variables_combo") );
 
     data.list                    = GTK_LIST_STORE( gtk_builder_get_object (builder, "liststore"));
-    data.IndVarsSinglePhaseModel = GTK_LIST_STORE( gtk_builder_get_object (builder, "indip_vars_single_phase_liststore"));
-    data.IndVarsSaturationModel  = GTK_LIST_STORE( gtk_builder_get_object (builder, "indip_vars_saturation_liststore"));
+    data.IndVarsSinglePhaseModel = GTK_LIST_STORE( gtk_builder_get_object (builder, "indep_vars_single_phase_liststore"));
+    data.IndVarsSaturationModel  = GTK_LIST_STORE( gtk_builder_get_object (builder, "indep_vars_saturation_liststore"));
 
-    data.IndVar1Label = GTK_LABEL( gtk_builder_get_object (builder, "indip_var1_label") );
-    data.IndVar2Label = GTK_LABEL( gtk_builder_get_object (builder, "indip_var2_label") );
+    data.IndVar1Label = GTK_LABEL( gtk_builder_get_object (builder, "indep_var1_label") );
+    data.IndVar2Label = GTK_LABEL( gtk_builder_get_object (builder, "indep_var2_label") );
 
     data.about = GTK_DIALOG (gtk_builder_get_object (builder, "aboutdialog"));
 

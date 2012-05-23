@@ -9,10 +9,10 @@
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">Generic</col>
+        <col id="0" translatable="yes">Any state</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Saturation State (Region 4)</col>
+        <col id="0" translatable="yes">Saturated state</col>
       </row>
     </data>
   </object>
@@ -32,124 +32,124 @@
     <data>
       <row>
         <col id="0" translatable="yes">Pressure</col>
-        <col id="1" translatable="yes">P    [bar(a)]</col>
+        <col id="1" translatable="yes">p / bar</col>
         <col id="2">0</col>
         <col id="3">0</col>
         <col id="4">0</col>
       </row>
       <row>
         <col id="0" translatable="yes">Temperature</col>
-        <col id="1" translatable="yes">T    [deg C]</col>
+        <col id="1" translatable="yes">T / °C</col>
         <col id="2">0</col>
         <col id="3">0</col>
         <col id="4">0</col>
       </row>
       <row>
         <col id="0" translatable="yes">Enthalpy</col>
-        <col id="1" translatable="yes">h    [kJ / kg]</col>
+        <col id="1" translatable="yes">h / [kJ/kg]</col>
         <col id="2">0</col>
         <col id="3">0</col>
         <col id="4">0</col>
       </row>
       <row>
         <col id="0" translatable="yes">Entropy</col>
-        <col id="1" translatable="yes">s    [kJ / kg K]</col>
+        <col id="1" translatable="yes">s / [kJ/kgK]</col>
         <col id="2">0</col>
         <col id="3">0</col>
         <col id="4">0</col>
       </row>
       <row>
         <col id="0" translatable="yes">Internal Energy</col>
-        <col id="1" translatable="yes">u    [kJ / kg]</col>
+        <col id="1" translatable="yes">u / [kJ/kg]</col>
         <col id="2">0</col>
         <col id="3">0</col>
         <col id="4">0</col>
       </row>
       <row>
         <col id="0" translatable="yes">Specific Volume</col>
-        <col id="1" translatable="yes">v    [m3 / kg]</col>
+        <col id="1" translatable="yes">v / [m³/kg]</col>
         <col id="2">0</col>
         <col id="3">0</col>
         <col id="4">0</col>
       </row>
       <row>
         <col id="0" translatable="yes">Density</col>
-        <col id="1" translatable="yes">rho [kg /m3]</col>
+        <col id="1" translatable="yes">ρ / [kg/m³]</col>
         <col id="2">0</col>
         <col id="3">0</col>
         <col id="4">0</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Isobaric Heat Capacity</col>
-        <col id="1" translatable="yes">Cp  [kJ / kg k]</col>
+        <col id="0" translatable="yes">Isobaric heat capacity</col>
+        <col id="1" translatable="yes">cp / [kJ/kg·K]</col>
         <col id="2">0</col>
         <col id="3">0</col>
         <col id="4">0</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Isochoric Heat Capacity</col>
-        <col id="1" translatable="yes">Cv  [kJ / kg k]</col>
+        <col id="0" translatable="yes">Isochoric heat capacity</col>
+        <col id="1" translatable="yes">cv / [kJ/kg·K]</col>
         <col id="2">0</col>
         <col id="3">0</col>
         <col id="4">0</col>
       </row>
       <row>
         <col id="0" translatable="yes">Quality</col>
-        <col id="1" translatable="yes">x    [ - ]</col>
+        <col id="1" translatable="yes">x</col>
         <col id="2">0</col>
         <col id="3">0</col>
         <col id="4">0</col>
       </row>
       <row>
-        <col id="0" translatable="yes">Thermal Conductivity</col>
-        <col id="1" translatable="yes">k    [W / m K]</col>
+        <col id="0" translatable="yes">Thermal conductivity</col>
+        <col id="1" translatable="yes">k / [W/m·K]</col>
         <col id="2">0</col>
         <col id="3">0</col>
         <col id="4">0</col>
       </row>
       <row>
         <col id="0" translatable="yes">Viscosity</col>
-        <col id="1" translatable="yes">mu [Pa s]</col>
+        <col id="1" translatable="yes">mu / [Pa·s]</col>
         <col id="2">0</col>
         <col id="3">0</col>
         <col id="4">0</col>
       </row>
     </data>
   </object>
-  <object class="GtkListStore" id="indip_vars_saturation_liststore">
+  <object class="GtkListStore" id="indep_vars_saturation_liststore">
     <columns>
       <!-- column-name IndVarsSaturation -->
       <column type="gchararray"/>
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">( T, x )  Temperature - Vapour Fraction</col>
+        <col id="0" translatable="yes">(T,x)  Temperature, quality</col>
       </row>
       <row>
-        <col id="0" translatable="yes">( p, x )  Pressure - Vapour Fraction (Backward)</col>
+        <col id="0" translatable="yes">(p,x)  Pressure, quality (backward)</col>
       </row>
     </data>
   </object>
-  <object class="GtkListStore" id="indip_vars_single_phase_liststore">
+  <object class="GtkListStore" id="indep_vars_single_phase_liststore">
     <columns>
       <!-- column-name IndVarsColumn -->
       <column type="gchararray"/>
     </columns>
     <data>
       <row>
-        <col id="0" translatable="yes">( p, T )  Pressure - Temperature (Basic eqn)</col>
+        <col id="0" translatable="yes">(p,T)  Pressure, temperature</col>
       </row>
       <row>
-        <col id="0" translatable="yes">( p, h )  Pressure - Enthalpy (Backward eqn)</col>
+        <col id="0" translatable="yes">(p,h)  Pressure, enthalpy (backward eqn)</col>
       </row>
       <row>
-        <col id="0" translatable="yes">( p, s )  Pressure - Entropy (Backward eqn)</col>
+        <col id="0" translatable="yes">(p,s)  Pressure, entropy (backword eqn)</col>
       </row>
       <row>
-        <col id="0" translatable="yes">( p, u )  Pressure - Internal Energy (Iterative solver)</col>
+        <col id="0" translatable="yes">(p,u)  Pressure, internal energy (iterative)</col>
       </row>
       <row>
-        <col id="0" translatable="yes">( T, s )  Temperature - Internal Energy (Iterative solver)</col>
+        <col id="0" translatable="yes">(T,s)  Temperature, entropy (iterative)</col>
       </row>
     </data>
   </object>
@@ -310,13 +310,13 @@
             <child>
               <object class="GtkLabel" id="title_combo_solver_class">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Solver Class</property>
+                <property name="label" translatable="yes">Solving for...</property>
               </object>
             </child>
             <child>
               <object class="GtkLabel" id="title_combo_ind_vars">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Indipendent Variables Combination</property>
+                <property name="label" translatable="yes">...with independent properties</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -342,13 +342,13 @@
               </packing>
             </child>
             <child>
-              <object class="GtkComboBox" id="indip_variables_combo">
+              <object class="GtkComboBox" id="indep_variables_combo">
                 <property name="visible">True</property>
-                <property name="model">indip_vars_single_phase_liststore</property>
+                <property name="model">indep_vars_single_phase_liststore</property>
                 <property name="active">0</property>
-                <signal name="changed" handler="on_indip_variables_combo_changed"/>
+                <signal name="changed" handler="on_indep_variables_combo_changed"/>
                 <child>
-                  <object class="GtkCellRendererText" id="indip_vars_renderer"/>
+                  <object class="GtkCellRendererText" id="indep_vars_renderer"/>
                   <attributes>
                     <attribute name="text">0</attribute>
                   </attributes>
@@ -371,7 +371,7 @@
             <property name="visible">True</property>
             <property name="spacing">8</property>
             <child>
-              <object class="GtkLabel" id="indip_var1_label">
+              <object class="GtkLabel" id="indep_var1_label">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Pressure [bar(a)]: </property>
                 <property name="justify">right</property>
@@ -381,20 +381,20 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="indip_var1_entry">
+              <object class="GtkEntry" id="indep_var1_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">&#x25CF;</property>
-                <signal name="changed" handler="on_indip_var1_entry_editing_done"/>
+                <signal name="changed" handler="on_indep_var1_entry_editing_done"/>
               </object>
               <packing>
                 <property name="position">1</property>
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="indip_var2_label">
+              <object class="GtkLabel" id="indep_var2_label">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Temperature [deg C]: </property>
+                <property name="label" translatable="yes">Temperature [°C]: </property>
                 <property name="justify">right</property>
               </object>
               <packing>
@@ -402,11 +402,11 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="indip_var2_entry">
+              <object class="GtkEntry" id="indep_var2_entry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="invisible_char">&#x25CF;</property>
-                <signal name="changed" handler="on_indip_var2_entry_editing_done"/>
+                <signal name="changed" handler="on_indep_var2_entry_editing_done"/>
               </object>
               <packing>
                 <property name="position">3</property>

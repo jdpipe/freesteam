@@ -89,7 +89,7 @@ enum
     SATURATION_SOLVER
   };
 
-/* indipendent variables allowed combinations, i.e. the available solvers */
+/* independent variables allowed combinations, i.e. the available solvers */
 enum
   {
     SOLVER_PT = 0,
@@ -124,8 +124,8 @@ struct _TableData
 
   GtkStatusbar *solver_status;
 
-  GtkEntry *indip_var1_entry;
-  GtkEntry *indip_var2_entry;
+  GtkEntry *indep_var1_entry;
+  GtkEntry *indep_var2_entry;
 
   GtkLabel *IndVar1Label;
   GtkLabel *IndVar2Label;
