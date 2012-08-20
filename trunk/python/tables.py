@@ -42,8 +42,8 @@ def temperature_table(T_range,caption,fout):
     \small
     \centering
     \begin{tabular}{ c c c c c c c c c c c }
-      & & \multicolumn{2}{c}{Specific volume} & \multicolumn{2}{c}{Internal energy} & \multicolumn{2}{c}{Specific enthalpy} & \multicolumn{2}{c}{Specific entropy}\\
-      & & \multicolumn{2}{c}{$\unit{m^{3}/kg}$} & \multicolumn{2}{c}{$\unit{kJ/kg}$} & \multicolumn{2}{c}{$\unit{kJ/kg}$} & \multicolumn{2}{c}{$\unit{kJ/kg K}$} \\ \cline{3-4} 
+      & & \multicolumn{2}{c}{Density} & \multicolumn{2}{c}{Internal energy} & \multicolumn{2}{c}{Specific enthalpy} & \multicolumn{2}{c}{Specific entropy}\\
+      & & \multicolumn{2}{c}{$\unit{kg/m^3}$} & \multicolumn{2}{c}{$\unit{kJ/kg}$} & \multicolumn{2}{c}{$\unit{kJ/kg}$} & \multicolumn{2}{c}{$\unit{kJ/kg K}$} \\ \cline{3-4} 
       % & & \multicolumn{2}{c}{$\underline{\hphantom{aaaaaaaaa}}$}\\
     temp & pressure & Water & Steam \\
     $T \quad \unit{^{\circ}C} $ & $p \quad \unit{bar} $ & $\rho_f$ & $\rho_g$ & $u_f$ & $u_g$ & $h_f$ & $h_g$ & $s_f$ & $s_g$ \\[2pt]
@@ -73,7 +73,7 @@ def pressure_table(p_range,caption,fout):
     \centering
     \begin{tabular}{ c c c c c c c c c c c }
     $p$ & $T$ & $\rho_f$ & $\rho_g$ & $u_f$ & $u_g$ & $h_f$ & $h_g$ & $s_f$ & $s_g$ \\
-    $[bar]$ & $[^\circ C]$ & $[kg/m^3]$ & $[kg/m^3]$ & $[kJ/kg]$ & $[kJ/kg]$ & $[kJ/kg]$ & $[kJ/kg]$ & $[kJ/kg K]$ & $[kJ/kg K]$ \\
+    $[\unit{bar}]$ & $[\unit{^\circ C}]$ & $[\unit{kg/m^3}]$ & $[\unit{kg/m^3}]$ & $[\unit{kJ/kg}]$ & $[\unit{kJ/kg}]$ & $[\unit{kJ/kg}]$ & $[\unit{kJ/kg}]$ & $[\unit{kJ/kg K}]$ & $[\unit{kJ/kg K}]$ \\
     \hline
     """)
     for p in p_range:
@@ -118,13 +118,13 @@ def superheat_table(caption,variable,fout,p_range,t_range):
 
     # Temperature header line
     if variable == "enthalpy":
-        variable_label = r"Specific Enthalpy / [$kJ/kg$]"
+        variable_label = r"Specific Enthalpy / [$\unit{kJ/kg}$]"
     elif variable == "entropy":
-        variable_label = r"Specific Entropy / [$kJ/kg K$]"
+        variable_label = r"Specific Entropy / [$\unit{kJ/kg K}$]"
     elif variable == "density":
-        variable_label = r"Density / [$kg/m^3$]"
+        variable_label = r"Density / [$\unit{kg/m^3}$]"
     elif variable == "internal":
-        variable_label = r"Specific Internal Energy / [$kJ/kg$]"
+        variable_label = r"Specific Internal Energy / [$\unit{kJ/kg}$]"
     else:
         print "Option not recognised"
         raise SystemExit
@@ -201,7 +201,7 @@ print "tables.py - script to get data for Steam Tables"
 
 # Create a latex file
 fout = open("steamtable.tex","w")
-fout.write(r"""\documentclass[dvips,a4paper,11pt]{article}
+fout.write(r"""\documentclass[a4paper,11pt]{article}
 \usepackage{graphicx}
 \usepackage{lscape}
 %\usepackage[scaled=.92]{helvet}
@@ -227,12 +227,12 @@ print "Creating Table 7..."
 
 #Table 7A
 T_range = [Ttriple] + range(2,51,2) # Range of table in deg C
-caption = r"Saturated Water and Steam (Triple Point to 50$^\circ C$)"
+caption = r"Saturated Water and Steam (Triple Point to 50$\unit{^\circ C}$)"
 temperature_table(T_range,caption,fout)
 
 #Table 7B
 T_range = range(50,101,2) # Range of table in deg C
-caption = r"Saturated Water and Steam (50 to 100 $^\circ C$)"
+caption = r"Saturated Water and Steam (50 to 100 $\unit{^\circ C}$)"
 temperature_table(T_range,caption,fout)
 
 print "Creating Table 8..."
@@ -240,33 +240,33 @@ print "Creating Table 8..."
 
 # Given the non-uniform spacing here sometimes the manual way is the best...
 p_range = (ptriple,0.008,0.01,0.012,0.014,0.016,0.018,0.020,0.022,0.024,0.026,0.028,0.030,0.035,0.040,0.045, \
-           0.050,0.06,0.07,0.08,0.09,0.01,0.012,0.013,0.014,0.015)
-caption = r"Saturated Water and Steam (0.00611 to 0.015 $bar$)"
+           0.050,0.06,0.07,0.08,0.09,0.1,0.12,0.13,0.14,0.15)
+caption = r"Saturated Water and Steam (0.00611 to 0.15 $\unit{bar}$)"
 pressure_table(p_range,caption,fout)
 
 #Table 8B
-p_range = (0.015,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.6,0.7,0.8,0.9,1.0)
-caption = r"Saturated Water and Steam (0.015 to 1 $bar$)"
+p_range = (0.16,0.18,0.20,0.22,0.24,0.26,0.28,0.30,0.35,0.40,0.45,0.50,0.55,0.60,0.65,0.70,0.75,0.80,0.85,0.90,0.95,1.00)
+caption = r"Saturated Water and Steam (0.16 to 1 $\unit{bar}$)"
 pressure_table(p_range,caption,fout)
 
 #Table 8C
 p_range = (1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2,2.2,2.4,2.6,2.8,3,3.2,3.4,3.6,3.8,4,4.2,4.4,4.6,4.8,5,5.5,6,6.5,7)
-caption = r"Saturated Water and Steam (1 to 7 $bar$)"
+caption = r"Saturated Water and Steam (1 to 7 $\unit{bar}$)"
 pressure_table(p_range,caption,fout)
 
 #Table 8D
 p_range = (7.5,8,8.5,9,9.5,10,10.5,11,11.5,12,12.5,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30)
-caption = r"Saturated Water and Steam (7.5 to 30 $bar$)"
+caption = r"Saturated Water and Steam (7.5 to 30 $\unit{bar}$)"
 pressure_table(p_range,caption,fout)
 
 #Table 8D
 p_range = (30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88)
-caption = r"Saturated Water and Steam (30 to 88 $bar$)"
+caption = r"Saturated Water and Steam (30 to 88 $\unit{bar}$)"
 pressure_table(p_range,caption,fout)
 
 #Table 8D
 p_range = (90,92,94,96,98,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220)
-caption = r"Saturated Water and Steam (90 to 220 $bar$)"
+caption = r"Saturated Water and Steam (90 to 220 $\unit{bar}$)"
 pressure_table(p_range,caption,fout)
 
 print "Creating Table 9,10,11 and 12"
