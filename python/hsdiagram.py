@@ -24,20 +24,24 @@ rc('text', usetex=True)
 from pylab import *
 from math import *
 
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+
 # Diagram Ranges - it would be nice to do this automagically but for
 # the moment this will have to do..
-smin = 5; smax = 9;
+smin = 6; smax = 9;
 hmin = 2000; hmax = 4500;
 tmin =  6.96963241256; tmax = 800;
-pressure_range = [0.01,0.05,0.1,0.2,0.5,1,2,5,10,20,40,60,80,100,150,200]
+pressure_range = [0.01,0.025,0.05,0.10,0.25,0.5,1,2,3,5,7.5,10,15,20,25,30,40,50,60,80,100,125,150,200]
 pmax = 500; pmin = 0.01;
-twophase_x_range = [0.65,0.70,0.75,0.80,0.85,0.90,0.95,1.0]
-const_T_range = [50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800]
+twophase_x_range = [0.74,0.76,0.78,0.80,0.82,0.84,0.86,0.88,0.90,0.92,0.94,0.96,0.98,1.0]
+const_T_range = [25,50,75,100,125,150,175,200,225,250,275,300,325,350,375,400,425,450,475,500,525,550,575,600,625,650,675,700,725,750,775,800]
 xy_ratio = float(hmax - hmin) / float(smax - smin)
 
 # This makes the picture A4 matplotlib accepts dimensions in inches...
 figure(figsize = (8.26771654,11.6929134))
 paper_ratio = 11.6929134 / 8.26771654
+
+
 
 # supercritical region
 print "Supercritical region..."
@@ -140,23 +144,33 @@ for i in const_T_range:
         plot(x,y,'g-')
         text(smax+0.1,max(y)-10,r'%3.0f $^\circ$ C' % i,color="green")
 
+
+
+figtext(0.15,0.85,\
+        "Calculated with freesteam v%s \n IAPWS-IF97 Industrial Formulation" % FREESTEAM_VERSION,bbox=dict(facecolor='white', alpha=0.75))
+
 # work-around for non-helvetica default axes
 # in theory this shouldn't be required
 ylabels = []
-ytickloc = arange(hmin,hmax+500,500)
+ytickloc = arange(hmin,hmax+100,100)
 for i in ytickloc: ylabels.append(str(i))
 xlabels = []
-xtickloc = arange(smin,smax+0.5,0.5)
+xtickloc = arange(smin,smax+0.25,0.25)
 for i in xtickloc: xlabels.append(str(i))
 
-figtext(0.15,0.85,\
-        "Calculated with freesteam v%s \n IAPWS-IF97 Industrial Formulation" % FREESTEAM_VERSION
-		,bbox=dict(facecolor='white', alpha=0.75))
+# Axes details: Quite a lot of work to get minor grids working - there
+# may be simpler ways of doing it!
+#for the minor ticks, use no labels; default NullFormatter
+gca().xaxis.set_minor_locator(MultipleLocator(0.05))
+gca().xaxis.grid(True, which='minor',linewidth=0.25,linestyle='solid',color='0.75')  
+gca().yaxis.set_minor_locator(MultipleLocator(10))
+gca().yaxis.grid(True, which='minor',linewidth=0.25,linestyle='solid',color='0.75') 
 
-# Axes details
-grid(True)
-gca().xaxis.grid(True, which='minor')  # minor grid on too
-gca().yaxis.grid(True, which='minor')  # minor grid on too
+# Major grids should be thicker
+gca().xaxis.grid(True,'major',linewidth=0.5,linestyle='solid',color='0.1')
+gca().yaxis.grid(True,'major',linewidth=0.5,linestyle='solid',color='0.1')
+gca().set_axisbelow(True)
+
 title('Mollier Diagram')
 ylabel('Specific Enthalpy, kJ / kg')
 xlabel('Specific Entropy, kJ / kg K')
@@ -165,11 +179,11 @@ yticks(ytickloc,ylabels)
 xlim( smin,smax )
 ylim( hmin,hmax )
 
-#print "Exporting PNG file to current directory..."
-#savefig('mollier.png',dpi = 600)
+print "Exporting PDF file to current directory..."
+savefig('mollier.pdf')
 
 #print "Exporting EPS file to current directory..."
-#savefig('mollier.eps',dpi = 600)
+#savefig('mollier.ps',dpi = 600)
 
-show()
+#show()
 
