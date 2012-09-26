@@ -174,6 +174,8 @@ else:
 		, tools=['default']+tools
 	)
 
+Help(vars.GenerateHelpText(env))
+
 # Some utility tools for installing file with suitable permissions
   	 
 import SCons 	 
