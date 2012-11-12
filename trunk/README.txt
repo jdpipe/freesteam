@@ -240,6 +240,26 @@ accurate to your required precision, let us know.
 Special tips for Ubuntu users
 -----------------------------
 
+UBUNTU 12.04
+
+On a fresh Ubuntu 12.04 LTS, 32-bit, you can build and install freesteam using
+the following steps (as at r676 of our subversion repository):
+
+ sudo apt-get install subversion scons libgsl0-dev python-dev swig ipython python-matplotlib
+ svn co https://freesteam.svn.sourceforge.net/svnroot/freesteam/trunk freesteam
+ cd freesteam
+ scons
+ sudo scons install
+
+You can test this for example with
+
+ ipython
+ from freesteam import *
+ print steam_pT(1e5, 300).h
+
+
+UBUNTU 9.10
+
 On a clean Ubuntu 9.10 machine, a perfect development environment can be
 established by installing the following packages on your machine:
 
