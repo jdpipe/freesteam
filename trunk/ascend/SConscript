@@ -27,5 +27,6 @@ if env.get('HAVE_ASCEND'):
 	env.Depends(lib,env['libfreesteam'])
 
 	env['installedfiles'] += [env.InstallLibrary("${INSTALL_ROOT}$ASCEND_MODELS",[lib])]
+	env['installedfiles'] += [env.Install("${INSTALL_ROOT}$ASCEND_MODELS/freesteam",env.Glob("*.a4c"))]
 
 # vim: set syntax=python:

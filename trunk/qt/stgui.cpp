@@ -19,13 +19,13 @@ remaining broken stuff.
 #include <stdexcept>
 
 extern "C"{
-#include <freesteam/steam_pT.h>
-#include <freesteam/steam_ph.h>
-#include <freesteam/steam_ps.h>
-#include <freesteam/steam_pv.h>
-#include <freesteam/steam_Ts.h>
-#include <freesteam/steam_Tx.h>
-#include <freesteam/region4.h>
+#include <../steam_pT.h>
+#include <../steam_ph.h>
+#include <../steam_ps.h>
+#include <../steam_pv.h>
+#include <../steam_Ts.h>
+#include <../steam_Tx.h>
+#include <../region4.h>
 };
 
 #include <QApplication>

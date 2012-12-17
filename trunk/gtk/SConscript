@@ -3,6 +3,9 @@ Import('env')
 
 if env.get('HAVE_GTK'):
 
+	env['GTK_GLADE_DIR'] = "$INSTALL_SHARE/freesteam"
+	env['GTK_GLADE_FILE'] = "freesteam-gtk.glade"
+
 	gtk_env = env.Clone()
 
 	gtk_env.Append(
@@ -12,6 +15,13 @@ if env.get('HAVE_GTK'):
 		,CPPDEFINES=['FREESTEAM_LOCAL']
 	)
 
-	gtk_env.Program("freesteam-gtk",['freesteam-gtk.c','callbacks.c'])
+	prog = gtk_env.Program("freesteam-gtk",['freesteam-gtk.c','callbacks.c']
+		,CPPDEFINES={
+			"GTK_GLADE_DIR":"\\\"${GTK_GLADE_DIR}\\\""
+			,"GTK_GLADE_FILE":"\\\"${GTK_GLADE_FILE}\\\""
+		}
+	)
 
+	env['installedfiles'] += [env.Install("${INSTALL_ROOT}${GTK_GLADE_DIR}",["${GTK_GLADE_FILE}"])]
+	env['installedfiles'] += [env.Install("${INSTALL_ROOT}$INSTALL_BIN",[prog])]
 
