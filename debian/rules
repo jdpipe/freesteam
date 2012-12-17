@@ -28,7 +28,7 @@ DATADIR=$(INSTALLROOT)/usr/share
 build: build-stamp
 build-stamp:
 	dh_testdir
-	cd $(CURDIR) && $(SCONS) INSTALL_PREFIX=/usr INSTALL_ROOT=/
+	cd $(CURDIR) && $(SCONS) python ascend gtk INSTALL_PREFIX=/usr
 	touch build-stamp
 
 clean:
@@ -46,6 +46,11 @@ install: build
 	dh_installdirs
 	mkdir -p $(INSTALLROOT)/usr
 	cd $(CURDIR) && $(SCONS) INSTALL_PREFIX=/usr INSTALL_ROOT=$(INSTALLROOT) install
+#
+	cd $(CURDIR)/gtk/gnome && \
+	install -m 644 -D freesteam-gtk.desktop $(DATADIR)/applications/freesteam-gtk.desktop && \
+	install -m 644 -D freesteam-gtk-64x64.png $(DATADIR)/icons/freesteam-gtk-app.png && \
+	install -m 644 -D freesteam-gtk-64x64.png $(DATADIR)/icons/hicolor/64x64/freesteam-gtk-app.png
 #
 	dh_install --sourcedir=$(INSTALLROOT)
 #	dh_desktop

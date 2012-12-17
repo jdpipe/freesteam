@@ -20,51 +20,67 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "freesteam-gtk.h"
 
-int
-main (int argc, char *argv[])
-{
-    GtkBuilder      *builder; 
-    GtkWidget       *window;
+#ifndef GTK_GLADE_FILE
+# define GTK_GLADE_FILE "freesteam-gtk.glade"
+#endif
+#ifndef GTK_GLADE_DIR
+# define GTK_GLADE_DIR "."
+#endif
+#ifdef _WIN32
+# define PATH_SEP "\\"
+#else
+# define PATH_SEP "/"
+#endif
+
+int main (int argc, char *argv[]){
+    GtkBuilder *builder; 
+    GtkWidget *window;
     GtkTreeIter iter;
 
-    gtk_init (&argc, &argv);
+    gtk_init(&argc, &argv);
  
-    builder = gtk_builder_new ();
-    gtk_builder_add_from_file (builder, UI_FILE, NULL);
-    window = GTK_WIDGET (gtk_builder_get_object (builder, "window"));
+    builder = gtk_builder_new();
+
+	FILE *f = fopen(GTK_GLADE_DIR PATH_SEP GTK_GLADE_FILE,"r");
+	if(f){
+		fclose(f);
+	    gtk_builder_add_from_file(builder, GTK_GLADE_DIR PATH_SEP GTK_GLADE_FILE, NULL);
+	}else if((f = fopen(GTK_GLADE_FILE,"r"))){
+		fclose(f);
+	    gtk_builder_add_from_file(builder, GTK_GLADE_FILE, NULL);
+	}else{
+		fprintf(stderr,"ERROR: unable to locate Glade file" GTK_GLADE_DIR PATH_SEP GTK_GLADE_FILE ". Exiting.\n");
+		return 1;
+	}	
+		
+    window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
 
     /* define and fill in the data structure containing steam table data */
     TableData data;
     
     data.iter = &iter;
-    data.solver_status = GTK_STATUSBAR( gtk_builder_get_object (builder, "statusbar"));
+    data.solver_status = GTK_STATUSBAR(gtk_builder_get_object(builder, "statusbar"));
 
-    data.indep_var1_entry = GTK_ENTRY( gtk_builder_get_object (builder, "indep_var1_entry"));
-    data.indep_var2_entry = GTK_ENTRY( gtk_builder_get_object (builder, "indep_var2_entry"));
+    data.indep_var1_entry = GTK_ENTRY(gtk_builder_get_object(builder, "indep_var1_entry"));
+    data.indep_var2_entry = GTK_ENTRY(gtk_builder_get_object(builder, "indep_var2_entry"));
 
-    data.SolverClassCombo  = GTK_COMBO_BOX( gtk_builder_get_object (builder, "solver_class_combo") );
-    data.IndVariablesCombo = GTK_COMBO_BOX( gtk_builder_get_object (builder, "indep_variables_combo") );
+    data.SolverClassCombo  = GTK_COMBO_BOX(gtk_builder_get_object(builder, "solver_class_combo") );
+    data.IndVariablesCombo = GTK_COMBO_BOX(gtk_builder_get_object(builder, "indep_variables_combo") );
 
-    data.list                    = GTK_LIST_STORE( gtk_builder_get_object (builder, "liststore"));
-    data.IndVarsSinglePhaseModel = GTK_LIST_STORE( gtk_builder_get_object (builder, "indep_vars_single_phase_liststore"));
-    data.IndVarsSaturationModel  = GTK_LIST_STORE( gtk_builder_get_object (builder, "indep_vars_saturation_liststore"));
+    data.list                    = GTK_LIST_STORE(gtk_builder_get_object(builder, "liststore"));
+    data.IndVarsSinglePhaseModel = GTK_LIST_STORE(gtk_builder_get_object(builder, "indep_vars_single_phase_liststore"));
+    data.IndVarsSaturationModel  = GTK_LIST_STORE(gtk_builder_get_object(builder, "indep_vars_saturation_liststore"));
 
-    data.IndVar1Label = GTK_LABEL( gtk_builder_get_object (builder, "indep_var1_label") );
-    data.IndVar2Label = GTK_LABEL( gtk_builder_get_object (builder, "indep_var2_label") );
+    data.IndVar1Label = GTK_LABEL(gtk_builder_get_object(builder, "indep_var1_label") );
+    data.IndVar2Label = GTK_LABEL(gtk_builder_get_object(builder, "indep_var2_label") );
 
-    data.about = GTK_DIALOG (gtk_builder_get_object (builder, "aboutdialog"));
+    data.about = GTK_DIALOG(gtk_builder_get_object(builder, "aboutdialog"));
 
-    gtk_builder_connect_signals (builder, &data);
+    gtk_builder_connect_signals(builder, &data);
 
-    gtk_statusbar_push( data.solver_status, 0, "Ready");
-
-    /*
-    g_object_unref (G_OBJECT (builder));
-    */
-
-    gtk_widget_show (window);             
-  
-    gtk_main ();
+    gtk_statusbar_push(data.solver_status, 0, "Ready");
+    gtk_widget_show(window); 
+    gtk_main();
 
     return 0;
 }

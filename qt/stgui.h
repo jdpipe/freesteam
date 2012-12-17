@@ -4,7 +4,7 @@
 #include "ui_ST.h"
 
 extern "C"{
-#include <freesteam/steam.h>
+#include "../steam.h"
 };
 
 class st_QtGUI : public QWidget, private Ui::st_QtDLG
