@@ -12,15 +12,14 @@ if env.get('HAVE_GTK'):
 		LIBPATH=["#"]+env.get('GTK_LIBPATH')
 		,LIBS=['freesteam'] + env.get('GTK_LIBS')
 		,CPPPATH=['#',env.get('GTK_CPPPATH')]
-		,CPPDEFINES=['FREESTEAM_LOCAL']
-	)
-
-	prog = gtk_env.Program("freesteam-gtk",['freesteam-gtk.c','callbacks.c']
 		,CPPDEFINES={
 			"GTK_GLADE_DIR":"\\\"${GTK_GLADE_DIR}\\\""
-			,"GTK_GLADE_FILE":"\\\"${GTK_GLADE_FILE}\\\""
+			,"GTK_GLADE_FILE":"\\\"${GTK_GLADE_FILE}\\\""		
+			,'FREESTEAM_LOCAL':1
 		}
 	)
+
+	prog = gtk_env.Program("freesteam-gtk",['freesteam-gtk.c','callbacks.c'])
 
 	env['installedfiles'] += [env.Install("${INSTALL_ROOT}${GTK_GLADE_DIR}",["${GTK_GLADE_FILE}"])]
 	env['installedfiles'] += [env.Install("${INSTALL_ROOT}$INSTALL_BIN",[prog])]

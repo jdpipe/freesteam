@@ -320,6 +320,8 @@ if env.get('DEBUG'):
 
 subst_dict = {
 	'@VERSION@':version
+	,'@SONAME_MAJOR@':soname_major
+	,'@SONAME_MINOR@':soname_minor
 	, '@PYTHON@' : python_exe
 	, '@INSTALL_BIN@':env['INSTALL_BIN']
 	, '@INSTALL_INCLUDE@':env['INSTALL_INCLUDE']
@@ -330,8 +332,8 @@ subst_dict = {
 env.Append(SUBST_DICT=subst_dict)
 
 configh = env.SubstInFile('config.h.in')
-
 configscript = env.SubstInFile('freesteam-config.in')
+specfile = env.SubstInFile('freesteam.spec.in')
 
 install_config = env.InstallProgram("${INSTALL_ROOT}$INSTALL_BIN",configscript)
 
@@ -483,7 +485,7 @@ env.Append(
 )
 
 tar = env.DistTar("dist/"+env['DISTTAR_NAME']
-	, [env.Dir('#')]
+	, [env.Dir('#'),'freesteam.spec']
 )
 
 #------------------------------------------------------
