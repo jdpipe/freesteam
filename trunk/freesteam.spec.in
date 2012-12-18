@@ -33,11 +33,10 @@ BuildRequires: blas
 BuildRequires: ascend-devel
 BuildRequires: gcc
 
-AutoProv: 1
-#
-#%{?filter_setup:
-#%filter_setup
-#}
+
+%{?filter_setup:
+%filter_setup
+}
 
 %description
 Calculate the properties of water and steam using the IAPWS-IF97 correlations.
@@ -71,6 +70,8 @@ IAPWS-IF97 steam tables to be calculated using the Python scripting language.
 Summary: Developer files for freesteam
 Group: Applications/Engineering
 Requires: %{name} = %{version}-%{release}
+#for the 'freesteam-config' script
+Requires: python
 %description devel
 Developer files for the freesteam IAPWS steam properties library, including
 C++ header files and shared library symlinks.
@@ -125,19 +126,17 @@ install -m 644 -D freesteam-gtk-64x64.png %{buildroot}%{_datadir}/icons/freestea
 install -m 644 -D freesteam-gtk-64x64.png %{buildroot}%{_datadir}/icons/hicolor/64x64/freesteam-gtk-app.png
 cd ../..
 
+chmod 0755 %{buildroot}%{_libdir}/lib%{name}.so%{SONAME_MAJOR}
+
 %clean
 rm -rf %{buildroot}
 
-%post
-/sbin/ldconfig
+%post -p /sbin/ldconfig
 
-%postun
-/sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
-%defattr(-, root, root)
 %doc CHANGELOG.txt README.txt LICENSE.txt
-%defattr(755, root, root)
 %{_libdir}/libfreesteam.so.*
 
 #----------------------------
