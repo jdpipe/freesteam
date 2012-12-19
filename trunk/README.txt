@@ -66,6 +66,9 @@ can be used to control the location of the installed files, debug flags, etc.
 
 See also 'Special tips for Ubuntu users' further below.
 
+For users of Microsoft Visual Studio, see the accompanying 'README-msvs.txt'
+file also provided here with our source code.
+
 
 Accessing freesteam from Python
 -------------------------------
@@ -167,7 +170,7 @@ Accessing freesteam from Excel or OpenOffice
 freesteam is currently not accessible from spreadsheet programs. We do propose
 to implement bindings for these environments, but it hasn't happened yet.
 
-In the mean time, it is suggested that Visual Basic / OpenOffice Basic code
+In the meantime, it is suggested that Visual Basic / OpenOffice Basic code
 from the XSteam project will probably do what you need.
 http://www.x-eng.com/XSteam_Information.htm
 
