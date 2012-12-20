@@ -17,7 +17,7 @@ Version:	@VERSION@
 # and still have the update occur automatically.
 Release:	0%{?dist}
 
-License:	GPL
+License:	GPLv2+
 Group:		Applications/Engineering
 Source:		http://downloads.sourceforge.net/project/freesteam/freesteam/%{version}/%{name}-%{version}.tar.bz2
 URL:		http://freesteam.sourceforge.net/
@@ -100,6 +100,7 @@ mkdir -p %{buildroot}%{_datadir}
 mkdir -p %{buildroot}%{ASCEND_MODELS}
 scons %{?_smp_mflags} \
 		%{?__cc:CC="%__cc"} \
+		DEBUG=1 \
 	ascend python
 
 %install
@@ -112,6 +113,7 @@ scons %{?_smp_mflags} \
 		LIBDIR=%{_libdir} \
 		INCDIR=%{_includedir} \
 		INSTALL_SHARE=%{_datadir} \
+		DEBUG=1 \
 	install
 
 # Fix uninstalled files
@@ -127,6 +129,8 @@ install -m 644 -D freesteam-gtk-64x64.png %{buildroot}%{_datadir}/icons/hicolor/
 cd ../..
 
 chmod 0755 %{buildroot}%{_libdir}/lib%{name}.so%{SONAME_MAJOR}
+chmod 0755 %{buildroot}%{_libdir}/python%{pyver}/site-packages/_freesteam.so
+chmod 0755 %{buildroot}%{ASCEND_MODELS}/libfreesteam_ascend.so
 
 %clean
 rm -rf %{buildroot}
@@ -169,8 +173,8 @@ rm -rf %{buildroot}
 %defattr(-, root, root)
 %endif
 %{_bindir}/freesteam-gtk
-%{_datadir}/icons
-%{_datadir}/applications
+%{_datadir}/icons/*
+%{_datadir}/applications/*
 %{_datadir}/freesteam/freesteam-gtk.glade
 
 #-----------------------------
