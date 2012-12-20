@@ -71,7 +71,8 @@ Finally, compile freesteam.lib as either Debug or Release version.
 
 * Under Linker->Input add freesteam.lib to the Additional Dependencies.
 
-You can use the code below for testing that everything works alright - it calculates the execution time for freesteam function calls:
+You can use the code below for testing that everything works alright - it 
+calculates the execution time for freesteam function calls:
 
  #include "stdafx.h"
  #include <iostream>

@@ -142,7 +142,7 @@ SteamState freesteam_region1_set_pT(double p, double T);
 SteamState freesteam_region2_set_pT(double p, double T);
 SteamState freesteam_region3_set_rhoT(double rho, double T);
 SteamState freesteam_region4_set_Tx(double T, double x);
-//%include "steam.h";
+// don't include steam.h directly because SWIG deals poorly with it
 
 %include "steam_ph.h";
 %include "steam_ps.h";
@@ -206,7 +206,14 @@ def solver2_region3(X, Y, x, y, guess):
 };
 
 %{
+#if SWIG_VERSION >= 0x020007
 #define GETTER(N) double struct_SteamState_struct_##N##_get(SteamState *S){return freesteam_##N(*S);}
+#define GETTER_REGION struct_SteamState_struct_##region_get
+#else
+#define GETTER(N) double SteamState_struct_##N##_get(SteamState *S){return freesteam_##N(*S);}
+#define GETTER_REGION SteamState_struct_##region_get
+#endif
+
 #define SPACE
 
 #define FNS(G,X) G(p) X G(T) X G(h) X G(u) X G(v) X G(rho) X G(x) X G(s) X G(cp) X G(cv) X G(w) X G(mu) X G(k)
@@ -216,7 +223,6 @@ FNS(GETTER,SPACE)
 #undef GETTER
 #undef SPACE
 
-#define GETTER_REGION struct_SteamState_struct_##region_get
 int GETTER_REGION(SteamState *S){
 	return (int)(S->region);
 }
