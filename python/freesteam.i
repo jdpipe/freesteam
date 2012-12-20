@@ -33,6 +33,7 @@ You may not use it in commercially-released software."
 
 %include "typemaps.i"
 
+%rename(SteamState) struct_SteamState_struct;
 %rename(steam_ph) freesteam_set_ph;
 %rename(steam_ps) freesteam_set_ps;
 %rename(steam_pT) freesteam_set_pT;
@@ -84,7 +85,6 @@ You may not use it in commercially-released software."
 %rename(dpsatdT_T) freesteam_region4_dpsatdT_T;
 %rename(surftens_T) freesteam_surftens_T;
 
-%ignore SteamState;
 %ignore freesteam_T;
 %ignore freesteam_p;
 %ignore freesteam_h;
@@ -127,7 +127,30 @@ double freesteam_region4_rhof_T(double T);
 double freesteam_region4_rhog_T(double T);
 double freesteam_region4_dpsatdT_T(double T);
 
-%include "steam.h";
+/* steam.h */
+typedef struct SteamState_struct{int region;} SteamState;
+
+int freesteam_region(SteamState S);
+SteamState freesteam_region1_set_pT(double p, double T);
+SteamState freesteam_region2_set_pT(double p, double T);
+SteamState freesteam_region3_set_rhoT(double rho, double T);
+SteamState freesteam_region4_set_Tx(double T, double x);
+int freesteam_fprint(FILE *f, SteamState S);
+double freesteam_p(SteamState S);
+double freesteam_T(SteamState S);
+double freesteam_rho(SteamState S);
+double freesteam_v(SteamState S);
+double freesteam_u(SteamState S);
+double freesteam_h(SteamState S);
+double freesteam_s(SteamState S);
+double freesteam_cp(SteamState S);
+double freesteam_cv(SteamState S);
+double freesteam_w(SteamState S);
+double freesteam_x(SteamState S);
+double freesteam_mu(SteamState S);
+double freesteam_k(SteamState S);
+
+
 %include "steam_ph.h";
 %include "steam_ps.h";
 %include "steam_pT.h";
@@ -158,8 +181,8 @@ def solver2_region3(X, Y, x, y, guess):
 
 /* SteamState in python is an object with attributes that are the properties,
   calculated when requested (note: *every time* they are requested) */
-%extend SteamState{
-	SteamState(){
+%extend SteamState_struct{
+	SteamState_struct(){
 		SteamState *S;
 		S = (SteamState *)malloc(sizeof(SteamState));
 		S->region = 0;
@@ -168,11 +191,12 @@ def solver2_region3(X, Y, x, y, guess):
 		return S;
 	}
 
-	~SteamState(){
+	~SteamState_struct(){
 		free($self);
 	}
 	
 	%immutable;
+	const int region;
 	const double p;
 	const double T;
 	const double u;
@@ -189,56 +213,60 @@ def solver2_region3(X, Y, x, y, guess):
 };
 
 %{
-double SteamState_p_get(SteamState *S){
+double struct_SteamState_struct_p_get(SteamState *S){
 	return freesteam_p(*S);
 }
 
-double SteamState_T_get(SteamState *S){
+double struct_SteamState_struct_T_get(SteamState *S){
 	return freesteam_T(*S);
 }
 
-double SteamState_h_get(SteamState *S){
+double struct_SteamState_struct_h_get(SteamState *S){
 	return freesteam_h(*S);
 }
 
-double SteamState_u_get(SteamState *S){
+double struct_SteamState_struct_u_get(SteamState *S){
 	return freesteam_u(*S);
 }
 
-double SteamState_v_get(SteamState *S){
+double struct_SteamState_struct_v_get(SteamState *S){
 	return freesteam_v(*S);
 }
 
-double SteamState_rho_get(SteamState *S){
+double struct_SteamState_struct_rho_get(SteamState *S){
 	return freesteam_rho(*S);
 }
 
-double SteamState_x_get(SteamState *S){
+double struct_SteamState_struct_x_get(SteamState *S){
 	return freesteam_x(*S);
 }
 
-double SteamState_s_get(SteamState *S){
+double struct_SteamState_struct_s_get(SteamState *S){
 	return freesteam_s(*S);
 }
 
-double SteamState_cp_get(SteamState *S){
+double struct_SteamState_struct_cp_get(SteamState *S){
 	return freesteam_cp(*S);
 }
 
-double SteamState_cv_get(SteamState *S){
+double struct_SteamState_struct_cv_get(SteamState *S){
 	return freesteam_cv(*S);
 }
 
-double SteamState_w_get(SteamState *S){
+double struct_SteamState_struct_w_get(SteamState *S){
 	return freesteam_w(*S);
 }
 
-double SteamState_mu_get(SteamState *S){
+double struct_SteamState_struct_mu_get(SteamState *S){
 	return freesteam_mu(*S);
 }
 
-double SteamState_k_get(SteamState *S){
+double struct_SteamState_struct_k_get(SteamState *S){
 	return freesteam_k(*S);
+}
+
+int struct_SteamState_struct_region_get(SteamState *S){
+	return S->region;
 }
 
 %}
