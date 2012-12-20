@@ -42,7 +42,7 @@ S = freesteam.steam_ph(100e5,300)
 
 print "TESTING RESULTS"
 
-print "region =",ord(S.region)
+print "region =",S.region
 print "h =",S.h
 print "v =",S.v
 print "p =",S.p
@@ -59,7 +59,7 @@ print "region?",freesteam.region_pv(p,v)
 
 S = freesteam.steam_pv(p,v)
 
-print "region =",ord(S.region)
+print "region =",S.region
 print "h =",S.h
 print "v =",S.v
 print "p =",S.p

@@ -34,25 +34,30 @@ You may not use it in commercially-released software."
 %include "typemaps.i"
 
 %rename(SteamState) struct_SteamState_struct;
-%rename(steam_ph) freesteam_set_ph;
+
 %rename(steam_ps) freesteam_set_ps;
+%rename(steam_ph) freesteam_set_ph;
+%rename(steam_Ts) freesteam_set_Ts;
+%rename(steam_pv) freesteam_set_pv;
+%rename(steam_Tx) freesteam_set_Tx;
 %rename(steam_pT) freesteam_set_pT;
 %rename(steam_pu) freesteam_set_pu;
-%rename(steam_Ts) freesteam_set_Ts;
-%rename(steam_Tx) freesteam_set_Tx;
-%rename(steam_pv) freesteam_set_pv;
 
 %rename(bounds_ps) freesteam_bounds_ps;
 %rename(bounds_ph) freesteam_bounds_ph;
 %rename(bounds_Ts) freesteam_bounds_Ts;
 %rename(bounds_pv) freesteam_bounds_pv;
 %rename(bounds_Tx) freesteam_bounds_Tx;
+%rename(bounds_pT) freesteam_bounds_pT;
+%rename(bounds_pu) freesteam_bounds_pu;
 
 %rename(region_ps) freesteam_region_ps;
 %rename(region_ph) freesteam_region_ph;
 %rename(region_Ts) freesteam_region_Ts;
 %rename(region_pv) freesteam_region_pv;
 %rename(region_Tx) freesteam_region_Tx;
+%rename(region_pT) freesteam_region_pT;
+%rename(region_pu) freesteam_region_pu;
 
 %rename(bound_pmax_T) freesteam_bound_pmax_T;
 
@@ -73,7 +78,6 @@ You may not use it in commercially-released software."
 %rename(PMAX) IAPWS97_PMAX;
 %rename(R) IAPWS97_R;
 %rename(PTRIPLE) IAPWS97_PTRIPLE;
-
 
 %rename(psat_T) freesteam_region4_psat_T;
 %rename(dpsatdT_T) freesteam_region4_dpsatdT_T;
@@ -102,6 +106,7 @@ You may not use it in commercially-released software."
 %include "common.h"
 
 %{
+// function prototypes for included C use -- for reading by GCC
 #include "steam.h"
 #include "steam_ph.h"
 #include "steam_ps.h"
@@ -127,29 +132,17 @@ double freesteam_region4_rhof_T(double T);
 double freesteam_region4_rhog_T(double T);
 double freesteam_region4_dpsatdT_T(double T);
 
-/* steam.h */
-typedef struct SteamState_struct{int region;} SteamState;
+// function names desired to be wrapped -- for reading by SWIG
 
-int freesteam_region(SteamState S);
+// steam.h:
+struct SteamState_struct{};
+typedef struct SteamState_struct SteamState;
+
 SteamState freesteam_region1_set_pT(double p, double T);
 SteamState freesteam_region2_set_pT(double p, double T);
 SteamState freesteam_region3_set_rhoT(double rho, double T);
 SteamState freesteam_region4_set_Tx(double T, double x);
-int freesteam_fprint(FILE *f, SteamState S);
-double freesteam_p(SteamState S);
-double freesteam_T(SteamState S);
-double freesteam_rho(SteamState S);
-double freesteam_v(SteamState S);
-double freesteam_u(SteamState S);
-double freesteam_h(SteamState S);
-double freesteam_s(SteamState S);
-double freesteam_cp(SteamState S);
-double freesteam_cv(SteamState S);
-double freesteam_w(SteamState S);
-double freesteam_x(SteamState S);
-double freesteam_mu(SteamState S);
-double freesteam_k(SteamState S);
-
+//%include "steam.h";
 
 %include "steam_ph.h";
 %include "steam_ps.h";
@@ -194,7 +187,7 @@ def solver2_region3(X, Y, x, y, guess):
 	~SteamState_struct(){
 		free($self);
 	}
-	
+
 	%immutable;
 	const int region;
 	const double p;
@@ -213,60 +206,19 @@ def solver2_region3(X, Y, x, y, guess):
 };
 
 %{
-double struct_SteamState_struct_p_get(SteamState *S){
-	return freesteam_p(*S);
-}
+#define GETTER(N) double struct_SteamState_struct_##N##_get(SteamState *S){return freesteam_##N(*S);}
+#define SPACE
 
-double struct_SteamState_struct_T_get(SteamState *S){
-	return freesteam_T(*S);
-}
+#define FNS(G,X) G(p) X G(T) X G(h) X G(u) X G(v) X G(rho) X G(x) X G(s) X G(cp) X G(cv) X G(w) X G(mu) X G(k)
 
-double struct_SteamState_struct_h_get(SteamState *S){
-	return freesteam_h(*S);
-}
+FNS(GETTER,SPACE)
 
-double struct_SteamState_struct_u_get(SteamState *S){
-	return freesteam_u(*S);
-}
+#undef GETTER
+#undef SPACE
 
-double struct_SteamState_struct_v_get(SteamState *S){
-	return freesteam_v(*S);
-}
-
-double struct_SteamState_struct_rho_get(SteamState *S){
-	return freesteam_rho(*S);
-}
-
-double struct_SteamState_struct_x_get(SteamState *S){
-	return freesteam_x(*S);
-}
-
-double struct_SteamState_struct_s_get(SteamState *S){
-	return freesteam_s(*S);
-}
-
-double struct_SteamState_struct_cp_get(SteamState *S){
-	return freesteam_cp(*S);
-}
-
-double struct_SteamState_struct_cv_get(SteamState *S){
-	return freesteam_cv(*S);
-}
-
-double struct_SteamState_struct_w_get(SteamState *S){
-	return freesteam_w(*S);
-}
-
-double struct_SteamState_struct_mu_get(SteamState *S){
-	return freesteam_mu(*S);
-}
-
-double struct_SteamState_struct_k_get(SteamState *S){
-	return freesteam_k(*S);
-}
-
-int struct_SteamState_struct_region_get(SteamState *S){
-	return S->region;
+#define GETTER_REGION struct_SteamState_struct_##region_get
+int GETTER_REGION(SteamState *S){
+	return (int)(S->region);
 }
 
 %}
