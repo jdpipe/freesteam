@@ -92,16 +92,16 @@ int Tvsx_ph_calc(struct BBoxInterp *bbox,
 		return 0;
 	case bb_deriv_eval:
 		/*fprintf(stderr,"derivative evaluation, region %d\n",S.region);*/
-		dTdp_h = freesteam_deriv(S,'T','p','h');
-		dTdh_p = freesteam_deriv(S,'T','h','p');
-		dvdp_h = freesteam_deriv(S,'v','p','h');
-		dvdh_p = freesteam_deriv(S,'v','h','p');
-		dsdp_h = freesteam_deriv(S,'s','p','h');
-		dsdh_p = freesteam_deriv(S,'s','h','p');
+		dTdp_h = freesteam_deriv(S,"Tph");
+		dTdh_p = freesteam_deriv(S,"Thp");
+		dvdp_h = freesteam_deriv(S,"vph");
+		dvdh_p = freesteam_deriv(S,"vhp");
+		dsdp_h = freesteam_deriv(S,"sph");
+		dsdh_p = freesteam_deriv(S,"shp");
 		switch(S.region){
 			case 4:
-				dxdp_h = freesteam_deriv(S,'x','p','h');
-				dxdh_p = freesteam_deriv(S,'x','h','p');
+				dxdp_h = freesteam_deriv(S,"xph");
+				dxdh_p = freesteam_deriv(S,"xhp");
 				break;
 			default:
 				/* try to 'slope' the solver into the saturation region */
