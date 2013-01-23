@@ -120,7 +120,7 @@ brackets around the functions declared. This means that, if you are linking to
 freesteam from C++ code, you must add those 'extern "C"{...}' statements
 around your '#include' statements for freesteam. Otherwise you will get
 linker errors because C++ munges function names, but C does not. In future we
-make incorporate the 'extern' statements into the freesteam header files, but
+may incorporate the 'extern' statements into the freesteam header files, but
 we have not yet done so.
 
 Accessing freesteam from ASCEND
