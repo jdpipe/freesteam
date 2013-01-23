@@ -155,6 +155,8 @@ SteamState freesteam_region4_set_Tx(double T, double x);
 	const double x;
 }
 
+%include "config.h"
+%include "common.h"
 
 // region 4.h
 double freesteam_region4_psat_T(double T);
@@ -205,7 +207,8 @@ double freesteam_surftens_T(double T);
 double freesteam_mu_rhoT(double rho, double T);
 
 // derivs.h
-double freesteam_deriv(SteamState S, char xyz[3]);
+//double freesteam_deriv(SteamState S, char xyz[3]);
+%include "derivs.h"
 // don't include derivs.h because we don't want all the functions taking char arguments
 
 // NOTE: solver2 routines have been removed from the Python bindings.
