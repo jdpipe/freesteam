@@ -523,7 +523,7 @@ if not env.get('NSIS'):
 
 if platform.system()=="Windows":
 	if with_installer:
-		inst64 = (0,1)[platform.architecture()[0] == "64bit"]
+		inst64 = ("0","1")[platform.architecture()[0] == "64bit"]
 		env.Append(NSISDEFINES={
 			'OUTFILE':"#dist/"+env['WIN_INSTALLER_NAME']
 			,"VERSION":version

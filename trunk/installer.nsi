@@ -16,7 +16,11 @@
 !define VERSION 0.cvs
 !endif
 
-!if ${INST64}
+!ifndef INST64
+!error "INST64 must be defined"
+!endif
+
+!if $INST64
 Name "freesteam ${VERSION} (amd64)"
 !else
 Name "freesteam ${VERSION}"
@@ -240,14 +244,14 @@ Section "Python language bindings"
 		SetOutPath $INSTDIR\python
 		File python\README.txt
 		File python\test.py
-		File python\phdiagram.py
+		;File python\phdiagram.py
 		File python\pTdiagram.py
-		File python\pudiagram.py
+		;File python\pudiagram.py
 		File python\rhoTdiagram.py
-		File python\satcurve.py
+		;File python\satcurve.py
 		File python\tables.py
 		File python\Thdiagram.py
-		File python\Tsdiagram.py
+		;File python\Tsdiagram.py
 
 		; Set output path to the installation directory.
 		SetOutPath $PYPATH\Lib\site-packages
