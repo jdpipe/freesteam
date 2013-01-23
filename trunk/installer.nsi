@@ -248,7 +248,7 @@ Section "Python language bindings"
 		File python\pTdiagram.py
 		;File python\pudiagram.py
 		File python\rhoTdiagram.py
-		;File python\satcurve.py
+		File python\satcurve.py
 		File python\tables.py
 		File python\Thdiagram.py
 		;File python\Tsdiagram.py

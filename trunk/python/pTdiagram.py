@@ -32,7 +32,7 @@ for p in pp:
 	for T in TT:
 		S = freesteam.steam_pT(p,T)
 		#print "p = %f, T = %f" % (p,T)
-		r = ord(S.region)
+		r = S.region
 		#print "p = %f MPa, T = %f K, region[%d,%d] = %d" % (p/1e6,T,x,y,r)
 		im[x,y] = float(r) / 4.
 		y += 1
