@@ -27,11 +27,19 @@ These functions are drawn from the IAPWS Guidelines document "Revised Advisory
 Note No. 3 Thermodynamic Derivatives from IAPWS Formulations". (2008).
 */
 
-/*
-	x, y, and z should be passed as character constants, which in C are e.g. 'p'
+/**
+	@param xyz is a 3-char string containing the names of the variables x y z
+	in the a derivative (dx/dy)_z, ie partial derivative of x wrt y holding z
+	constant. Valid variables for this function are p T v u h s g a f. Note
+	that speed of sound and specific heat capacities are NOT in the list at this
+	stage.
+
+	It was problematic having three different char constants, because of the
+	way C handles character constants versus how SWIG would like to wrap this 
+	function for use in Python.
 	http://stackoverflow.com/questions/433895/why-are-c-character-literals-ints-instead-of-chars
  */
-FREESTEAM_DLL double freesteam_deriv(SteamState S, FREESTEAM_CHAR x, FREESTEAM_CHAR y, FREESTEAM_CHAR z);
+FREESTEAM_DLL double freesteam_deriv(SteamState S, char xyz[3]);
 
 FREESTEAM_DLL double freesteam_drhofdT_T(double T);
 FREESTEAM_DLL double freesteam_drhogdT_T(double T);

@@ -73,7 +73,11 @@ PartialDerivFn PT1, TP1, PT2, TP2, TV3, VT3, TX4, XT4;
 
 	@return the numerical value of the derivative (∂z/∂x)y.
 */
-double freesteam_deriv(SteamState S, FREESTEAM_CHAR z, FREESTEAM_CHAR x, FREESTEAM_CHAR y){
+double freesteam_deriv(SteamState S, char xyz[3]){
+	char x = xyz[0];
+	char y = xyz[1];
+	char z = xyz[2];
+
 	PartialDerivFn *AB, *BA;
 
 	//fprintf(stderr,"CALCULATING (∂%c/∂%c)%c... ",z,x,y);

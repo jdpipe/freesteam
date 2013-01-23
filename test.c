@@ -425,7 +425,7 @@ void test_ph_derivs(double p, double h){
 	//freesteam_fprint(stderr,Sdp);
 
 	double dvdp_h_fdiff = (freesteam_v(Sdp) - freesteam_v(S))/dp;
-	double dvdp_h = freesteam_deriv(S,'v','p','h');
+	double dvdp_h = freesteam_deriv(S,"vph");
 	CHECK_VAL(dvdp_h,dvdp_h_fdiff,1e-3);
 #endif
 
@@ -449,7 +449,7 @@ void test_ph_derivs(double p, double h){
 
 	double dvdh_p_fdiff = (freesteam_v(Sdh) - freesteam_v(S))/dh;
 	
-	double dvdh_p = freesteam_deriv(S,'v','h','p');
+	double dvdh_p = freesteam_deriv(S,"vhp");
 
 	CHECK_VAL(dvdh_p,dvdh_p_fdiff,1e-3);
 

@@ -31,8 +31,6 @@ You may not use it in commercially-released software."
 %feature("autodoc", "1");
 %module(docstring=DOCSTRING) freesteam
 
-%include "typemaps.i"
-
 %rename(SteamState) struct_SteamState_struct;
 
 %rename(steam_ps) freesteam_set_ps;
@@ -102,11 +100,11 @@ You may not use it in commercially-released software."
 %ignore freesteam_region;
 %ignore ipow;
 
-%include "config.h"
-%include "common.h"
 
 %{
 // function prototypes for included C use -- for reading by GCC
+#include "config.h"
+#include "common.h"
 #include "steam.h"
 #include "steam_ph.h"
 #include "steam_ps.h"
@@ -123,71 +121,23 @@ You may not use it in commercially-released software."
 #include "solver2.h"
 #include "bounds.h"
 #include "surftens.h"
+#include "viscosity.h"
 %}
 
-/* TODO clean up region4.h so we can just include it here */
-double freesteam_region4_psat_T(double T);
-double freesteam_region4_Tsat_p(double p);
-double freesteam_region4_rhof_T(double T);
-double freesteam_region4_rhog_T(double T);
-double freesteam_region4_dpsatdT_T(double T);
+// steam.h
 
-// function names desired to be wrapped -- for reading by SWIG
+%nodefaultctor;
 
-// steam.h:
-struct SteamState_struct{};
-typedef struct SteamState_struct SteamState;
-
+typedef struct{} SteamState;
 SteamState freesteam_region1_set_pT(double p, double T);
 SteamState freesteam_region2_set_pT(double p, double T);
 SteamState freesteam_region3_set_rhoT(double rho, double T);
 SteamState freesteam_region4_set_Tx(double T, double x);
-// don't include steam.h directly because SWIG deals poorly with it
 
-%include "steam_ph.h";
-%include "steam_ps.h";
-%include "steam_pT.h";
-%include "steam_pu.h";
-%include "steam_Ts.h";
-%include "steam_Tx.h";
-%include "steam_pv.h";
-%include "bounds.h";
-%include "derivs.h";
-%include "surftens.h";
-
-#if 0
-/* FIXME convert solver2 routines to throw exception instead of return status */
-SteamState freesteam_solver2_region3(char X, char Y, double x, double y, SteamState guess, int *OUTPUT);
-SteamState freesteam_solver2_region1(char X, char Y, double x, double y, SteamState guess, int *OUTPUT);
-SteamState freesteam_solver2_region2(char X, char Y, double x, double y, SteamState guess, int *OUTPUT);
-SteamState freesteam_solver2_region4(char X, char Y, double x, double y, SteamState guess, int *OUTPUT);
-
-/* An experiment: make solver2 errors become Python exceptions. */
-%pythoncode %{
-def solver2_region3(X, Y, x, y, guess):
-	S, err = _freesteam.solver2_region3(X,Y,x,y,guess)
-	if(err):
-		raise ValueError("solver2_region3 returned error %d" % err);
-	return S
-%}
-#endif
-
-/* SteamState in python is an object with attributes that are the properties,
-  calculated when requested (note: *every time* they are requested) */
-%extend SteamState_struct{
-	SteamState_struct(){
-		SteamState *S;
-		S = (SteamState *)malloc(sizeof(SteamState));
-		S->region = 0;
-		S->R1.T = 0;
-		S->R1.p = 0;
-		return S;
+%extend SteamState{
+	double deriv(char *spec){
+		return freesteam_deriv(*$self, spec);
 	}
-
-	~SteamState_struct(){
-		free($self);
-	}
-
 	%immutable;
 	const int region;
 	const double p;
@@ -203,28 +153,80 @@ def solver2_region3(X, Y, x, y, guess):
 	const double mu;
 	const double k;
 	const double x;
-};
+}
+
+
+// region 4.h
+double freesteam_region4_psat_T(double T);
+double freesteam_region4_Tsat_p(double p);
+double freesteam_region4_rhof_T(double T);
+double freesteam_region4_rhog_T(double T);
+double freesteam_region4_dpsatdT_T(double T);
+
+// steam_ph.h
+int freesteam_bounds_ph(double p, double h, int verbose);
+int freesteam_region_ph(double p, double h);
+SteamState freesteam_set_ph(double p, double h);
+
+// steam_ps.h
+int freesteam_bounds_ps(double p, double s, int verbose);
+int freesteam_region_ps(double p, double s);
+SteamState freesteam_set_ps(double p, double s);
+
+// steam_pT.h
+SteamState freesteam_set_pT(double p, double T);
+
+// steam_pu.h
+int freesteam_region_pu(double p, double u);
+SteamState freesteam_set_pu(double p, double u);
+
+// steam_Ts.h
+int freesteam_bounds_Ts(double T, double s, int verbose);
+int freesteam_region_Ts(double T, double s);
+SteamState freesteam_set_Ts(double T, double s);
+
+// steam_Tx.h
+int freesteam_bounds_Tx(double T, double x, int verbose);
+int freesteam_region_Tx(double T, double x);
+SteamState freesteam_set_Tx(double T, double x);
+
+// steam_pv.h
+int freesteam_bounds_pv(double p, double v, int verbose);
+int freesteam_region_pv(double p, double v);
+SteamState freesteam_set_pv(double p, double v);
+
+// bounds.h
+SteamState freesteam_bound_pmax_T(double T);
+
+// surftens.h
+double freesteam_surftens_T(double T);
+
+// viscosity.h
+double freesteam_mu_rhoT(double rho, double T);
+
+// derivs.h
+double freesteam_deriv(SteamState S, char xyz[3]);
+// don't include derivs.h because we don't want all the functions taking char arguments
+
+// NOTE: solver2 routines have been removed from the Python bindings.
 
 %{
-#if SWIG_VERSION >= 0x020007
-#define GETTER(N) double struct_SteamState_struct_##N##_get(SteamState *S){return freesteam_##N(*S);}
-#define GETTER_REGION struct_SteamState_struct_##region_get
-#else
-#define GETTER(N) double SteamState_struct_##N##_get(SteamState *S){return freesteam_##N(*S);}
-#define GETTER_REGION SteamState_struct_##region_get
-#endif
+// implementation of getter functions
 
+#define FNS(G,X) G(p) X G(T) X G(h) X G(u) X G(v) X G(rho) X G(x) X G(s) \
+	X G(cp) X G(cv) X G(w) X G(mu) X G(k)
+#define GETTER(N) \
+	double SteamState_##N##_get(SteamState *state){\
+		return freesteam_##N(*state);\
+	}
 #define SPACE
-
-#define FNS(G,X) G(p) X G(T) X G(h) X G(u) X G(v) X G(rho) X G(x) X G(s) X G(cp) X G(cv) X G(w) X G(mu) X G(k)
-
 FNS(GETTER,SPACE)
-
 #undef GETTER
 #undef SPACE
 
-int GETTER_REGION(SteamState *S){
+int SteamState_region_get(SteamState *S){
 	return (int)(S->region);
 }
 
 %}
+
