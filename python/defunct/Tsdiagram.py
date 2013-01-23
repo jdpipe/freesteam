@@ -80,8 +80,8 @@ for p in pp:
 			continue
 		S = freesteam.steam_ps(p,s)
 		assert(fabs(S.s - s) < 1e-5)
-		dy = freesteam.freesteam_deriv(S,'T','s','p')
-		dx = 0.15
+		dy = freesteam.freesteam_deriv(S,"Tsp")
+		dx = 1
 		m = math.sqrt(dx**2 + dy**2)
 		x += [s/1.e3]
 		y += [S.T]
