@@ -36,6 +36,7 @@ if env.get('HAVE_PYTHON'):
 		python_env['SHLIBSUFFIX']=".pyd"
 	elif platform.system()=="Darwin":
 		python_env['SHLIBSUFFIX']='.so'
+		python_env.AppendUnique(LIBPATH=[distutils.sysconfig.PREFIX+"/lib"])
 
 	swiglib = python_env.SharedLibrary("freesteam",['freesteam.i']
 		, SHLIBPREFIX = '_'
