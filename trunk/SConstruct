@@ -173,6 +173,9 @@ else:
 		, toolpath=['scons']
 		, tools=['default']+tools
 	)
+	# import this one if it's been specified
+	if os.environ.get('PKG_CONFIG_PATH'):
+		env['ENV']['PKG_CONFIG_PATH'] = os.environ['PKG_CONFIG_PATH']
 
 Help(vars.GenerateHelpText(env))
 
