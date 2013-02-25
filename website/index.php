@@ -233,6 +233,8 @@ Journal of Engineering for Gas Turbines and Power</a><br>
     </a></dd>
   
   <dt>Free (in the OS sense) IAPWS calculators</dt>
+  <dd><a href="http://sourceforge.net/projects/jsteam/">jSteam</a> (a Java implementation, based on freesteam, GPL licensed)<br>
+  <dd><a href="http://www.hummeling.com/IF97">IF97</a> (a Java implementation, LGPL licensed)<br>
   <dd><a href="http://www.x-eng.com/">X Steam</a> (for Excel, OpenOffice and Matlab, licensing unclear)<br>
 
   Bernhard Spang's IF-97 Excel plug-in <a
