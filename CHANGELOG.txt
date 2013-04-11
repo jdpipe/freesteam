@@ -2,16 +2,16 @@ FREESTEAM CHANGELOG
 ===================
 
 2.1
-XXXXXXXXX
----------
+11 Apr 2013
+-----------
 
 - Add surface tension calculation
 - Added (T,s,p) surface plots (Rod Stephenson)
 - Addes speed of sound calculation for Region 3 (Garrett Greet)
+- GTK+ GUI (Carlo Tegano)
 - Experimental Qt GUI (Carlo)
-- Experimental GTK+ GUI (Carlo Tegano)
 - Experimental PyQt GUI (Juan-Jose Gomera)
-- Ability to access transport properties from ASCENDo
+- Ability to access transport properties from ASCEND
 - Experimental LabVIEW bindings (Andrew Young)
 - Fixed bug #522 with sonames on Gentoo (Michal Gorny)
 
