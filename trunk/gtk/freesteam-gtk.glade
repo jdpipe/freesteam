@@ -10,8 +10,9 @@
     <property name="type_hint">normal</property>
     <property name="program_name">freesteam</property>
     <property name="version">2.1</property>
-    <property name="copyright" translatable="yes">Copyright © 2010 Carlo Tegano, 2012 John Pye</property>
-    <property name="comments" translatable="yes">Calculate steam properties according to IAPWS-IF97 correlations (freesteam 2.1)</property>
+    <property name="copyright" translatable="yes">Copyright © 2010 Carlo Tegano
+© 2012-2013 John Pye</property>
+    <property name="comments" translatable="yes">Calculate steam properties according to IAPWS-IF97 correlations</property>
     <property name="website">http://freesteam.sourceforge.net/</property>
     <property name="website_label" translatable="yes">freesteam website</property>
     <property name="license" translatable="yes">This program is free software; you can redistribute it and/or
@@ -210,7 +211,7 @@ Carlo Tegano &lt;carlotorres95@gmail.com&gt;
   </object>
   <object class="GtkWindow" id="window">
     <property name="can_focus">False</property>
-    <property name="title">Gtk+ Steam Table - Release 0.0.1</property>
+    <property name="title">freesteam 2.1</property>
     <property name="icon">icon.png</property>
     <signal name="destroy" handler="on_window_destroy" swapped="no"/>
     <child>
