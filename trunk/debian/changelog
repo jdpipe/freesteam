@@ -1,8 +1,8 @@
-freesteam (2.1) precise; urgency=low
+freesteam (2.1-0~ubuntu1204) precise; urgency=low
 
   * New version, packaging also the GTK GUI
 
- -- John Pye <john.pye@anu.edu.au>  Mon, 17 Dec 2012 22:34:00 +1000
+ -- John Pye <john.pye@anu.edu.au>  Thu, 11 Apr 2013 22:34:00 +1000
 
 freesteam (2.0) karmic; urgency=low
 
