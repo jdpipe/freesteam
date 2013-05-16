@@ -28,9 +28,10 @@ Requirements:
   - MinGW-w64 http://mingw-w64.sourceforge.net/
 
 I recommend to use the tdm installer for MinGW-w64 http://tdm-gcc.tdragon.net/
+I recommend to install MinGW-w64 and xlw in paths without spaces (i.e. not in C:\Program Files)
 
 If required, create the config.h file: 
-copy ../config.h.in to ../confing.h then replace @VERSION@ by your version number
+copy ../config.h.in to ../config.h then replace @VERSION@ by your version number
 
 Finally use the MakeRelease.bat batch file to generate 32 and 64 bits xlls
 
