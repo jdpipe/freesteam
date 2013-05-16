@@ -1,0 +1,6 @@
+mingw32-make -f RunInterfaceGenerator.mak BUILD=Release
+mingw32-make[1]: Entering directory `X:/freesteam-2.0/msexcel'
+mingw32-make[1]: Nothing to be done for `all'.
+mingw32-make[1]: Leaving directory `X:/freesteam-2.0/msexcel'
+cmd /c if not exist .\\obj md .\\obj
+g++.exe -shared -static -s  .\\obj\\zeroin.o .\\obj\\viscosity.o .\\obj\\thcond.o .\\obj\\steam_pT.o .\\obj\\steam.o .\\obj\\region4.o .\\obj\\region3.o .\\obj\\region2.o .\\obj\\region1.o .\\obj\\xlwWrapper.o .\\obj\\fstm_sat.o .\\obj\\fstm_pT.o .\\obj\\common.o .\\obj\\b23.o -luser32 "C:\GNU\XLW\\xlw\\lib\\libxlw-gcc-s-4_0_0f0.a" -o freesteam.xll
