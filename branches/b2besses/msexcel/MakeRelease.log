@@ -1,6 +1,66 @@
+cmd /c del /f obj\\zeroin.o obj\\viscosity.o obj\\thcond.o obj\\steam_pT.o obj\\steam.o obj\\region4.o obj\\region3.o obj\\region2.o obj\\region1.o obj\\xlwWrapper.o obj\\fstm_sat.o obj\\fstm_pT.o obj\\common.o obj\\b23.o freesteam.xll xlwWrapper.cpp
+cmd /c rd obj
 mingw32-make -f RunInterfaceGenerator.mak BUILD=Release
-mingw32-make[1]: Entering directory `X:/freesteam-2.0/msexcel'
-mingw32-make[1]: Nothing to be done for `all'.
-mingw32-make[1]: Leaving directory `X:/freesteam-2.0/msexcel'
-cmd /c if not exist .\\obj md .\\obj
-g++.exe -shared -static -s  .\\obj\\zeroin.o .\\obj\\viscosity.o .\\obj\\thcond.o .\\obj\\steam_pT.o .\\obj\\steam.o .\\obj\\region4.o .\\obj\\region3.o .\\obj\\region2.o .\\obj\\region1.o .\\obj\\xlwWrapper.o .\\obj\\fstm_sat.o .\\obj\\fstm_pT.o .\\obj\\common.o .\\obj\\b23.o -luser32 "C:\GNU\XLW\\xlw\\lib\\libxlw-gcc-s-4_0_0f0.a" -o freesteam.xll
+mingw32-make[1]: Entering directory `X:/freesteam-svn/branches/b2besses/msexcel'
+"C:/mingw64/xlw-5.0.0f0/xlw/build/codeblocks-gcc/bin/Release/InterfaceGenerator.exe" cppinterface.h xlwWrapper.cpp
+XLW InterfaceGenerator
+Copyright (c) XLW Project 2006-2011. All Rights Reserved
+file has been read in
+file has been tokenized
+file has been stripped
+file has been function modeled
+file has been function described
+ .. writing xlwWrapper.cpp
+new file is a vector
+all done
+OK
+mingw32-make[1]: Leaving directory `X:/freesteam-svn/branches/b2besses/msexcel'
+cmd /c if not exist obj md obj
+gcc.exe -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\zeroin.c -o obj\\zeroin.o
+gcc.exe -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\viscosity.c -o obj\\viscosity.o
+gcc.exe -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\thcond.c -o obj\\thcond.o
+gcc.exe -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\steam_pT.c -o obj\\steam_pT.o
+gcc.exe -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\steam.c -o obj\\steam.o
+gcc.exe -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\region4.c -o obj\\region4.o
+gcc.exe -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\region3.c -o obj\\region3.o
+gcc.exe -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\region2.c -o obj\\region2.o
+gcc.exe -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\region1.c -o obj\\region1.o
+g++.exe -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c xlwWrapper.cpp -o obj\\xlwWrapper.o
+g++.exe -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c fstm_sat.cpp -o obj\\fstm_sat.o
+g++.exe -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c fstm_pT.cpp -o obj\\fstm_pT.o
+gcc.exe -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\common.c -o obj\\common.o
+gcc.exe -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\b23.c -o obj\\b23.o
+g++.exe -shared -s -o freesteam.xll -Wl,"C:\mingw64\xlw-5.0.0f0/xlw/include/xlw/xlw.def" -Wl,-static -static-libgcc -L"C:\mingw64\xlw-5.0.0f0\xlw\lib" obj\\zeroin.o obj\\viscosity.o obj\\thcond.o obj\\steam_pT.o obj\\steam.o obj\\region4.o obj\\region3.o obj\\region2.o obj\\region1.o obj\\xlwWrapper.o obj\\fstm_sat.o obj\\fstm_pT.o obj\\common.o obj\\b23.o -lxlw-gcc-s-5_0_0f0
+cmd /c del /f obj\\zeroin.o obj\\viscosity.o obj\\thcond.o obj\\steam_pT.o obj\\steam.o obj\\region4.o obj\\region3.o obj\\region2.o obj\\region1.o obj\\xlwWrapper.o obj\\fstm_sat.o obj\\fstm_pT.o obj\\common.o obj\\b23.o freesteam-w64.xll xlwWrapper.cpp
+cmd /c rd obj
+mingw32-make -f RunInterfaceGenerator.mak BUILD=Release
+mingw32-make[1]: Entering directory `X:/freesteam-svn/branches/b2besses/msexcel'
+"C:/mingw64/xlw-5.0.0f0/xlw/build/codeblocks-gcc/bin/Release/InterfaceGenerator.exe" cppinterface.h xlwWrapper.cpp
+XLW InterfaceGenerator
+Copyright (c) XLW Project 2006-2011. All Rights Reserved
+file has been read in
+file has been tokenized
+file has been stripped
+file has been function modeled
+file has been function described
+ .. writing xlwWrapper.cpp
+new file is a vector
+all done
+OK
+mingw32-make[1]: Leaving directory `X:/freesteam-svn/branches/b2besses/msexcel'
+cmd /c if not exist obj md obj
+x86_64-w64-mingw32-gcc.exe -m64 -DWIN64 -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\zeroin.c -o obj\\zeroin.o
+x86_64-w64-mingw32-gcc.exe -m64 -DWIN64 -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\viscosity.c -o obj\\viscosity.o
+x86_64-w64-mingw32-gcc.exe -m64 -DWIN64 -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\thcond.c -o obj\\thcond.o
+x86_64-w64-mingw32-gcc.exe -m64 -DWIN64 -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\steam_pT.c -o obj\\steam_pT.o
+x86_64-w64-mingw32-gcc.exe -m64 -DWIN64 -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\steam.c -o obj\\steam.o
+x86_64-w64-mingw32-gcc.exe -m64 -DWIN64 -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\region4.c -o obj\\region4.o
+x86_64-w64-mingw32-gcc.exe -m64 -DWIN64 -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\region3.c -o obj\\region3.o
+x86_64-w64-mingw32-gcc.exe -m64 -DWIN64 -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\region2.c -o obj\\region2.o
+x86_64-w64-mingw32-gcc.exe -m64 -DWIN64 -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\region1.c -o obj\\region1.o
+x86_64-w64-mingw32-g++.exe -m64 -DWIN64 -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c xlwWrapper.cpp -o obj\\xlwWrapper.o
+x86_64-w64-mingw32-g++.exe -m64 -DWIN64 -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c fstm_sat.cpp -o obj\\fstm_sat.o
+x86_64-w64-mingw32-g++.exe -m64 -DWIN64 -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c fstm_pT.cpp -o obj\\fstm_pT.o
+x86_64-w64-mingw32-gcc.exe -m64 -DWIN64 -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\common.c -o obj\\common.o
+x86_64-w64-mingw32-gcc.exe -m64 -DWIN64 -O3 -Wall -DNDEBUG -IC:\mingw64\xlw-5.0.0f0\\xlw\\include -I..\\ -c ..\\b23.c -o obj\\b23.o
+x86_64-w64-mingw32-g++.exe -shared -s -o freesteam-w64.xll -Wl,"C:\mingw64\xlw-5.0.0f0/xlw/include/xlw/xlw.def" -Wl,-static -static-libgcc -L"C:\mingw64\xlw-5.0.0f0\xlw\lib\x64" obj\\zeroin.o obj\\viscosity.o obj\\thcond.o obj\\steam_pT.o obj\\steam.o obj\\region4.o obj\\region3.o obj\\region2.o obj\\region1.o obj\\xlwWrapper.o obj\\fstm_sat.o obj\\fstm_pT.o obj\\common.o obj\\b23.o -lxlw-gcc-s-5_0_0f0
