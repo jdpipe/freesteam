@@ -29,5 +29,8 @@ Requirements:
 
 I recommend to use the tdm installer for MinGW-w64 http://tdm-gcc.tdragon.net/
 
-Use the MakeRelease.bat batch file to generate 32 and 64 bits xlls
+If required, create the config.h file: 
+copy ../config.h.in to ../confing.h then replace @VERSION@ by your version number
+
+Finally use the MakeRelease.bat batch file to generate 32 and 64 bits xlls
 
