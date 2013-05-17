@@ -1,7 +1,7 @@
 FREESTEAM XLL
 =============
 
-The freesteam add-in provides natives Excel function for calculating
+The freesteam add-in provides natives Excel functions for calculating
 the properties of water and steam using the IAPWS-IF97 industry-standard
 steam properties correlations.
 
@@ -17,6 +17,36 @@ To use the freesteam functions, click on the fx button on the formula
 bar, select the Freesteam category, select a function then enter your
 data. Functions description and examples of usage are given in the
 freesteam-list-of-functions.xls Excel sheet.
+
+Available Functions
+-------------------
+fstm_h_pT	Enthalpy (kJ/kg)
+fstm_s_pT	Entropy (kJ/kg.K)
+fstm_cp_pT	Isobaric heat capacity (kJ/kg.K)
+fstm_cv_pT	Isochoric heat capacity (kJ/kg.K)
+fstm_v_pT	Specific volume (m3/kg)
+fstm_rho_pT	Density (kg/m3)
+fstm_u_pT	Internal energy (kJ/kg)
+fstm_k_pT	Thermal conductivity (W/m.K)
+fstm_mu_pT	Dynamic viscosity (Pa.s)
+fstm_w_pT	Speed of sound (m/s)
+fstm_region_pT	Region of IAPWS-IF97
+	
+fstm_psat_T	Saturation pressure (bar)
+fstm_hf_T	Liquid Enthalpy at saturation (kJ/kg)
+fstm_hg_T	Vapour Enthalpy at saturation (kJ/kg)
+	
+fstm_Tsat_p	Saturation temperature (°C)
+fstm_hf_p	Liquid Enthalpy at saturation (kJ/kg)
+fstm_hg_p	Vapour Enthalpy at saturation (kJ/kg)
+
+fstm_h_Tx	Enthalpy at saturation (kJ/kg)
+fstm_u_Tx	Internal energy at saturation (kJ/kg)
+fstm_v_Tx	Specific volume at saturation (m3/kg)
+
+fstm_h_px	Enthalpy at saturation (kJ/kg)
+fstm_u_px	Internal energy at saturation (kJ/kg)
+fstm_v_px	Specific volume at saturation (m3/kg)
 
 Building freesteam.xll
 ----------------------
@@ -35,7 +65,7 @@ It is possible to install both MinGW and MinGW-w64
 e.g. in C:\mingw32 and C:\mingw64 respectively. If so:
  - It is useless to install mingw32-make with MinGW-w64 
    (it is included with MinGW 32 bits)
- - Because both C:\mingw32\bin and C:\mingw64\bin should be defined 
+ - Because both C:\mingw32\bin and C:\mingw64\bin are defined 
    in %PATH%, use non ambiguous compilers names like mingw32-gcc.exe 
    and x86_64-w64-mingw32-gcc.exe
 
