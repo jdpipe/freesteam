@@ -89,7 +89,7 @@ fstm_w_pT(
     double Temperature //0°C <= Temperature <= 800°C
 );
 
-short //Region of IAPWS-IF97
+int //Region of IAPWS-IF97
 fstm_region_pT(
     double Pressure, //0 bar <= Pressure <= 1000 bar
     double Temperature //0°C <= Temperature <= 800°C
@@ -140,25 +140,25 @@ fstm_h_Tx(
 double //Internal energy at saturation (kJ/kg)
 fstm_u_px(
     double Pressure, //0 bar <= Pressure <= Pcrit(220.64 bar)
-    double x //Steam quality (kg/kg), 0 <= x <= 1
+    double x //Steam Quality (kg/kg), 0 <= x <= 1
 );
 
 double //Internal energy at saturation (kJ/kg)
 fstm_u_Tx(
     double Temperature, //0°C <= Temperature <= Tcrit(373.946°C)
-    double x //Steam quality (kg/kg), 0 <= x <= 1
+    double x //Steam Quality (kg/kg), 0 <= x <= 1
 );
 
 double //Specific volume at saturation (m3/kg)
 fstm_v_px(
     double Pressure, //0 bar <= Pressure <= Pcrit(220.64 bar)
-    double x //Steam quality (kg/kg), 0 <= x <= 1
+    double x //Steam Quality (kg/kg), 0 <= x <= 1
 );
 
 double //Specific volume at saturation (m3/kg)
 fstm_v_Tx(
     double Temperature, //0°C <= Temperature <= Tcrit(373.946°C)
-    double x //Steam quality (kg/kg), 0 <= x <= 1
+    double x //Steam Quality (kg/kg), 0 <= x <= 1
 );
 
 #endif
