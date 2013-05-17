@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef FSTM_H
 #define FSTM_H
 
+#define FREESTEAM_BUILDING_LIB
+
 /*
  * C function declaration
  */

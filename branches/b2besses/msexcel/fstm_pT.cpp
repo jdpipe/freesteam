@@ -17,9 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#define FREESTEAM_BUILDING_LIB
-
-#include "cppinterface.h"
 #include "fstm.h"
 
 /*
@@ -165,9 +162,8 @@ fstm_w_pT(
 
 /*
  * Region of IAPWS-IF97
- * return a short, there is a strange compilation error if int is used
  */
-short //Region of IAPWS-IF97
+int //Region of IAPWS-IF97
 fstm_region_pT(
     double Pressure, //0 bar <= Pressure <= 1000 bar
     double Temperature //0°C <= Temperature <= 800°C

@@ -1,18 +1,35 @@
 WORKDIR = %cd%
 
+########################################################
+#	Platform specific section
+########################################################
+ifeq ($(PLATFORM), WIN64)
 CC = x86_64-w64-mingw32-gcc.exe
 CXX = x86_64-w64-mingw32-g++.exe
 LD = x86_64-w64-mingw32-g++.exe
-
-INC =  -I$(XLW)\\xlw\\include -I..\\
 LIBDIR =  -L"$(XLW)\xlw\lib\x64"
 CFLAGS =  -m64 -DWIN64 -O3 -Wall -DNDEBUG
+OUT = freesteam-w64.xll
+
+else
+CC = mingw32-gcc.exe
+CXX = mingw32-g++.exe
+LD = mingw32-g++.exe
+LIBDIR =  -L"$(XLW)\xlw\lib"
+CFLAGS =  -O3 -Wall -DNDEBUG
+OUT = freesteam.xll
+
+endif
+
+########################################################
+#	Common section
+########################################################
+INC =  -I$(XLW)\\xlw\\include -I..\\
 LIB =-lxlw-gcc-s-5_0_0f0
 LDFLAGS =  -Wl,"$(XLW)/xlw/include/xlw/xlw.def" \
         -Wl,-static \
         -static-libgcc
 OBJDIR = obj
-OUT = freesteam-w64.xll
 
 OBJ = $(OBJDIR)\\zeroin.o $(OBJDIR)\\viscosity.o $(OBJDIR)\\thcond.o $(OBJDIR)\\steam_pT.o $(OBJDIR)\\steam.o $(OBJDIR)\\region4.o $(OBJDIR)\\region3.o $(OBJDIR)\\region2.o $(OBJDIR)\\region1.o $(OBJDIR)\\xlwWrapper.o $(OBJDIR)\\fstm_sat.o $(OBJDIR)\\fstm_pT.o $(OBJDIR)\\common.o $(OBJDIR)\\b23.o
 
