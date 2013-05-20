@@ -9,6 +9,7 @@ CXX = x86_64-w64-mingw32-g++.exe
 LD = x86_64-w64-mingw32-g++.exe
 LIBDIR =  -L"$(XLW)\xlw\lib\x64"
 CFLAGS =  -m64 -DWIN64 -O3 -Wall -DNDEBUG
+OBJDIR = obj64
 OUT = freesteam-w64.xll
 
 else
@@ -17,6 +18,7 @@ CXX = mingw32-g++.exe
 LD = mingw32-g++.exe
 LIBDIR =  -L"$(XLW)\xlw\lib"
 CFLAGS =  -O3 -Wall -DNDEBUG
+OBJDIR = obj
 OUT = freesteam.xll
 
 endif
@@ -29,13 +31,12 @@ LIB =-lxlw-gcc-s-5_0_0f0
 LDFLAGS =  -Wl,"$(XLW)/xlw/include/xlw/xlw.def" \
         -Wl,-static \
         -static-libgcc
-OBJDIR = obj
 
 OBJ = $(OBJDIR)\\zeroin.o $(OBJDIR)\\viscosity.o $(OBJDIR)\\thcond.o $(OBJDIR)\\steam_pT.o $(OBJDIR)\\steam.o $(OBJDIR)\\region4.o $(OBJDIR)\\region3.o $(OBJDIR)\\region2.o $(OBJDIR)\\region1.o $(OBJDIR)\\xlwWrapper.o $(OBJDIR)\\fstm_sat.o $(OBJDIR)\\fstm_pT.o $(OBJDIR)\\common.o $(OBJDIR)\\b23.o
 
 all: release
 
-before: 
+before:
 	mingw32-make -f RunInterfaceGenerator.mak BUILD=Release
 	cmd /c if not exist $(OBJDIR) md $(OBJDIR)
 
@@ -86,7 +87,7 @@ $(OBJDIR)\\common.o: ..\\common.c
 $(OBJDIR)\\b23.o: ..\\b23.c
 	$(CC) $(CFLAGS) $(INC) -c ..\\b23.c -o $(OBJDIR)\\b23.o
 
-clean: 
+clean:
 	cmd /c del /f $(OBJ) $(OUT) xlwWrapper.cpp
 	cmd /c rd $(OBJDIR)
 
