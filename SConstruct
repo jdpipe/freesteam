@@ -5,7 +5,8 @@
 # We don't currently propose to support building freesteam from MSVS but
 # that shouldn't be necessary, as you should be able to use the MinGW-generated
 # DLL even with MSVS, because it only uses C code.
-import platform, sys, distutils.sysconfig, os, os.path
+import platform, sys, distutils.sysconfig, os, os.path, SCons.Warnings
+SCons.Warnings.suppressWarningClass(SCons.Warnings.VisualCMissingWarning)
 
 #version number for this copy of freesteam
 version = "2.1"
@@ -14,7 +15,7 @@ version = "2.1"
 pyversion = "%d.%d" % (sys.version_info[0],sys.version_info[1])
 
 # architecture
-instarch = ("","-amd64")[platform.architecture()[0] == "64bit"]
+instarch = ("-win32","-amd64")[platform.architecture()[0] == "64bit"]
 
 # Set up some platform-specific defaults
 if platform.system()=="Windows":
@@ -526,14 +527,20 @@ if not env.get('NSIS'):
 
 if platform.system()=="Windows":
 	if with_installer:
-		inst64 = ("0","1")[platform.architecture()[0] == "64bit"]
-		env.Append(NSISDEFINES={
-			'OUTFILE':"#dist/"+env['WIN_INSTALLER_NAME']
+		pyarch = ""
+		nsisarch = "win32"
+		if platform.architecture()[0] == "64bit":
+			nsisarch = "x64"
+			pyarch = ".amd64"
+		nsisdefs = {
+			'OUTFILE':"#dist/$WIN_INSTALLER_NAME"
 			,"VERSION":version
 			,'PYVERSION':pyversion
-			,'INST64':inst64
-		})
-		installer = env.Installer('installer.nsi')
+			,'PYPATCH':".%d"%sys.version_info[2]
+			,'PYARCH':str(pyarch)
+			,'INSTARCH':str(nsisarch)
+		}
+		installer = env.Installer('installer.nsi',NSISDEFINES=nsisdefs)
 		Depends(installer,["python","ascend"])
 		Depends(installer,[configscript])
 		env.Alias('installer',installer)
