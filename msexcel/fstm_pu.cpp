@@ -24,12 +24,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * Enthalpy (kJ/kg)
  */
 double //Enthalpy (kJ/kg)
-fstm_h_pT(
+fstm_h_pu(
     double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
+    double InternalEnergy //Internal energy (kJ/kg)
 )
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
+    SteamState S = fstm_set_pu(Pressure, InternalEnergy) ;
     return ( freesteam_h(S) * 0.001 )  ;
 }
 
@@ -37,12 +37,12 @@ fstm_h_pT(
  * Entropy (kJ/kg.K)
  */
 double //Entropy (kJ/kg.K)
-fstm_s_pT(
+fstm_s_pu(
     double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
+    double InternalEnergy //Internal energy (kJ/kg)
 )
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
+    SteamState S = fstm_set_pu(Pressure, InternalEnergy) ;
     return ( freesteam_s(S) * 0.001 )  ;
 }
 
@@ -50,12 +50,12 @@ fstm_s_pT(
  * Isobaric heat capacity (kJ/kg.K)
  */
 double //Isobaric heat capacity (kJ/kg.K)
-fstm_cp_pT(
+fstm_cp_pu(
     double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
+    double InternalEnergy //Internal energy (kJ/kg)
 )
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
+    SteamState S = fstm_set_pu(Pressure, InternalEnergy) ;
     return ( freesteam_cp(S) * 0.001 )  ;
 }
 
@@ -63,12 +63,12 @@ fstm_cp_pT(
  * Isochoric heat capacity (kJ/kg.K)
  */
 double //Isochoric heat capacity (kJ/kg.K)
-fstm_cv_pT(
+fstm_cv_pu(
     double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
+    double InternalEnergy //Internal energy (kJ/kg)
 )
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
+    SteamState S = fstm_set_pu(Pressure, InternalEnergy) ;
     return ( freesteam_cv(S) * 0.001 )  ;
 }
 
@@ -76,12 +76,12 @@ fstm_cv_pT(
  * Specific volume (m3/kg)
  */
 double //Specific volume (m3/kg)
-fstm_v_pT(
+fstm_v_pu(
     double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
+    double InternalEnergy //Internal energy (kJ/kg)
 )
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
+    SteamState S = fstm_set_pu(Pressure, InternalEnergy) ;
     return ( freesteam_v(S) )  ;
 }
 
@@ -89,38 +89,38 @@ fstm_v_pT(
  * Density (kg/m3)
  */
 double //Density (kg/m3)
-fstm_rho_pT(
+fstm_rho_pu(
     double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
+    double InternalEnergy //Internal energy (kJ/kg)
 )
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
+    SteamState S = fstm_set_pu(Pressure, InternalEnergy) ;
     return ( freesteam_rho(S) )  ;
 }
 
 /*
- * Internal energy (kJ/kg)
+ * Temperature (C)
  */
-double //Internal energy (kJ/kg)
-fstm_u_pT(
+double //Temperature (C)
+fstm_T_pu(
     double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
+    double InternalEnergy //Internal energy (kJ/kg)
 )
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
-    return ( freesteam_u(S) * 0.001)  ;
+    SteamState S = fstm_set_pu(Pressure, InternalEnergy) ;
+    return ( freesteam_T(S) - 273.15 )  ;
 }
 
 /*
  * Thermal conductivity (W/m.K)
  */
 double //Thermal conductivity (W/m.K)
-fstm_k_pT(
+fstm_k_pu(
     double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
+    double InternalEnergy //Internal energy (kJ/kg)
 )
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
+    SteamState S = fstm_set_pu(Pressure, InternalEnergy) ;
     return ( freesteam_k(S) )  ;
 }
 
@@ -128,12 +128,12 @@ fstm_k_pT(
  * Dynamic viscosity (Pa.s)
  */
 double //Dynamic viscosity (Pa.s)
-fstm_mu_pT(
+fstm_mu_pu(
     double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
+    double InternalEnergy //Internal energy (kJ/kg)
 )
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
+    SteamState S = fstm_set_pu(Pressure, InternalEnergy) ;
     return ( freesteam_mu(S) )  ;
 }
 
@@ -141,12 +141,12 @@ fstm_mu_pT(
  * Speed of sound (m/s)
  */
 double //Speed of sound (m/s)
-fstm_w_pT(
+fstm_w_pu(
     double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
+    double InternalEnergy //Internal energy (kJ/kg)
 )
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
+    SteamState S = fstm_set_pu(Pressure, InternalEnergy) ;
     return ( freesteam_w(S)  ) ;
 }
 
@@ -154,39 +154,43 @@ fstm_w_pT(
  * Region of IAPWS-IF97
  */
 int //Region of IAPWS-IF97
-fstm_region_pT(
+fstm_region_pu(
     double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
+    double InternalEnergy //Internal energy (kJ/kg)
 )
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
+    SteamState S = fstm_set_pu(Pressure, InternalEnergy) ;
     return ( freesteam_region(S) ) ;
+}
+
+/*
+ * Steam quality (kg/kg)
+ */
+double //Steam quality (kg/kg)
+fstm_x_pu(
+    double Pressure, //0 bar <= Pressure <= 1000 bar
+    double InternalEnergy //Internal energy (kJ/kg)
+)
+{
+    SteamState S = fstm_set_pu(Pressure, InternalEnergy) ;
+    return ( freesteam_x(S) ) ;
 }
 
 /*
  * Set steam state, test bounds and send error if any
  */
-SteamState fstm_set_pT(double Pressure, double Temperature)
+SteamState fstm_set_pu(double Pressure, double InternalEnergy)
 {
     double p = Pressure * 1.0e5 ;
-    double T = Temperature + 273.15 ;
+    double u = InternalEnergy * 1000.0 ;
+
+    SteamState S = freesteam_set_pu(p, u) ;
+
+    double T = freesteam_T(S) ;
 
     if ( ! ( ( p >= 0.0 ) && (p <= IAPWS97_PMAX ) && ( T >= IAPWS97_TMIN) && ( T <= IAPWS97_TMAX) ) )
     {
-        throw("#ERROR Pressure/Temperature out of bounds") ;
+        throw("#ERROR Pressure/Internal Energy out of bounds") ;
     }
-    return ( freesteam_set_pT(p, T) ) ;
-}
 
-/*
- * Custom exit function: stop the xll without crashing Excel
- */
-void freesteam_xll_exit(int status)
-{
-    char * ErrorMessage = new char[256] ;
-
-    sprintf(ErrorMessage, "#ERROR freesteam exit status = %i", status) ;
-    throw(ErrorMessage) ;
-
-    free(ErrorMessage) ;
-}
+    return ( S ) ;}
