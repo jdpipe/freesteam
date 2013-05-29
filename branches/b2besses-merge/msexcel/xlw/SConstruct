@@ -1,0 +1,23 @@
+import SCons.Warnings, os, sys, platform
+
+SCons.Warnings.suppressWarningClass(SCons.Warnings.VisualCMissingWarning)
+
+env = Environment(
+	ENV={"PATH":os.environ['PATH']}
+	, tools=['mingw']
+)
+env['ENV']['TMP'] = os.environ['TMP']
+
+srcs = env.Glob("src/*.cpp")
+
+env.Append(
+	CPPPATH="#/include"
+	,LINKFLAGS=['-static-libgcc','-static-libstdc++']
+)
+ 
+env.StaticLibrary("lib/xlw",srcs)
+
+ifsrcs = env.Glob("ifgen/*.cpp")
+
+env.Program("xlw_ifgen",ifsrcs)
+

@@ -584,9 +584,9 @@ void test_region3_ps_point(double p,double s, double T, double v){
 	double v1 = freesteam_region3_v_ps(p*1e6,s*1e3);
 	CHECK_VAL(v1,v,RELTOL);
 
-	//SteamState S = freesteam_set_ps(p*1e6,s*1e3);
-	//CHECK_VAL(freesteam_p(S)/1e6,p,RELTOL);
-	//CHECK_VAL(freesteam_s(S)/1e3,s,RELTOL);
+	SteamState S = freesteam_set_ps(p*1e6,s*1e3);
+	CHECK_VAL(freesteam_p(S)/1e6,p,RELTOL);
+	CHECK_VAL(freesteam_s(S)/1e3,s,RELTOL);
 }
 
 void testregion3ps(void){

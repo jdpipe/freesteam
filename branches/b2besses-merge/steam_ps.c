@@ -19,14 +19,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define FREESTEAM_BUILDING_LIB
 #include "steam_ps.h"
 
+//#define USE_SOLVER_FOR_PS3
+
 #include "region1.h"
 #include "region2.h"
 #include "region3.h"
 #include "region4.h"
 #include "zeroin.h"
 #include "b23.h"
-#include "solver2.h"
 #include "backwards.h"
+
+#ifdef USE_SOLVER_FOR_PS3
+# include "solver2.h"
+#endif
 
 #include <stdlib.h>
 
@@ -146,7 +151,6 @@ SteamState freesteam_set_ps(double p, double s){
 			zeroin_solve(&ps_region2_fn, &D, lb, ub, tol, &sol, &err);
 			return freesteam_region2_set_pT(p,sol);
 		case 3:
-#define USE_SOLVER_FOR_PS3
 #ifdef USE_SOLVER_FOR_PS3
 		/* FIXME looks like a problem with the derivative routines here? */
 			{
