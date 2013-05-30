@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+Import('env')
+import os, sys, platform
+
+if platform.system()=="Windows":
+
+	env.SConscript(['xlw/SConscript'],'env')
+
+	xlenv = env.Clone()
+
+	xlenv['XLW'] = "./xlw"
+
+	print "XLW =",xlenv['XLW']
+
+	XLL64 = False
+	libxlw_path = "$XLW/lib"
+	libxlw_name = 'xlw'
+	if XLL64:
+		libxlw_path = "$XLW/lib/x64"
+
+	xlenv['SHLIBSUFFIX'] = ".xll"
+	xlenv['SHLIBPREFIX'] = ""
+
+	xlenv.Append(
+		CPPPATH=["$XLW/include","#"]
+		,LIBPATH=[libxlw_path]
+		,LINKFLAGS=['-static','-s','-static-libgcc','-static-libstdc++']
+		,LIBS=['freesteam','user32']
+	)
+
+
+	# Generate foo.vds from foo.txt using mk_vds
+	iface = xlenv.XlwWrapper('cppinterface.h')
+
+
+	#xlenv.Command('xlwWrapper.cpp','cppinterface.h',"msexcel\\xlw\\xlw_ifgen.exe $SOURCE $TARGET")
+
+	xlenv1 = xlenv.Clone()
+
+	srcs = xlenv1.Glob("fstm_*.cpp") + iface
+	#srcs += xlenv.Glob("../*.c")
+
+	if 1:
+		xlenv1.Append(
+			CPPPATH=env.get('GSL_CPPPATH')
+		)
+
+		if xlenv1['GSL_STATIC']:
+			srcs = env.get('GSL_STATICLIBS',[]) + srcs
+		else:
+			xlenv1.Append(
+				LIBS = env.get('GSL_LIBS')
+				,LIBPATH = env.get('GSL_LIBPATH')
+			)
+	else:
+		xlenv1.Append(
+			LIBS = ['m','gslcblas','gsl']
+			,LIBPATH = ['c:\\mingw\\32\\lib']
+		)
+	xlenv1.AppendUnique(
+		LIBPATH=[".."]
+		,LIBS=['xlw']
+	)
+
+	xlenv1.SharedLibrary("freesteam",srcs)
+

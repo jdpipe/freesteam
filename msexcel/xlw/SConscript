@@ -7,13 +7,17 @@ ifgen_env = env.Clone()
 srcs = libxlw_env.Glob("src/*.cpp")
 
 libxlw_env.Append(
-	CPPPATH="#/include"
+	CPPPATH="./include"
 	,LINKFLAGS=['-static-libgcc','-static-libstdc++']
 )
 
 libxlw_env.StaticLibrary("lib/xlw",srcs)
 
 ifsrcs = ifgen_env.Glob("ifgen/*.cpp")
+
+ifgen_env.Append(
+	CPPPATH="./include"
+)
 
 ifgen_tool = ifgen_env.Program("xlw_ifgen",ifsrcs)
 
@@ -24,8 +28,8 @@ def ifgen_emitter(target, source, env):
 
 # Create a builder (that uses the emitter) to build .vds files from .txt files
 # The use of abspath is so that mk_vds's directory doesn't have to be added to the shell path.
-bld = Builder(action = xlw_ifgen[0].abspath + ' $SOURCE',
-	      emitter = igfen_emitter,
+bld = Builder(action = ifgen_tool[0].abspath + ' $SOURCE $TARGET',
+	      emitter = ifgen_emitter,
 	      prefix = 'xlw', suffix = '.cpp')
 
 # Add the new Builder to the list of builders
