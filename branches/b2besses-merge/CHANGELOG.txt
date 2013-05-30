@@ -1,6 +1,13 @@
 FREESTEAM CHANGELOG
 ===================
 
+2.2
+30 May 2013
+-----------
+
+- Incorporate new MS Excel add-in (Ben Besses)
+- Excel add-in included in installer.
+
 2.1
 11 Apr 2013
 -----------

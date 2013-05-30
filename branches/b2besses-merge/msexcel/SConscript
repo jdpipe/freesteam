@@ -6,61 +6,60 @@ if platform.system()=="Windows":
 
 	env.SConscript(['xlw/SConscript'],'env')
 
+	#print "LIBPATH =",env.get('LIBPATH')
+	#print "GSLSTATIC = ",env.get('GSL_STATIC')
 	xlenv = env.Clone()
 
-	xlenv['XLW'] = "./xlw"
-
-	print "XLW =",xlenv['XLW']
-
+	# FIXME we still need to figure out how to build 64-bit XLL, probably
+	# not possible with the XLW 4.0 code we've included in the xlw/ dir.
 	XLL64 = False
-	libxlw_path = "$XLW/lib"
+
+	libxlw_path = "xlw/lib"
 	libxlw_name = 'xlw'
 	if XLL64:
-		libxlw_path = "$XLW/lib/x64"
-
-	xlenv['SHLIBSUFFIX'] = ".xll"
-	xlenv['SHLIBPREFIX'] = ""
+		libxlw_path = "$XLW/lib64"
 
 	xlenv.Append(
-		CPPPATH=["$XLW/include","#"]
+		CPPPATH=["xlw/include","#"]
 		,LIBPATH=[libxlw_path]
 		,LINKFLAGS=['-static','-s','-static-libgcc','-static-libstdc++']
 		,LIBS=['freesteam','user32']
 	)
 
+	subst_dict = {
+		'@VERSION@':"$FREESTEAM_VERSION"
+	}
 
-	# Generate foo.vds from foo.txt using mk_vds
-	iface = xlenv.XlwWrapper('cppinterface.h')
+	xlenv.Append(SUBST_DICT=subst_dict)
+	iface_h = xlenv.SubstInFile('cppinterface.h.in')
 
-
-	#xlenv.Command('xlwWrapper.cpp','cppinterface.h',"msexcel\\xlw\\xlw_ifgen.exe $SOURCE $TARGET")
+	# Generate xlwcppinterface.cpp from cppinterface.h using xlw/xlw_ifgen
+	iface = xlenv.XlwWrapper(iface_h)
 
 	xlenv1 = xlenv.Clone()
 
 	srcs = xlenv1.Glob("fstm_*.cpp") + iface
-	#srcs += xlenv.Glob("../*.c")
 
-	if 1:
-		xlenv1.Append(
-			CPPPATH=env.get('GSL_CPPPATH')
-		)
+	xlenv1.Append(
+		CPPPATH=env.get('GSL_CPPPATH')
+	)
 
-		if xlenv1['GSL_STATIC']:
-			srcs = env.get('GSL_STATICLIBS',[]) + srcs
-		else:
-			xlenv1.Append(
-				LIBS = env.get('GSL_LIBS')
-				,LIBPATH = env.get('GSL_LIBPATH')
-			)
+	if xlenv1['GSL_STATIC']:
+		srcs = env.get('GSL_STATICLIBS',[]) + srcs
 	else:
 		xlenv1.Append(
-			LIBS = ['m','gslcblas','gsl']
-			,LIBPATH = ['c:\\mingw\\32\\lib']
+			LIBS = env.get('GSL_LIBS')
+			,LIBPATH = env.get('GSL_LIBPATH')
 		)
+
 	xlenv1.AppendUnique(
 		LIBPATH=[".."]
 		,LIBS=['xlw']
 	)
 
-	xlenv1.SharedLibrary("freesteam",srcs)
+	# this is our Excel add-in, freesteam.xll:
+	xlenv1.SharedLibrary("freesteam",srcs
+		,SHLIBSUFFIX='.xll'
+		,SHLIBPREFIX=''
+	)
 

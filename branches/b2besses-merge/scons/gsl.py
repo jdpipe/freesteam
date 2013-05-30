@@ -80,7 +80,7 @@ def generate(env):
 				env1['CPPPATH'] = None
 				env1['LIBPATH'] = None
 				env1['LIBS'] = None
-				print "RUNNING gsl-config"
+				#print "RUNNING gsl-config"
 				env1.ParseConfig(cmd)
 				env['GSL_CPPPATH'] = winpath(env1.get('CPPPATH')[0])
 				env['GSL_LIBPATH'] = winpath(env1.get('LIBPATH')[0])
@@ -94,7 +94,7 @@ def generate(env):
 			env['GSL_CPPPATH'] = env.get('CPPPATH')
 			env['GSL_LIBPATH'] = env.get('LIBPATH')
 
-			print "GSL_STATIC =",env.get('GSL_STATIC')
+			#print "GSL_STATIC =",env.get('GSL_STATIC')
 
 			if env.get('GSL_STATIC'):
 				env['GSL_STATICLIBS'] = [os.path.join(env.get('GSL_LIBPATH')[0],"lib%s.a"%i) for i in ["gsl","gslcblas"]]
@@ -117,10 +117,10 @@ def generate(env):
 			#		if 'gslcblas' in env['GSL_LIBS']:
 			#			env['GSL_LIBS'].remove('gslcblas')
 
-		print "GSL_LIBS =",env.get('GSL_LIBS')
-		print "GSL_LIBPATH =",env.get('GSL_LIBPATH')
-		print "GSL_CPPPATH =",env.get('GSL_CPPPATH')
-		print "GSL_STATICLIBS =",env.get('GSL_STATICLIBS')
+		#print "GSL_LIBS =",env.get('GSL_LIBS')
+		#print "GSL_LIBPATH =",env.get('GSL_LIBPATH')
+		#print "GSL_CPPPATH =",env.get('GSL_CPPPATH')
+		#print "GSL_STATICLIBS =",env.get('GSL_STATICLIBS')
 
 	except Exception,e:
 		print "Checking for GSL... not found! (%s)" % str(e)
@@ -143,5 +143,6 @@ def exists(env):
 		if not subprocess.call('pkg-config libgvc libagraph --exists'):
 			return True
 		return False
-# vim: set ts=4 noexpandtab:
+
+# vim: set ts=4 noexpandtab:
 

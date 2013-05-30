@@ -49,6 +49,9 @@ InstallDir $PROGRAMFILES64\freesteam
 InstallDir $PROGRAMFILES32\freesteam
 !endif
 
+; note http://nsis.sourceforge.net/Shortcuts_removal_fails_on_Windows_Vista
+RequestExecutionLevel admin
+
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
 
@@ -76,6 +79,7 @@ Var /GLOBAL PYINSTALLED
 Var /GLOBAL ASCENDINSTALLED
 Var /GLOBAL LIBINSTALLED
 Var /GLOBAL EXAMPLESINSTALLED
+Var /GLOBAL EXCELINSTALLED
 
 Function .onInit
 !ifdef INST64
@@ -125,6 +129,7 @@ uninst:
 	StrCpy $ASCENDINSTALLED ""
 	StrCpy $LIBINSTALLED ""
 	StrCpy $EXAMPLESINSTALLED ""
+	StrCpy $EXCELINSTALLED ""
 	
 	Call DetectPython
 	Pop $PYOK
@@ -171,6 +176,24 @@ Section "freesteam (required)"
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\freesteam" "NoRepair" 1
   WriteUninstaller "uninstall.exe"
   
+SectionEnd
+
+;--------------------------------
+
+Section "MS Excel add-in"
+!ifdef INST64
+  SetRegView 64
+!endif
+  DetailPrint "--- EXCELL ADD-IN FILES ---"
+  SetOutPath $INSTDIR
+  File "msexcel\freesteam.xll"
+  SetOutPath $INSTDIR\msexcel
+  File "msexcel\test.xls"
+  File "msexcel\freesteam-tests-functions.xls"
+  File "msexcel\freesteam-tests-memory.xls"
+  File "msexcel\README.txt"
+  WriteRegDWORD HKLM "SOFTWARE\freesteam" "Excel" 1
+  StrCpy $EXCELINSTALLED "1"  
 SectionEnd
 
 ;--------------------------------
@@ -305,27 +328,32 @@ Section "Start Menu Shortcuts"
 !ifdef INST64
   SetRegView 64
 !endif
-  
-  WriteRegDWORD HKLM "SOFTWARE\freesteam" "StartMenu" 1
+	DetailPrint "--- START MENU SHORTCUTS ---"
+	SetShellVarContext all
+	WriteRegDWORD HKLM "SOFTWARE\freesteam" "StartMenu" 1
 
-  CreateDirectory "$SMPROGRAMS\${SMNAME}"
-  CreateShortCut "$SMPROGRAMS\${SMNAME}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  CreateShortCut "$SMPROGRAMS\${SMNAME}\LICENSE.lnk" "$INSTDIR\LICENSE.txt" "" "$INSTDIR\LICENSE.txt" 0
-  CreateShortCut "$SMPROGRAMS\${SMNAME}\README.lnk" "$INSTDIR\README.txt" "" "$INSTDIR\README.txt" 0
-  CreateShortCut "$SMPROGRAMS\${SMNAME}\CHANGELOG.lnk" "$INSTDIR\CHANGELOG.txt" "" "$INSTDIR\CHANGELOG.txt" 0
+	CreateDirectory "$SMPROGRAMS\${SMNAME}"
+	CreateShortCut "$SMPROGRAMS\${SMNAME}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
+	CreateShortCut "$SMPROGRAMS\${SMNAME}\LICENSE.lnk" "$INSTDIR\LICENSE.txt" "" "$INSTDIR\LICENSE.txt" 0
+	CreateShortCut "$SMPROGRAMS\${SMNAME}\README.lnk" "$INSTDIR\README.txt" "" "$INSTDIR\README.txt" 0
+	CreateShortCut "$SMPROGRAMS\${SMNAME}\CHANGELOG.lnk" "$INSTDIR\CHANGELOG.txt" "" "$INSTDIR\CHANGELOG.txt" 0
 
-  ${If} $EXAMPLESINSTALLED == "1"
-	CreateShortCut "$SMPROGRAMS\${SMNAME}\Example source code.lnk" "$INSTDIR\examples" "" "$INSTDIR\examples" 0
-  ${EndIf}
+	${If} $EXCELINSTALLED == "1"
+		CreateShortCut "$SMPROGRAMS\${SMNAME}\Excel add-in.lnk" "$INSTDIR\msexcel" "" "$INSTDIR\msexcel" 0
+	${EndIf}
 
-  ${If} $PYINSTALLED == "1"
-	CreateShortCut "$SMPROGRAMS\${SMNAME}\Python README.lnk" "$INSTDIR\python\README.txt" "" "$INSTDIR\python\README.txt" 0
-	CreateShortCut "$SMPROGRAMS\${SMNAME}\Python scripts.lnk" "$INSTDIR\python" "" "$INSTDIR\python" 0
-  ${EndIf}
-  
-  ${If} $ASCENDINSTALLED == "1"
-	CreateShortCut "$SMPROGRAMS\${SMNAME}\ASCEND models.lnk" "$INSTDIR\ascend" "" "$INSTDIR\ascend" 0
-  ${EndIf}
+	${If} $EXAMPLESINSTALLED == "1"
+		CreateShortCut "$SMPROGRAMS\${SMNAME}\Example source code.lnk" "$INSTDIR\examples" "" "$INSTDIR\examples" 0
+	${EndIf}
+
+	${If} $PYINSTALLED == "1"
+		CreateShortCut "$SMPROGRAMS\${SMNAME}\Python README.lnk" "$INSTDIR\python\README.txt" "" "$INSTDIR\python\README.txt" 0
+		CreateShortCut "$SMPROGRAMS\${SMNAME}\Python scripts.lnk" "$INSTDIR\python" "" "$INSTDIR\python" 0
+	${EndIf}
+
+	${If} $ASCENDINSTALLED == "1"
+		CreateShortCut "$SMPROGRAMS\${SMNAME}\ASCEND models.lnk" "$INSTDIR\ascend" "" "$INSTDIR\ascend" 0
+	${EndIf}
   
 SectionEnd
 
@@ -341,12 +369,26 @@ Section "Uninstall"
 
 	ReadRegDWORD $0 HKLM "SOFTWARE\freesteam" "Lib"
 	${If} $0 != 0
+		DetailPrint "--- REMOVING CORE FREESTEAM COMPONENTS ---"
 		Delete "$INSTDIR\freesteam-config"
 		Delete "$INSTDIR\freesteam-config.bat"
 		RmDir /r "$INSTDIR\include"
 		Delete "$INSTDIR\lib\libfreesteam.a"
 		Delete "$INSTDIR\lib\freesteam.def"
 		RmDir "$INSTDIR\lib"
+	${EndIf}
+
+;--- excel add-in ---
+
+	ReadRegDWORD $0 HKLM "SOFTWARE\freesteam" "Excel"
+	${If} $0 != 0
+		DetailPrint "--- REMOVING EXCEL ADD-IN ---"
+		Delete "$INSTDIR\freesteam.xll"
+		Delete "$INSTDIR\msexcel\README.txt"
+		Delete "$INSTDIR\msexcel\test.xls"
+		Delete "$INSTDIR\msexcel\freesteam-tests-functions.xls"
+		Delete "$INSTDIR\msexcel\freesteam-tests-memory.xls"
+		RmDir "$INSTDIR\msexcel"
 	${EndIf}
 
 ;--- example code ---
@@ -399,6 +441,7 @@ Section "Uninstall"
 	ReadRegDWORD $1 HKLM "SOFTWARE\freesteam" "StartMenu"
 	${If} $1 != 0:
 		; Remove shortcuts, if any
+		SetShellVarContext all
 		DetailPrint "--- REMOVING START MENU SHORTCUTS ---"
 		RmDir /r "$SMPROGRAMS\${SMNAME}"
 	${EndIf}
@@ -419,7 +462,8 @@ Section "Uninstall"
 	Delete $INSTDIR\uninstall.exe
 	
 	; Remove directories used (should be empty now)
-	RMDir "$INSTDIR"
+	DetailPrint "--- REMOVING INSTALLATION DIR ---"
+	RMDir $INSTDIR
 	
 SectionEnd
 

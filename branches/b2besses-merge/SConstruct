@@ -9,7 +9,7 @@ import platform, sys, distutils.sysconfig, os, os.path, SCons.Warnings
 SCons.Warnings.suppressWarningClass(SCons.Warnings.VisualCMissingWarning)
 
 #version number for this copy of freesteam
-version = "2.1"
+version = "2.2"
 
 # version number of python
 pyversion = "%d.%d" % (sys.version_info[0],sys.version_info[1])
@@ -302,6 +302,8 @@ if  not env.get('HAVE_ASCEND'):
 if not env['HAVE_PYTHON']:
 	print "WARNING: Freesteam will be built without Python bindings.", without_python_reason
 
+if not platform.system()=="Windows":
+	print "NOTE: MS Excel add-in will not be built. User is too cool to use Windows."
 
 # Flags to give some more warning output from the GCC compiler
 
@@ -422,6 +424,7 @@ env.SConscript(["examples/SConscript"],'env')
 env.SConscript(["gtk/SConscript"],'env')
 
 # Build the MS Excel bindings that everyone will REALLY like 8-P
+env['FREESTEAM_VERSION'] = version
 env.SConscript(["msexcel/SConscript"],'env')
 
 # Create the test program. Currently we're not using any unit testing library;
