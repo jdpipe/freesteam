@@ -11,14 +11,19 @@ you required.
 
 freesteam is not a stand-alone program in its own right. Rather, it is a 'shared
 library' that implements a range of functions that you can use to work out steam
-properties in your own program that you write yourself.
+properties in your own program that you write yourself. As well as a shared 
+library, a MS Excel add-in is included allowing various freesteam functions to 
+be accessed from that spreadsheet program, and a Python module is included to
+allow freesteam to be accessed from the Python programming language. Finally, 
+an ASCEND external library is included to allow IAPWS-IF97 steam properties to
+be calculated from the ASCEND simulation environment.
 
-This version 2.x release of freesteam is a complete re-write of freesteam in 
-pure C. We have removed all the complicated C++ template code (excessively
-complicated) as well as the units-of-measurement code (cute, but also
-rather hard to maintain). This has the immediate advantage that the resulting
-DLLs/libraries can be linked to from all C/C++ compilers, something which was 
-not possible with the previous C++ version.
+Version 2.x of freesteam was a complete re-write of freesteam in pure C. We
+removed all the complicated C++ template code (excessively complicated) as well
+as the units-of-measurement code (cute, but also rather hard to maintain). This
+has the immediate advantage that the resulting DLLs/libraries can be linked to 
+from all C/C++ compilers, something which was not possible with the previous 
+C++ version of freesteam.
 
 For more information, see
 http://freesteam.sourceforge.net/
@@ -164,8 +169,17 @@ no specific code is provided for this, but if there is sufficient interest it
 could certainly be developed.
 
 
-Accessing freesteam from Excel or OpenOffice
---------------------------------------------
+Accessing freesteam from Excel 
+------------------------------
+
+Version 2.2 of freesteam includes, for the first time, a new 'XLL' freesteam
+add-in for Microsoft Excel. See the file 'README.txt' in the msexcel folder
+for more details (a link will be installed in your Start menu if you used
+our Windows '*.exe' installer for freesteam. Some example spreadsheets are
+included there as well.
+
+Accessing freesteam from LibreOffice
+------------------------------------
 
 freesteam is currently not accessible from spreadsheet programs. We do propose
 to implement bindings for these environments, but it hasn't happened yet.
