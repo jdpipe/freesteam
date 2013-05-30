@@ -341,7 +341,7 @@ specfile = env.SubstInFile('freesteam.spec.in')
 
 install_config = env.InstallProgram("${INSTALL_ROOT}$INSTALL_BIN",configscript)
 
-default_targets =['python','ascend']
+default_targets =['python','ascend','msexcel']
 
 # Here is the list of all of the source files that will go into
 # the freesteam DLL/SO.
@@ -377,6 +377,8 @@ if platform.system()=="Linux":
 
 lib = lib_env.SharedLibrary("freesteam",lib_srcs)
 env.Depends('python',lib)
+
+liba = lib_env.StaticLibrary("lib/freesteam",lib_srcs)
 
 libs = [lib]
 
@@ -418,6 +420,9 @@ env.SConscript(["examples/SConscript"],'env')
 
 # Build the cheery little GTK GUI that everyone will like :-)
 env.SConscript(["gtk/SConscript"],'env')
+
+# Build the MS Excel bindings that everyone will REALLY like 8-P
+env.SConscript(["msexcel/SConscript"],'env')
 
 # Create the test program. Currently we're not using any unit testing library;
 # this is currently just simple bespoke code.
