@@ -35,21 +35,18 @@ if not conf.CheckLib(libxlw_name):
 hasXlw = False
 env = conf.Finish()
 
-#fsconfig = "\"" + env.WhereIs('freesteam-config') + "\""
-#fsconfig = r'''"c:\Program Files (x86)\freesteam\freesteam-config"'''
-#print "fsconfig=",fsconfig
-#env.ParseConfig([sys.executable,fsconfig,'--libs','--cppflags'])
-
-fssrcs = ['../zeroin.c','../viscosity.c','../surftens.c','../thcond.c'
-	,'../steam_pT.c', '../steam.c', '../region4.c', '../region3.c'
-	, '../region2.c', '../region1.c', '../common.c', '../b23.c'
-	, '../steam_ph.c','../steam_ps.c', '../steam_Ts.c', '../backwards.c'
-	, '../steam_pv.c', '../bounds.c']
-
 env['SHLIBSUFFIX'] = ".xll"
 env['SHLIBPREFIX'] = ""
 
 env.Command('xlwWrapper.cpp','cppinterface.h',"xlw\\xlw_ifgen.exe $SOURCE $TARGET")
 
-env.SharedLibrary("freesteam",fssrcs + ['fstm_pT.cpp','fstm_Ts.cpp','fstm_ps.cpp','fstm_ph.cpp','fstm_pv.cpp','fstm_sat.cpp','xlwWrapper.cpp'])
+env1 = env.Clone()
+
+env1.AppendUnique(
+	LIBPATH=["../lib"]
+	,LIBS=['freesteam']
+)
+
+fssrcs = env1.Glob("fstm_*.cpp") + ['xlwWrapper.cpp']
+env1.SharedLibrary("freesteam",fssrcs)
 
