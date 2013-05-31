@@ -494,6 +494,7 @@ env.Append(
 	, DISTTAR_EXCLUDEDIRS=['CVS','.svn','.sconf_temp', 'dist','debian']
 	, DISTTAR_EXCLUDERES=[r"_wrap\.c$", r"~$", r"python/freesteam\.py"
 		, r"/test$",r"examples/isentropic$",r"gtk/freesteam-gtk$"
+		, r"mollier\.pdf$"
 	]
 )
 
