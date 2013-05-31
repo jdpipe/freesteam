@@ -1,3 +1,9 @@
+freesteam (2.2-0~ubuntu1204) precise; urgency=low
+
+  * New version, see CHANGELOG.txt
+
+ -- John Pye <john.pye@anu.edu.au>  Fri, 31 May 2013 12:53:35 +1000
+
 freesteam (2.1-0~ubuntu1204) precise; urgency=low
 
   * New version, packaging also the GTK GUI
