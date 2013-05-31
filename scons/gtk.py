@@ -30,7 +30,7 @@ def generate(env):
 		cmd = ['pkg-config','--cflags','--libs','gtk+-2.0','gmodule-2.0']
 		old_env = env.Clone()
 		env.ParseConfig(cmd)
-		print "LIBPATH:",env.get('LIBPATH')
+		#print "LIBPATH:",env.get('LIBPATH')
 		env['GTK_CPPPATH'] = env.get('CPPPATH') or []
 		env['GTK_LIBPATH'] = env.get('LIBPATH') or []
 		env['GTK_LIBS'] = env.get('LIBS') or []

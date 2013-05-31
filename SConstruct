@@ -302,9 +302,6 @@ if  not env.get('HAVE_ASCEND'):
 if not env['HAVE_PYTHON']:
 	print "WARNING: Freesteam will be built without Python bindings.", without_python_reason
 
-if not platform.system()=="Windows":
-	print "NOTE: MS Excel add-in will not be built. User is too cool to use Windows."
-
 # Flags to give some more warning output from the GCC compiler
 
 env.Append(CFLAGS=['-Wall','-W','-Wconversion','-Wimplicit'])
@@ -343,7 +340,9 @@ specfile = env.SubstInFile('freesteam.spec.in')
 
 install_config = env.InstallProgram("${INSTALL_ROOT}$INSTALL_BIN",configscript)
 
-default_targets =['python','ascend','msexcel']
+default_targets =['python','ascend']
+if platform.system()=="Windows":
+	default_targets.append('msexcel')
 
 # Here is the list of all of the source files that will go into
 # the freesteam DLL/SO.
@@ -493,7 +492,9 @@ env.Append(
 		,'.dvi','.tex','.lot','.loc','.eps'
 	]
 	, DISTTAR_EXCLUDEDIRS=['CVS','.svn','.sconf_temp', 'dist','debian']
-	, DISTTAR_EXCLUDERES=[r"_wrap\.c$", r"~$", r"python/freesteam\.py", r"/test$",r"examples/isentropic$"]
+	, DISTTAR_EXCLUDERES=[r"_wrap\.c$", r"~$", r"python/freesteam\.py"
+		, r"/test$",r"examples/isentropic$",r"gtk/freesteam-gtk$"
+	]
 )
 
 tar = env.DistTar("dist/"+env['DISTTAR_NAME']
