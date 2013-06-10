@@ -46,8 +46,10 @@ e.g. in C:\mingw32 and C:\mingw64 respectively. If so:
 Set up GSL library locations of the LIBDIR and INC variables in the Makefile.
 
 If required, create the config.h file: 
-copy ../config.h.in to ../config.h then replace @VERSION@ by your version number
-Add the following instrunction in te config.h file:
+ - copy ../config.h.in to ../config.h
+ - Replace @VERSION@ by your version number
+ - Add the following instruction in the config.h file:
+
     #define exit freesteam_xll_exit
     void freesteam_xll_exit(int status) ;
 
