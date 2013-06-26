@@ -188,5 +188,5 @@ void freesteam_xll_exit(int status)
     sprintf(ErrorMessage, "#ERROR freesteam exit status = %i", status) ;
     throw(ErrorMessage) ;
 
-    free(ErrorMessage) ;
+    delete [] ErrorMessage ;
 }
