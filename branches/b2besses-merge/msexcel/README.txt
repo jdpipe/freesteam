@@ -8,8 +8,8 @@ steam properties correlations.
 32 bits version : freesteam.xll
 64 bits version : freesteam-w64.xll
 
-Using xll
--------------------
+Using freeseteam.xll
+--------------------
 Follow instructions from the link below to load the xll add-in in Excel.
 http://office.microsoft.com/en-us/excel-help/load-or-unload-add-in-programs-HP010096834.aspx
 

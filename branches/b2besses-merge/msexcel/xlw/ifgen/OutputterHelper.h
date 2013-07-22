@@ -1,6 +1,6 @@
 /*
  Copyright (C) 2006 Mark Joshi
- Copyright (C) 2011 Narinder S Claire
+ Copyright (C) 2011 Narinder Claire
 
  This file is part of XLW, a free-software/open-source C++ wrapper of the
  Excel C API - http://xlw.sourceforge.net/
@@ -14,19 +14,19 @@
  FOR A PARTICULAR PURPOSE.  See the license for more details.
 */
 
-#ifndef FUNCTIONIZER_H
-#define FUNCTIONIZER_H
+#ifndef OUTPUTTER_HELPER
+#define OUTPUTTER_HELPER 
+#include "Outputter.h"
+#include "TypeRegister.h"
+#include "IncludeRegister.h"
+#include <sstream>
+#include"OutputterHelper.h"
 
-#include "Tokenizer.h"
-#include "FunctionModel.h"
-#include <vector>
-
-void splitWords(const std::string&theSentence, std::vector<std::string> & theWords);
-std::vector<FunctionModel> ConvertToFunctionModel(const std::vector<Token>& input,
-                                                  std::string& LibraryName,
-                                                  std::vector<std::string> &openMethods, 
-                                                  std::vector<std::string> &closeMethods);
+void PushBack(std::string& str, char c);
+void AddLine(std::vector<char>& file, std::string line);
+std::string strip(std::string in);
+std::string getdir(std::string in);
+void writeOutputFile(const std::string & fileName, const std::vector<char> &theData);
 
 
-
-#endif
+#endif //  OUTPUTTER_HELPER
