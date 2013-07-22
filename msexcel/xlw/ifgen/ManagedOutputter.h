@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2006 Mark Joshi
+ Copyright (C) 2011 Narinder Claire
 
  This file is part of XLW, a free-software/open-source C++ wrapper of the
  Excel C API - http://xlw.sourceforge.net/
@@ -13,11 +13,16 @@
  FOR A PARTICULAR PURPOSE.  See the license for more details.
 */
 
-#ifndef STRIP_H
-#define STRIP_H
-#include "Tokenizer.h"
+#ifndef MANAGED_OUTPUTTER_H
+#define MANAGED_OUTPUTTER_H
 
-std::vector<Token> Strip(const std::vector<Token> & input);
+#include"OutputterHelper.h"
 
+void OutputFileCreatorMan(std::vector<FunctionDescription>& functionVector,
+                                      std::string inputFileName,
+                                      std::string LibraryName,
+                                      std::vector<char> &outputVector_h,
+                                      std::vector<char> &outputVector_cpp
+                                       );
 
-#endif
+#endif //MANAGED_OUTPUTTER_H
