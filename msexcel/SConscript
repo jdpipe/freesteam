@@ -21,8 +21,8 @@ if platform.system()=="Windows":
 
 	xlenv.Append(
 		CPPPATH=["xlw/include","#"]
-		,LIBPATH=[libxlw_path]
-		,LINKFLAGS=['-static','-s','-static-libgcc','-static-libstdc++']
+		,LIBPATH=["#/lib",libxlw_path]
+		,LINKFLAGS=['-static','-s','-static-libgcc','-static-libstdc++','-Wl,-Bstatic']
 		,LIBS=['freesteam','user32']
 	)
 

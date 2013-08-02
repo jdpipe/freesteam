@@ -23,7 +23,7 @@ if platform.system()=="Windows":
 	default_prefix = 'c:/MinGW'
 	python_exe = sys.executable
 	default_python = distutils.sysconfig.get_python_lib()
-	default_gsl_static = 1
+	default_gsl_static = 0
 else:
 	default_emso_location = None
 	default_prefix = '/usr/local'
@@ -255,6 +255,38 @@ def CheckSwigVersion(context):
 		context.Result("too old, %d.%d.%d" % (maj,min,pat))
 		return False;
 
+gtk_test_code = """
+#include <gtk/gtk.h>
+
+int main (int argc, char *argv[]){
+  GtkWidget *window;
+  gtk_init (&argc, &argv);
+  gtk_main ();
+  return 0;
+}
+"""
+
+def CheckGTK(context):
+	context.Message("Checking for GTK+... ")
+	if not context.env.get("GTK_LIBS"):
+		context.Result(False)
+		return False
+	old_env = context.env.Clone()
+	context.env.Append(
+		CPPPATH = env.get('GTK_CPPPATH')
+		, LIBS = env.get('GTK_LIBS')
+		, LIBPATH = env.get('GTK_LIBPATH')
+		, CPPDEFINES = env.get('GTK_CPPDEFINES')
+	)
+	res = context.TryLink(gtk_test_code,".c")
+	context.Result(res)
+	for i in ['LIBS','CPPPATH','LIBPATH','CPPDEFINES']:
+		if old_env.get(i) is not None:
+			context.env[i] = old_env[i]
+		else:
+			del context.env[i]
+	return res
+
 # Check that we got all the associated stuff that we need...
 
 if not env.get('HAVE_GSL'):
@@ -271,9 +303,10 @@ import distutils.sysconfig
 
 python_lib = python_lib % (sys.version_info[0],sys.version_info[1])
 
-conf = env.Configure(custom_tests =
-	{'CheckSwigVersion' : CheckSwigVersion}
-)
+conf = env.Configure(custom_tests ={
+		'CheckSwigVersion' : CheckSwigVersion
+		, 'CheckGTK' : CheckGTK
+})
 
 if not conf.CheckFunc('fprintf'):
 	print "You compiler and/or environment is not correctly configured (see config.log for details)"
@@ -286,6 +319,9 @@ pyinc = os.path.join(distutils.sysconfig.get_python_inc(),"Python.h")
 _havepy = conf.CheckHeader(pyinc)
 if _havepy:
 	env['HAVE_PYTHON'] = True
+
+conf.env['HAVE_GTK'] = conf.CheckGTK()
+
 
 #without_python_reason = "Python library '%s' not found" % python_lib
 #conf.env['HAVE_PYTHON'] = conf.CheckLib(python_lib)
@@ -371,6 +407,8 @@ if not lib_env['GSL_STATIC']:
 	)
 else:
 	lib_srcs = srcs + env.get('GSL_STATICLIBS',[])
+lib_env.Append(LINKFLAGS=['-Wl,-Bstatic'])
+
 if platform.system()=="Linux":
 	lib_env.Append(LINKFLAGS=['-Wl,-soname,$SONAME'])
 
@@ -381,7 +419,7 @@ env.Depends('python',lib)
 
 liba = lib_env.StaticLibrary("lib/freesteam",lib_srcs)
 
-libs = [lib]
+libs = [lib,liba]
 
 # create local symlink for the soname stuff.
 if platform.system()=="Linux":
@@ -421,6 +459,8 @@ env.SConscript(["examples/SConscript"],'env')
 
 # Build the cheery little GTK GUI that everyone will like :-)
 env.SConscript(["gtk/SConscript"],'env')
+if env['HAVE_GTK']:
+	default_targets.append('gtk')
 
 # Build the MS Excel bindings that everyone will REALLY like 8-P
 env['FREESTEAM_VERSION'] = version
@@ -551,7 +591,7 @@ if platform.system()=="Windows":
 			,'INSTARCH':str(nsisarch)
 		}
 		installer = env.Installer('installer.nsi',NSISDEFINES=nsisdefs)
-		Depends(installer,["python","ascend"])
+		Depends(installer,["python","ascend","msexcel"])
 		Depends(installer,[configscript])
 		env.Alias('installer',installer)
 	else:
