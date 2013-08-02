@@ -1,11 +1,10 @@
 # SCONS tools to detect GTK on Windows and Linux
 # We assume 'pkg-config' is available on the PATH.
 
-import os, os.path, platform, subprocess
+import os, platform,sys
 from SCons.Script import *
 
 munge = lambda s: s
-
 try:
 	# if we have access to GetShortPathName, we'll use it...
 	import win32api
@@ -24,37 +23,68 @@ except:
 
 def generate(env):
 	"""
-	Detect GTK settings and add them to the environment.
+	Detect GTK+ settings and add them to the environment.
 	"""
 	try:
-		cmd = ['pkg-config','--cflags','--libs','gtk+-2.0','gmodule-2.0']
-		old_env = env.Clone()
-		env.ParseConfig(cmd)
-		#print "LIBPATH:",env.get('LIBPATH')
-		env['GTK_CPPPATH'] = env.get('CPPPATH') or []
-		env['GTK_LIBPATH'] = env.get('LIBPATH') or []
-		env['GTK_LIBS'] = env.get('LIBS') or []
+		if platform.system()=="Windows":
+			# TODO can we use 'env.WhereIs(...)' instead??
+			pathsep = os.environ['PATH'].split(";")
+			pp = [os.path.abspath(os.path.join(os.path.expanduser(p),"pkg-config.exe")) for p in pathsep]
+			p1 = None
+			for p in pp:
+				if os.path.exists(p):
+					#print "pkg-config at",p
+					p1 = munge(p)
+					#p1 = "pkg-config.exe"
+			if not p1:
+				raise RuntimeError("Could not find 'pkg-config.exe' in your PATH")
+				
+			print "PATH =",p1
+			cmd = [p1,'gtk+-2.0','--cflags','--libs']
+			env1 = env.Clone()
+			env1.ParseConfig(cmd)
+			env.Append(
+				GTK_CPPPATH = env1.get('CPPPATH') or []
+				,GTK_CPPDEFINES = env1.get('CPPDEFINES') or []
+				,GTK_LIBPATH = env1.get('LIBPATH') or []
+				,GTK_LIBS = env1.get('LIBS') or []
+				,GTK_CCFLAGS = env1.get('CCFLAGS') or []
+			)
+		else:
+			cmd = ['pkg-config','gtk+-2.0','--cflags','--libs']
+			env1 = env.Clone()
+			env1.ParseConfig(cmd)
+			env.Append(
+				GTK_CPPPATH = env1.get('CPPPATH') or []
+				,GTK_CPPDEFINES = env1.get('CPPDEFINES') or []
+				,GTK_LIBPATH = env1.get('LIBPATH') or []
+				,GTK_LIBS = env1.get('LIBS') or []
+				,GTK_CCFLAGS = env1.get('CCFLAGS') or []
+			)
 
-		for i in ['LIBS','LIBPATH','CPPPATH']:
-			if old_env.get(i) is None:
-				if env.has_key(i):
-					del env[i]
-			else:
-				env[i] = old_env[i]
-
-		env['HAVE_GTK'] = True
+		#print "GTK_LIBS =",env.get('GTK_LIBS')
+		#print "GTK_LIBPATH =",env.get('GTK_LIBPATH')
+		#print "GTK_CPPPATH =",env.get('GTK_CPPPATH')
 
 	except Exception,e:
-		print "Checking for GTK... not found! (%s)" % str(e)
-		env['HAVE_GTK'] = False
+		print "Failed to set up GTK+ (%s)" % str(e)
+		pass
 
 def exists(env):
 	"""
-	Make sure this tool exists (and that header files are installed).
+	Make sure this tool exists.
 	"""
-	if not subprocess.call('pkg-config gtk+-2.0 gmodule-2.0 --exists'):
-		return True
-	return False
-
-# vim: set ts=4 noexpandtab:
+	if platform.system()=="Windows":
+		try:
+			import _winreg
+			x=_winreg.ConnectRegistry(None,_winreg.HKEY_LOCAL_MACHINE)
+			y= _winreg.OpenKey(x,r"SOFTWARE\gtk")
+			INCLUDE,t = _winreg.QueryValueEx(y,'INSTALL_INCLUDE')
+			return True
+		except:
+			return False
+	else:
+		if env.Execute(['pkg-config','gtk+-2.0']):
+			return True
+		return False
 
