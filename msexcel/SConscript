@@ -55,6 +55,7 @@ if platform.system()=="Windows":
 	xlenv1.AppendUnique(
 		LIBPATH=[".."]
 		,LIBS=['xlw']
+		,LINKFLAGS=['-Wl,msexcel/xlw/include/xlw/xlw.def']
 	)
 
 	# this is our Excel add-in, freesteam.xll:
