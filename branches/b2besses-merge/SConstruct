@@ -407,7 +407,9 @@ if not lib_env['GSL_STATIC']:
 	)
 else:
 	lib_srcs = srcs + env.get('GSL_STATICLIBS',[])
-lib_env.Append(LINKFLAGS=['-Wl,-Bstatic'])
+
+if platform.system()=="Windows":
+	lib_env.Append(LINKFLAGS=['-Wl,-Bstatic'])
 
 if platform.system()=="Linux":
 	lib_env.Append(LINKFLAGS=['-Wl,-soname,$SONAME'])
