@@ -35,32 +35,6 @@
 					<SilentBuild command="mingw32-make PLATFORM=WIN32 &gt; $(CMD_NULL)" />
 				</MakeCommands>
 			</Target>
-			<Target title="Release64">
-				<Option platforms="Windows;" />
-				<Option output="freesteam-w64.xll" prefix_auto="0" extension_auto="0" />
-				<Option object_output="./obj/" />
-				<Option type="3" />
-				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-Wall" />
-					<Add option="-DBUILD_DLL" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-				</Linker>
-				<ExtraCommands>
-					<Add before="mingw32-make -f RunInterfaceGenerator.mak BUILD=Release" />
-					<Mode after="always" />
-				</ExtraCommands>
-				<MakeCommands>
-					<Build command="$make -f $makefile PLATFORM=WIN64 $target" />
-					<CompileFile command="$make -f $makefile PLATFORM=WIN64 $file" />
-					<Clean command="$make -f $makefile PLATFORM=WIN64 clean$target" />
-					<DistClean command="$make -f $makefile distclean$target" />
-					<AskRebuildNeeded command="$make -q -f $makefile PLATFORM=WIN64 $target" />
-					<SilentBuild command="$make -s -f $makefile PLATFORM=WIN64 $target" />
-				</MakeCommands>
-			</Target>
 		</Build>
 		<Compiler>
 			<Add directory="$(XLW)/xlw/include" />
@@ -156,6 +130,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../zeroin.h" />
+		<Unit filename="Make-Clean.bat" />
+		<Unit filename="MakeRelease-win32.bat" />
+		<Unit filename="MakeRelease-win64.bat" />
 		<Unit filename="Makefile" />
 		<Unit filename="ReadMe.txt" />
 		<Unit filename="cppinterface.h" />
