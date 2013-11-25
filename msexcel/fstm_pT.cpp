@@ -21,161 +21,130 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "cppinterface.h"
 
 /*
+ * Set steam state, test bounds and send error if any
+ */
+CellMatrix fstm_pT_Result(double Pressure, double Temperature,
+                          varPtrType freesteamFunction, double scale)
+{
+    double p = Pressure * 1.0e5 ;
+    double T = Temperature + 273.15 ;
+    CellMatrix result(1,1) ;
+
+    if ( ! ( ( p >= 0.0 ) && (p <= IAPWS97_PMAX ) && ( T >= IAPWS97_TMIN) && ( T <= IAPWS97_TMAX) ) )
+    {
+        result(0,0) = ERROR_EXCEL_TYPE_NUM ;
+    }
+    else
+    {
+        SteamState S = freesteam_set_pT(p, T) ;
+        result(0,0) = freesteamFunction(S) * scale ;
+    }
+
+    return result ;
+}
+
+/*
  * Enthalpy (kJ/kg)
  */
-double //Enthalpy (kJ/kg)
-fstm_h_pT(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
-)
+CellMatrix fstm_h_pT(double Pressure, double Temperature)
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
-    return ( freesteam_h(S) * 0.001 )  ;
+    return fstm_pT_Result(Pressure, Temperature, &freesteam_h, 0.001) ;
 }
 
 /*
  * Entropy (kJ/kg.K)
  */
-double //Entropy (kJ/kg.K)
-fstm_s_pT(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
-)
+CellMatrix fstm_s_pT(double Pressure, double Temperature)
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
-    return ( freesteam_s(S) * 0.001 )  ;
+    return fstm_pT_Result(Pressure, Temperature, &freesteam_s, 0.001) ;
 }
 
 /*
  * Isobaric heat capacity (kJ/kg.K)
  */
-double //Isobaric heat capacity (kJ/kg.K)
-fstm_cp_pT(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
-)
+CellMatrix fstm_cp_pT(double Pressure, double Temperature)
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
-    return ( freesteam_cp(S) * 0.001 )  ;
+    return fstm_pT_Result(Pressure, Temperature, &freesteam_cp, 0.001) ;
 }
 
 /*
  * Isochoric heat capacity (kJ/kg.K)
  */
-double //Isochoric heat capacity (kJ/kg.K)
-fstm_cv_pT(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
-)
+CellMatrix fstm_cv_pT(double Pressure, double Temperature)
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
-    return ( freesteam_cv(S) * 0.001 )  ;
+    return fstm_pT_Result(Pressure, Temperature, &freesteam_cv, 0.001) ;
 }
 
 /*
  * Specific volume (m3/kg)
  */
-double //Specific volume (m3/kg)
-fstm_v_pT(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
-)
+CellMatrix fstm_v_pT(double Pressure, double Temperature)
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
-    return ( freesteam_v(S) )  ;
+    return fstm_pT_Result(Pressure, Temperature, &freesteam_v, 1.0) ;
 }
 
 /*
  * Density (kg/m3)
  */
-double //Density (kg/m3)
-fstm_rho_pT(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
-)
+CellMatrix fstm_rho_pT(double Pressure, double Temperature)
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
-    return ( freesteam_rho(S) )  ;
+    return fstm_pT_Result(Pressure, Temperature, &freesteam_rho, 1.0) ;
 }
 
 /*
  * Internal energy (kJ/kg)
  */
-double //Internal energy (kJ/kg)
-fstm_u_pT(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
-)
+CellMatrix fstm_u_pT(double Pressure, double Temperature)
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
-    return ( freesteam_u(S) * 0.001)  ;
+    return fstm_pT_Result(Pressure, Temperature, &freesteam_u, 0.001) ;
 }
 
 /*
  * Thermal conductivity (W/m.K)
  */
-double //Thermal conductivity (W/m.K)
-fstm_k_pT(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
-)
+CellMatrix fstm_k_pT(double Pressure, double Temperature)
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
-    return ( freesteam_k(S) )  ;
+    return fstm_pT_Result(Pressure, Temperature, &freesteam_k, 1.0) ;
 }
 
 /*
  * Dynamic viscosity (Pa.s)
  */
-double //Dynamic viscosity (Pa.s)
-fstm_mu_pT(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
-)
+CellMatrix fstm_mu_pT(double Pressure, double Temperature)
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
-    return ( freesteam_mu(S) )  ;
+    return fstm_pT_Result(Pressure, Temperature, &freesteam_mu, 1.0) ;
 }
 
 /*
  * Speed of sound (m/s)
  */
-double //Speed of sound (m/s)
-fstm_w_pT(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
-)
+CellMatrix fstm_w_pT(double Pressure, double Temperature)
 {
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
-    return ( freesteam_w(S)  ) ;
+    return fstm_pT_Result(Pressure, Temperature, &freesteam_w, 1.0) ;
 }
 
 /*
  * Region of IAPWS-IF97
+ * Note: function pointer can not be used for freesteam_region
+ * because it returns ans integer and not a double
  */
-int //Region of IAPWS-IF97
-fstm_region_pT(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double Temperature //0 C <= Temperature <= 800 C
-)
-{
-    SteamState S = fstm_set_pT(Pressure, Temperature) ;
-    return ( freesteam_region(S) ) ;
-}
-
-/*
- * Set steam state, test bounds and send error if any
- */
-SteamState fstm_set_pT(double Pressure, double Temperature)
+CellMatrix fstm_region_pT(double Pressure, double Temperature)
 {
     double p = Pressure * 1.0e5 ;
     double T = Temperature + 273.15 ;
+    CellMatrix result(1,1) ;
 
     if ( ! ( ( p >= 0.0 ) && (p <= IAPWS97_PMAX ) && ( T >= IAPWS97_TMIN) && ( T <= IAPWS97_TMAX) ) )
     {
-        throw("#ERROR Pressure/Temperature out of bounds") ;
+        result(0,0) = ERROR_EXCEL_TYPE_NUM ;
     }
-    return ( freesteam_set_pT(p, T) ) ;
+    else
+    {
+        SteamState S = freesteam_set_pT(p, T) ;
+        result(0,0) = freesteam_region(S) ;
+    }
+
+    return result ;
 }
 
 /*

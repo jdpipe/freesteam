@@ -8,7 +8,7 @@ CC = x86_64-w64-mingw32-gcc.exe
 CXX = x86_64-w64-mingw32-g++.exe
 LD = x86_64-w64-mingw32-g++.exe
 LIBDIR =  -L"$(XLW)\xlw\lib\x64" -L"C:\GNU\gsl-1.15-dev-win64\lib"
-CFLAGS =  -m64 -DWIN64 -O3 -Wall -DNDEBUG
+CFLAGS =  -m64 -DWIN64 -O3 -Wall
 OBJDIR = obj64
 OUT = freesteam-w64.xll
 
@@ -17,7 +17,7 @@ CC = mingw32-gcc.exe
 CXX = mingw32-g++.exe
 LD = mingw32-g++.exe
 LIBDIR =  -L"$(XLW)\xlw\lib" -L"C:\GNU\gsl-1.15-dev-win32\lib"
-CFLAGS =  -O3 -Wall -DNDEBUG
+CFLAGS =  -O3 -Wall
 OBJDIR = obj
 OUT = freesteam.xll
 
