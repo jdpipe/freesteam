@@ -47,33 +47,21 @@ extern "C"
 /*
  * define Excel errors
  */
-#define ERROR_EXCEL_TYPE_NULL CellValue::error_type(0)
-#define ERROR_EXCEL_TYPE_DIV0 CellValue::error_type(7)
-#define ERROR_EXCEL_TYPE_VALUE CellValue::error_type(15)
-#define ERROR_EXCEL_TYPE_REF CellValue::error_type(23)
-#define ERROR_EXCEL_TYPE_NAME CellValue::error_type(29)
+//#define ERROR_EXCEL_TYPE_NULL CellValue::error_type(0)
+//#define ERROR_EXCEL_TYPE_DIV0 CellValue::error_type(7)
+//#define ERROR_EXCEL_TYPE_VALUE CellValue::error_type(15)
+//#define ERROR_EXCEL_TYPE_REF CellValue::error_type(23)
+//#define ERROR_EXCEL_TYPE_NAME CellValue::error_type(29)
 #define ERROR_EXCEL_TYPE_NUM CellValue::error_type(36)
-#define ERROR_EXCEL_TYPE_NA CellValue::error_type(42)
+//#define ERROR_EXCEL_TYPE_NA CellValue::error_type(42)
 
 /*
- * freesteamFunction pointer type
+ * Function pointer types
  */
-typedef double (*varPtrType)(SteamState) ;
+typedef double (*fstm_PtrType_S)(SteamState) ;
+typedef double (*fstm_PtrType_double)(double) ;
+typedef double (*fstm_PtrType_double_double)(double, double) ;
 
-double fstm_psat_P(double Pressure) ;
-
-double fstm_Tsat_T(double Temperature) ;
-
-void fstm_x_check(double x) ;
-
-SteamState fstm_set_ps(double Pressure, double Entropy) ;
-
-SteamState fstm_set_ph(double Pressure, double Enthalpy) ;
-
-SteamState fstm_set_Ts(double Temperature, double Entropy) ;
-
-SteamState fstm_set_pu(double Pressure, double InternalEnergy) ;
-
-SteamState fstm_set_pv(double Pressure, double SpecificVolume) ;
+double freesteam_region_double(SteamState S) ;
 
 #endif

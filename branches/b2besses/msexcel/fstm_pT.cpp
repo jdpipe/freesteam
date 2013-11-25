@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  * Set steam state, test bounds and send error if any
  */
 CellMatrix fstm_pT_Result(double Pressure, double Temperature,
-                          varPtrType freesteamFunction, double scale)
+                          fstm_PtrType_S freesteamFunction, double scale)
 {
     double p = Pressure * 1.0e5 ;
     double T = Temperature + 273.15 ;
@@ -125,26 +125,18 @@ CellMatrix fstm_w_pT(double Pressure, double Temperature)
 
 /*
  * Region of IAPWS-IF97
- * Note: function pointer can not be used for freesteam_region
- * because it returns ans integer and not a double
  */
 CellMatrix fstm_region_pT(double Pressure, double Temperature)
 {
-    double p = Pressure * 1.0e5 ;
-    double T = Temperature + 273.15 ;
-    CellMatrix result(1,1) ;
+    return fstm_pT_Result(Pressure, Temperature, &freesteam_region_double, 1.0) ;
+}
 
-    if ( ! ( ( p >= 0.0 ) && (p <= IAPWS97_PMAX ) && ( T >= IAPWS97_TMIN) && ( T <= IAPWS97_TMAX) ) )
-    {
-        result(0,0) = ERROR_EXCEL_TYPE_NUM ;
-    }
-    else
-    {
-        SteamState S = freesteam_set_pT(p, T) ;
-        result(0,0) = freesteam_region(S) ;
-    }
-
-    return result ;
+/*
+ * freesteam_region as a double for fstm_PtrType_S compatibility
+ */
+double freesteam_region_double(SteamState S)
+{
+    return (double)freesteam_region(S) ;
 }
 
 /*
