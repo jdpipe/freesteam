@@ -8,7 +8,7 @@ CC = x86_64-w64-mingw32-gcc.exe
 CXX = x86_64-w64-mingw32-g++.exe
 LD = x86_64-w64-mingw32-g++.exe
 LIBDIR =  -L"$(XLW)\xlw\lib\x64" -L"C:\GNU\gsl-1.15-dev-win64\lib"
-CFLAGS =  -m64 -DWIN64 -O3 -Wall
+CFLAGS =  -m64 -DWIN64 -O3 -Wall -DNDEBUG
 OBJDIR = obj64
 OUT = freesteam-w64.xll
 
@@ -17,7 +17,7 @@ CC = mingw32-gcc.exe
 CXX = mingw32-g++.exe
 LD = mingw32-g++.exe
 LIBDIR =  -L"$(XLW)\xlw\lib" -L"C:\GNU\gsl-1.15-dev-win32\lib"
-CFLAGS =  -O3 -Wall
+CFLAGS =  -O3 -Wall -DNDEBUG
 OBJDIR = obj
 OUT = freesteam.xll
 
@@ -29,12 +29,11 @@ endif
 INC =  -I$(XLW)\\xlw\\include -I..\\ -I"C:\GNU\gsl-1.15-dev-win32\include"
 LIB =-lxlw-gcc-s-5_0_0f0 -lgsl -lgslcblas
 LDFLAGS =  -Wl,"$(XLW)/xlw/include/xlw/xlw.def" \
-        -Wl,-static \
-        -static-libgcc
+        -Wl,-static -static-libgcc
 
 ########################################################
 
-OBJ = $(OBJDIR)\\steam.o $(OBJDIR)\\steam_Ts.o $(OBJDIR)\\steam_pT.o $(OBJDIR)\\steam_ph.o $(OBJDIR)\\steam_ps.o $(OBJDIR)\\steam_pu.o $(OBJDIR)\\steam_pv.o $(OBJDIR)\\surftens.o $(OBJDIR)\\thcond.o $(OBJDIR)\\viscosity.o $(OBJDIR)\\zeroin.o $(OBJDIR)\\b23.o $(OBJDIR)\\backwards.o $(OBJDIR)\\common.o $(OBJDIR)\\fstm_Ts.o $(OBJDIR)\\fstm_pT.o $(OBJDIR)\\fstm_ph.o $(OBJDIR)\\fstm_ps.o $(OBJDIR)\\fstm_pu.o $(OBJDIR)\\fstm_pv.o $(OBJDIR)\\fstm_sat.o $(OBJDIR)\\xlwWrapper.o $(OBJDIR)\\region1.o $(OBJDIR)\\region2.o $(OBJDIR)\\region3.o $(OBJDIR)\\region4.o $(OBJDIR)\\solver2.o $(OBJDIR)\\bounds.o $(OBJDIR)\\derivs.o
+OBJ = $(OBJDIR)\\steam.o $(OBJDIR)\\steam_Ts.o $(OBJDIR)\\steam_pT.o $(OBJDIR)\\steam_ph.o $(OBJDIR)\\steam_ps.o $(OBJDIR)\\steam_pu.o $(OBJDIR)\\steam_pv.o $(OBJDIR)\\surftens.o $(OBJDIR)\\thcond.o $(OBJDIR)\\viscosity.o $(OBJDIR)\\zeroin.o $(OBJDIR)\\b23.o $(OBJDIR)\\backwards.o $(OBJDIR)\\common.o $(OBJDIR)\\fstm_Ts.o $(OBJDIR)\\fstm_pT.o $(OBJDIR)\\fstm_ph.o $(OBJDIR)\\fstm_ps.o $(OBJDIR)\\fstm_pu.o $(OBJDIR)\\fstm_pv.o $(OBJDIR)\\fstm_sat.o $(OBJDIR)\\xlwWrapper.o $(OBJDIR)\\region1.o $(OBJDIR)\\region2.o $(OBJDIR)\\region3.o $(OBJDIR)\\region4.o $(OBJDIR)\\solver2.o $(OBJDIR)\\bounds.o $(OBJDIR)\\derivs.o $(OBJDIR)\\fstm_utils.o
 
 all: release
 
@@ -140,6 +139,9 @@ $(OBJDIR)\\bounds.o: ..\\bounds.c
 
 $(OBJDIR)\\derivs.o: ..\\derivs.c
 	$(CC) $(CFLAGS) $(INC) -c ..\\derivs.c -o $(OBJDIR)\\derivs.o
+
+$(OBJDIR)\\fstm_utils.o: fstm_utils.cpp
+	$(CXX) $(CFLAGS) $(INC) -c fstm_utils.cpp -o $(OBJDIR)\\fstm_utils.o
 
 ########################################################
 

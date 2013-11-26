@@ -31,27 +31,23 @@ I recommend:
  - To use the tdm installer for MinGW-w64 http://tdm-gcc.tdragon.net/
  - To install MinGW, MinGW-w64 and xlw in paths without spaces
    (i.e. not in C:\Program Files)
- - To use precompiled GSL library and headers from oscats. Both 32 bits and 
+ - To use precompiled GSL library and headers from oscats. Both 32 bits and
    64 bits versions are available at http://code.google.com/p/oscats/downloads/list
 
 
 It is possible to install both MinGW and MinGW-w64
 e.g. in C:\mingw32 and C:\mingw64 respectively. If so:
- - It is useless to install mingw32-make with MinGW-w64 
+ - It is useless to install mingw32-make with MinGW-w64
    (it is included with MinGW 32 bits)
- - Because both C:\mingw32\bin and C:\mingw64\bin are defined 
-   in %PATH%, use non ambiguous compilers names like mingw32-gcc.exe 
+ - Because both C:\mingw32\bin and C:\mingw64\bin are defined
+   in %PATH%, use non ambiguous compilers names like mingw32-gcc.exe
    and x86_64-w64-mingw32-gcc.exe
 
 Set up GSL library locations of the LIBDIR and INC variables in the Makefile.
 
-If required, create the config.h file: 
+If required, create the config.h file:
  - copy ../config.h.in to ../config.h
  - Replace @VERSION@ by your version number
- - Add the following instruction in the config.h file:
-
-    #define exit freesteam_xll_exit
-    void freesteam_xll_exit(int status) ;
 
 Finally:
     Use the MakeRelease-win32.bat batch files to build the 32 bits xll

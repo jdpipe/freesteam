@@ -45,15 +45,9 @@ extern "C"
 }
 
 /*
- * define Excel errors
+ * define Excel error #NUM!
  */
-//#define ERROR_EXCEL_TYPE_NULL CellValue::error_type(0)
-//#define ERROR_EXCEL_TYPE_DIV0 CellValue::error_type(7)
-//#define ERROR_EXCEL_TYPE_VALUE CellValue::error_type(15)
-//#define ERROR_EXCEL_TYPE_REF CellValue::error_type(23)
-//#define ERROR_EXCEL_TYPE_NAME CellValue::error_type(29)
 #define ERROR_EXCEL_TYPE_NUM CellValue::error_type(36)
-//#define ERROR_EXCEL_TYPE_NA CellValue::error_type(42)
 
 /*
  * Function pointer types
@@ -62,6 +56,9 @@ typedef double (*fstm_PtrType_S)(SteamState) ;
 typedef double (*fstm_PtrType_double)(double) ;
 typedef double (*fstm_PtrType_double_double)(double, double) ;
 
+/*
+ * return freesteam_region as a double for fstm_PtrType_S compatibility
+ */
 double freesteam_region_double(SteamState S) ;
 
 #endif

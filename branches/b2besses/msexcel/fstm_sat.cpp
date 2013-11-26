@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "cppinterface.h"
 
 /*
- * Set steam state, test bounds and send error if any
+ * Convert units, set steam state, test bounds and send error if any
  */
 CellMatrix fstm_T_Result(double Temperature, fstm_PtrType_double freesteamFunction, double scale)
 {
@@ -41,7 +41,7 @@ CellMatrix fstm_T_Result(double Temperature, fstm_PtrType_double freesteamFuncti
 }
 
 /*
- * Set steam state, test bounds and send error if any
+ * Convert units, set steam state, test bounds and send error if any
  */
 CellMatrix fstm_px_Result(double Pressure, double x, fstm_PtrType_double_double freesteamFunction,
                           double scale)
@@ -62,7 +62,7 @@ CellMatrix fstm_px_Result(double Pressure, double x, fstm_PtrType_double_double 
 }
 
 /*
- * Set steam state, test bounds and send error if any
+ * Convert units, set steam state, test bounds and send error if any
  */
 CellMatrix fstm_px2Tx_Result(double Pressure, double x, fstm_PtrType_double_double freesteamFunction,
                              double scale)
@@ -84,7 +84,7 @@ CellMatrix fstm_px2Tx_Result(double Pressure, double x, fstm_PtrType_double_doub
 }
 
 /*
- * Set steam state, test bounds and send error if any
+ * Convert units, set steam state, test bounds and send error if any
  */
 CellMatrix fstm_Tx_Result(double Temperature, double x, fstm_PtrType_double_double freesteamFunction,
                           double scale)
@@ -105,7 +105,7 @@ CellMatrix fstm_Tx_Result(double Temperature, double x, fstm_PtrType_double_doub
 }
 
 /*
- * Set steam state, test bounds and send error if any
+ * Convert units, set steam state, test bounds and send error if any
  */
 CellMatrix fstm_p2T_Result(double Pressure, fstm_PtrType_double freesteamFunction,
                            double scale)

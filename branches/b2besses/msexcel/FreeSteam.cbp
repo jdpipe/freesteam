@@ -144,6 +144,7 @@
 		<Unit filename="fstm_pu.cpp" />
 		<Unit filename="fstm_pv.cpp" />
 		<Unit filename="fstm_sat.cpp" />
+		<Unit filename="fstm_utils.cpp" />
 		<Unit filename="xlwWrapper.cpp" />
 		<Extensions>
 			<code_completion />
