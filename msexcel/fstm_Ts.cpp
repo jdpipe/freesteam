@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "cppinterface.h"
 
 /*
- * Set steam state, test bounds and send error if any
+ * Convert units, set steam state, test bounds and send error if any
  */
 CellMatrix fstm_Ts_Result(double Temperature, double Entropy,
                           fstm_PtrType_S freesteamFunction, double scale)
