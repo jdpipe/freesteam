@@ -22,7 +22,6 @@ Building freesteam.xll
 ----------------------
 
 Requirements:
-  - xlw 5 http://xlw.sourceforge.net/index.shtml
   - For 64 bits MinGW-w64 http://mingw-w64.sourceforge.net/
   - For 32 bits MinGW http://www.mingw.org/
   - GSL library http://www.gnu.org/software/gsl/

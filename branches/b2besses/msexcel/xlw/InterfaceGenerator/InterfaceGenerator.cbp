@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="InterfaceGenerator" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Release">
+				<Option output="InterfaceGenerator" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="FunctionModel.cpp" />
+		<Unit filename="FunctionModel.h" />
+		<Unit filename="FunctionType.h" />
+		<Unit filename="Functionizer.cpp" />
+		<Unit filename="Functionizer.h" />
+		<Unit filename="IncludeRegister.h" />
+		<Unit filename="Make-Clean.bat" />
+		<Unit filename="Make.bat" />
+		<Unit filename="Makefile" />
+		<Unit filename="MakefileLinux" />
+		<Unit filename="ManagedOutputter.cpp" />
+		<Unit filename="ManagedOutputter.h" />
+		<Unit filename="Outputter.cpp" />
+		<Unit filename="Outputter.h" />
+		<Unit filename="OutputterHelper.cpp" />
+		<Unit filename="OutputterHelper.h" />
+		<Unit filename="ParserData.cpp" />
+		<Unit filename="ParserData.h" />
+		<Unit filename="Singleton.h" />
+		<Unit filename="Strip.cpp" />
+		<Unit filename="Strip.h" />
+		<Unit filename="Tokenizer.cpp" />
+		<Unit filename="Tokenizer.h" />
+		<Unit filename="TypeRegister.cpp" />
+		<Unit filename="TypeRegister.h" />
+		<Unit filename="TypeRegistrations.cpp" />
+		<Unit filename="main.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

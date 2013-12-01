@@ -1,0 +1,72 @@
+WORKDIR = %cd%
+
+CC = gcc
+CXX = g++
+LD = g++
+CFLAGS = -O2 -Wall
+OBJDIR = obj
+OUT = InterfaceGenerator
+
+OBJ = $(OBJDIR)/main.o \
+	$(OBJDIR)/TypeRegistrations.o \
+	$(OBJDIR)/TypeRegister.o \
+	$(OBJDIR)/Tokenizer.o \
+	$(OBJDIR)/Strip.o \
+	$(OBJDIR)/ParserData.o \
+	$(OBJDIR)/FunctionModel.o \
+	$(OBJDIR)/OutputterHelper.o \
+	$(OBJDIR)/Outputter.o \
+	$(OBJDIR)/ManagedOutputter.o \
+	$(OBJDIR)/Functionizer.o
+
+all: release
+
+clean: clean
+
+before:
+	mkdir -p $(OBJDIR)
+
+release: before out
+
+out: before $(OBJ)
+	$(LD) -o $(OUT) $(OBJ)
+
+$(OBJDIR)/main.o: main.cpp
+	$(CXX) $(CFLAGS) -c main.cpp -o $(OBJDIR)/main.o
+
+$(OBJDIR)/TypeRegistrations.o: TypeRegistrations.cpp
+	$(CXX) $(CFLAGS) -c TypeRegistrations.cpp -o $(OBJDIR)/TypeRegistrations.o
+
+$(OBJDIR)/TypeRegister.o: TypeRegister.cpp
+	$(CXX) $(CFLAGS) -c TypeRegister.cpp -o $(OBJDIR)/TypeRegister.o
+
+$(OBJDIR)/Tokenizer.o: Tokenizer.cpp
+	$(CXX) $(CFLAGS) -c Tokenizer.cpp -o $(OBJDIR)/Tokenizer.o
+
+$(OBJDIR)/Strip.o: Strip.cpp
+	$(CXX) $(CFLAGS) -c Strip.cpp -o $(OBJDIR)/Strip.o
+
+$(OBJDIR)/ParserData.o: ParserData.cpp
+	$(CXX) $(CFLAGS) -c ParserData.cpp -o $(OBJDIR)/ParserData.o
+
+$(OBJDIR)/FunctionModel.o: FunctionModel.cpp
+	$(CXX) $(CFLAGS) -c FunctionModel.cpp -o $(OBJDIR)/FunctionModel.o
+
+$(OBJDIR)/OutputterHelper.o: OutputterHelper.cpp
+	$(CXX) $(CFLAGS) -c OutputterHelper.cpp -o $(OBJDIR)/OutputterHelper.o
+
+$(OBJDIR)/Outputter.o: Outputter.cpp
+	$(CXX) $(CFLAGS) -c Outputter.cpp -o $(OBJDIR)/Outputter.o
+
+$(OBJDIR)/ManagedOutputter.o: ManagedOutputter.cpp
+	$(CXX) $(CFLAGS) -c ManagedOutputter.cpp -o $(OBJDIR)/ManagedOutputter.o
+
+$(OBJDIR)/Functionizer.o: Functionizer.cpp
+	$(CXX) $(CFLAGS) -c Functionizer.cpp -o $(OBJDIR)/Functionizer.o
+
+clean:
+	rm -f source/xlwWrapper.cpp
+	rm -f $(OBJ) $(OUT)
+
+.PHONY: before after clean
+
