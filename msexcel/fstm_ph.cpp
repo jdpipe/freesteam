@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "fstm.h"
-#include "cppinterface.h"
+#include "cppinterface_ph.h"
 
 /*
  * Convert units, set steam state, test bounds and send error if any
