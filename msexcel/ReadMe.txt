@@ -14,9 +14,23 @@ Follow instructions from the link below to load the xll add-in in Excel.
 http://office.microsoft.com/en-us/excel-help/load-or-unload-add-in-programs-HP010096834.aspx
 
 To use the freesteam functions, click on the fx button on the formula
-bar, select the Freesteam category, select a function then enter your
-data. Functions description and examples of usage are given in the
-examples.xls Excel sheet.
+bar, select one of the Freesteam sub-category on the table below,
+then enter your data.
+
+-------------------------------------------------------------
+|  Category             | First variable | Second variable  |
+-------------------------------------------------------------
+|  Freesteam 2.x (p,h)  |    pressure    |    enthalpy      |
+|  Freesteam 2.x (p,s)  |    pressure    |    entropy       |
+|  Freesteam 2.x (p,T)  |    pressure    |  temperature     |
+|  Freesteam 2.x (p,u)  |    pressure    |  internal energy |
+|  Freesteam 2.x (p,v)  |    pressure    |  specific volume |
+|  Freesteam 2.x (sat.) |     properties at saturation      |
+|  Freesteam 2.x (T,s)  |  temperature   |    entropy       |
+-------------------------------------------------------------
+
+Functions description and examples of usage are given in
+the examples.xls Excel sheet.
 
 Building freesteam.xll
 ----------------------
