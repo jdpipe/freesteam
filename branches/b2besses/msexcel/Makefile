@@ -75,14 +75,6 @@ OBJ = $(OBJDIR)\\MJCellMatrix.o \
 	$(OBJDIR)\\b23.o \
 	$(OBJDIR)\\backwards.o \
 	$(OBJDIR)\\common.o \
-	$(OBJDIR)\\fstm_Ts.o \
-	$(OBJDIR)\\fstm_pT.o \
-	$(OBJDIR)\\fstm_ph.o \
-	$(OBJDIR)\\fstm_ps.o \
-	$(OBJDIR)\\fstm_pu.o \
-	$(OBJDIR)\\fstm_pv.o \
-	$(OBJDIR)\\fstm_sat.o \
-	$(OBJDIR)\\xlwWrapper.o \
 	$(OBJDIR)\\region1.o \
 	$(OBJDIR)\\region2.o \
 	$(OBJDIR)\\region3.o \
@@ -90,7 +82,21 @@ OBJ = $(OBJDIR)\\MJCellMatrix.o \
 	$(OBJDIR)\\solver2.o \
 	$(OBJDIR)\\bounds.o \
 	$(OBJDIR)\\derivs.o \
-	$(OBJDIR)\\fstm_utils.o
+	$(OBJDIR)\\fstm_Ts.o \
+	$(OBJDIR)\\fstm_pT.o \
+	$(OBJDIR)\\fstm_ph.o \
+	$(OBJDIR)\\fstm_ps.o \
+	$(OBJDIR)\\fstm_pu.o \
+	$(OBJDIR)\\fstm_pv.o \
+	$(OBJDIR)\\fstm_sat.o \
+	$(OBJDIR)\\fstm_utils.o \
+	$(OBJDIR)\\xlwWrapper_ph.o \
+	$(OBJDIR)\\xlwWrapper_ps.o \
+	$(OBJDIR)\\xlwWrapper_pT.o \
+	$(OBJDIR)\\xlwWrapper_pu.o \
+	$(OBJDIR)\\xlwWrapper_pv.o \
+	$(OBJDIR)\\xlwWrapper_sat.o \
+	$(OBJDIR)\\xlwWrapper_Ts.o
 
 all: release
 
@@ -227,6 +233,27 @@ $(OBJDIR)\\backwards.o: ..\\backwards.c
 $(OBJDIR)\\common.o: ..\\common.c
 	$(CC) $(CFLAGS) $(INC) -c ..\\common.c -o $(OBJDIR)\\common.o
 
+$(OBJDIR)\\region1.o: ..\\region1.c
+	$(CC) $(CFLAGS) $(INC) -c ..\\region1.c -o $(OBJDIR)\\region1.o
+
+$(OBJDIR)\\region2.o: ..\\region2.c
+	$(CC) $(CFLAGS) $(INC) -c ..\\region2.c -o $(OBJDIR)\\region2.o
+
+$(OBJDIR)\\region3.o: ..\\region3.c
+	$(CC) $(CFLAGS) $(INC) -c ..\\region3.c -o $(OBJDIR)\\region3.o
+
+$(OBJDIR)\\region4.o: ..\\region4.c
+	$(CC) $(CFLAGS) $(INC) -c ..\\region4.c -o $(OBJDIR)\\region4.o
+
+$(OBJDIR)\\solver2.o: ..\\solver2.c
+	$(CC) $(CFLAGS) $(INC) -c ..\\solver2.c -o $(OBJDIR)\\solver2.o
+
+$(OBJDIR)\\bounds.o: ..\\bounds.c
+	$(CC) $(CFLAGS) $(INC) -c ..\\bounds.c -o $(OBJDIR)\\bounds.o
+
+$(OBJDIR)\\derivs.o: ..\\derivs.c
+	$(CC) $(CFLAGS) $(INC) -c ..\\derivs.c -o $(OBJDIR)\\derivs.o
+
 ########################################################
 # Freesteam XLL
 ########################################################
@@ -255,37 +282,34 @@ $(OBJDIR)\\fstm_pv.o: fstm_pv.cpp
 $(OBJDIR)\\fstm_sat.o: fstm_sat.cpp
 	$(CXX) $(CFLAGS) $(INC) -c fstm_sat.cpp -o $(OBJDIR)\\fstm_sat.o
 
-$(OBJDIR)\\xlwWrapper.o: xlwWrapper.cpp
-	$(CXX) $(CFLAGS) $(INC) -c xlwWrapper.cpp -o $(OBJDIR)\\xlwWrapper.o
-
-$(OBJDIR)\\region1.o: ..\\region1.c
-	$(CC) $(CFLAGS) $(INC) -c ..\\region1.c -o $(OBJDIR)\\region1.o
-
-$(OBJDIR)\\region2.o: ..\\region2.c
-	$(CC) $(CFLAGS) $(INC) -c ..\\region2.c -o $(OBJDIR)\\region2.o
-
-$(OBJDIR)\\region3.o: ..\\region3.c
-	$(CC) $(CFLAGS) $(INC) -c ..\\region3.c -o $(OBJDIR)\\region3.o
-
-$(OBJDIR)\\region4.o: ..\\region4.c
-	$(CC) $(CFLAGS) $(INC) -c ..\\region4.c -o $(OBJDIR)\\region4.o
-
-$(OBJDIR)\\solver2.o: ..\\solver2.c
-	$(CC) $(CFLAGS) $(INC) -c ..\\solver2.c -o $(OBJDIR)\\solver2.o
-
-$(OBJDIR)\\bounds.o: ..\\bounds.c
-	$(CC) $(CFLAGS) $(INC) -c ..\\bounds.c -o $(OBJDIR)\\bounds.o
-
-$(OBJDIR)\\derivs.o: ..\\derivs.c
-	$(CC) $(CFLAGS) $(INC) -c ..\\derivs.c -o $(OBJDIR)\\derivs.o
-
 $(OBJDIR)\\fstm_utils.o: fstm_utils.cpp
 	$(CXX) $(CFLAGS) $(INC) -c fstm_utils.cpp -o $(OBJDIR)\\fstm_utils.o
+
+$(OBJDIR)\\xlwWrapper_ph.o: xlwWrapper_ph.cpp
+	$(CXX) $(CFLAGS) $(INC) -c xlwWrapper_ph.cpp -o $(OBJDIR)\\xlwWrapper_ph.o
+
+$(OBJDIR)\\xlwWrapper_ps.o: xlwWrapper_ps.cpp
+	$(CXX) $(CFLAGS) $(INC) -c xlwWrapper_ps.cpp -o $(OBJDIR)\\xlwWrapper_ps.o
+
+$(OBJDIR)\\xlwWrapper_pT.o: xlwWrapper_pT.cpp
+	$(CXX) $(CFLAGS) $(INC) -c xlwWrapper_pT.cpp -o $(OBJDIR)\\xlwWrapper_pT.o
+
+$(OBJDIR)\\xlwWrapper_pu.o: xlwWrapper_pu.cpp
+	$(CXX) $(CFLAGS) $(INC) -c xlwWrapper_pu.cpp -o $(OBJDIR)\\xlwWrapper_pu.o
+
+$(OBJDIR)\\xlwWrapper_pv.o: xlwWrapper_pv.cpp
+	$(CXX) $(CFLAGS) $(INC) -c xlwWrapper_pv.cpp -o $(OBJDIR)\\xlwWrapper_pv.o
+
+$(OBJDIR)\\xlwWrapper_sat.o: xlwWrapper_sat.cpp
+	$(CXX) $(CFLAGS) $(INC) -c xlwWrapper_sat.cpp -o $(OBJDIR)\\xlwWrapper_sat.o
+
+$(OBJDIR)\\xlwWrapper_Ts.o: xlwWrapper_Ts.cpp
+	$(CXX) $(CFLAGS) $(INC) -c xlwWrapper_Ts.cpp -o $(OBJDIR)\\xlwWrapper_Ts.o
 
 ########################################################
 
 clean:
-	cmd /c del /f $(OBJ) $(OUT) xlwWrapper.cpp
+	cmd /c del /f $(OBJ) $(OUT) xlwWrapper_ph.cpp xlwWrapper_ps.cpp xlwWrapper_pT.cpp xlwWrapper_pu.cpp xlwWrapper_pv.cpp xlwWrapper_sat.cpp xlwWrapper_Ts.cpp
 	cmd /c rd $(OBJDIR)
 
 .PHONY: before clean
