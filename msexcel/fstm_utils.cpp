@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "fstm.h"
+#include <xlw/XlfException.h>
 
 /*
  * return freesteam_region as a double for fstm_PtrType_S compatibility
@@ -32,11 +33,6 @@ double freesteam_region_double(SteamState S)
  */
 void exit(int status)
 {
-    char * ErrorMessage = new char[256] ;
-
-    sprintf(ErrorMessage, "#ERROR freesteam exit(%i)", status) ;
-    throw(ErrorMessage) ;
-
-    delete [] ErrorMessage ;
+    THROW_XLW("#ERROR freesteam exit (" << status << ")") ;
 }
 
