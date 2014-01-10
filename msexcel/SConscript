@@ -10,14 +10,8 @@ if platform.system()=="Windows":
 	#print "GSLSTATIC = ",env.get('GSL_STATIC')
 	xlenv = env.Clone()
 
-	# FIXME we still need to figure out how to build 64-bit XLL, probably
-	# not possible with the XLW 4.0 code we've included in the xlw/ dir.
-	XLL64 = False
-
 	libxlw_path = "xlw/lib"
 	libxlw_name = 'xlw'
-	if XLL64:
-		libxlw_path = "$XLW/lib64"
 
 	xlenv.Append(
 		CPPPATH=["xlw/include","#"]
