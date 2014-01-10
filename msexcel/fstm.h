@@ -44,22 +44,21 @@ extern "C"
 #include <surftens.h>
 }
 
-SteamState fstm_set_pT(double Pressure, double Temperature) ;
+/*
+ * define Excel error #NUM!
+ */
+#define ERROR_EXCEL_TYPE_NUM CellValue::error_type(36)
 
-double fstm_psat_P(double Pressure) ;
+/*
+ * Function pointer types
+ */
+typedef double (*fstm_PtrType_S)(SteamState) ;
+typedef double (*fstm_PtrType_double)(double) ;
+typedef double (*fstm_PtrType_double_double)(double, double) ;
 
-double fstm_Tsat_T(double Temperature) ;
-
-void fstm_x_check(double x) ;
-
-SteamState fstm_set_ps(double Pressure, double Entropy) ;
-
-SteamState fstm_set_ph(double Pressure, double Enthalpy) ;
-
-SteamState fstm_set_Ts(double Temperature, double Entropy) ;
-
-SteamState fstm_set_pu(double Pressure, double InternalEnergy) ;
-
-SteamState fstm_set_pv(double Pressure, double SpecificVolume) ;
+/*
+ * return freesteam_region as a double for fstm_PtrType_S compatibility
+ */
+double freesteam_region_double(SteamState S) ;
 
 #endif
