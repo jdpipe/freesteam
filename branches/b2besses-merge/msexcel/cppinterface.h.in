@@ -18,11 +18,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 *//*
 This file is an interface file for XLW, the MS Excel wrapper generator. It 
 contains declarations of the functions that will be provided by our freesteam
-Excel add-in. This file is first processed by SCons to insert the current
-version number into the library name, then processed by XLW to produce the C++
-code for generation of the Excel wrapper XLL file.
+Excel add-in.
 
-TODO can we #include the fstm_*.h files instead of repeating everything here??
+NOTE: This file is first processed by SCons to insert the current version number
+into the library name, then processed by XLW to produce the C++ code for
+generation of the Excel wrapper XLL file.
+
+TODO: there is a lot of boring stuff in this file. Stuff like limits and 
+units of measurement could be done with text insertion/macros of some sort.
+It should be possible to set the unit conversion once-off in a header file,
+too, rather than everwhere ad-hoc.
+
+TODO: what if someone wants to use temperatures in K, or pressures in Pa, etc?
+Currently we have no way to support that in a convenient way.
 */
 
 #ifndef CPPINTERFACE_H
