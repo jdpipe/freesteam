@@ -21,175 +21,120 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "cppinterface.h"
 
 /*
+ * Convert units, set steam state, test bounds and send error if any
+ */
+CellMatrix fstm_pv_Result(double Pressure, double SpecificVolume,
+                          fstm_PtrType_S freesteamFunction, double scale, double offset)
+{
+    double p = Pressure * 1.0e5 ;
+    SteamState S = freesteam_set_pv(p, SpecificVolume) ;
+    double T = freesteam_T(S) ;
+    CellMatrix result(1,1) ;
+
+    if ( ! ( ( p >= 0.0 ) && (p <= IAPWS97_PMAX ) && ( T >= IAPWS97_TMIN) && ( T <= IAPWS97_TMAX) ) )
+    {
+        result(0,0) = ERROR_EXCEL_TYPE_NUM ;
+    }
+    else
+    {
+        result(0,0) = freesteamFunction(S) * scale + offset ;
+    }
+
+    return result ;
+}
+
+/*
  * Enthalpy (kJ/kg)
  */
-double //Enthalpy (kJ/kg)
-fstm_h_pv(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double SpecificVolume //Specific volume (m3/kg)
-)
+CellMatrix fstm_h_pv(double Pressure, double SpecificVolume)
 {
-    SteamState S = fstm_set_pv(Pressure, SpecificVolume) ;
-    return ( freesteam_h(S) * 0.001 )  ;
+    return fstm_pv_Result(Pressure, SpecificVolume, &freesteam_h, 0.001, 0.0) ;
 }
 
 /*
  * Entropy (kJ/kg.K)
  */
-double //Entropy (kJ/kg.K)
-fstm_s_pv(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double SpecificVolume //Specific volume (m3/kg)
-)
+CellMatrix fstm_s_pv(double Pressure, double SpecificVolume)
 {
-    SteamState S = fstm_set_pv(Pressure, SpecificVolume) ;
-    return ( freesteam_s(S) * 0.001 )  ;
+    return fstm_pv_Result(Pressure, SpecificVolume, &freesteam_s, 0.001, 0.0) ;
 }
 
 /*
  * Isobaric heat capacity (kJ/kg.K)
  */
-double //Isobaric heat capacity (kJ/kg.K)
-fstm_cp_pv(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double SpecificVolume //Specific volume (m3/kg)
-)
+CellMatrix fstm_cp_pv(double Pressure, double SpecificVolume)
 {
-    SteamState S = fstm_set_pv(Pressure, SpecificVolume) ;
-    return ( freesteam_cp(S) * 0.001 )  ;
+    return fstm_pv_Result(Pressure, SpecificVolume, &freesteam_cp, 0.001, 0.0) ;
 }
 
 /*
  * Isochoric heat capacity (kJ/kg.K)
  */
-double //Isochoric heat capacity (kJ/kg.K)
-fstm_cv_pv(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double SpecificVolume //Specific volume (m3/kg)
-)
+CellMatrix fstm_cv_pv(double Pressure, double SpecificVolume)
 {
-    SteamState S = fstm_set_pv(Pressure, SpecificVolume) ;
-    return ( freesteam_cv(S) * 0.001 )  ;
+    return fstm_pv_Result(Pressure, SpecificVolume, &freesteam_cv, 0.001, 0.0) ;
 }
 
 /*
  * Temperature (C)
  */
-double //Temperature (C)
-fstm_T_pv(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double SpecificVolume //Specific volume (m3/kg)
-)
+CellMatrix fstm_T_pv(double Pressure, double SpecificVolume)
 {
-    SteamState S = fstm_set_pv(Pressure, SpecificVolume) ;
-    return ( freesteam_T(S) ) - 273.15  ;
+    return fstm_pv_Result(Pressure, SpecificVolume, &freesteam_T, 1.0, -273.15 ) ;
 }
 
 /*
  * Density (kg/m3)
  */
-double //Density (kg/m3)
-fstm_rho_pv(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double SpecificVolume //Specific volume (m3/kg)
-)
+CellMatrix fstm_rho_pv(double Pressure, double SpecificVolume)
 {
-    SteamState S = fstm_set_pv(Pressure, SpecificVolume) ;
-    return ( freesteam_rho(S) )  ;
+    return fstm_pv_Result(Pressure, SpecificVolume, &freesteam_rho, 1.0, 0.0) ;
 }
 
 /*
  * Internal energy (kJ/kg)
  */
-double //Internal energy (kJ/kg)
-fstm_u_pv(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double SpecificVolume //Specific volume (m3/kg)
-)
+CellMatrix fstm_u_pv(double Pressure, double SpecificVolume)
 {
-    SteamState S = fstm_set_pv(Pressure, SpecificVolume) ;
-    return ( freesteam_u(S) * 0.001)  ;
+    return fstm_pv_Result(Pressure, SpecificVolume, &freesteam_u, 0.001, 0.0) ;
 }
 
 /*
  * Thermal conductivity (W/m.K)
  */
-double //Thermal conductivity (W/m.K)
-fstm_k_pv(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double SpecificVolume //Specific volume (m3/kg)
-)
+CellMatrix fstm_k_pv(double Pressure, double SpecificVolume)
 {
-    SteamState S = fstm_set_pv(Pressure, SpecificVolume) ;
-    return ( freesteam_k(S) )  ;
+    return fstm_pv_Result(Pressure, SpecificVolume, &freesteam_k, 1.0, 0.0) ;
 }
 
 /*
  * Dynamic viscosity (Pa.s)
  */
-double //Dynamic viscosity (Pa.s)
-fstm_mu_pv(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double SpecificVolume //Specific volume (m3/kg)
-)
+CellMatrix fstm_mu_pv(double Pressure, double SpecificVolume)
 {
-    SteamState S = fstm_set_pv(Pressure, SpecificVolume) ;
-    return ( freesteam_mu(S) )  ;
+    return fstm_pv_Result(Pressure, SpecificVolume, &freesteam_mu, 1.0, 0.0) ;
 }
 
 /*
  * Speed of sound (m/s)
  */
-double //Speed of sound (m/s)
-fstm_w_pv(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double SpecificVolume //Specific volume (m3/kg)
-)
+CellMatrix fstm_w_pv(double Pressure, double SpecificVolume)
 {
-    SteamState S = fstm_set_pv(Pressure, SpecificVolume) ;
-    return ( freesteam_w(S)  ) ;
+    return fstm_pv_Result(Pressure, SpecificVolume, &freesteam_w, 1.0, 0.0) ;
 }
 
 /*
  * Region of IAPWS-IF97
  */
-int //Region of IAPWS-IF97
-fstm_region_pv(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double SpecificVolume //Specific volume (m3/kg)
-)
+CellMatrix fstm_region_pv(double Pressure, double SpecificVolume)
 {
-    SteamState S = fstm_set_pv(Pressure, SpecificVolume) ;
-    return ( freesteam_region(S) ) ;
+    return fstm_pv_Result(Pressure, SpecificVolume, &freesteam_region_double, 1.0, 0.0) ;
 }
 
 /*
  * Steam quality (kg/kg)
  */
-double //Steam quality (kg/kg)
-fstm_x_pv(
-    double Pressure, //0 bar <= Pressure <= 1000 bar
-    double SpecificVolume //Specific volume (m3/kg)
-)
+CellMatrix fstm_x_pv(double Pressure, double SpecificVolume)
 {
-    SteamState S = fstm_set_pv(Pressure, SpecificVolume) ;
-    return ( freesteam_x(S) ) ;
-}
-
-/*
- * Set steam state, test bounds and send error if any
- */
-SteamState fstm_set_pv(double Pressure, double SpecificVolume)
-{
-    double p = Pressure * 1.0e5 ;
-
-    SteamState S = freesteam_set_pv(p, SpecificVolume) ;
-
-    double T = freesteam_T(S) + 273.15 ;
-
-    if ( ! ( ( p >= 0.0 ) && (p <= IAPWS97_PMAX ) && ( T >= IAPWS97_TMIN) && ( T <= IAPWS97_TMAX) ) )
-    {
-        throw("#ERROR Pressure/Specific volume out of bounds") ;
-    }
-    return ( S ) ;
+    return fstm_pv_Result(Pressure, SpecificVolume, &freesteam_x, 1.0, 0.0) ;
 }
