@@ -1,57 +1,57 @@
 FREESTEAM XLL
 =============
 
-The freesteam add-in provides natives Excel functions for calculating
-the properties of water and steam using the IAPWS-IF97 industry-standard
-steam properties correlations.
+The freesteam add-in for Microsoft Excel provides fast machine-level functions
+for calculating the properties of water and steam using the industry-standard 
+IAPWS-IF97 steam property correlations.
 
-32 bits version : freesteam.xll
-64 bits version : freesteam-w64.xll
+The XLL was primarily developed by Ben Besses, with further input from John Pye.
+
 
 Using freeseteam.xll
 --------------------
 Follow instructions from the link below to load the xll add-in in Excel.
 http://office.microsoft.com/en-us/excel-help/load-or-unload-add-in-programs-HP010096834.aspx
 
-To use the freesteam functions, click on the fx button on the formula
-bar, select the Freesteam category, select a function then enter your
-data. Functions description and examples of usage are given in the
-examples.xls Excel sheet.
+To use the freesteam functions, click on the 'fx' button on the formula bar, 
+select the Freesteam category, select a function then enter your data. Function
+descriptions and examples of usage are given in the 'examples.xls' file 
+provided.
+
+IMPORTANT NOTE: freesteam.xll currently does NOT use base SI units in the way 
+that the freesteam C and Python libraries do. You need to check the function 
+description and make sure you are providing values in the units requested. For
+example, temperatures are in kelvin and pressures are in bar.
+
 
 Building freesteam.xll
 ----------------------
 
-Requirements:
-  - xlw 5 http://xlw.sourceforge.net/index.shtml
-  - For 64 bits MinGW-w64 http://mingw-w64.sourceforge.net/
-  - For 32 bits MinGW http://www.mingw.org/
-  - GSL library http://www.gnu.org/software/gsl/
+If you are running 64-bit Microsoft Office, then you need a 64-bit MinGW-w64
+environment. If you are running 32-bit Microsoft Office, you need 32-bit 
+MinGW32. We recommend that you set up your build environment as specified at 
+the following link. Other configurations are possible, but it's harder to help
+you if you strike difficulties.
 
-I recommend:
- - To use the tdm installer for MinGW-w64 http://tdm-gcc.tdragon.net/
- - To install MinGW, MinGW-w64 and xlw in paths without spaces
-   (i.e. not in C:\Program Files)
- - To use precompiled GSL library and headers from oscats. Both 32 bits and 
-   64 bits versions are available at http://code.google.com/p/oscats/downloads/list
+http://ascend4.org/Setting_up_a_MinGW-w64_build_environment
 
+The freesteam.xll file can be built as part of the overall freesteam build
+process. Once you have GSL built/installed, you should be able to just
+run 'scons' in your ~/freesteam folder, and everything including the XLL will
+be built for you.
 
-It is possible to install both MinGW and MinGW-w64
-e.g. in C:\mingw32 and C:\mingw64 respectively. If so:
- - It is useless to install mingw32-make with MinGW-w64 
-   (it is included with MinGW 32 bits)
- - Because both C:\mingw32\bin and C:\mingw64\bin are defined 
-   in %PATH%, use non ambiguous compilers names like mingw32-gcc.exe 
-   and x86_64-w64-mingw32-gcc.exe
+Note that we have included an embedded copy of the just the needed parts of 
+XLW (the Excel wrapper tool, http://xlw.sf.net), version 5.0. We found that it
+was much simpler to provide and build this tool on the fly compared with using
+a pre-compiled version.
 
-Set up GSL library locations of the LIBDIR and INC variables in the Makefile.
+Note also that the recommended TDM-GCC compiler does NOT provide support for the
+-static-libstdc++ compiler flag. If you use a different version of GCC, you 
+may need to add this compiler flag in order to avoid generating undesired DLL
+runtime dependencies (it's much easier if the XLL is statically linked to
+all the stuff it needs).
 
-If required, create the config.h file: 
-copy ../config.h.in to ../config.h then replace @VERSION@ by your version number
-Add the following instrunction in te config.h file:
-    #define exit freesteam_xll_exit
-    void freesteam_xll_exit(int status) ;
-
-Finally:
-    Use the MakeRelease-win32.bat batch files to build the 32 bits xll
-    Use the MakeRelease-win64.bat batch files to build the 64 bits xll
+-- 
+John Pye and Ben Besses
+Jan 2014
 
