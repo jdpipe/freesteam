@@ -258,7 +258,7 @@ def CheckSwigVersion(context):
 # Check that we got all the associated stuff that we need...
 
 if not env.get('HAVE_GSL'):
-	print "GSL was not found... install GSL (package 'libgsl0-dev' or similar in Ubuntu)."
+	print "GSL was not found... install GSL (package 'libgsl0-dev' in Ubuntu; 'gsl-devel' in Fedora)."
 	Exit(1)
 
 # TODO: detect PYTHON properly.
@@ -491,6 +491,7 @@ env.Append(
 tar = env.DistTar("dist/"+env['DISTTAR_NAME']
 	, [env.Dir('#'),'freesteam.spec']
 )
+Depends(tar,["freesteam.spec"])
 
 #------------------------------------------------------
 
