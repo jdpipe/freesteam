@@ -196,6 +196,21 @@ int mu_Tv_calc(struct BBoxInterp *bbox, int ninputs, int noutputs,
 	return 0;
 }
 
+int k_Tv_calc(struct BBoxInterp *bbox, int ninputs, int noutputs,
+	double *inputs, double *outputs, double *jacobian
+){
+	(void)bbox; (void)jacobian; (void)ninputs; (void)noutputs; // not used currently
+
+	double T = inputs[0];
+	double rho = 1./inputs[1];
+
+	/* TODO make checks of two-phase region, act accordingly */
+	double k = freesteam_k_rhoT(rho,T);
+
+	outputs[0] = k;
+	return 0;
+}
+
 /*============== a few quick single-input, single output routines ============*/
 
 #define FREESTEAM_SISO_FUNCS(D,X)\
@@ -336,6 +351,17 @@ FREESTEAM_EXPORT int freesteam_register(){
 			, NULL /* free */
 			, 2,1 /* inputs, outputs */
 			, "[mu] = freesteam_mu_Tv(T,v) (see http://freesteam.sf.net)"
+			, 0.0
+		);
+
+		result += CreateUserFunctionBlackBox("freesteam_k_Tv"
+			, NULL /* alloc */
+			, k_Tv_calc /* value */
+			, NULL /* deriv */
+			, NULL /* deriv2 */
+			, NULL /* free */
+			, 2,1 /* inputs, outputs */
+			, "[k] = freesteam_k_Tv(T,v) (see http://freesteam.sf.net)"
 			, 0.0
 		);
 
