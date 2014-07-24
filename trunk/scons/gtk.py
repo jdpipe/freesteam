@@ -34,8 +34,9 @@ def generate(env):
 		env['GTK_CPPPATH'] = env.get('CPPPATH') or []
 		env['GTK_LIBPATH'] = env.get('LIBPATH') or []
 		env['GTK_LIBS'] = env.get('LIBS') or []
+		env['GTK_LINKFLAGS'] = env.get('LINKFLAGS') or []
 
-		for i in ['LIBS','LIBPATH','CPPPATH']:
+		for i in ['LIBS','LIBPATH','CPPPATH','LINKFLAGS']:
 			if old_env.get(i) is None:
 				if env.has_key(i):
 					del env[i]
