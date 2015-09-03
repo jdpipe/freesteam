@@ -753,6 +753,45 @@ void testTx(void){
 	fprintf(stderr,"...tested %d points.\n",n);
 }
 
+
+/*------------------------------------------------------------------------------
+  (u, v) ROUTINES
+*/
+
+
+void testuv(void){
+	SteamState S;
+
+	const double xx[] = {-1, -2, -1e-6, 0, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 0.3, 0.5, 0.7
+		, 0.9, 0.99, 0.999, 0.9999, 0.99999, 0.999999, 1, 1.00000001, 1.1, 2, 5
+	};
+	const int nx = sizeof(xx)/sizeof(double);
+
+	const double TT[] = {273.15, 273.16, 273.2, 274, 280, 290, 300, 310, 350
+		, 400, 450, 500, 550, 600, 620, 630, 640, 645, 647, 647.09, IAPWS97_TCRIT
+		, 647.1, 650, 700, 800, 900, 1000, 1073.15
+	};
+	const int nT = sizeof(TT)/sizeof(double);
+
+	fprintf(stderr,"FULL (T,X) TESTS\n");
+
+	const double *x,*T;
+	int n = 0;
+	for(x = xx; x < xx+nx; ++x){
+		for(T = TT; T < TT+nT; ++T){
+			if(freesteam_bounds_Tx(*T, *x, 0))continue;
+			if(*T == IAPWS97_TCRIT)continue;
+			S = freesteam_set_Tx(*T, *x);
+			//fprintf(stderr,"T = %f, x = %f... region %d\n", *T, *x, S.region);
+			CHECK_VAL(freesteam_T(S), *T, TXRELTOL);
+			CHECK_VAL(freesteam_x(S), *x, TXRELTOL);
+			++n;
+		}
+	}
+	fprintf(stderr,"...tested %d points.\n",n);
+}
+
+
 /*------------------------------------------------------------------------------
   VISCOSITY ROUTINES
 */

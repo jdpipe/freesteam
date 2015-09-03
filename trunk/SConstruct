@@ -346,11 +346,12 @@ default_targets =['python','ascend']
 # Here is the list of all of the source files that will go into
 # the freesteam DLL/SO.
 
-srcs = ["region1.c", "region2.c", "region3.c", "region4.c", "steam_ph.c"
-	,"steam.c", "backwards.c","b23.c", "common.c", "derivs.c", "zeroin.c"
-	,"steam_ps.c", "solver2.c","steam_pT.c","steam_pu.c","steam_Ts.c"
-	,"steam_Tx.c", "surftens.c"
-	,"bounds.c", "steam_pv.c", "viscosity.c", "thcond.c"
+srcs = ["region1.c", "region2.c", "region3.c", "region4.c", "steam.c"
+	,"backwards.c","b23.c", "common.c", "derivs.c", "zeroin.c", "solver2.c"
+	,"bounds.c"
+	,"steam_ps.c", "steam_pT.c","steam_pu.c","steam_Ts.c"
+	,"steam_ph.c", "steam_Tx.c", "steam_pv.c", "steam_uv.c"
+	,"surftens.c", "viscosity.c", "thcond.c"
 ]
 
 # Create a sub-environment with linking to libm for mathematics routines

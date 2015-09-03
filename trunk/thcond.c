@@ -24,6 +24,7 @@
 #include "thcond.h"
 
 #include <math.h>
+#include <stdio.h>
 
 #define THCOND_TSTAR 647.26
 #define THCOND_RHOSTAR 317.7
@@ -49,6 +50,8 @@
 
 /* freesteam code */
 double freesteam_k_rhoT(double rho, double T){
+
+	fprintf(stderr,"%s:%d: got T=%f, rho %f\n",__FILE__,__LINE__,T,rho);
 
 #define THCOND_a_COUNT 4
 	const double THCOND_a[THCOND_a_COUNT] = {

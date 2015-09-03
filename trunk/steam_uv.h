@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "common.h"
 #include "steam.h"
 
-/*
+/**
 	Warning: the routines that calculate steam properties as functions of
 	(u,v) are generally more computationally intensive that alternative
 	functions. It is suggested that you attempt to make use of other
