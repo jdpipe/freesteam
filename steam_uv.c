@@ -1,25 +1,25 @@
 /*
 freesteam - IAPWS-IF97 steam tables library
-Copyright (C) 2004-2009  John Pye
+Copyright (C) 2004-2015 John Pye
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation; either version 2
 of the License, or (at your option) any later version.
-
+ 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-
+ 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
+ 
 #define FREESTEAM_BUILDING_LIB
 #include "steam_uv.h"
-
+ 
 #include "region1.h"
 #include "region2.h"
 #include "region3.h"
@@ -28,145 +28,255 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "backwards.h"
 #include "solver2.h"
 #include "zeroin.h"
-
+#include "steam_pT.h"
+ 
 #include "common.h"
-
+ 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
-/*-----------------required helper functions---------------*/
+#define STEAM_UV_DEBUG
+#ifdef STEAM_UV_DEBUG
+# define MSG(FMT,...) fprintf(stderr,"%s:%d: " FMT "\n",__FILE__,__LINE__,__VA_ARGS__)
+#else
+# define MSG(...)
+#endif
 
-static double uf_p(double p){
-	Tsat = freesteam_region4_Tsat_p(p);
-	if(T < T13){
-		return freesteam_region1_u_pT(p, Tsat);
-	}else{
-		/* region 3 part of the saturation line */
+/**
+	Iterate on pressure and temperature to solve for u given constant V
+*/
+SteamState freesteam_region1_set_uv(double ut, double vt){
+	MSG("region 1, setting u = %f, v = %f",ut,vt);
+	double T0 = 300;;
+	double p0 = 1e5;
+
+	double u0 = freesteam_region1_u_pT(T0, p0);
+	double v0 = freesteam_region1_v_pT(T0, p0);
+
+	double v = v0;
+	double T = T0;
+	double p = p0;
+	double u = u0;
+
+	double error = fabs((ut - u) / u0) + fabs((vt - v) / v0);
+	//int attempts = 0;
+	while (error > 1e-15){
+		double T1 = T * (1.000001);
+		double p1 = p;
+
+		double T2 = T;
+		double p2 = p * (1.000001);
+
+		double u1 = freesteam_region1_u_pT(p1, T1);
+		double v1 = freesteam_region1_v_pT(p1, T1);
+
+		double u2 = freesteam_region1_u_pT(p2, T2);
+		double v2 = freesteam_region1_v_pT(p2, T2);
+
+		double dudt = (u1 - u) / (T1 - T);
+		double dvdt = (v1 - v) / (T1 - T);
+
+		double dudp = (u2 - u) / (p2 - p);
+		double dvdp = (v2 - v) / (p2 - p);
+
+		double dt = (ut - u - (vt - v)*dudp / dvdp) / (dudt - dudp*dvdt / dvdp);
+		double dp = -dt *dvdt / dvdp + (vt - v) / dvdp;
+		//double f = fabs((v2 - v) / v) / fabs((v1 - v) / v);
+
+		double T3 = T + dt;
+		double p3 = p + dp;
+		double u3 = freesteam_region1_u_pT(p3, T3);
+		double v3 = freesteam_region1_v_pT(p3, T3);
+
+		double error1 = fabs((ut - u3) / u0) + fabs((vt - v3) / v0);
+		v = v3;
+		T = T3;
+		p = p3;
+		u = u3;
+		error = error1;
+		MSG("p = %f, T = %f, u = %f, v = %f -> err = %f",p,T,u,v,error1);
 	}
+
+	return freesteam_region1_set_pT(p, T);
 }
 
-static double ug_p(double p){
-	Tsat = freesteam_region4_Tsat_p(p);
-	if(T < T13){
-		return freesteam_region2_u_pT(p, Tsat);
-	}else{
-		/* region 3 part of the saturation line */
+SteamState freesteam_region3_set_uv(double ut, double vt) {
+	MSG("region 3, setting u = %f, v = %f",ut,vt);
+	double rho = 1 / vt;
+	/* one-way iteration on T to solve v(rho,T). */
+	//double freesteam_region3_h_rhoT(double rho, double T);
+	double T0 = 700;
+
+	double u0 = freesteam_region3_u_rhoT(rho, T0);
+	double u1 = u0;
+	double T1 = T0*1.001;
+	double error = 1;
+	while(error > 1e-10){
+		u1 = freesteam_region3_u_rhoT(rho, T1);
+		error = fabs((u1 - ut) / ut);
+		double dudt = (u1 - u0) / (T1 - T0);
+		T0 = T1;
+		u0 = u1;
+		T1 = T0 + (ut - u1) / dudt;
 	}
+
+	SteamState S = freesteam_region3_set_rhoT(rho, T1);
+	return S;
 }
 
-static double vf_u(double u){
-	/* zeroin for T such that uf(T) = u */	
-	return freesteam_region1_v_pT(psat(T), T);
+/**
+	Iterate on pressure and temperature to solve for u given constant V
+*/
+SteamState freesteam_region2_set_uv(double ut, double vt){
+	MSG("region 2, setting u = %f, v = %f",ut,vt);
+	double T0 = 600;
+	double p0 = 1e5;
+
+	double v0 = freesteam_region2_v_pT(p0, T0);
+
+	double v = v0;
+	double T = T0;
+	double p = p0;
+
+	double u0 = freesteam_region2_u_pT(p0, T);
+	double u = u0;
+	double error = fabs((ut - u) / u0) + fabs((vt - v) / v0);
+	//int attempts = 0;
+	while (error > 1e-15){
+		double T1 = T * (1.000001);
+		double p1 = p;
+
+		double T2 = T;
+		double p2 = p * (1.000001);
+
+		double u1 = freesteam_region2_u_pT(p1, T1);
+		double v1 = freesteam_region2_v_pT(p1, T1);
+
+		double u2 = freesteam_region2_u_pT(p2, T2);
+		double v2 = freesteam_region2_v_pT(p2, T2);
+
+		double dudt = (u1 - u) / (T1 - T);
+		double dvdt = (v1 - v) / (T1 - T);
+
+		double dudp = (u2 - u) / (p2 - p);
+		double dvdp = (v2 - v) / (p2 - p);
+
+		double dt = (ut - u - (vt - v)*dudp / dvdp) / (dudt - dudp*dvdt / dvdp);
+		double dp = -dt *dvdt / dvdp + (vt - v) / dvdp;
+		//double f = fabs((v2 - v) / v) / fabs((v1 - v) / v);
+
+		double T3 = T + dt;
+		double p3 = p + dp;
+		double u3 = freesteam_region2_u_pT(p3, T3);
+		double v3 = freesteam_region2_v_pT(p3, T3);
+		double error1 = fabs((ut - u3) / u0) + fabs((vt - v3) / v0);
+
+		v = v3;
+		T = T3;
+		p = p3;
+		u = u3;
+		error = error1;
+	}
+	return freesteam_region2_set_pT(p, T);
 }
 
-static double ug_v(double v){
-	/* zeroin for T such that vg(T) = v */
-	return freesteam_region2_u_pT(psat(T), T)
+
+double u_23(double vt){
+	double T0 = 800;
+	double p0 = freesteam_b23_p_T(T0);
+	double v0 = freesteam_region2_v_pT(p0, T0);
+
+	double T = T0;
+	double T1 = T*1.01;
+	//double p = p0;
+	double v = v0;
+	double u;
+	double error = 1;
+	while(error > 1e-10){
+		double p1 = freesteam_b23_p_T(T1);
+		double v1 = freesteam_region2_v_pT(p1, T1);
+		u = freesteam_region2_u_pT(p1, T1);
+		double dvdt = (v1 - v) / (T1 - T);
+		error = fabs((vt - v) / vt);
+		T = T1;
+		v = v1;
+		T1 = T + (vt - v1) / dvdt;
+	}
+	return u;
 }
-
-static double u13_v(double v){
-	/* iterate on p to find v_pT(p, T13) = v */
-	return u_pT(p, T13)
-}
-
-static double u23_v(double v){
-	/* iterate on T to get freesteam_region2_v_pT(p23(T), T) = v */
-	return freesteam_region2_u_pT(p, T);
-
-	/* is there a better way using region 3 (rho, T) ?? */
-}
-
-/*-----------------main routines --------------------*/
 
 int freesteam_bounds_uv(double u, double v, int verbose){
 
-	/* lower bound on u */
-	double uf = uf_p(IAPWS97_PTRIPLE)
-	if(u < uf){
-		return 1;
+#define BOUND_WARN(MSG) \
+	if(verbose){\
+		fprintf(stderr,"%s (%s:%d): WARNING " MSG " (u = %g kJ/kg, v = %g m3/kg)\n"\
+		,__func__,__FILE__,__LINE__,u/1e3,v);\
 	}
 
-	double ug = ug_p(IAPWS97_PTRIPLE);
-	double vf = vf_p(IAPWS97_PTRIPLE), vg = vg_p(IAPWS97_PTRIPLE);
-	/* triple-point pressure line boundary for saturation region */
-	if(u < ug || v > vf){
-		double v1 = vf + (vg - vf)*(u - uf)/(ug - uf);
-		if(v > v1){
-			return 1;
-		}
+	BOUND_WARN("not yet implemented");
+	return 0;
+}
+
+
+int freesteam_region_uv(double u, double v) {
+	const double u_crit0 = 1874291.9078304442;
+
+	/*
+	FIXME some more code is needed to implement all the required boundaries correctly
+	in accordance with IAPWS-IF97.
+	for b13, see http://sourceforge.net/p/freesteam/code/HEAD/tree/tags/freesteam-0.8.1/b13curve.h
+	for b23, see http://sourceforge.net/p/freesteam/code/HEAD/tree/tags/freesteam-0.8.1/b23curve.h
+	for sat curves see http://sourceforge.net/p/freesteam/code/HEAD/tree/tags/freesteam-0.8.1/satcurve.h
+	*/
+
+	const double vf = 0.0022461503950500787; /* FIXME this is not a constant, should be vf(uf(T3) < u < u_crit) */
+	const double u13 = 1599556.2219496202; /* FIXME this is not a constant */
+	const double ug = 2205006.2923036958; /* FIXME this is not a constant! */
+	const double v2 = 0.0043355076532487760; /* this is vmax_b23 */
+
+	// TODO check that u > some minimum value (need ptriple(v)...)
+	if(u < u_crit0){
+		// FIXME XXX vf is not a constant value (need vf(u)...)
+		if(v > vf) return 4;
+		// FIXME XXX u13 is not a constant value (need u13(v)...)
+		else if(u > u13) return 3;
+		else return 1;
 	}
-
-	double v2 = freesteam_region2_v_pT(IAPWS97_PMAX, IAPWS97_TMAX);
-	if(v > v2 && u > ug){
-			/* triple-point pressure line boundary for superheat region */
-			/* solve for T to give u,pmin --> check v */
-
-			/* maximum temperature line */
-			/* solve p to give region2_v_pT(p, TMAX) --> check u */
-		}
-	}
-
-	double u2 = freesteam_region2_u_pT(IAPWS97_PMAX, IAPWS97_TMAX);
-	if(u > u2 && v < v2){
+	if(u < ug){
+		// FIXME first we need to check if v > vcrit, this is missing
+		return 4;
+	// FIXME should also check v > vmin_b23 before evaluating u_23?
+	}else if (v > v2 || u > u_23(v)){
+		// FIXME this should be if(v
 		return 2;
+	}else{
+		return 3;
 	}
-
-
-	/* use steam_pu(PMAX, u) to work out if v is within limits */
-	
-	
-
-
-	if(u < uf_p(IAPWS97_PTRIPLE){
-		return 1;
-	}else if(u < ug_p(IAPWS97_PTRIPLE)
-
-	/* else if u < ug(pmin) */
-	/*     check v < v(pmin, u) region 4 */
-
-	/* else if u > ug(pmin) */
-	/*     check v > v(pmin, u) region 2 */
-	
-	if(u < freesteam_region2_u_pT(PMAX, TMAX)){
-	/*     check v > v(pmax, u) region 1, 3, or 2! */
-
-	}/* else if u > u(pmax, Tmax) */
-	/*     check u < u(Tmax, v) */
+	/* TODO what does it mean to return 0?? */
+	return 0;
 }
 
-int freesteam_region_uv(double u, double v){
-	
-	/* if u < u_crit */
-	/*     if v > vf(u) */
-	/*          region 4 */
-	/*     else if u > u13(v) */
-	/*          region 3 */
-    /*     else */
-	/*          region 1 */
-
-	/* if u < ug(v) */
-	/*     region 4 */
-	/* else if v > v_234 || u > u_23(v) */
-    /*     region 2 */
-	/* else */
-    /*     region 3 */
-
-}
 
 SteamState freesteam_set_uv(double u, double v){
-
-	int region = /* work out the region */
-
-	if(region == 1){
-		double vf = /* solved Tsat(u) */
-		/* iterate on p, T to solve u, v */
-	}else if(region == 2){
-		/* two-way iteration with p,T to solve u,v */
-	}else if(region == 3){
-		/* one-way iteration on T to solve v(rho,T). */
-	}else if(region == 4){
-		/* initial guess ? */
-		/* iterate on T, x to solve u, v */
+	MSG("u = %f, v = %f",u,v);
+	int region = freesteam_region_uv(u, v);
+	MSG("region = %d",region);
+	switch(region){
+	case 1:
+		return freesteam_region1_set_uv(u, v);
+		break;
+	case 2:
+		return freesteam_region2_set_uv(u, v);
+		break;
+	case 3:
+		return freesteam_region3_set_uv(u, v);
+	default:
+		MSG("Region %d not implemented!",region);
+		// no 4 or 5
+		// XXX FIXME why not???
+		// FIXME what if we got a 0 from region_uv?
+		return freesteam_region3_set_uv(u, v);
 	}
 }
 

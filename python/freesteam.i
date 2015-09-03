@@ -40,6 +40,7 @@ You may not use it in commercially-released software."
 %rename(steam_Tx) freesteam_set_Tx;
 %rename(steam_pT) freesteam_set_pT;
 %rename(steam_pu) freesteam_set_pu;
+%rename(steam_uv) freesteam_set_uv;
 
 %rename(bounds_ps) freesteam_bounds_ps;
 %rename(bounds_ph) freesteam_bounds_ph;
@@ -48,6 +49,7 @@ You may not use it in commercially-released software."
 %rename(bounds_Tx) freesteam_bounds_Tx;
 %rename(bounds_pT) freesteam_bounds_pT;
 %rename(bounds_pu) freesteam_bounds_pu;
+%rename(bounds_uv) freesteam_bounds_uv;
 
 %rename(region_ps) freesteam_region_ps;
 %rename(region_ph) freesteam_region_ph;
@@ -56,6 +58,7 @@ You may not use it in commercially-released software."
 %rename(region_Tx) freesteam_region_Tx;
 %rename(region_pT) freesteam_region_pT;
 %rename(region_pu) freesteam_region_pu;
+%rename(region_uv) freesteam_region_uv;
 
 %rename(bound_pmax_T) freesteam_bound_pmax_T;
 
@@ -113,6 +116,7 @@ You may not use it in commercially-released software."
 #include "steam_Ts.h"
 #include "steam_pv.h"
 #include "steam_Tx.h"
+#include "steam_uv.h"
 #include "region1.h"
 #include "region2.h"
 #include "region3.h"
@@ -196,6 +200,11 @@ SteamState freesteam_set_Tx(double T, double x);
 int freesteam_bounds_pv(double p, double v, int verbose);
 int freesteam_region_pv(double p, double v);
 SteamState freesteam_set_pv(double p, double v);
+
+// steam_uv.h
+int freesteam_bounds_uv(double u, double v, int verbose);
+int freesteam_region_uv(double u, double v);
+SteamState freesteam_set_uv(double u, double v);
 
 // bounds.h
 SteamState freesteam_bound_pmax_T(double T);
