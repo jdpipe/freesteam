@@ -21,18 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "../derivs.h"
 #include "../region4.h"
 #include "../viscosity.h"
-#include "../thcond.h"
 
 #include <ascend/general/platform.h>
 #include <ascend/utilities/error.h>
 #include <ascend/compiler/extfunc.h>
 
-#define BBOX_DEBUG
-#ifdef BBOX_DEBUG
-# define MSG CONSOLE_DEBUG
-#else
-# define MSG(ARGS...) ((void)0)
-#endif
+/* #define BBOX_DEBUG */
 
 /**
 	ASCEND external evaluation function
@@ -57,7 +51,12 @@ int Tvsx_ph_calc(struct BBoxInterp *bbox,
 	double p = inputs[0]; /* ASCEND uses SI units, so no conversion needed */
 	double h = inputs[1]; /* ASCEND uses SI units, so no conversion needed */
 
-	MSG("Evaluating with p = %f bar, h = %f kJ/kg",p/1e5,h);
+#ifdef BBOX_DEBUG
+	ERROR_REPORTER_HERE(ASC_USER_NOTE,
+		"Evaluating with p = %f bar, h = %f kJ/kg"
+		,p,h
+	);
+#endif
 
 	SteamState S;
 	S = freesteam_set_ph(p,h);
@@ -78,7 +77,12 @@ int Tvsx_ph_calc(struct BBoxInterp *bbox,
 			x = freesteam_x(S);
 		}
 
-		MSG("Got result T = %f K" ,T );
+#ifdef BBOX_DEBUG
+		ERROR_REPORTER_HERE(ASC_USER_NOTE,
+			"Got result T = %f K"
+			,T
+		);
+#endif
 		outputs[0] = T;
 		outputs[1] = v;
 		outputs[2] = s;
@@ -105,8 +109,14 @@ int Tvsx_ph_calc(struct BBoxInterp *bbox,
 				dxdh_p = 0.001;
 				break;
 		}
-		MSG("Got result (dT/dp)h = %g, (dT/dh)p = %g K/Pa",dTdp_h,dTdh_p);
-		MSG("Got result (dv/dp)h = %g, (dv/dh)p = %g K/Pa",dvdp_h,dvdh_p);
+#ifdef BBOX_DEBUG
+		ERROR_REPORTER_HERE(ASC_USER_NOTE,
+			"Got result (dT/dp)h = %g, (dT/dh)p = %g K/Pa",dTdp_h,dTdh_p
+		);
+		ERROR_REPORTER_HERE(ASC_USER_NOTE,
+			"Got result (dv/dp)h = %g, (dv/dh)p = %g K/Pa",dvdp_h,dvdh_p
+		);
+#endif
 		jacobian[0] = dTdp_h;
 		jacobian[1] = dTdh_p;
 		jacobian[2] = dvdp_h;
@@ -141,7 +151,12 @@ int mukrhocp_pT_calc(struct BBoxInterp *bbox,
 	double p = inputs[0]; /* ASCEND uses SI units, so no conversion needed */
 	double T = inputs[1]; /* ASCEND uses SI units, so no conversion needed */
 
-	MSG("Evaluating with p = %f bar, T = %f K = %f C" ,p,T,T-273.15 );
+#ifdef BBOX_DEBUG
+	ERROR_REPORTER_HERE(ASC_USER_NOTE,
+		"Evaluating with p = %f bar, T = %f K = %f C"
+		,p,T,T-273.15
+	);
+#endif
 
 	SteamState S;
 	S = freesteam_set_pT(p,T);
@@ -150,28 +165,18 @@ int mukrhocp_pT_calc(struct BBoxInterp *bbox,
 	double rho = freesteam_rho(S);
 	double cp = freesteam_cp(S);
 
-	MSG("Got mu = %f, k = %f, rho = %f, cp = %f" , mu, k, rho, cp );
+#ifdef BBOX_DEBUG
+	ERROR_REPORTER_HERE(ASC_USER_NOTE,
+		"Got mu = %f, k = %f, rho = %f, cp = %f"
+		, mu, k, rho, cp
+	);
+#endif
 
 	outputs[0] = mu;
 	outputs[1] = k;
 	outputs[2] = rho;
 	outputs[3] = cp;
 
-	return 0;
-}
-
-int cp_ph_calc(struct BBoxInterp *bbox, int ninputs, int noutputs,
-	double *inputs, double *outputs, double *jacobian
-){
-	(void)bbox; (void)jacobian; (void)ninputs; (void)noutputs; // not used currently
-
-	double p = inputs[0];
-	double h = inputs[1];
-
-	SteamState S = freesteam_set_ph(p,h);
-	double cp = freesteam_cp(S);
-
-	outputs[0] = cp;
 	return 0;
 }
 
@@ -188,24 +193,6 @@ int mu_Tv_calc(struct BBoxInterp *bbox, int ninputs, int noutputs,
 	double mu = freesteam_mu_rhoT(rho,T);
 
 	outputs[0] = mu;
-	return 0;
-}
-
-int k_Tv_calc(struct BBoxInterp *bbox, int ninputs, int noutputs,
-	double *inputs, double *outputs, double *jacobian
-){
-	(void)bbox; (void)jacobian; (void)ninputs; (void)noutputs; // not used currently
-
-	double T = inputs[0];
-	double rho = 1./inputs[1];
-
-	MSG("T=%f, v=%f, rho=%f",T,inputs[1],rho);
-	/* TODO make checks of two-phase region, act accordingly */
-	double k = freesteam_k_rhoT(rho,T);
-
-	MSG("-->k=%f W/m/K",k);
-
-	outputs[0] = k;
 	return 0;
 }
 
@@ -316,7 +303,9 @@ FREESTEAM_SISO_FUNCS(FREESTEAM_SISO_WRAP,X)
 FREESTEAM_EXPORT int freesteam_register(){
 		int result = 0;
 
-		MSG("Initialising freesteam...");
+#ifdef BBOX_DEBUG
+		CONSOLE_DEBUG("Initialising freesteam...");
+#endif
 		result += CreateUserFunctionBlackBox("freesteam_Tvsx_ph"
 			, NULL /* alloc */
 			, Tvsx_ph_calc /* value */
@@ -325,17 +314,6 @@ FREESTEAM_EXPORT int freesteam_register(){
 			, NULL /* free */
 			, 2,4 /* inputs, outputs */
 			, "[T,v,s,x] = freesteam_Tvsx_ph(p,h) (see http://freesteam.sf.net)"
-			, 0.0
-		);
-
-		result += CreateUserFunctionBlackBox("freesteam_cp_ph"
-			, NULL /* alloc */
-			, cp_ph_calc /* value */
-			, NULL /* deriv */
-			, NULL /* deriv2 */
-			, NULL /* free */
-			, 2,1 /* inputs, outputs */
-			, "[cp] = freesteam_cp_ph(p,h) (see http://freesteam.sf.net)"
 			, 0.0
 		);
 
@@ -358,17 +336,6 @@ FREESTEAM_EXPORT int freesteam_register(){
 			, NULL /* free */
 			, 2,1 /* inputs, outputs */
 			, "[mu] = freesteam_mu_Tv(T,v) (see http://freesteam.sf.net)"
-			, 0.0
-		);
-
-		result += CreateUserFunctionBlackBox("freesteam_k_Tv"
-			, NULL /* alloc */
-			, k_Tv_calc /* value */
-			, NULL /* deriv */
-			, NULL /* deriv2 */
-			, NULL /* free */
-			, 2,1 /* inputs, outputs */
-			, "[k] = freesteam_k_Tv(T,v) (see http://freesteam.sf.net)"
 			, 0.0
 		);
 

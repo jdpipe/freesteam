@@ -12,16 +12,18 @@
 
 ; The name of the installer
 
-!if "${INSTARCH}" == "x64"
-!define INST64 1
+!ifndef VERSION
+!define VERSION 0.cvs
 !endif
 
-!ifdef INST64
+!ifndef INST64
+!error "INST64 must be defined"
+!endif
+
+!if $INST64
 Name "freesteam ${VERSION} (amd64)"
-!define SMNAME "freesteam (64 bit)"
 !else
 Name "freesteam ${VERSION}"
-!define SMNAME "freesteam"
 !endif
 
 !include LogicLib.nsh
@@ -43,7 +45,8 @@ OutFile freesteam-${VERSION}-py${PYVERSION}-setup.exe
 SetCompressor /SOLID lzma
 
 ; The default installation directory
-!ifdef INST64
+; The default installation directory
+!if ${INST64}
 InstallDir $PROGRAMFILES64\freesteam
 !else
 InstallDir $PROGRAMFILES32\freesteam
@@ -51,6 +54,7 @@ InstallDir $PROGRAMFILES32\freesteam
 
 ; Registry key to check for directory (so if you install again, it will 
 ; overwrite the old one automatically)
+InstallDirRegKey HKLM "Software\freesteam" "Install_Dir"
 
 ;--------------------------------
 
@@ -78,7 +82,7 @@ Var /GLOBAL LIBINSTALLED
 Var /GLOBAL EXAMPLESINSTALLED
 
 Function .onInit
-!ifdef INST64
+!if ${INST64}
 	${If} ${RunningX64}
 	${Else}
 		MessageBox MB_OK "This freesteam installer is for 64-bit Windows versions only.\n\nVisit http://freesteam.sf.net for a 32-bit version."
@@ -145,7 +149,7 @@ FunctionEnd
 Section "freesteam (required)"
   SectionIn RO
 
-!ifdef INST64
+!if ${INST64}
   SetRegView 64
 !endif
 
@@ -176,7 +180,7 @@ SectionEnd
 ;--------------------------------
 
 Section "Static library and header files"
-!ifdef INST64
+!if ${INST64}
 	SetRegView 64
 !endif
 
@@ -265,7 +269,7 @@ Section "Python language bindings"
 SectionEnd
 
 Section "ASCEND hooks"
-!ifdef INST64
+!if ${INST64}
 	SetRegView 64
 !endif
 
@@ -290,7 +294,7 @@ Section "ASCEND hooks"
 SectionEnd
 
 Section "Add to PATH"
-!ifdef INST64
+!if ${INST64}
 	SetRegView 64
 !endif
 	${EnvVarUpdate} $0 "PATH" "A" "HKLM" "$INSTDIR"
@@ -302,29 +306,29 @@ SectionEnd
 
 ; Optional section (can be disabled by the user)
 Section "Start Menu Shortcuts"
-!ifdef INST64
+!if ${INST64}
   SetRegView 64
 !endif
   
   WriteRegDWORD HKLM "SOFTWARE\freesteam" "StartMenu" 1
 
-  CreateDirectory "$SMPROGRAMS\${SMNAME}"
-  CreateShortCut "$SMPROGRAMS\${SMNAME}\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
-  CreateShortCut "$SMPROGRAMS\${SMNAME}\LICENSE.lnk" "$INSTDIR\LICENSE.txt" "" "$INSTDIR\LICENSE.txt" 0
-  CreateShortCut "$SMPROGRAMS\${SMNAME}\README.lnk" "$INSTDIR\README.txt" "" "$INSTDIR\README.txt" 0
-  CreateShortCut "$SMPROGRAMS\${SMNAME}\CHANGELOG.lnk" "$INSTDIR\CHANGELOG.txt" "" "$INSTDIR\CHANGELOG.txt" 0
+  CreateDirectory "$SMPROGRAMS\freesteam"
+  CreateShortCut "$SMPROGRAMS\freesteam\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
+  CreateShortCut "$SMPROGRAMS\freesteam\LICENSE.lnk" "$INSTDIR\LICENSE.txt" "" "$INSTDIR\LICENSE.txt" 0
+  CreateShortCut "$SMPROGRAMS\freesteam\README.lnk" "$INSTDIR\README.txt" "" "$INSTDIR\README.txt" 0
+  CreateShortCut "$SMPROGRAMS\freesteam\CHANGELOG.lnk" "$INSTDIR\CHANGELOG.txt" "" "$INSTDIR\CHANGELOG.txt" 0
 
   ${If} $EXAMPLESINSTALLED == "1"
-	CreateShortCut "$SMPROGRAMS\${SMNAME}\Example source code.lnk" "$INSTDIR\examples" "" "$INSTDIR\examples" 0
+	CreateShortCut "$SMPROGRAMS\freesteam\Example source code.lnk" "$INSTDIR\examples" "" "$INSTDIR\examples" 0
   ${EndIf}
 
   ${If} $PYINSTALLED == "1"
-	CreateShortCut "$SMPROGRAMS\${SMNAME}\Python README.lnk" "$INSTDIR\python\README.txt" "" "$INSTDIR\python\README.txt" 0
-	CreateShortCut "$SMPROGRAMS\${SMNAME}\Python scripts.lnk" "$INSTDIR\python" "" "$INSTDIR\python" 0
+	CreateShortCut "$SMPROGRAMS\freesteam\Python README.lnk" "$INSTDIR\python\README.txt" "" "$INSTDIR\python\README.txt" 0
+	CreateShortCut "$SMPROGRAMS\freesteam\Python scripts.lnk" "$INSTDIR\python" "" "$INSTDIR\python" 0
   ${EndIf}
   
   ${If} $ASCENDINSTALLED == "1"
-	CreateShortCut "$SMPROGRAMS\${SMNAME}\ASCEND models.lnk" "$INSTDIR\ascend" "" "$INSTDIR\ascend" 0
+	CreateShortCut "$SMPROGRAMS\freesteam\ASCEND models.lnk" "$INSTDIR\ascend" "" "$INSTDIR\ascend" 0
   ${EndIf}
   
 SectionEnd
@@ -333,7 +337,7 @@ SectionEnd
 ; UNINSTALLER
 
 Section "Uninstall"
-!ifdef INST64
+!if ${INST64}
 	SetRegView 64
 !endif
 
@@ -400,7 +404,7 @@ Section "Uninstall"
 	${If} $1 != 0:
 		; Remove shortcuts, if any
 		DetailPrint "--- REMOVING START MENU SHORTCUTS ---"
-		RmDir /r "$SMPROGRAMS\${SMNAME}"
+		RmDir /r "$SMPROGRAMS\freesteam"
 	${EndIf}
 
 ;--- common components ---
@@ -427,7 +431,7 @@ SectionEnd
 ; UTILITY ROUTINES
 
 Function DetectPython
-!ifdef INST64
+!if ${INST64}
 	SetRegView 64
 !endif
 	ReadRegStr $R6 HKCU "SOFTWARE\Python\PythonCore\${PYVERSION}\InstallPath" ""
@@ -453,7 +457,7 @@ FunctionEnd
 ; Detect ASCEND
 
 Function DetectASCEND
-!ifdef INST64
+!if ${INST64}
 	SetRegView 64
 !endif
 	ReadRegStr $R6 HKCU "SOFTWARE\ASCEND" "Install_Dir"
@@ -476,7 +480,7 @@ Function DetectASCEND
 FunctionEnd
 
 Function DetectASCENDModels
-!ifdef INST64
+!if ${INST64}
 	SetRegView 64
 !endif
 	ReadRegStr $R6 HKCU "SOFTWARE\ASCEND" "INSTALL_MODELS"

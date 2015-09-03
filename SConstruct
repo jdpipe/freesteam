@@ -5,8 +5,7 @@
 # We don't currently propose to support building freesteam from MSVS but
 # that shouldn't be necessary, as you should be able to use the MinGW-generated
 # DLL even with MSVS, because it only uses C code.
-import platform, sys, distutils.sysconfig, os, os.path, SCons.Warnings
-SCons.Warnings.suppressWarningClass(SCons.Warnings.VisualCMissingWarning)
+import platform, sys, distutils.sysconfig, os, os.path
 
 #version number for this copy of freesteam
 version = "2.1"
@@ -15,7 +14,7 @@ version = "2.1"
 pyversion = "%d.%d" % (sys.version_info[0],sys.version_info[1])
 
 # architecture
-instarch = ("-win32","-amd64")[platform.architecture()[0] == "64bit"]
+instarch = ("","-amd64")[platform.architecture()[0] == "64bit"]
 
 # Set up some platform-specific defaults
 if platform.system()=="Windows":
@@ -258,7 +257,7 @@ def CheckSwigVersion(context):
 # Check that we got all the associated stuff that we need...
 
 if not env.get('HAVE_GSL'):
-	print "GSL was not found... install GSL (package 'libgsl0-dev' in Ubuntu; 'gsl-devel' in Fedora)."
+	print "GSL was not found... install GSL (package 'libgsl0-dev' or similar in Ubuntu)."
 	Exit(1)
 
 # TODO: detect PYTHON properly.
@@ -346,12 +345,11 @@ default_targets =['python','ascend']
 # Here is the list of all of the source files that will go into
 # the freesteam DLL/SO.
 
-srcs = ["region1.c", "region2.c", "region3.c", "region4.c", "steam.c"
-	,"backwards.c","b23.c", "common.c", "derivs.c", "zeroin.c", "solver2.c"
-	,"bounds.c"
-	,"steam_ps.c", "steam_pT.c","steam_pu.c","steam_Ts.c"
-	,"steam_ph.c", "steam_Tx.c", "steam_pv.c", "steam_uv.c"
-	,"surftens.c", "viscosity.c", "thcond.c"
+srcs = ["region1.c", "region2.c", "region3.c", "region4.c", "steam_ph.c"
+	,"steam.c", "backwards.c","b23.c", "common.c", "derivs.c", "zeroin.c"
+	,"steam_ps.c", "solver2.c","steam_pT.c","steam_pu.c","steam_Ts.c"
+	,"steam_Tx.c", "surftens.c"
+	,"bounds.c", "steam_pv.c", "viscosity.c", "thcond.c"
 ]
 
 # Create a sub-environment with linking to libm for mathematics routines
@@ -492,7 +490,6 @@ env.Append(
 tar = env.DistTar("dist/"+env['DISTTAR_NAME']
 	, [env.Dir('#'),'freesteam.spec']
 )
-Depends(tar,["freesteam.spec"])
 
 #------------------------------------------------------
 
@@ -529,20 +526,14 @@ if not env.get('NSIS'):
 
 if platform.system()=="Windows":
 	if with_installer:
-		pyarch = ""
-		nsisarch = "win32"
-		if platform.architecture()[0] == "64bit":
-			nsisarch = "x64"
-			pyarch = ".amd64"
-		nsisdefs = {
-			'OUTFILE':"#dist/$WIN_INSTALLER_NAME"
+		inst64 = ("0","1")[platform.architecture()[0] == "64bit"]
+		env.Append(NSISDEFINES={
+			'OUTFILE':"#dist/"+env['WIN_INSTALLER_NAME']
 			,"VERSION":version
 			,'PYVERSION':pyversion
-			,'PYPATCH':".%d"%sys.version_info[2]
-			,'PYARCH':str(pyarch)
-			,'INSTARCH':str(nsisarch)
-		}
-		installer = env.Installer('installer.nsi',NSISDEFINES=nsisdefs)
+			,'INST64':inst64
+		})
+		installer = env.Installer('installer.nsi')
 		Depends(installer,["python","ascend"])
 		Depends(installer,[configscript])
 		env.Alias('installer',installer)

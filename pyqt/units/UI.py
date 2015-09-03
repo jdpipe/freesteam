@@ -14,7 +14,7 @@ Config.read("UI_steamTablesrc")
 
 class Entrada_con_unidades(QtGui.QWidget):
     """Clase que define el widget con entrada de datos y boton de dialogo de unidades"""
-    valueChanged = QtCore.pyqtSignal(float)
+    valueChanged = QtCore.pyqtSignal("value")
     def __init__(self, dialogo, unidad, magnitud, UIconfig=None, retornar=True, readOnly=False, boton=True, texto=True, textounidad="", value=None, start=0, max=float("inf"), min=0, decimales=4, tolerancia=4, parent=None, width=85, resaltado=False, spinbox=False, suffix="", step=0.01, colorReadOnly=None, colorResaltado=None, frame=True):
         """
         Dialogo: el dialogo de unidades usado por el conversor de unidades

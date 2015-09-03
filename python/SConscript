@@ -32,13 +32,6 @@ if env.get('HAVE_PYTHON'):
 #	)
 #
 
-	# remove the flags that cause warnings from SWIG...
-	# TODO can we do anything to avoid these warnings, otherwise?
-	_cflags =  str(python_env['CFLAGS']).split(" ")
-	_cflags.remove("-Wconversion")
-	_cflags.remove("-Wall")
-	python_env.Replace(CFLAGS=_cflags)
-
 	if platform.system()=="Windows":
 		python_env['SHLIBSUFFIX']=".pyd"
 	elif platform.system()=="Darwin":

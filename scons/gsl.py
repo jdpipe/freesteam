@@ -75,7 +75,7 @@ def generate(env):
 				env['GSL_STATICLIBS'] = [os.path.join(munge(LIB),"lib%s.a"%i) for i in ["gsl","gslcblas"]]
 				env['GSL_LIBS'] = ['gsl']
 			except WindowsError:					
-				cmd = ['sh.exe','-c','"gsl-config --libs --cflags"']
+				cmd = ['sh.exe','-c','"/mingw/bin/gsl-config --libs --cflags"']
 				env1 = env.Clone()
 				env1['CPPPATH'] = None
 				env1['LIBPATH'] = None
@@ -143,6 +143,5 @@ def exists(env):
 		if not subprocess.call('pkg-config libgvc libagraph --exists'):
 			return True
 		return False
-
-# vim: set ts=4 noexpandtab:
+# vim: set ts=4 noexpandtab:
 
