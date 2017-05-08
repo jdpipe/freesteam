@@ -303,6 +303,9 @@ if not env['HAVE_PYTHON']:
 	print "WARNING: Freesteam will be built without Python bindings.", without_python_reason
 
 
+if not env.get('HAVE_GTK'):
+	print "WARNING: GTK was not found... no GUI will be built. You can install 'libgtk2.0-dev' on Ubuntu to fix this."
+
 # Flags to give some more warning output from the GCC compiler
 
 env.Append(CFLAGS=['-Wall','-W','-Wconversion','-Wimplicit'])
@@ -341,7 +344,7 @@ specfile = env.SubstInFile('freesteam.spec.in')
 
 install_config = env.InstallProgram("${INSTALL_ROOT}$INSTALL_BIN",configscript)
 
-default_targets =['python','ascend']
+default_targets =['python','ascend','gtk']
 
 # Here is the list of all of the source files that will go into
 # the freesteam DLL/SO.

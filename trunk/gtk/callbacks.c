@@ -21,22 +21,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "freesteam-gtk.h"
 #include <string.h>
 
-void 
-on_window_destroy (GtkObject *object, gpointer user_data)
-{
+void on_window_destroy (GtkObject *object, gpointer user_data){
+  (void)object; (void)user_data;
   gtk_main_quit ();
 }
 
-void
-on_quit_activate (GtkMenuItem *item, gpointer user_data)
-{
+void on_quit_activate (GtkMenuItem *item, gpointer user_data){
+  (void)item; (void)user_data;
   gtk_main_quit ();
 }
 
 
-void
-on_aboutdialog_response (GtkDialog *dialog, gint response_id, gpointer user_data)
-{
+void on_aboutdialog_response (GtkDialog *dialog, gint response_id, gpointer user_data){
+  (void)dialog;
   TableData *data = (TableData *) user_data;
 
   if (response_id == GTK_RESPONSE_CANCEL)
@@ -44,9 +41,8 @@ on_aboutdialog_response (GtkDialog *dialog, gint response_id, gpointer user_data
 }
 
 
-void
-on_about_activate (GtkMenuItem *item, gpointer user_data)
-{
+void on_about_activate (GtkMenuItem *item, gpointer user_data){
+  (void)item;
   TableData *data = (TableData *) user_data;
 
   gtk_widget_show(GTK_WIDGET(data->about));
@@ -56,38 +52,28 @@ on_about_activate (GtkMenuItem *item, gpointer user_data)
  * show solver status and errors on the status bar
  */
 
-void status_bar_update(int code, TableData *data)
-{
-  if (code==DOMAIN_ERROR)
-    {
-      gtk_statusbar_push( data->solver_status, 0, "ERROR! Independent variable out of domain");
-    }
-  else if (code==READY)
-    {
+void status_bar_update(int code, TableData *data){
+  if(code==DOMAIN_ERROR){
+    gtk_statusbar_push( data->solver_status, 0, "ERROR! Independent variable out of domain");
+  }else if(code==READY){
       gtk_statusbar_push( data->solver_status, 0, "Ready");
-    }
-  else if (code==PRINT_MESSAGE)
-    {
+  }else if(code==PRINT_MESSAGE){
       gtk_statusbar_push( data->solver_status, 0, data->status_string);
-    }
-
+  }
 }
 
 
-void reset_table (TableData *data)
-{
+void reset_table (TableData *data){
   int i, j =0;
 
-  for (j=COL_LIQUID; j<NUM_COLS; j++)
-    {
-      gtk_tree_model_get_iter_first( GTK_TREE_MODEL(data->list), data->iter );
+  for (j=COL_LIQUID; j<NUM_COLS; j++){
+    gtk_tree_model_get_iter_first( GTK_TREE_MODEL(data->list), data->iter );
 
-      for(i=0; i<_Nr_table_lines_; i++) 
-	{
+    for(i=0; i<_Nr_table_lines_; i++){
 	  gtk_list_store_set( data->list, data->iter, j, 0.0, -1);
 	  gtk_tree_model_iter_next( GTK_TREE_MODEL(data->list), data->iter );
 	}
-    }
+  }
 }
 
 
@@ -96,8 +82,9 @@ void reset_table (TableData *data)
  */
 
 G_MODULE_EXPORT
-void on_solver_class_changed (GtkComboBox *widget, gpointer user_data)
-{
+void on_solver_class_changed (GtkComboBox *widget, gpointer user_data){
+  (void)widget;
+
   TableData *data = (TableData *) user_data;
 
   gtk_entry_set_text (data->indep_var1_entry, "");
@@ -127,8 +114,8 @@ void on_solver_class_changed (GtkComboBox *widget, gpointer user_data)
  */
 
 G_MODULE_EXPORT
-void on_indep_variables_combo_changed (GtkComboBox *widget, gpointer user_data)
-{
+void on_indep_variables_combo_changed (GtkComboBox *widget, gpointer user_data){
+  (void)widget;
   TableData *data = (TableData *) user_data;
 
   gtk_entry_set_text (data->indep_var1_entry, "");
@@ -188,11 +175,9 @@ void on_indep_variables_combo_changed (GtkComboBox *widget, gpointer user_data)
  * update table values after recalculation 
  */
 
-void update_table_liststore( int column, int reset, TableData *data , SteamState *S)
-{
+void update_table_liststore( int column, int reset, TableData *data , SteamState *S){
 
   if (reset) reset_table (data);
-
 
   gtk_tree_model_get_iter_first( GTK_TREE_MODEL(data->list), data->iter );
   gtk_list_store_set( data->list, data->iter, column, freesteam_p(*S) * 1e-5, -1);
@@ -234,8 +219,7 @@ void update_table_liststore( int column, int reset, TableData *data , SteamState
 }
 
 
-int eval_state (TableData *data)
-{
+int eval_state (TableData *data){
   double var1, var2;
 
   int active_sol_class;
@@ -251,156 +235,106 @@ int eval_state (TableData *data)
   /* single phase state */
   /**********************/
 
-  if( active_sol_class == SINGLE_PHASE_SOLVER )
-    {
-
-      switch (active_sol)
-	{
-	 
+  if(active_sol_class == SINGLE_PHASE_SOLVER){
+    switch(active_sol){ 
 	case SOLVER_PT:
-
-	  if (1)
+	  if(1)
 	    data->S = freesteam_set_pT (var1*1e+5, var2+273.15);
 	  else
 	    return DOMAIN_ERROR;
-
 	  break;
 
-
 	case SOLVER_PH:
+	  if(!freesteam_bounds_ph (var1*1e+5, var2*1e+3, VERBOSE)){
+	    data->S = freesteam_set_ph (var1 * 1e+5, var2 * 1e+3);
 
-	  if (!freesteam_bounds_ph (var1*1e+5, var2*1e+3, VERBOSE))
-	    {
-	      data->S = freesteam_set_ph (var1 * 1e+5, var2 * 1e+3);
-
-	      if (data->S.region == REGION_4)
-		{
+	    if(data->S.region == REGION_4){
 		  var1 = freesteam_region4_Tsat_p (var1 * 1e+5); /* T in K */
 		  data->SLiq = freesteam_set_Tx (var1, 0.0);
 		  data->SVap = freesteam_set_Tx (var1, 1.0);
 		  data->SMix = data->S;
 		}
-	    }
-	  else
+	  }else
 	    return DOMAIN_ERROR;
-
 	  break;
 
-
 	case SOLVER_PS:
-
-	  if (!freesteam_bounds_ps (var1*1e+5, var2*1e+3, VERBOSE))
-	    {
+	  if(!freesteam_bounds_ps (var1*1e+5, var2*1e+3, VERBOSE)){
 	      data->S = freesteam_set_ps (var1 * 1e+5, var2 * 1e+3);
-	    }
-	  else
+	  }else
 	    return DOMAIN_ERROR;
-
 	  break;
 
 	case SOLVER_PU:
-
 	  data->S = freesteam_set_pu (var1 * 1e+5, var2 * 1e+3);
-
 	  break;
 
-
 	case SOLVER_PV:
-
-	  if (freesteam_bounds_pv (var1 * 1e+5, var2, VERBOSE))
-	    {
-	      data->S = freesteam_set_pv (var1 * 1e+5, var2);
-	    }
-	  else
+	  if (freesteam_bounds_pv (var1 * 1e+5, var2, VERBOSE)){
+	    data->S = freesteam_set_pv (var1 * 1e+5, var2);
+	  }else
 	    return DOMAIN_ERROR;
-
 	  break; 
 
-
 	case SOLVER_TS:
-	
-	  if (!freesteam_bounds_Ts (var1+273.15, var2*1e+3, VERBOSE))
-	    {
-	      data->S = freesteam_set_Ts( var1 + 273.15, var2 * 1e+3);
-	    }
-	  else
+	  if(!freesteam_bounds_Ts (var1+273.15, var2*1e+3, VERBOSE)){
+	    data->S = freesteam_set_Ts( var1 + 273.15, var2 * 1e+3);
+	  }else
 	    return DOMAIN_ERROR;
-
 	} /* switch */
-   
-    }
 
-  /* saturation state */
-  /********************/
-  else if (active_sol_class == SATURATION_SOLVER)
-    {
-      data->S.region = REGION_4;
+  }else if(active_sol_class == SATURATION_SOLVER){
+    /* saturation state */
+    /********************/
+    data->S.region = REGION_4;
 
-      switch (active_sol)
-	{
-
+    switch (active_sol){
 	case SAT_SOLVER_TX:
-      
-	  if (!freesteam_bounds_Tx (var1 + 273.15, var2, 1))
-	    {
+	  if (!freesteam_bounds_Tx (var1 + 273.15, var2, 1)){
 	      data->SLiq = freesteam_set_Tx (var1 + 273.15, 0.0);
               data->SVap = freesteam_set_Tx (var1 + 273.15, 1.0);
               data->SMix = freesteam_set_Tx (var1 + 273.15, var2);
-	    }
-	  else
+	  }else
 	    return DOMAIN_ERROR;
-
 	  break;
-	
+
 	case SAT_SOLVER_PX:
-	  if (1)
-	    {
+	  if(1){
 	      var1 = freesteam_region4_Tsat_p (var1 * 1e+5); /* T in K */
 	      data->SLiq = freesteam_set_Tx (var1, 0.0);
 	      data->SVap = freesteam_set_Tx (var1, 1.0);
 	      data->SMix = freesteam_set_Tx (var1, var2);
-	    }
-	  else
+	  }else
 	    return DOMAIN_ERROR;
-
 	  break;
 	}
-    }
+  }
 
   /* solution found for new state */
 
-  switch (data->S.region)
-    {
-    case REGION_1:
+  switch (data->S.region){
+  case REGION_1:
+    update_table_liststore( COL_LIQUID, 1, data, &data->S );
+    break;
 
-      update_table_liststore( COL_LIQUID, 1, data, &data->S );
-      break;
+  case REGION_2:
+    update_table_liststore( COL_VAPOUR, 1,  data, &data->S );
+    break;
 
+  case REGION_3:
+    update_table_liststore( COL_LIQUID, 1, data, &data->S );
+    break;
 
-    case REGION_2:
+  case REGION_4:
+    update_table_liststore (COL_VAPOUR, 0, data, &data->SVap);
+    update_table_liststore (COL_LIQUID, 0, data, &data->SLiq);
+    update_table_liststore (COL_MIXED , 0, data, &data->SMix);
+    break;
 
-      update_table_liststore( COL_VAPOUR, 1,  data, &data->S );
-      break;
-
-    case REGION_3:
-
-      update_table_liststore( COL_LIQUID, 1, data, &data->S );
-      break;
-
-
-    case REGION_4:
-
-      update_table_liststore (COL_VAPOUR, 0, data, &data->SVap);
-      update_table_liststore (COL_LIQUID, 0, data, &data->SLiq);
-      update_table_liststore (COL_MIXED , 0, data, &data->SMix);
-      break;
-
-
-    case REGION_5:
-
-      update_table_liststore( COL_VAPOUR, 1,  data, &data->S );
-      break;
-    }
+  case REGION_5:
+    update_table_liststore( COL_VAPOUR, 1,  data, &data->S );
+    break;
+  }
 
   return 0;
 }
@@ -412,8 +346,9 @@ int eval_state (TableData *data)
 
 G_MODULE_EXPORT
 void on_indep_var1_entry_editing_done(GtkEntry *cell_editable,
-                                      gpointer  user_data)
-{
+    gpointer  user_data
+){
+  (void)cell_editable;
   TableData *data = (TableData *) user_data;
   int code;
 
@@ -432,8 +367,9 @@ void on_indep_var1_entry_editing_done(GtkEntry *cell_editable,
 
 G_MODULE_EXPORT
 void on_indep_var2_entry_editing_done(GtkEntry *cell_editable,
-                                      gpointer  user_data)
-{  
+    gpointer  user_data
+){
+  (void)cell_editable;
   TableData *data = (TableData *) user_data;
 
   int code;
