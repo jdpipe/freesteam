@@ -66,7 +66,7 @@ int freesteam_bounds_ph(double p, double h, int verbose){
 }
 
 int freesteam_region_ph(double p, double h){
-	//fprintf(stderr,"freesteam_set_ph(p = %f, h = %f)\n",p,h);
+	//fprintf(stderr,"freesteam_region_ph(p = %f, h = %f)\n",p,h);
 
 	double p13 = 0;
 	p13 = freesteam_region4_psat_T(REGION1_TMAX);
@@ -125,12 +125,12 @@ double ph_region2_fn(double T, void *user_data){
 SteamState freesteam_set_ph(double p, double h){
 	SteamState S;
 	S.region = (char)freesteam_region_ph(p,h);
-	//int status;
 	switch(S.region){
 		case 1:
 			S.R1.p = p;
 			S.R1.T = freesteam_region1_T_ph(p, h);
 #if 0
+			int status;
 			S = freesteam_solver2_region1('p','h', p, h, S, &status);
 			if(status){
 				fprintf(stderr,"%s: WARNING: Failed to converge in region 1\n",__func__);
@@ -153,7 +153,7 @@ SteamState freesteam_set_ph(double p, double h){
 			/* solver2 is not working in this region, for some reason. */
 			S = freesteam_solver2_region2('p','h', p, h, S, &status);
 			if(status){
-				fprintf(stderr,"%s: WARNING: Failed to converge in region 2\n");
+				fprintf(stderr,"%s: WARNING: Failed to converge in region 2\n",__func__);
 			}
 #endif
 			return S;
