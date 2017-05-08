@@ -435,6 +435,9 @@ prog_env.Append(
 
 prog_env.Program("test","test.c")
 
+# Create another test (Ramiro Vignolo)
+prog_env.Program("test2","test2.c")
+
 #-------------------------------------------------------------------------------
 # Install files, if requested.
 
