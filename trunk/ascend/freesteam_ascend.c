@@ -87,7 +87,7 @@ int Tvsx_ph_calc(struct BBoxInterp *bbox,
 		/* TODO add error checks here, surely? */
 		return 0;
 	case bb_deriv_eval:
-		/*fprintf(stderr,"derivative evaluation, region %d\n",S.region);*/
+		MSG("Derivative evaluation, region %d",S.region);
 		dTdp_h = freesteam_deriv(S,"Tph");
 		dTdh_p = freesteam_deriv(S,"Thp");
 		dvdp_h = freesteam_deriv(S,"vph");
@@ -320,7 +320,7 @@ FREESTEAM_EXPORT int freesteam_register(){
 		result += CreateUserFunctionBlackBox("freesteam_Tvsx_ph"
 			, NULL /* alloc */
 			, Tvsx_ph_calc /* value */
-			, Tvsx_ph_calc /* deriv */
+			, NULL // Tvsx_ph_calc /* deriv */
 			, NULL /* deriv2 */
 			, NULL /* free */
 			, 2,4 /* inputs, outputs */
