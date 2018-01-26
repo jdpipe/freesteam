@@ -308,19 +308,20 @@ if not env.get('HAVE_GTK'):
 
 # Flags to give some more warning output from the GCC compiler
 
-env.Append(CFLAGS=['-Wall','-W','-Wconversion','-Wimplicit'])
+env.Append(CCFLAGS=['-Wall','-W','-Wconversion','-Wimplicit'])
 
 # Flags for coverage testing (will apply to all code built in 'env')
 
 if env.get('GCOV'):
 	env.Append(
-		CFLAGS=['-fprofile-arcs','-ftest-coverage']
+		CCFLAGS=['-fprofile-arcs','-ftest-coverage']
 		,LIBS=['gcov']
 	)
 
-if env.get('DEBUG'):
+if env['DEBUG']:
 	env.Append(
-		CFLAGS=['-g']
+		CCFLAGS=['-g']
+		,LINKFLAGS=['-g']
 	)
 
 # Create config.h including version number

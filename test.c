@@ -45,6 +45,12 @@ int errorflag = 0;
 double maxrelerr = 0;
 int verbose = 0;
 
+#define MSG(ARGS...) \
+	fprintf(stderr,ARGS)
+
+#define VMSG(ARGS...) \
+	if(verbose)MSG(ARGS)
+
 #define CHECK_VAL(EXPR, VAL, RELTOL){ \
 	double calc = (EXPR); \
 	double error = calc - (VAL);\
@@ -52,6 +58,25 @@ int verbose = 0;
 	relerr = (VAL==0) ? error : error / (VAL);\
 	if(fabs(relerr)>maxrelerr)maxrelerr=fabs(relerr);\
 	if(fabs(relerr) > RELTOL){\
+		fprintf(stderr,"ERROR (%s:%d): %s = %e, should be %e, error %10e %% exceeds tol %10e %%\n",\
+			__FILE__,__LINE__,#EXPR, calc, (VAL), relerr*100., RELTOL*100.\
+		);\
+		/*exit(1);*/\
+		errorflag = 1; \
+	 }else if(verbose){ \
+		fprintf(stderr,"OK: %s = %f with %e %% error (test value = %f).\n", #EXPR, calc, error/(VAL)*100,(VAL)); \
+	} \
+}
+
+
+#define CHECK_VAL_S(STATE, EXPR, VAL, RELTOL){ \
+	double calc = (EXPR); \
+	double error = calc - (VAL);\
+	double relerr;\
+	relerr = (VAL==0) ? error : error / (VAL);\
+	if(fabs(relerr)>maxrelerr)maxrelerr=fabs(relerr);\
+	if(fabs(relerr) > RELTOL){\
+		freesteam_fprint(stderr,STATE);\
 		fprintf(stderr,"ERROR (%s:%d): %s = %e, should be %e, error %10e %% exceeds tol %10e %%\n",\
 			__FILE__,__LINE__,#EXPR, calc, (VAL), relerr*100., RELTOL*100.\
 		);\
@@ -94,19 +119,19 @@ void test_region1_point(double T,double p, double v,double h,double u, double s,
 */
 
 	SteamState S = freesteam_region1_set_pT(p*1e6, T);
-	CHECK_VAL(freesteam_p(S),p*1e6,RELTOL);
-	CHECK_VAL(freesteam_T(S),T,RELTOL);
-	CHECK_VAL(freesteam_v(S),v,RELTOL);
-	CHECK_VAL(freesteam_h(S),h*1e3,RELTOL);
-	CHECK_VAL(freesteam_u(S),u*1e3,RELTOL);
-	CHECK_VAL(freesteam_s(S),s*1e3,RELTOL);
-	CHECK_VAL(freesteam_cp(S),cp*1e3,RELTOL);
-	CHECK_VAL(freesteam_w(S),w,RELTOL);
+	CHECK_VAL_S(S, freesteam_p(S),p*1e6,RELTOL);
+	CHECK_VAL_S(S, freesteam_T(S),T,RELTOL);
+	CHECK_VAL_S(S, freesteam_v(S),v,RELTOL);
+	CHECK_VAL_S(S, freesteam_h(S),h*1e3,RELTOL);
+	CHECK_VAL_S(S, freesteam_u(S),u*1e3,RELTOL);
+	CHECK_VAL_S(S, freesteam_s(S),s*1e3,RELTOL);
+	CHECK_VAL_S(S, freesteam_cp(S),cp*1e3,RELTOL);
+	CHECK_VAL_S(S, freesteam_w(S),w,RELTOL);
 
 }
 
 void testregion1(void){
-	fprintf(stderr,"REGION 1 TESTS\n");
+	MSG("REGION 1 TESTS\n");
 	test_region1_point(300., 3., 0.100215168E-2, 0.115331273E3, 0.112324818E3, 0.392294792, 0.417301218E1, 0.150773921E4);
 	test_region1_point(300., 80., 0.971180894E-3, 0.184142828E3, 0.106448356E3, 0.368563852, 0.401008987E1, 0.163469054E4);
 	test_region1_point(500., 3., 0.120241800E-2, 0.975542239E3, 0.971934985E3, 0.258041912E1, 0.465580682E1, 0.124071337E4);
@@ -121,18 +146,18 @@ void test_region2_point(double T,double p, double v,double h,double u, double s,
 	/* units of measurement as for region1 test */
 
 	SteamState S = freesteam_region2_set_pT(p*1e6, T);
-	CHECK_VAL(freesteam_p(S),p*1e6,RELTOL);
-	CHECK_VAL(freesteam_T(S),T,RELTOL);
-	CHECK_VAL(freesteam_v(S),v,RELTOL);
-	CHECK_VAL(freesteam_h(S),h*1e3,RELTOL);
-	CHECK_VAL(freesteam_u(S),u*1e3,RELTOL);
-	CHECK_VAL(freesteam_s(S),s*1e3,RELTOL);
-	CHECK_VAL(freesteam_cp(S),cp*1e3,RELTOL);
-	CHECK_VAL(freesteam_w(S),w,RELTOL);
+	CHECK_VAL_S(S, freesteam_p(S),p*1e6,RELTOL);
+	CHECK_VAL_S(S, freesteam_T(S),T,RELTOL);
+	CHECK_VAL_S(S, freesteam_v(S),v,RELTOL);
+	CHECK_VAL_S(S, freesteam_h(S),h*1e3,RELTOL);
+	CHECK_VAL_S(S, freesteam_u(S),u*1e3,RELTOL);
+	CHECK_VAL_S(S, freesteam_s(S),s*1e3,RELTOL);
+	CHECK_VAL_S(S, freesteam_cp(S),cp*1e3,RELTOL);
+	CHECK_VAL_S(S, freesteam_w(S),w,RELTOL);
 }
 
 void testregion2(void){
-	fprintf(stderr,"REGION 2 TESTS\n");
+	MSG("REGION 2 TESTS\n");
 	test_region2_point(300., 0.0035, 0.394913866E2, 0.254991145E4, 0.241169160E4, 0.852238967E1, 0.191300162E1, 0.427920172E3);
 	test_region2_point(700., 0.0035, 0.923015898E2, 0.333568375E4, 0.301262819E4, 0.101749996E2, 0.208141274E1, 0.644289068E3);
 	test_region2_point(700., 30., 0.542946619E-02, 0.263149474E+4, 0.246861076E+4, 0.517540298E+1, 0.103505092E+2, 0.480386523E+3);
@@ -147,18 +172,18 @@ void test_region3_point(double T,double rho, double p,double h,double u, double 
 	/* units of measurement as for region1 test */
 
 	SteamState S = freesteam_region3_set_rhoT(rho, T);
-	CHECK_VAL(freesteam_p(S),p*1e6,RELTOL);
-	CHECK_VAL(freesteam_T(S),T,RELTOL);
-	CHECK_VAL(freesteam_v(S),1./rho,RELTOL);
-	CHECK_VAL(freesteam_h(S),h*1e3,RELTOL);
-	CHECK_VAL(freesteam_u(S),u*1e3,RELTOL);
-	CHECK_VAL(freesteam_s(S),s*1e3,RELTOL);
-	CHECK_VAL(freesteam_cp(S),cp*1e3,RELTOL);
-	CHECK_VAL(freesteam_w(S),w,RELTOL);
+	CHECK_VAL_S(S, freesteam_p(S),p*1e6,RELTOL);
+	CHECK_VAL_S(S, freesteam_T(S),T,RELTOL);
+	CHECK_VAL_S(S, freesteam_v(S),1./rho,RELTOL);
+	CHECK_VAL_S(S, freesteam_h(S),h*1e3,RELTOL);
+	CHECK_VAL_S(S, freesteam_u(S),u*1e3,RELTOL);
+	CHECK_VAL_S(S, freesteam_s(S),s*1e3,RELTOL);
+	CHECK_VAL_S(S, freesteam_cp(S),cp*1e3,RELTOL);
+	CHECK_VAL_S(S, freesteam_w(S),w,RELTOL);
 }
 
 void testregion3(void){
-	fprintf(stderr,"REGION 3 TESTS\n");
+	MSG("REGION 3 TESTS\n");
 
 	test_region3_point(650., 500., 0.255837018E2,
 			           0.186343019E4, 0.181226279E4, 0.405427273E1,
@@ -180,13 +205,13 @@ void testregion3(void){
 void test_region4_point(double T,double p){
 	SteamState S = freesteam_region4_set_Tx(T,0.);
 	double p1 = freesteam_p(S);
-	CHECK_VAL(p1,p*1e6,RELTOL);
+	CHECK_VAL_S(S, p1,p*1e6,RELTOL);
 	double T1 = freesteam_region4_Tsat_p(p1);
 	CHECK_VAL(T1,T,RELTOL);
 }
 
 void testregion4(void){
-	fprintf(stderr,"REGION 4 TESTS\n");
+	MSG("REGION 4 TESTS\n");
 	test_region4_point(300.,	0.353658941E-2);
 	test_region4_point(500.,	0.263889776E1);
 	test_region4_point(600.,	0.123443146E2);
@@ -202,7 +227,7 @@ void test_region1_ph_point(double p,double h, double T){
 }
 
 void testregion1ph(void){
-	fprintf(stderr,"REGION 1 (P,H) TESTS\n");
+	MSG("REGION 1 (P,H) TESTS\n");
 	test_region1_ph_point(3.,	500.,	0.391798509e3);
 	test_region1_ph_point(80.,	500.,	0.378108626e3);
 	test_region1_ph_point(80.,	1500.,	0.611041229e3);
@@ -215,7 +240,7 @@ void test_region1_ps_point(double p,double s, double T){
 }
 
 void testregion1ps(void){
-	fprintf(stderr,"REGION 1 (P,S) TESTS\n");
+	MSG("REGION 1 (P,S) TESTS\n");
 	test_region1_ps_point(3.,	0.5.,  0.307842258e3);
 	test_region1_ps_point(80.,	0.5.,  0.309979785e3);
 	test_region1_ps_point(80.,	3.,    0.565899909E3);
@@ -233,7 +258,7 @@ void test_region2_ph_point(double p,double h, double T){
 }
 
 void testregion2ph(void){
-	fprintf(stderr,"REGION 2 (P,H) TESTS\n");
+	MSG("REGION 2 (P,H) TESTS\n");
 	test_region2_ph_point(0.001,3000.,	0.534433241e3);
 	test_region2_ph_point(3.,	3000.,	0.575373370e3);
 	test_region2_ph_point(3.,	4000.,	0.101077577e4);
@@ -259,7 +284,7 @@ void test_region3_ph_point(double p,double h, double T, double v){
 }
 
 void testregion3ph(void){
-	fprintf(stderr,"REGION 3 (P,H) TESTS\n");
+	MSG("REGION 3 (P,H) TESTS\n");
 	test_region3_ph_point(20.,	1700.,	6.293083892e2, 1.749903962e-3);
 	test_region3_ph_point(50.,	2000.,	6.905718338e2, 1.908139035e-3);
 	test_region3_ph_point(100.,	2100.,	7.336163014e2, 1.676229776e-3);
@@ -279,7 +304,7 @@ void test_region3_psath_point(double h,double p){
 }
 
 void testregion3psath(void){
-	fprintf(stderr,"REGION 3 PSAT(H) TESTS\n");
+	MSG("REGION 3 PSAT(H) TESTS\n");
 	test_region3_psath_point(1700., 1.724175718e1);
 	test_region3_psath_point(2000., 2.193442957e1);
 	test_region3_psath_point(2400., 2.018090839e1);
@@ -295,7 +320,7 @@ void test_region3_psats_point(double s,double p){
 }
 
 void testregion3psats(void){
-	fprintf(stderr,"REGION 3 PSAT(S) TESTS\n");
+	MSG("REGION 3 PSAT(S) TESTS\n");
 	test_region3_psats_point(3.8, 1.687755057e1);
 	test_region3_psats_point(4.2, 2.164451789e1);
 	test_region3_psats_point(5.2, 1.668968482e1);
@@ -308,7 +333,7 @@ void testregion3psats(void){
 void testb23(){
 	double T = 623.15;
 	double p = 0.165291643e8;
-	fprintf(stderr,"REGION 2-3 BOUNDARY TESTS\n");
+	MSG("REGION 2-3 BOUNDARY TESTS\n");
 	double p1 = freesteam_b23_p_T(T);
 	CHECK_VAL(p1,p,RELTOL);
 	double T1 = freesteam_b23_T_p(p);
@@ -328,8 +353,8 @@ void test_steam_ph(double p,double h){
 	SteamState S = freesteam_set_ph(p*1e6,h*1e3);
 	//if(S.region !=1)return;
 	//fprintf(stderr,"--> region = %d\n", S.region);
-	CHECK_VAL(freesteam_p(S),p*1e6,PHRELTOL);
-	CHECK_VAL(freesteam_h(S),h*1e3,PHRELTOL);
+	CHECK_VAL_S(S,freesteam_p(S),p*1e6,PHRELTOL);
+	CHECK_VAL_S(S,freesteam_h(S),h*1e3,PHRELTOL);
 
 };
 
@@ -340,7 +365,7 @@ void testph(void){
 	const int nh = sizeof(hh)/sizeof(double);
 	const double *p, *h;
 
-	fprintf(stderr,"FULL (P,H) TESTS\n");
+	MSG("FULL (P,H) TESTS\n");
 	for(p=pp; p<pp+np; ++p){
 		for(h=hh; h<hh+nh; ++h){
 			if(freesteam_bounds_ph(*p*1e6, *h*1e3, 0))continue;
@@ -375,20 +400,20 @@ const int r4testprops_max = sizeof(r4testprops_data)/sizeof(R4TestProps);
 void test_steam_region4_props(const R4TestProps *P){
 	SteamState S;
 	S = freesteam_region4_set_Tx(P->T, 0.);
-	CHECK_VAL(freesteam_p(S),P->p*1e6,R4RELTOL);
-	CHECK_VAL(freesteam_v(S),1./P->rhof,R4RELTOL);
-	CHECK_VAL(freesteam_h(S),P->hf*1e3,R4RELTOL);
-	CHECK_VAL(freesteam_s(S),P->sf*1e3,R4RELTOL);
+	CHECK_VAL_S(S, freesteam_p(S),P->p*1e6,R4RELTOL);
+	CHECK_VAL_S(S, freesteam_v(S),1./P->rhof,R4RELTOL);
+	CHECK_VAL_S(S, freesteam_h(S),P->hf*1e3,R4RELTOL);
+	CHECK_VAL_S(S, freesteam_s(S),P->sf*1e3,R4RELTOL);
 	S = freesteam_region4_set_Tx(P->T, 1.);
-	CHECK_VAL(freesteam_p(S),P->p*1e6,R4RELTOL);
-	CHECK_VAL(freesteam_v(S),1./P->rhog,R4RELTOL);
-	CHECK_VAL(freesteam_h(S),P->hg*1e3,R4RELTOL);
-	CHECK_VAL(freesteam_s(S),P->sg*1e3,R4RELTOL);
+	CHECK_VAL_S(S, freesteam_p(S),P->p*1e6,R4RELTOL);
+	CHECK_VAL_S(S, freesteam_v(S),1./P->rhog,R4RELTOL);
+	CHECK_VAL_S(S, freesteam_h(S),P->hg*1e3,R4RELTOL);
+	CHECK_VAL_S(S, freesteam_s(S),P->sg*1e3,R4RELTOL);
 };
 
 void testregion4props(void){
 	int i;
-	fprintf(stderr,"REGION 4 PROPERTY EVALUATION TESTS\n");
+	MSG("REGION 4 PROPERTY EVALUATION TESTS\n");
 	for(i=0; i< r4testprops_max; ++i){
 		test_steam_region4_props(&r4testprops_data[i]);
 	}
@@ -401,10 +426,10 @@ void testregion4props(void){
 void test_ph_derivs(double p, double h){
 	SteamState S;
 	S = freesteam_set_ph(p,h);
-	freesteam_fprint(stderr,S);
+	if(verbose)freesteam_fprint(stderr,S);
 
 #if 1
-	if(S.region!=3)return;
+	//if(S.region!=3)return;
 	double dp = 1.;
 	SteamState Sdp;
 	switch(S.region){
@@ -426,7 +451,7 @@ void test_ph_derivs(double p, double h){
 
 	double dvdp_h_fdiff = (freesteam_v(Sdp) - freesteam_v(S))/dp;
 	double dvdp_h = freesteam_deriv(S,"vph");
-	CHECK_VAL(dvdp_h,dvdp_h_fdiff,1e-3);
+	CHECK_VAL_S(S, dvdp_h,dvdp_h_fdiff,1e-3);
 #endif
 
 	double dh = 1.;
@@ -451,10 +476,120 @@ void test_ph_derivs(double p, double h){
 	
 	double dvdh_p = freesteam_deriv(S,"vhp");
 
-	CHECK_VAL(dvdh_p,dvdh_p_fdiff,1e-3);
+	CHECK_VAL_S(S, dvdh_p,dvdh_p_fdiff,1e-3);
 
 
 }
+	
+void testderiv1(void){
+	MSG("SINGLE-POINT DERIVATIVE CHECKS\n");
+
+	double p = 50e5;
+	double h = 4000e3;
+	SteamState S = freesteam_set_ph(p,h);
+	double p1 = p + 1;
+	SteamState Sdp_h = freesteam_set_ph(p1,h);
+	double dhdp_h = (freesteam_h(Sdp_h) - freesteam_h(S))/(p1 - p);
+	CHECK_VAL_S(S, dhdp_h, 0., 2e-7);
+	CHECK_VAL_S(S, freesteam_deriv(S,"hph"), 0., 1e-9);
+	
+	double dpdp_h = (freesteam_p(Sdp_h) - freesteam_p(S))/(p1 - p);
+	CHECK_VAL_S(S, dpdp_h, 1., 1e-9);
+	CHECK_VAL_S(S, freesteam_deriv(S,"pph"), 1., 1e-9);
+	
+	double dvdp_h = (freesteam_v(Sdp_h) - freesteam_v(S))/(p1 - p);
+	double dvdp_h_an = freesteam_deriv(S,"vph");
+	CHECK_VAL_S(S, dvdp_h_an, dvdp_h, 5e-4);
+
+#define DER(X,Y,Z,S,S1,DY,TOL)\
+	double d##X##d##Y##_##Z = (freesteam_##X(S1) - freesteam_##X(S))/(DY);\
+	CHECK_VAL_S(S, freesteam_deriv(S,#X #Y #Z),d##X##d##Y##_##Z, TOL);
+
+	// PARTIALS WITH PRESSURE
+
+	// test (dX/dp)s
+
+	double s = freesteam_s(S);
+	S = freesteam_set_ps(p,s);
+	p1 = p + 1e-3;
+	SteamState Sdp_s = freesteam_set_ps(p1,s);
+
+	DER(p,p,s,S,Sdp_s,p1-p,1e-7);
+	DER(T,p,s,S,Sdp_s,p1-p,3e-5);
+	DER(v,p,s,S,Sdp_s,p1-p,3e-4);
+	DER(u,p,s,S,Sdp_s,p1-p,5e-4);
+	DER(h,p,s,S,Sdp_s,p1-p,1e-4);
+	DER(s,p,s,S,Sdp_s,p1-p,1e-7);
+	CHECK_VAL_S(S, dsdp_s, 0., 5e-7);
+	CHECK_VAL_S(S, dpdp_s, 1., 1e-9);
+
+	// test (dX/dp)T
+	double T = freesteam_T(S);
+	S = freesteam_set_pT(p,T);
+	SteamState Sdp_T = freesteam_set_pT(p1,T);
+
+	DER(p,p,T,S,Sdp_T,p1-p,1e-7);
+	DER(T,p,T,S,Sdp_T,p1-p,1e-7);
+	DER(v,p,T,S,Sdp_T,p1-p,1e-4);
+	DER(u,p,T,S,Sdp_T,p1-p,4e-4);
+	DER(h,p,T,S,Sdp_T,p1-p,1e-4);
+	DER(s,p,T,S,Sdp_T,p1-p,7e-4);
+	CHECK_VAL_S(S, dTdp_T, 0., 5e-7);
+	CHECK_VAL_S(S, dpdp_T, 1., 1e-9);
+
+	// test (dX/dp)v
+
+	double v = freesteam_v(S);
+	S = freesteam_set_pv(p,v);
+	SteamState Sdp_v = freesteam_set_pv(p1,v);
+
+	DER(p,p,v,S,Sdp_v,p1-p,1e-7);
+	DER(T,p,v,S,Sdp_v,p1-p,4e-7);
+	DER(v,p,v,S,Sdp_v,p1-p,1e-7);
+	DER(u,p,v,S,Sdp_v,p1-p,6e-6);
+	DER(h,p,v,S,Sdp_v,p1-p,7e-6);
+	DER(s,p,v,S,Sdp_v,p1-p,1e-5);
+	CHECK_VAL_S(S, dvdp_v, 0., 5e-7);
+	CHECK_VAL_S(S, dpdp_v, 1., 1e-9);
+
+	//testTs();
+	//testTx();
+
+	// PARTIALS WITH TEMPERATURE
+
+	// test (dX/dT)p
+
+	T = freesteam_T(S);
+	S = freesteam_set_pT(p,T);
+	double T1 = T + 0.01;
+	SteamState SdT_p = freesteam_set_pT(p,T1);
+
+	DER(p,T,p,S,SdT_p,T1-T,1e-7);
+	DER(T,T,p,S,SdT_p,T1-T,4e-7);
+	DER(v,T,p,S,SdT_p,T1-T,1e-4);
+	DER(u,T,p,S,SdT_p,T1-T,6e-6);
+	DER(h,T,p,S,SdT_p,T1-T,7e-6);
+	DER(s,T,p,S,SdT_p,T1-T,4e-4);
+	CHECK_VAL_S(S, dpdT_p, 0., 5e-7);
+	CHECK_VAL_S(S, dTdT_p, 1., 1e-9);
+
+	// test (dX/dT)s
+
+	s = freesteam_s(S);
+	S = freesteam_set_Ts(T,s);
+	SteamState SdT_s = freesteam_set_Ts(T1,s);
+
+	DER(p,T,s,S,SdT_s,T1-T,3e-5);
+	DER(T,T,s,S,SdT_s,T1-T,4e-7);
+	DER(v,T,s,S,SdT_s,T1-T,1e-4);
+	DER(u,T,s,S,SdT_s,T1-T,6e-6);
+	DER(h,T,s,S,SdT_s,T1-T,7e-6);
+	DER(s,T,s,S,SdT_s,T1-T,4e-4);
+	CHECK_VAL_S(S, dsdT_s, 0., 5e-7);
+	CHECK_VAL_S(S, dTdT_s, 1., 1e-9);
+
+}
+
 
 void testderivs(void){
 	const double pp[] = {0.001, 0.0035, 0.01, 0.1, 1, 2, 5, 10, 20, 22, 22.06 , 22.064, 22.07, 23, 25, 30, 40, 50, 80, 90, 100};
@@ -463,7 +598,7 @@ void testderivs(void){
 	const int nh = sizeof(hh)/sizeof(double);
 	const double *p, *h;
 	
-	fprintf(stderr,"DERIVATIVE ROUTINE TESTS\n");
+	MSG("DERIVATIVE ROUTINE TESTS\n");
 	for(p=pp; p<pp+np; ++p){
 		for(h=hh; h<hh+nh; ++h){
 			test_ph_derivs((*p)*1e6,(*h)*4e3);
@@ -489,7 +624,7 @@ double test_zeroin_subject(double x, void *user_data){
 
 void testzeroin(void){
 	TestQuadratic Q1 = {1, 0, -4};
-	fprintf(stderr,"BRENT SOLVER TESTS\n");
+	MSG("BRENT SOLVER TESTS\n");
 	double sol = 0, err = 0;
 	zeroin_solve(&test_zeroin_subject,&Q1, -10., 4.566, 1e-10, &sol, &err);
 	CHECK_VAL(sol,2.,1e-10);
@@ -500,7 +635,7 @@ void testzeroin(void){
 */
 
 void testsolver2(void){
-	fprintf(stderr,"SOLVER2 TESTS\n");
+	MSG("SOLVER2 TESTS\n");
 	SteamState S;
 
 	/* test in region 3 */
@@ -510,45 +645,45 @@ void testsolver2(void){
 	double h = freesteam_h(S);
 	int status;
 	SteamState S2;
-	fprintf(stderr,"Solving for p = %g MPa, h = %g kJ/kgK (rho = %g, T = %g)\n",p/1e6, h/1e3,S.R3.rho, S.R3.T);
+	VMSG("Solving for p = %g MPa, h = %g kJ/kgK (rho = %g, T = %g)\n",p/1e6, h/1e3,S.R3.rho, S.R3.T);
 	SteamState guess = freesteam_region3_set_rhoT(1./0.00317, 673.15);	
 	S2 = freesteam_solver2_region3('p','h',p,h,guess,&status);
 	assert(status==0);
-	CHECK_VAL(freesteam_p(S2),p, 1e-7);
-	CHECK_VAL(freesteam_h(S2),h, 1e-7);
+	CHECK_VAL_S(S2, freesteam_p(S2),p, 1e-7);
+	CHECK_VAL_S(S2, freesteam_h(S2),h, 1e-7);
 
 	/* test in region 4 */
 	S = freesteam_region4_set_Tx(440., 0.9);
 	p = freesteam_p(S);
 	h = freesteam_h(S);
-	fprintf(stderr,"Solving for p = %g MPa, h = %g kJ/kgK (region 4: T = %g, x = %g)\n",p/1e6, h/1e3,S.R4.T, S.R4.x);
+	VMSG("Solving for p = %g MPa, h = %g kJ/kgK (region 4: T = %g, x = %g)\n",p/1e6, h/1e3,S.R4.T, S.R4.x);
 	guess = freesteam_region4_set_Tx(IAPWS97_TCRIT - 1.,0.5);
 	S2 = freesteam_solver2_region4('p','h',p,h,guess,&status);
 	assert(status==0);
-	CHECK_VAL(freesteam_p(S2),p, 1e-7);
-	CHECK_VAL(freesteam_h(S2),h, 1e-7);
+	CHECK_VAL_S(S2, freesteam_p(S2),p, 1e-7);
+	CHECK_VAL_S(S2, freesteam_h(S2),h, 1e-7);
 
 	/* test in region 2 */
 	S = freesteam_region2_set_pT(1e5, 273.15+180.);
 	p = freesteam_p(S);
 	h = freesteam_h(S);
-	fprintf(stderr,"Solving for p = %g MPa, h = %g kJ/kgK (region 2: p = %g, T = %g)\n",p/1e6, h/1e3,S.R2.p, S.R2.T);
+	VMSG("Solving for p = %g MPa, h = %g kJ/kgK (region 2: p = %g, T = %g)\n",p/1e6, h/1e3,S.R2.p, S.R2.T);
 	guess = freesteam_region2_set_pT(200e5,273.15+500.);
 	S2 = freesteam_solver2_region2('p','h',p,h,guess,&status);
 	assert(status==0);
-	CHECK_VAL(freesteam_p(S2),p, 1e-7);
-	CHECK_VAL(freesteam_h(S2),h, 1e-7);
+	CHECK_VAL_S(S2, freesteam_p(S2),p, 1e-7);
+	CHECK_VAL_S(S2, freesteam_h(S2),h, 1e-7);
 
 	/* test in region 1 */
 	S = freesteam_region1_set_pT(1e5, 273.15+40.);
 	p = freesteam_p(S);
 	h = freesteam_h(S);
-	fprintf(stderr,"Solving for p = %g MPa, h = %g kJ/kgK (region 1: p = %g, T = %g)\n",p/1e6, h/1e3,S.R1.p, S.R1.T);
+	VMSG("Solving for p = %g MPa, h = %g kJ/kgK (region 1: p = %g, T = %g)\n",p/1e6, h/1e3,S.R1.p, S.R1.T);
 	guess = freesteam_region1_set_pT(200e5,273.15+20.);
 	S2 = freesteam_solver2_region1('p','h',p,h,guess,&status);
 	assert(status==0);
-	CHECK_VAL(freesteam_p(S2),p, 1e-7);
-	CHECK_VAL(freesteam_h(S2),h, 1e-7);
+	CHECK_VAL_S(S2, freesteam_p(S2),p, 1e-7);
+	CHECK_VAL_S(S2, freesteam_h(S2),h, 1e-7);
 }
 
 
@@ -559,14 +694,14 @@ void testsolver2(void){
 void test_point_pT(double p, double T){
 	SteamState S = freesteam_set_pT(p,T);
 	//fprintf(stderr,"region = %d\n",S.region);
-	CHECK_VAL(freesteam_p(S),p,1e-7);
-	CHECK_VAL(freesteam_T(S),T,1e-7);
+	CHECK_VAL_S(S, freesteam_p(S),p,1e-7);
+	CHECK_VAL_S(S, freesteam_T(S),T,1e-7);
 }
 
 void testpT(void){
 	int np = 100, nT = 100;
 	double p,T, dp = (IAPWS97_PMAX - 0.)/np, dT = (IAPWS97_TMAX - IAPWS97_TMIN)/nT;
-	fprintf(stderr,"FULL (P,T) TESTS\n");
+	MSG("FULL (P,T) TESTS\n");
 	for(p = 0.; p <= IAPWS97_PMAX; p += dp){
 		for(T = IAPWS97_TMIN; T <= IAPWS97_TMAX; T += dT){
 			test_point_pT(p,T);
@@ -590,7 +725,7 @@ void test_region3_ps_point(double p,double s, double T, double v){
 }
 
 void testregion3ps(void){
-	fprintf(stderr,"REGION 3 (P,S) TESTS\n");
+	MSG("REGION 3 (P,S) TESTS\n");
 	test_region3_ps_point(20.,	3.8,	6.282959869e2, 1.733791463e-3);
 	test_region3_ps_point(50.,	3.6,	6.297158726e2, 1.469680170e-3);
 	test_region3_ps_point(100.,	4.0,	7.056880237e2, 1.555893131e-3);
@@ -615,8 +750,8 @@ void test_steam_ps(double p,double s){
 	//if(S.region !=1)return;
 	//fprintf(stderr,"--> region = %d\n", S.region);
 	//if(S.region==4)fprintf(stderr,"--> p = %g\n", freesteam_region4_psat_T(S.R4.T));
-	CHECK_VAL(freesteam_p(S),p*1e6,PHRELTOL);
-	CHECK_VAL(freesteam_s(S),s*1e3,PHRELTOL);
+	CHECK_VAL_S(S, freesteam_p(S),p*1e6,PHRELTOL);
+	CHECK_VAL_S(S, freesteam_s(S),s*1e3,PHRELTOL);
 
 };
 
@@ -627,7 +762,7 @@ void testps(void){
 	const int ns = sizeof(ss)/sizeof(double);
 	const double *p, *s;
 
-	fprintf(stderr,"FULL (P,S) TESTS\n");
+	MSG("FULL (P,S) TESTS\n");
 	for(p=pp; p<pp+np; ++p){
 		for(s=ss; s<ss+ns; ++s){
 			if(freesteam_bounds_ps(*p*1e6,*s*1e3,0))continue;
@@ -649,8 +784,8 @@ void test_steam_Ts(double T,double s){
 	//if(S.region !=1)return;
 	//fprintf(stderr,"--> region = %d\n", S.region);
 	//if(S.region==4)fprintf(stderr,"--> p = %g\n", freesteam_region4_psat_T(S.R4.T));
-	CHECK_VAL(freesteam_T(S),T,RELTOL);
-	CHECK_VAL(freesteam_s(S),s*1e3,RELTOL);
+	CHECK_VAL_S(S, freesteam_T(S),T,RELTOL);
+	CHECK_VAL_S(S, freesteam_s(S),s*1e3,RELTOL);
 };
 
 void testTs(void){
@@ -663,7 +798,7 @@ void testTs(void){
 	const int ns = sizeof(ss)/sizeof(double);
 	const double *T, *s;
 
-	fprintf(stderr,"FULL (T,S) TESTS\n");
+	MSG("FULL (T,S) TESTS\n");
 	int n = 0;
 	for(T=TT; T<TT+nT; ++T){
 		for(s=ss; s<ss+ns; ++s){
@@ -672,7 +807,7 @@ void testTs(void){
 			++n;
 		}
 	}
-	fprintf(stderr,"...tested %d points.\n",n);
+	VMSG("...tested %d points.\n",n);
 }
 
 /*------------------------------------------------------------------------------
@@ -689,8 +824,8 @@ void test_steam_pv(double p,double v){
 	//if(S.region != 3)return;
 	//fprintf(stderr,"--> region = %d\n", S.region);
 	//if(S.region==4)fprintf(stderr,"--> T = %g\n", freesteam_T(S));
-	CHECK_VAL(freesteam_p(S),p*1e6,PVRELTOL);
-	CHECK_VAL(freesteam_v(S),v,PVRELTOL);
+	CHECK_VAL_S(S, freesteam_p(S),p*1e6,PVRELTOL);
+	CHECK_VAL_S(S, freesteam_v(S),v,PVRELTOL);
 };
 
 void testpv(void){
@@ -702,7 +837,7 @@ void testpv(void){
 	const int nv = sizeof(vv)/sizeof(double);
 	const double *p, *v;
 
-	fprintf(stderr,"FULL (P,V) TESTS\n");
+	MSG("FULL (P,V) TESTS\n");
 	int n = 0;
 	for(p=pp; p<pp+np; ++p){
 		for(v=vv; v<vv+nv; ++v){
@@ -712,7 +847,7 @@ void testpv(void){
 			++n;
 		}
 	}
-	fprintf(stderr,"...tested %d points.\n",n);
+	VMSG("...tested %d points.\n",n);
 }
 
 /*------------------------------------------------------------------------------
@@ -735,7 +870,7 @@ void testTx(void){
 	};
 	const int nT = sizeof(TT)/sizeof(double);
 
-	fprintf(stderr,"FULL (T,X) TESTS\n");
+	MSG("FULL (T,X) TESTS\n");
 
 	const double *x,*T;
 	int n = 0;
@@ -745,12 +880,12 @@ void testTx(void){
 			if(*T == IAPWS97_TCRIT)continue;
 			S = freesteam_set_Tx(*T, *x);
 			//fprintf(stderr,"T = %f, x = %f... region %d\n", *T, *x, S.region);
-			CHECK_VAL(freesteam_T(S), *T, TXRELTOL);
-			CHECK_VAL(freesteam_x(S), *x, TXRELTOL);
+			CHECK_VAL_S(S, freesteam_T(S), *T, TXRELTOL);
+			CHECK_VAL_S(S, freesteam_x(S), *x, TXRELTOL);
 			++n;
 		}
 	}
-	fprintf(stderr,"...tested %d points.\n",n);
+	VMSG("...tested %d points.\n",n);
 }
 
 
@@ -773,7 +908,7 @@ void testuv(void){
 	};
 	const int nT = sizeof(TT)/sizeof(double);
 
-	fprintf(stderr,"FULL (T,X) TESTS\n");
+	MSG("FULL (T,X) TESTS\n");
 
 	const double *x,*T;
 	int n = 0;
@@ -783,12 +918,12 @@ void testuv(void){
 			if(*T == IAPWS97_TCRIT)continue;
 			S = freesteam_set_Tx(*T, *x);
 			//fprintf(stderr,"T = %f, x = %f... region %d\n", *T, *x, S.region);
-			CHECK_VAL(freesteam_T(S), *T, TXRELTOL);
-			CHECK_VAL(freesteam_x(S), *x, TXRELTOL);
+			CHECK_VAL_S(S, freesteam_T(S), *T, TXRELTOL);
+			CHECK_VAL_S(S, freesteam_x(S), *x, TXRELTOL);
 			++n;
 		}
 	}
-	fprintf(stderr,"...tested %d points.\n",n);
+	MSG("...tested %d points.\n",n);
 }
 
 
@@ -804,7 +939,7 @@ void test_viscosity_rhoT_point(double rho, double T, double mu){
 }
 
 void testviscosityrhoT(void){
-	fprintf(stderr,"VISCOSITY (RHO,T) TESTS\n");
+	MSG("VISCOSITY (RHO,T) TESTS\n");
 	test_viscosity_rhoT_point(998.,     298.15,	    889.735100);
 	test_viscosity_rhoT_point(1200.,    298.15,	    1437.649467);
 	test_viscosity_rhoT_point(1000.,    373.15,	    307.883622);
@@ -842,15 +977,15 @@ void test_k_pT_point(double p, double T, double k){
 
 	double k1 = freesteam_k_rhoT(freesteam_rho(S),T + 273.15) * 1.e3; // compare in mW/m·K
 
+
 #if 0
 	fprintf(stderr,"===> error = %f mW/m·K\n", k1 - k);
 #endif
-
-	CHECK_VAL(k1,k,KRELTOL);
+	CHECK_VAL_S(S,k1,k,KRELTOL);
 }
 
 void testconductivitypT(void){
-	fprintf(stderr,"THERMAL CONDUCTIVITY (P,T) TESTS\n");
+	MSG("THERMAL CONDUCTIVITY (P,T) TESTS\n");
 
 #define P_COUNT 29
 #define T_COUNT 22
@@ -903,7 +1038,7 @@ typedef struct{
 } SurfTensData;
 
 void testsurftens(void){
-	fprintf(stderr,"SURFACE TENSION (T) TESTS\n");
+	MSG("SURFACE TENSION (T) TESTS\n");
 
 #define SURFTENS_RELTOL 5e-3
 #define SURFTENS_COUNT 75
@@ -1000,8 +1135,10 @@ void testsurftens(void){
 int main(void){
 	errorflag = 0;
 	maxrelerr = 0;
+	verbose = 0;
 
 #if 1
+	MSG("\n");
 	testregion1();
 	testregion2();
 	testregion3();
@@ -1014,20 +1151,24 @@ int main(void){
 	testregion3psats();
 	testb23();
 
-	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
+	assert(maxrelerr < 1e-8);
+	fprintf(stderr,"%s From above tests, max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
 #endif
 
 	maxrelerr = 0;
 #if 0
 	fprintf(stderr,"\nFurther tests...\n");
 #endif
+	MSG("\n");
 	testps();
 	testpT();
 	testTs();
 	testpv();
 	testTx();
 
-	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
+	assert(maxrelerr < 1e-9);
+	MSG("%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
+
 	maxrelerr = 0;
 
 	/* the following tests cause the larger errors, and are not part of the
@@ -1044,23 +1185,25 @@ int main(void){
 	*/	
 	maxrelerr = 0;
 	testph();
-	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
+	assert(maxrelerr < 3e-4);
+	MSG("%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
 
 #if 0
+	testderiv1();
+
+	testderivs();
+
 	/* Also, the region4props test uses data from IAPWS95, which is not in
 	perfect agreement with IAPWS-IF97. */
 
 	//testregion4props();
 
-	//testderivs();
 	//testzeroin();
 	testsolver2();
 
 	//testTu(); .. not implemented
 	
 	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
-#endif
-
 	maxrelerr = 0;
     testviscosityrhoT();
 	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
@@ -1073,7 +1216,8 @@ int main(void){
 	testsurftens();
 	fprintf(stderr,"%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
 
-	
+#endif
+
 	if(errorflag)fprintf(stderr,"Return code %d.\n",errorflag);
 	return errorflag;
 }

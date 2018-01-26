@@ -38,8 +38,8 @@ from the IAPWS Guideline.
 /*
 The following are the functions
 
-	 ⎰ ∂z ⎱   ___\   VTn
-	 ⎱ ∂v ⎰T     /
+	 ⌈∂z⌉    →  VTn
+	 ⌊∂v⌋T   
 
 etc., for each of the different regions (n).
 */
@@ -61,8 +61,13 @@ PartialDerivFn PT1, TP1, PT2, TP2, TV3, VT3, TX4, XT4;
 /**
 	Calculates the derivative 
 
-	 ⎰ ∂z ⎱
-	 ⎱ ∂x ⎰y
+	 ⌈∂z⌉ 
+	 ⌊∂x⌋y   
+
+    but we want
+
+	 ⌈∂x⌉ 
+	 ⌊∂y⌋z
 
 	@param S steam state, already calculated using steam_ph, etc.
 	@param x in above equation, character one of 'pTvuhsgaf'.
@@ -74,10 +79,10 @@ PartialDerivFn PT1, TP1, PT2, TP2, TV3, VT3, TX4, XT4;
 
 	@return the numerical value of the derivative (∂z/∂x)y.
 */
-double freesteam_deriv(SteamState S, char xyz[3]){
-	char x = xyz[0];
-	char y = xyz[1];
-	char z = xyz[2];
+double freesteam_deriv(SteamState S, char zxy[3]){
+	char z = zxy[0];
+	char x = zxy[1];
+	char y = zxy[2];
 
 	PartialDerivFn *AB, *BA;
 
