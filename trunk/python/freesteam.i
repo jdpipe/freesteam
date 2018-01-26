@@ -139,6 +139,7 @@ SteamState freesteam_region3_set_rhoT(double rho, double T);
 SteamState freesteam_region4_set_Tx(double T, double x);
 
 %extend SteamState{
+	/* note string 'spec' example: 'hpT' == (dh/dp)_T */
 	double deriv(char *spec){
 		return freesteam_deriv(*$self, spec);
 	}
