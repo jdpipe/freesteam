@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+Import('env')
+
+if env.get('HAVE_PYTHON'):
+
+	python_env = env.Clone()
+
+	python_env.Append(
+		CPPPATH=['#']
+		,LIBPATH=['#']
+	)
+
+	import distutils.sysconfig, platform, os, sys
+
+	#------------------------------------------------------
+	# SWIG scanner
+
+	if platform.system()=="Windows":
+		python_lib = "python%s%s"%(sys.version_info[0],sys.version_info[1])
+	else:
+		python_lib = "python%s.%s"%(sys.version_info[0],sys.version_info[1])
+
+	python_env.Append(
+		CPPPATH = [distutils.sysconfig.get_python_inc()]
+		,LIBPATH = [distutils.sysconfig.PREFIX+"/libs"]
+		, LIBS = ['freesteam',python_lib]
+		, SWIGFLAGS=['-python']
+	)
+
+#	swigobj = python_env.SharedObject('freesteam.i'
+#		, SWIGFLAGS=['-python']
+#	)
+#
+
+	# remove the flags that cause warnings from SWIG...
+	# TODO can we do anything to avoid these warnings, otherwise?
+	_cflags =  python_env.get('CCFLAGS')
+	for f in ['-Wconversion','-Wall']:
+		if f in _cflags:
+			_cflags.remove(f)
+	python_env.Replace(CCFLAGS=_cflags)
+
+	if platform.system()=="Windows":
+		python_env['SHLIBSUFFIX']=".pyd"
+	elif platform.system()=="Darwin":
+		python_env['SHLIBSUFFIX']='.so'
+		python_env.AppendUnique(LIBPATH=[distutils.sysconfig.PREFIX+"/lib"])
+
+	swiglib = python_env.SharedLibrary("freesteam",['freesteam.i']
+		, SHLIBPREFIX = '_'
+	)
+	env.Depends("freesteam.i","../config.h")
+
+	env['installedfiles'] += [env.InstallLibrary("${INSTALL_ROOT}$INSTALL_PYTHON",[swiglib])]
+	env['installedfiles'] += [env.Install("${INSTALL_ROOT}$INSTALL_PYTHON",['freesteam.py'])]
+
