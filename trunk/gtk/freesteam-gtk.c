@@ -49,7 +49,7 @@ int main (int argc, char *argv[]){
 		fclose(f);
 	    gtk_builder_add_from_file(builder, GTK_GLADE_FILE, NULL);
 	}else{
-		fprintf(stderr,"ERROR: unable to locate Glade file" GTK_GLADE_DIR PATH_SEP GTK_GLADE_FILE ". Exiting.\n");
+		fprintf(stderr,"ERROR: unable to locate Glade file " GTK_GLADE_DIR PATH_SEP GTK_GLADE_FILE ". Exiting.\n");
 		return 1;
 	}	
 		

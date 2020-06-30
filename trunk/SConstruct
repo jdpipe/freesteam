@@ -29,6 +29,9 @@ else:
 	default_prefix = '/usr/local'
 	python_exe = "/usr/bin/env python"
 	default_python = distutils.sysconfig.get_python_lib()
+	if default_python == "/usr/lib/python2.7/dist-packages":
+		default_python = "$INSTALL_LIB/python2.7/site-packages"
+		print "default_python updated to",default_python
 	default_gsl_static = 0
 
 if platform.system()=="Darwin":
@@ -61,6 +64,12 @@ vars.Add(BoolVariable(
 	'DEBUG'
 	,"Build with debug data for use with GDB."
 	,False
+))
+
+vars.Add(BoolVariable(
+	'WITH_ASCEND'
+	,"Whether to build/install ASCEND support for freesteam."
+	,True
 ))
 
 vars.Add(PathVariable(
@@ -103,7 +112,7 @@ vars.Add(PathVariable(
 vars.Add(PathVariable(
 	'INSTALL_PYTHON'
 	,"Directory for installation of Python extensions"
-	,"%s" % default_python
+	,default_python
 ))
 
 vars.Add(
@@ -296,8 +305,9 @@ if conf.env['HAVE_PYTHON'] and conf.CheckSwigVersion() is False:
 
 conf.Finish()
 
-if  not env.get('HAVE_ASCEND'):
-	print "WARNING: ASCEND was not found... freesteam will be built without ASCEND bindings."
+if env.get('WITH_ASCEND'):
+	if  not env.get('HAVE_ASCEND'):
+		print "WARNING: ASCEND was not found... freesteam will be built without ASCEND bindings."
 
 if not env['HAVE_PYTHON']:
 	print "WARNING: Freesteam will be built without Python bindings.", without_python_reason
@@ -335,6 +345,7 @@ subst_dict = {
 	, '@INSTALL_INCLUDE@':env['INSTALL_INCLUDE']
 	, '@INSTALL_LIB@':env['INSTALL_LIB']
 	, '@INSTALL_SHARE@':env['INSTALL_SHARE']
+	, '@INSTALL_PYTHON@':env['INSTALL_PYTHON']
 }
 
 env.Append(SUBST_DICT=subst_dict)
@@ -453,10 +464,10 @@ except OSError:
 	pass
 
 
-libname = "${INSTALL_LIB}/$SONAME$SONAME_MINOR"
 if platform.system()=="Windows":
 	install_lib = env.InstallLibrary("$INSTALL_ROOT$INSTALL_LIB",[lib])
 else:
+	libname = "$INSTALL_LIB/$SONAME$SONAME_MINOR"
 	install_lib = env.InstallLibraryAs("${INSTALL_ROOT}"+libname, [lib])
 
 	link1 = "$INSTALL_LIB/${SHLIBPREFIX}freesteam$SHLIBSUFFIX"

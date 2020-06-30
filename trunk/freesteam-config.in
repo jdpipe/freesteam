@@ -57,13 +57,15 @@ else:
 	LIB="@INSTALL_LIB@"
 	BIN="@INSTALL_BIN@"
 	INCLUDE="@INSTALL_INCLUDE@"
+	PYTHON="@INSTALL_PYTHON@"
 
 usage = "usage: %prog [--help,...]"
 # the rest of this script is about returning those values in the standard way
 parser = OptionParser(usage=usage, version="@VERSION@")
 
-parser.add_option("--libs", action="store_true", dest="libs", help="show linker flags (for freesteam libraries)")
-parser.add_option("--cppflags", action="store_true", dest="cppflags", help="show C pre-processor flags (for freesteam header files)")
+parser.add_option("--libs", action="store_true", help="show linker flags (for freesteam libraries)")
+parser.add_option("--cppflags", action="store_true", help="show C pre-processor flags (for freesteam header files)")
+parser.add_option("--python", action="store_true", help="show where Python library was installed (if installed)")
 
 (options, args) = parser.parse_args()
 
@@ -90,6 +92,10 @@ if options.libs:
 		if len(libs):
 			Lflag = "-L"+libs+" "
 		print Lflag + "-lfreesteam"
+	ok = True
+
+if options.python:
+	print PYTHON
 	ok = True
 
 if not ok:
