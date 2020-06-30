@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 Import('env')
 
-if env.get('HAVE_GTK'):
+if env.get('WITH_GTK') and env.get('HAVE_GTK'):
 
 	env['GTK_GLADE_DIR'] = "$INSTALL_SHARE/freesteam"
 	env['GTK_GLADE_FILE'] = "freesteam-gtk.glade"
