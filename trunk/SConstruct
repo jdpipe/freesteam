@@ -72,6 +72,12 @@ vars.Add(BoolVariable(
 	,True
 ))
 
+vars.Add(BoolVariable(
+	'WITH_GTK'
+	,"Whether to build the GTK GUI for freesteam."
+	,True
+))
+
 vars.Add(PathVariable(
 	'INSTALL_PREFIX'
 	,"Base directory for install, see also INSTALL_LIB and INSTALL_INCLUDE"
@@ -284,8 +290,16 @@ conf = env.Configure(custom_tests =
 	{'CheckSwigVersion' : CheckSwigVersion}
 )
 
+headersok = True
+for h in ['stdio.h','limits.h','float.h','gsl/gsl_multiroots.h']:
+	if not conf.CheckCHeader(h):
+		headersok = False
+if not headersok:
+	print "Missing required system header files. Check your C compiler installation."
+	Exit(1)
+
 if not conf.CheckFunc('fprintf'):
-	print "You compiler and/or environment is not correctly configured (see config.log for details)"
+	print "Your compiler and/or environment is not correctly configured (see config.log for details)"
 	Exit(1)
 
 without_python_reason = "Python header 'Python.h' not found"
@@ -305,15 +319,13 @@ if conf.env['HAVE_PYTHON'] and conf.CheckSwigVersion() is False:
 
 conf.Finish()
 
-if env.get('WITH_ASCEND'):
-	if  not env.get('HAVE_ASCEND'):
-		print "WARNING: ASCEND was not found... freesteam will be built without ASCEND bindings."
+if env.get('WITH_ASCEND') and not env.get('HAVE_ASCEND'):
+	print "WARNING: ASCEND was not found... freesteam will be built without ASCEND bindings."
 
 if not env['HAVE_PYTHON']:
 	print "WARNING: Freesteam will be built without Python bindings.", without_python_reason
 
-
-if not env.get('HAVE_GTK'):
+if env.get('WITH_GTK') and not env.get('HAVE_GTK'):
 	print "WARNING: GTK was not found... no GUI will be built. You can install 'libgtk2.0-dev' on Ubuntu to fix this."
 
 # Flags to give some more warning output from the GCC compiler
