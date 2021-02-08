@@ -30,7 +30,7 @@ def generate(env):
 		cmd = ['pkg-config','--cflags','--libs','gtk+-2.0','gmodule-2.0']
 		old_env = env.Clone()
 		env.ParseConfig(cmd)
-		print "LIBPATH:",env.get('LIBPATH')
+		print("LIBPATH:",env.get('LIBPATH'))
 		env['GTK_CPPPATH'] = env.get('CPPPATH') or []
 		env['GTK_LIBPATH'] = env.get('LIBPATH') or []
 		env['GTK_LIBS'] = env.get('LIBS') or []
@@ -38,15 +38,15 @@ def generate(env):
 
 		for i in ['LIBS','LIBPATH','CPPPATH','LINKFLAGS']:
 			if old_env.get(i) is None:
-				if env.has_key(i):
+				if i in env:
 					del env[i]
 			else:
 				env[i] = old_env[i]
 
 		env['HAVE_GTK'] = True
 
-	except Exception,e:
-		print "Checking for GTK... not found! (%s)" % str(e)
+	except Exception as e:
+		print("Checking for GTK... not found! (%s)" % str(e))
 		env['HAVE_GTK'] = False
 
 def exists(env):

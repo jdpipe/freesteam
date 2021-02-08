@@ -45,8 +45,8 @@ def winpath(path):
 		#p1 = subprocess.Popen(["sh.exe","-c","echo hello"], stdout=subprocess.PIPE)
 		out = p1.communicate()[0].strip()
 		#print "NEW PATH IS '%s'" % out
-	except Exception,e:
-		print "FAILED: %s"%str(e)
+	except Exception as e:
+		print("FAILED: %s"%str(e))
 	finally:
 		#print "Deleting %s" % fn
 		os.unlink(fn)
@@ -62,12 +62,12 @@ def generate(env):
 	try:
 		if platform.system()=="Windows":
 			try:
-				import _winreg
-				x=_winreg.ConnectRegistry(None,_winreg.HKEY_LOCAL_MACHINE)
-				y= _winreg.OpenKey(x,r"SOFTWARE\gsl")
-				BIN,t = _winreg.QueryValueEx(y,"INSTALL_BIN")
-				LIB,t = _winreg.QueryValueEx(y,"INSTALL_LIB")
-				INCLUDE,t = _winreg.QueryValueEx(y,"INSTALL_INCLUDE")
+				import winreg
+				x=winreg.ConnectRegistry(None,winreg.HKEY_LOCAL_MACHINE)
+				y= winreg.OpenKey(x,r"SOFTWARE\gsl")
+				BIN,t = winreg.QueryValueEx(y,"INSTALL_BIN")
+				LIB,t = winreg.QueryValueEx(y,"INSTALL_LIB")
+				INCLUDE,t = winreg.QueryValueEx(y,"INSTALL_INCLUDE")
 
 				env['GSL_CPPPATH'] = [munge(INCLUDE)]
 				env['GSL_LIBPATH'] = [munge(LIB)]
@@ -80,7 +80,7 @@ def generate(env):
 				env1['CPPPATH'] = None
 				env1['LIBPATH'] = None
 				env1['LIBS'] = None
-				print "RUNNING gsl-config"
+				print("RUNNING gsl-config")
 				env1.ParseConfig(cmd)
 				env['GSL_CPPPATH'] = winpath(env1.get('CPPPATH')[0])
 				env['GSL_LIBPATH'] = winpath(env1.get('LIBPATH')[0])
@@ -94,7 +94,7 @@ def generate(env):
 			env['GSL_CPPPATH'] = env.get('CPPPATH')
 			env['GSL_LIBPATH'] = env.get('LIBPATH')
 
-			print "GSL_STATIC =",env.get('GSL_STATIC')
+			print("GSL_STATIC =",env.get('GSL_STATIC'))
 
 			if env.get('GSL_STATIC'):
 				env['GSL_STATICLIBS'] = [os.path.join(env.get('GSL_LIBPATH')[0],"lib%s.a"%i) for i in ["gsl","gslcblas"]]
@@ -103,7 +103,7 @@ def generate(env):
 
 			for i in ['LIBS','LIBPATH','CPPPATH']:
 				if old_env.get(i) is None:
-					if env.has_key(i):
+					if i in env:
 						del env[i]
 				else:
 					env[i] = old_env[i]
@@ -117,13 +117,13 @@ def generate(env):
 			#		if 'gslcblas' in env['GSL_LIBS']:
 			#			env['GSL_LIBS'].remove('gslcblas')
 
-		print "GSL_LIBS =",env.get('GSL_LIBS')
-		print "GSL_LIBPATH =",env.get('GSL_LIBPATH')
-		print "GSL_CPPPATH =",env.get('GSL_CPPPATH')
-		print "GSL_STATICLIBS =",env.get('GSL_STATICLIBS')
+		print("GSL_LIBS =",env.get('GSL_LIBS'))
+		print("GSL_LIBPATH =",env.get('GSL_LIBPATH'))
+		print("GSL_CPPPATH =",env.get('GSL_CPPPATH'))
+		print("GSL_STATICLIBS =",env.get('GSL_STATICLIBS'))
 
-	except Exception,e:
-		print "Checking for GSL... not found! (%s)" % str(e)
+	except Exception as e:
+		print("Checking for GSL... not found! (%s)" % str(e))
 		env['HAVE_GSL'] = False
 
 def exists(env):
@@ -132,10 +132,10 @@ def exists(env):
 	"""
 	if platform.system()=="Windows":
 		try:
-			import _winreg
-			x=_winreg.ConnectRegistry(None,_winreg.HKEY_LOCAL_MACHINE)
-			y= _winreg.OpenKey(x,r"SOFTWARE\gsl")
-			INCLUDE,t = _winreg.QueryValueEx(y,'INSTALL_INCLUDE')
+			import winreg
+			x=winreg.ConnectRegistry(None,winreg.HKEY_LOCAL_MACHINE)
+			y= winreg.OpenKey(x,r"SOFTWARE\gsl")
+			INCLUDE,t = winreg.QueryValueEx(y,'INSTALL_INCLUDE')
 			return True
 		except:
 			return False
