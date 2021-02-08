@@ -31,7 +31,7 @@ else:
 	default_python = distutils.sysconfig.get_python_lib()
 	if default_python == "/usr/lib/python2.7/dist-packages":
 		default_python = "$INSTALL_LIB/python2.7/site-packages"
-		print "default_python updated to",default_python
+		print("default_python updated to",default_python)
 	default_gsl_static = 0
 
 if platform.system()=="Darwin":
@@ -215,10 +215,10 @@ def InstallPermAs(env, dest, filen, perm):
 	return dest
   	 
 SConsEnvironment.InstallPerm = InstallPerm
-SConsEnvironment.InstallProgram = lambda env, dest, files: InstallPerm(env, dest, files, 0755) 	 
-SConsEnvironment.InstallHeader = lambda env, dest, files: InstallPerm(env, dest, files, 0644) 	 
-SConsEnvironment.InstallLibrary = lambda env, dest, files: InstallPerm(env, dest, files, 0644) 	 
-SConsEnvironment.InstallLibraryAs = lambda env, dest, files: InstallPermAs(env, dest, files, 0644)
+SConsEnvironment.InstallProgram = lambda env, dest, files: InstallPerm(env, dest, files, 0o755) 	 
+SConsEnvironment.InstallHeader = lambda env, dest, files: InstallPerm(env, dest, files, 0o644) 	 
+SConsEnvironment.InstallLibrary = lambda env, dest, files: InstallPerm(env, dest, files, 0o644) 	 
+SConsEnvironment.InstallLibraryAs = lambda env, dest, files: InstallPermAs(env, dest, files, 0o644)
 
 # Add configuration options to the 'environment'
 
@@ -251,7 +251,7 @@ def CheckSwigVersion(context):
 	try:
 		context.Message("Checking version of SWIG... ")
 		maj,min,pat = get_swig_version(context.env)
-	except Exception,e:
+	except Exception as e:
 		context.Result("Failed to detect version, or failed to run SWIG (%s)"% str(e))
 		return False;
 	
@@ -273,7 +273,7 @@ def CheckSwigVersion(context):
 # Check that we got all the associated stuff that we need...
 
 if not env.get('HAVE_GSL'):
-	print "GSL was not found... install GSL (package 'libgsl0-dev' in Ubuntu; 'gsl-devel' in Fedora)."
+	print("GSL was not found... install GSL (package 'libgsl0-dev' in Ubuntu; 'gsl-devel' in Fedora).")
 	Exit(1)
 
 # TODO: detect PYTHON properly.
@@ -295,11 +295,11 @@ for h in ['stdio.h','limits.h','float.h','gsl/gsl_multiroots.h']:
 	if not conf.CheckCHeader(h):
 		headersok = False
 if not headersok:
-	print "Missing required system header files. Check your C compiler installation."
+	print("Missing required system header files. Check your C compiler installation.")
 	Exit(1)
 
 if not conf.CheckFunc('fprintf'):
-	print "Your compiler and/or environment is not correctly configured (see config.log for details)"
+	print("Your compiler and/or environment is not correctly configured (see config.log for details)")
 	Exit(1)
 
 without_python_reason = "Python header 'Python.h' not found"
@@ -320,13 +320,13 @@ if conf.env['HAVE_PYTHON'] and conf.CheckSwigVersion() is False:
 conf.Finish()
 
 if env.get('WITH_ASCEND') and not env.get('HAVE_ASCEND'):
-	print "WARNING: ASCEND was not found... freesteam will be built without ASCEND bindings."
+	print("WARNING: ASCEND was not found... freesteam will be built without ASCEND bindings.")
 
 if not env['HAVE_PYTHON']:
-	print "WARNING: Freesteam will be built without Python bindings.", without_python_reason
+	print("WARNING: Freesteam will be built without Python bindings.", without_python_reason)
 
 if env.get('WITH_GTK') and not env.get('HAVE_GTK'):
-	print "WARNING: GTK was not found... no GUI will be built. You can install 'libgtk2.0-dev' on Ubuntu to fix this."
+	print("WARNING: GTK was not found... no GUI will be built. You can install 'libgtk2.0-dev' on Ubuntu to fix this.")
 
 # Flags to give some more warning output from the GCC compiler
 
@@ -470,7 +470,7 @@ prog_env.Program("test2","test2.c")
 #print "INSTALL_ROOT =",env.get('INSTALL_ROOT')
 
 try:
-	umask = os.umask(022)
+	umask = os.umask(0o22)
 except OSError:
 	# ignore on systems that don't support umask
 	pass
@@ -577,14 +577,14 @@ if platform.system()=="Windows":
 		Depends(installer,[configscript])
 		env.Alias('installer',installer)
 	else:
-		print "Skipping... Windows installer isn't being built:",without_installer_reason
+		print("Skipping... Windows installer isn't being built:",without_installer_reason)
 
 #------------------------------------------------------
 # DEFAULT TARGETS
 
 env.Default(default_targets)
 
-print "Building targets:"," ".join([str(i) for i in BUILD_TARGETS])
+print("Building targets:"," ".join([str(i) for i in BUILD_TARGETS]))
 
 # vim:set ts=4 sw=4 noexpandtab ft=python:
 
