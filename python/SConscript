@@ -17,15 +17,19 @@ if env.get('HAVE_PYTHON'):
 
 	if platform.system()=="Windows":
 		python_lib = "python%s%s"%(sys.version_info[0],sys.version_info[1])
+		libpath = distutils.sysconfig.PREFIX+"/libs"
+		python_env.Append(
+			CPPPATH = [distutils.sysconfig.get_python_inc()]
+			,LIBPATH = [distutils.sysconfig.PREFIX+"/lib"]
+			, LIBS = ['freesteam',python_lib]
+			, SWIGFLAGS=['-python']
+		)
 	else:
-		python_lib = "python%s.%s"%(sys.version_info[0],sys.version_info[1])
+		python_env.ParseConfig('pkg-config python-%s.%s --libs --cflags' % 
+			(sys.version_info[0],sys.version_info[1])
+		)
+		python_env.Append(LIBS=['freesteam'],SWIGFLAGS=['-python'])
 
-	python_env.Append(
-		CPPPATH = [distutils.sysconfig.get_python_inc()]
-		,LIBPATH = [distutils.sysconfig.PREFIX+"/libs"]
-		, LIBS = ['freesteam',python_lib]
-		, SWIGFLAGS=['-python']
-	)
 
 #	swigobj = python_env.SharedObject('freesteam.i'
 #		, SWIGFLAGS=['-python']

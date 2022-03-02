@@ -230,9 +230,9 @@ vars.Update(env)
 import re,subprocess
 
 def get_swig_version(env):
-	#print "SWIG='%s'" % env['SWIG']
+	#print("SWIG='%s'" % env['SWIG'])
 	cmd = [env['SWIG'],'-version']
-	output = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
+	output = subprocess.check_output(cmd,encoding='utf-8')
 	
 	restr = "SWIG\\s+Version\\s+(?P<maj>[0-9]+)\\.(?P<min>[0-9]+)\\.(?P<pat>[0-9]+)\\s*$"
 	expr = re.compile(restr,re.M);
