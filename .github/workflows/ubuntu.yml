@@ -2,11 +2,10 @@ name: freesteam ubuntu
 
 on:
   workflow_dispatch:
-    #
   push:
-    branches: [ $default-branch ]
+    branches: [ $default-branch, master ]
   pull_request:
-    branches: [ $default-branch ]
+    branches: [ $default-branch, master ]
 
 jobs:
   build:
