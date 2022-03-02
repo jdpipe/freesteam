@@ -248,7 +248,6 @@ def get_swig_version(env):
 	
 
 def CheckSwigVersion(context):
-	
 	try:
 		context.Message("Checking version of SWIG... ")
 		maj,min,pat = get_swig_version(context.env)
@@ -287,9 +286,7 @@ import distutils.sysconfig
 
 python_lib = python_lib % (sys.version_info[0],sys.version_info[1])
 
-conf = env.Configure(custom_tests =
-	{'CheckSwigVersion' : CheckSwigVersion}
-)
+conf = env.Configure()
 
 headersok = True
 for h in ['stdio.h','limits.h','float.h','gsl/gsl_multiroots.h']:
@@ -303,22 +300,20 @@ if not conf.CheckFunc('fprintf'):
 	print("Your compiler and/or environment is not correctly configured (see config.log for details)")
 	Exit(1)
 
-without_python_reason = "Python header 'Python.h' not found"
+conf.Finish()
+
 env['HAVE_PYTHON'] = False
-pyinc = os.path.join(distutils.sysconfig.get_python_inc(),"Python.h")
-#print "PYINC =",pyinc
-_havepy = conf.CheckHeader(pyinc)
-if _havepy:
+conf = env.Configure(custom_tests = {'CheckSwigVersion' : CheckSwigVersion})
+conf.env.ParseConfig('pkg-config python-%s.%s --libs --cflags' %(sys.version_info[0],sys.version_info[1]))
+without_python_reason = "Python.h not found."
+if conf.CheckHeader("Python.h"):
 	env['HAVE_PYTHON'] = True
-
-#without_python_reason = "Python library '%s' not found" % python_lib
-#conf.env['HAVE_PYTHON'] = conf.CheckLib(python_lib)
-
 if conf.env['HAVE_PYTHON'] and conf.CheckSwigVersion() is False:
 	without_python_reason = 'SWIG >= 1.3.24 is required'
-	conf.env['HAVE_PYTHON']=False
-
+	env['HAVE_PYTHON']=False
 conf.Finish()
+
+
 
 if env.get('WITH_ASCEND') and not env.get('HAVE_ASCEND'):
 	print("WARNING: ASCEND was not found... freesteam will be built without ASCEND bindings.")
