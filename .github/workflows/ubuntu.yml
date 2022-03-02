@@ -37,7 +37,8 @@ jobs:
         ./test
 
     - name: Test freesteam python
-      run: |    
+      run: |
+        export LD_LIBRARY_PATH=$PWD
         cd python
         python3 test.py
         python3 hsdiagram.py
