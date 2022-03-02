@@ -238,6 +238,7 @@ def get_swig_version(env):
 	expr = re.compile(restr,re.M);
 	m = expr.search(output);
 	if not m:
+		print("NO MATCH")
 		return None
 	maj = int(m.group('maj'))
 	min = int(m.group('min'))

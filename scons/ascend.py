@@ -8,8 +8,8 @@ from SCons.Script import *
 
 def my_parse_config_win(env,cmd):
 	env1 = env.Clone()
-	proc = subprocess.Popen(cmd,stdout=subprocess.PIPE)
-	out = proc.communicate()[0].strip()	
+	proc = subprocess.call(cmd,stdout=subprocess.PIPE,encoding='utf-8')
+	out = proc.stdout.strip()	
 	
 	env1.MergeFlags(out)
 
@@ -62,15 +62,15 @@ def generate(env):
 
 		# Get the suffix and prefix used for external libraries
 		
-		proc = subprocess.Popen(cmd+['--extlib-prefix'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-		out = proc.communicate()[0].strip()
+		proc = subprocess.run(cmd+['--extlib-prefix'],stdout=subprocess.PIPE,encoding='utf-8')
+		out = proc.stdout.strip()
 		if proc.returncode is 0:
 			env.Append(ASCEND_EXTLIB_PREFIX=out)
 		else:
 			# old ASCEND will not provide '--extlib-prefix' so make some assumptions...
 			env.Append(ASCEND_EXTLIB_PREFIX=libpref)
-		proc = subprocess.Popen(cmd+['--extlib-suffix'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-		out = proc.communicate()[0].strip()
+		proc = subprocess.run(cmd+['--extlib-suffix'],stdout=subprocess.PIPE,encoding='utf-8')
+		out = proc.stdout.strip()
 		if proc.returncode is 0:
 			env.Append(ASCEND_EXTLIB_SUFFIX=out)
 		else:
@@ -79,8 +79,8 @@ def generate(env):
 		# Get the ASCEND model library location (it will be assumed that
 		# we can install files to that location)
 
-		proc = subprocess.Popen(cmd+['--models'],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-		out = proc.communicate()[0].strip()
+		proc = subprocess.run(cmd+['--models'],stdout=subprocess.PIPE,encoding='utf-8')
+		out = proc.stdout.strip()
 		if proc.returncode is 0:
 			env.Append(ASCEND_MODELS=out)
 
