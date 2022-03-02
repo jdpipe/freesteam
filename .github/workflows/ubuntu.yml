@@ -1,0 +1,39 @@
+name: freesteam ubuntu
+
+on:
+  workflow_dispatch:
+    #
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, ubuntu-18.04]
+ 
+    steps:
+    - uses: actions/checkout@v2
+        
+    - name: Install dependencies
+      run: |
+        sudo apt-get install libgsl-dev scons swig build-essential python3-dev
+
+    - name: Build freesteam
+      run: |
+        scons
+
+    - name: Install freesteam
+      run: |
+        sudo scons install
+
+    - name: Test freesteam
+      run: |    
+        scons test
+        ./test
+
+# vim: ts=2:sw=2:et
