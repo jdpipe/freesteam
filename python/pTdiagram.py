@@ -1,11 +1,11 @@
 import freesteam
 import matplotlib
-matplotlib.use('gtkcairo')
+matplotlib.use('gtk3cairo')
 from pylab import *
 import math
 
 figure()
-hold(1)
+#hold(1)
 
 # SATURATION CURVE
 

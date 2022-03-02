@@ -23,7 +23,7 @@ if __name__=='__main__':
 	# run example code
 
 	def print_ex(N,S):
-		print "%s: exergy at p=%0.0f, T=%0.0f°C: ef = %.1f kJ/kg (h = %.1f kJ/kgK)" % (N, S.p/1e5,  S.T-273.15, exf(S)/1e3, S.h/1e3)
+		print("%s: exergy at p=%0.0f, T=%0.0f°C: ef = %.1f kJ/kg (h = %.1f kJ/kgK)" % (N, S.p/1e5,  S.T-273.15, exf(S)/1e3, S.h/1e3))
 
 	p0 = 1e5
 	T0 = 273.15 + 20
@@ -49,6 +49,6 @@ if __name__=='__main__':
 	S0 = freesteam.steam_pT(p,T)
 	print_ex("S0",S0)
 
-	print "from %0.0f to %0.0f bar, %.2f %% of exergy is lost" % (S1.p/1e5, S2.p/1e5, ((exf(S1) - exf(S2))/(exf(S1)-exf(S0)))*100)
-	print "from %0.0f to %0.0f bar, %.2f %% of exergy is lost" % (S1.p/1e5, S3.p/1e5, ((exf(S1) - exf(S3))/(exf(S1)-exf(S0)))*100)
+	print("from %0.0f to %0.0f bar, %.2f %% of exergy is lost" % (S1.p/1e5, S2.p/1e5, ((exf(S1) - exf(S2))/(exf(S1)-exf(S0)))*100))
+	print("from %0.0f to %0.0f bar, %.2f %% of exergy is lost" % (S1.p/1e5, S3.p/1e5, ((exf(S1) - exf(S3))/(exf(S1)-exf(S0)))*100))
 

@@ -44,7 +44,7 @@ paper_ratio = 11.6929134 / 8.26771654
 
 
 # supercritical region
-print "Supercritical region..."
+print("Supercritical region...")
 
 supcrit_p = [250,300,400,500]
 supcrit_T = linspace(tmin,tmax,50)
@@ -62,7 +62,7 @@ for i in supcrit_p:
 
 # lines of constant pressure
 
-print "Lines of constant pressure..."
+print("Lines of constant pressure...")
 
 for i in pressure_range:
     p = i * 1e5 #bar
@@ -102,7 +102,7 @@ for i in pressure_range:
                 
 # lines of constant dryness fraction
 
-print "Lines of dryness fraction (quality)..."
+print("Lines of dryness fraction (quality)...")
 
 twophase_T = linspace(tmin,373,20)
 
@@ -119,7 +119,7 @@ for i in twophase_x_range:
 
 # lines of constant temperature
 
-print "Lines of constant temperature..."
+print("Lines of constant temperature...")
 
 for i in const_T_range:
     T = i + 273.15 # K
@@ -179,7 +179,7 @@ yticks(ytickloc,ylabels)
 xlim( smin,smax )
 ylim( hmin,hmax )
 
-print "Exporting PDF file to current directory..."
+print("Exporting PDF file to current directory...")
 savefig('mollier.pdf')
 
 #print "Exporting EPS file to current directory..."

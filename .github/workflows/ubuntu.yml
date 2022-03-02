@@ -21,7 +21,7 @@ jobs:
         
     - name: Install dependencies
       run: |
-        sudo apt-get install libgsl-dev scons swig build-essential python3-dev
+        sudo apt-get install libgsl-dev scons swig build-essential python3-dev python3-matplotlib
 
     - name: Build freesteam
       run: |
@@ -31,9 +31,16 @@ jobs:
       run: |
         sudo scons install
 
-    - name: Test freesteam
+    - name: Test freesteam C
       run: |    
         scons test
         ./test
+
+    - name: Test freesteam python
+      run: |    
+        cd python
+        python3 test.py
+        python3 hsdiagram.py
+        python3 tables.py
 
 # vim: ts=2:sw=2:et
