@@ -24,11 +24,11 @@ jobs:
 
     - name: Build freesteam
       run: |
+        mkdir -p ~/.local
         scons PREFIX=~/.local
 
     - name: Install freesteam
       run: |
-        mkdir -p ~/.local
         sudo scons PREFIX=~/.local install
 
     - name: Test freesteam C
