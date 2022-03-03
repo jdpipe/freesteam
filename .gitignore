@@ -1,4 +1,6 @@
 *.o
+*.os
+*.so
 *.dll
 *.exe
 *.a
@@ -6,3 +8,12 @@
 config.h
 config.log
 .scon*
+python/mollier.pdf
+python/steamtable.tex
+python/steamtable.pdf
+python/steamtable.aux
+python/steamtable.lo[gtf]
+python/*.bak
+python/__pycache__
+scons/__pycache__
+
