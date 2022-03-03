@@ -1,0 +1,46 @@
+name: freesteam ubuntu
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ $default-branch, master ]
+  pull_request:
+    branches: [ $default-branch, master ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, ubuntu-18.04]
+ 
+    steps:
+    - uses: actions/checkout@v2
+        
+    - name: Install dependencies
+      run: |
+        sudo apt-get install libgsl-dev scons swig build-essential python3-dev python3-matplotlib texlive-latex-recommended dvipng texlive-latex-extra texlive-fonts-recommended cm-super
+
+    - name: Build freesteam
+      run: |
+        scons
+
+    - name: Install freesteam
+      run: |
+        sudo scons install
+
+    - name: Test freesteam C
+      run: |    
+        scons test
+        ./test
+
+    - name: Test freesteam python
+      run: |
+        export LD_LIBRARY_PATH=$PWD
+        cd python
+        python3 test.py
+        python3 hsdiagram.py
+        python3 tables.py
+
+# vim: ts=2:sw=2:et
