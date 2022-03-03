@@ -64,14 +64,14 @@ def generate(env):
 		
 		proc = subprocess.run(cmd+['--extlib-prefix'],stdout=subprocess.PIPE,encoding='utf-8')
 		out = proc.stdout.strip()
-		if proc.returncode is 0:
+		if proc.returncode == 0:
 			env.Append(ASCEND_EXTLIB_PREFIX=out)
 		else:
 			# old ASCEND will not provide '--extlib-prefix' so make some assumptions...
 			env.Append(ASCEND_EXTLIB_PREFIX=libpref)
 		proc = subprocess.run(cmd+['--extlib-suffix'],stdout=subprocess.PIPE,encoding='utf-8')
 		out = proc.stdout.strip()
-		if proc.returncode is 0:
+		if proc.returncode == 0:
 			env.Append(ASCEND_EXTLIB_SUFFIX=out)
 		else:
 			env.Append(ASCEND_EXTLIB_SUFFIX="_ascend%s"%libext)
@@ -81,7 +81,7 @@ def generate(env):
 
 		proc = subprocess.run(cmd+['--models'],stdout=subprocess.PIPE,encoding='utf-8')
 		out = proc.stdout.strip()
-		if proc.returncode is 0:
+		if proc.returncode == 0:
 			env.Append(ASCEND_MODELS=out)
 
 		env.Append(HAVE_ASCEND=True)
