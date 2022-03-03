@@ -1,0 +1,8 @@
+*.o
+*.dll
+*.exe
+*.a
+*.pyd
+config.h
+config.log
+.scon*
