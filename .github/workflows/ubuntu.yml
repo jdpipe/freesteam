@@ -24,15 +24,16 @@ jobs:
 
     - name: Build freesteam
       run: |
-        scons
+        scons PREFIX=~/.local
 
     - name: Install freesteam
       run: |
-        sudo scons install
+        mkdir -p ~/.local
+        sudo scons PREFIX=~/.local install
 
     - name: Test freesteam C
       run: |    
-        scons test
+        scons PREFIX=~/.local test
         ./test
 
     - name: Test freesteam python
