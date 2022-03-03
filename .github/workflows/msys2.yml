@@ -46,6 +46,7 @@ jobs:
 
     - name: Build freesteam
       run: |
+        mkdir -p ~/.local
         scons INSTALL_PREFIX=~/.local
 
     - name: Install freesteam
