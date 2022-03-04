@@ -42,6 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <assert.h>
 
 int errorflag = 0;
+int testcount = 0;
 double maxrelerr = 0;
 int verbose = 0;
 
@@ -56,6 +57,7 @@ int verbose = 0;
 	double error = calc - (VAL);\
 	double relerr;\
 	relerr = (VAL==0) ? error : error / (VAL);\
+	testcount++;\
 	if(fabs(relerr)>maxrelerr)maxrelerr=fabs(relerr);\
 	if(fabs(relerr) > RELTOL){\
 		fprintf(stderr,"ERROR (%s:%d): %s = %e, should be %e, error %10e %% exceeds tol %10e %%\n",\
@@ -74,6 +76,7 @@ int verbose = 0;
 	double error = calc - (VAL);\
 	double relerr;\
 	relerr = (VAL==0) ? error : error / (VAL);\
+	testcount++;\
 	if(fabs(relerr)>maxrelerr)maxrelerr=fabs(relerr);\
 	if(fabs(relerr) > RELTOL){\
 		freesteam_fprint(stderr,STATE);\
@@ -1134,7 +1137,7 @@ void testsurftens(void){
 
 int main(void){
 	errorflag = 0;
-	maxrelerr = 0;
+	maxrelerr = 0; testcount = 0;
 	verbose = 0;
 
 #if 1
@@ -1152,10 +1155,10 @@ int main(void){
 	testb23();
 
 	assert(maxrelerr < 1e-8);
-	fprintf(stderr,"%s From above tests, max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
+	fprintf(stderr,"%s Max rel err = %e %% from %d tests.",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100,testcount);
 #endif
 
-	maxrelerr = 0;
+	maxrelerr = 0;testcount = 0;
 #if 0
 	fprintf(stderr,"\nFurther tests...\n");
 #endif
@@ -1167,9 +1170,9 @@ int main(void){
 	testTx();
 
 	assert(maxrelerr < 1e-9);
-	MSG("%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
+	MSG("%s Max rel err = %e %% from %d tests.\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100,testcount);
 
-	maxrelerr = 0;
+	maxrelerr = 0; testcount = 0;
 
 	/* the following tests cause the larger errors, and are not part of the
 	formal validation of freesteam. It is *expected* that T(p,h) routines and
@@ -1183,10 +1186,10 @@ int main(void){
 		3e-4 (region 3)
 		5e-7 (region 4)
 	*/	
-	maxrelerr = 0;
+	maxrelerr = 0; testcount = 0;
 	testph();
 	assert(maxrelerr < 3e-4);
-	MSG("%s Max rel err = %e %%\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100);
+	MSG("%s Max rel err = %e %% from %d tests.\n",errorflag?"ERRORS ENCOUNTERED":"SUCCESS!",maxrelerr*100,testcount);
 
 #if 0
 	testderiv1();
