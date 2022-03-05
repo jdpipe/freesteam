@@ -30,7 +30,7 @@ if platform.system()=="Windows" or "MINGW" in platform.system():
 else:
 	soname_major = ".1"
 	soname_minor = ".0"
-	default_pkgconfig ="pkgconfig"
+	default_pkgconfig ="pkg-config"
 
 vars = Variables()
 
