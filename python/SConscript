@@ -6,7 +6,7 @@ envp = env.Clone()
 
 # get settings for linking to Python
 
-envp.ParseConfig('$PKGCONFIG $PYTHON_PKG --cflags --libs')
+envp.ParseConfig('pkg-config $PYTHON_PKG --cflags --libs')
 
 # check SWIG version
 

@@ -26,12 +26,12 @@ jobs:
       with:
         update: true
         install: >-
-          git pkgconf
+          git
           mingw-w64-x86_64-toolchain
           mingw-w64-x86_64-gsl
           mingw-w64-x86_64-gcc
           mingw-w64-x86_64-binutils
-          mingw-w64-x86_64-pkgconf
+          mingw-w64-x86_64-pkg-config
           mingw-w64-x86_64-python
           mingw-w64-x86_64-python-pip
           mingw-w64-x86_64-python-wheel

@@ -19,3 +19,5 @@ scons/__pycache__
 freesteam-config
 python/freesteam.py
 python/freesteam_wrap.c
+gtk/freesteam-gtk
+test
