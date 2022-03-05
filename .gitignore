@@ -16,4 +16,6 @@ python/steamtable.lo[gtf]
 python/*.bak
 python/__pycache__
 scons/__pycache__
-
+freesteam-config
+python/freesteam.py
+python/freesteam_wrap.c
