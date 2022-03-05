@@ -4,15 +4,14 @@
 # We don't currently propose to support building freesteam from MSVS but
 # that shouldn't be necessary, as you should be able to use the MinGW-generated
 # DLL even with MSVS, because it only uses C code.
-
-from pathlib import Path
+from __future__ import print_function
 import platform, sys, distutils.sysconfig, os, os.path, SCons.Warnings
 SCons.Warnings.suppressWarningClass(SCons.Warnings.VisualCMissingWarning)
 
 #version number for this copy of freesteam
 version = "2.1"
 
-default_prefix=Path.home()/'.local'
+default_prefix=os.path.join(os.path.expanduser("~"),".local")
 
 default_install_python = "$INSTALL_LIB/python%d.%d/site-packages"%(sys.version_info[0],sys.version_info[1])
 #print('system',platform.system())
