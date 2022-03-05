@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 Import('env')
-import re,subprocess
+import re,subprocess,sys
 
 envp = env.Clone()
 
@@ -13,7 +13,10 @@ envp.ParseConfig('pkg-config $PYTHON_PKG --cflags --libs')
 def get_swig_version(env):
 	#print("SWIG='%s'" % env['SWIG'])
 	cmd = [env['SWIG'],'-version']
-	output = subprocess.check_output(cmd,encoding='utf-8')
+	if sys.version_info[0]==2:
+		output = subprocess.check_output(cmd)
+	else:
+		output = subprocess.check_output(cmd,encoding='utf-8')
 	
 	restr = "SWIG\\s+Version\\s+(?P<maj>[0-9]+)\\.(?P<min>[0-9]+)\\.(?P<pat>[0-9]+)\\s*$"
 	expr = re.compile(restr,re.M);

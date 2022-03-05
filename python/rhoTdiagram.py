@@ -1,4 +1,4 @@
-# encoding: utf-8
+# vim: set fileencoding=utf-8
 import freesteam
 import matplotlib
 matplotlib.use('gtk3cairo')
@@ -17,8 +17,8 @@ for p in pp:
 	rrho  = [freesteam.steam_pT(p,T).rho for T in TT]
 	plot(TT-273.15,rrho,label='%f MPa' % (p/1e6))
 
-xlabel("Temperature / [°C]")
-ylabel("Density / [kg/m³]")
+xlabel(u"Temperature / [°C]")
+ylabel(u"Density / [kg/m³]")
 legend()
 show()
 

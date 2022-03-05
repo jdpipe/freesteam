@@ -1,5 +1,5 @@
+# vim: set fileencoding=utf-8
 import matplotlib
-# vim: fileencoding=utf-8
 matplotlib.use('gtk3cairo')
 from pylab import *
 import freesteam
@@ -13,9 +13,9 @@ rhog = [freesteam.rhog_T(t) for t in T]
 
 figure()
 plot(T,dpdT,'g-')
-title("Derivative ∂p/∂T along the saturation line")
+title(u"Derivative ∂p/∂T along the saturation line")
 xlabel("T [K]")
-ylabel("∂p/∂T [bar/K]")
+ylabel(u"∂p/∂T [bar/K]")
 
 figure()
 plot(T,rhof,'b-',label="liquid")

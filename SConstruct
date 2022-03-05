@@ -94,7 +94,7 @@ vars.Add(
 	,"$INSTALL_SHARE/freesteam"
 )
 
-env = Environment(variables=vars)
+env = Environment(variables=vars,tools=['default','textfile'])
 
 Help(vars.GenerateHelpText(env))
 
