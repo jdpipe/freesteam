@@ -35,7 +35,7 @@ jobs:
     - name: Test freesteam C
       run: |    
         scons PREFIX=~/.local test
-        ./test
+        LD_LIBRARY_PATH=. ./test
 
     - name: Test freesteam python
       run: |
