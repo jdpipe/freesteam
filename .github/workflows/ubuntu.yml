@@ -41,8 +41,8 @@ jobs:
       run: |
         export LD_LIBRARY_PATH=$PWD
         cd python
-        python3 test.py
-        python3 hsdiagram.py
-        python3 tables.py
+        python test.py
+        python hsdiagram.py
+        python tables.py
 
 # vim: ts=2:sw=2:et
