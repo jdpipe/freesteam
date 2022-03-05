@@ -24,10 +24,12 @@ else:
 
 	prog = envg.Program("freesteam-gtk",['freesteam-gtk.c','callbacks.c'])
 
-	env.Install("${INSTALL_ROOT}$GTK_GLADE_DIR",["$GTK_GLADE_FILE","icon.png"])
-	env.Install("${INSTALL_ROOT}$INSTALL_BIN",[prog])
+	print("$INSTALL_BIN = ",env.subst('$INSTALL_BIN'))
+	envg.Install("$GTK_GLADE_DIR",["$GTK_GLADE_FILE","icon.png"])
+	envg.Install("$INSTALL_BIN", prog)
 	
 #	env['installedfiles'] += [env.Install("${INSTALL_ROOT}${GTK_GLADE_DIR}",["${GTK_GLADE_FILE}"])]
 #	env['installedfiles'] += [env.Install("${INSTALL_ROOT}${GTK_GLADE_DIR}",["icon.png"])]
 #	env['installedfiles'] += [env.Install("${INSTALL_ROOT}$INSTALL_BIN",[prog])]
 
+# vim:set ts=4 sw=4 noexpandtab ft=python:

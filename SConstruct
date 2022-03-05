@@ -17,7 +17,10 @@ default_install_python = "$INSTALL_LIB/python%d.%d/site-packages"%(sys.version_i
 #print('system',platform.system())
 if platform.system()=="Windows" or "MINGW" in platform.system():
 	if os.environ.get('MSYSTEM') == "MINGW64":
-		default_prefix=os.path.join(os.environ['HOME'],'.local')
+		# old, doesn't work, messed up slashes...
+		#default_prefix=os.path.join(os.environ['HOME'],'.local')
+		import pathlib
+		default_prefix=pathlib.Path(os.environ['HOME'])/'.local'
 	soname_major = ""
 	soname_minor = ""
 else:
