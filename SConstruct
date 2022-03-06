@@ -23,14 +23,9 @@ if platform.system()=="Windows" or "MINGW" in platform.system():
 		default_prefix=pathlib.Path(os.environ['HOME'])/'.local'
 	soname_major = ""
 	soname_minor = ""
-	if os.environ.get("MINGW_CHOST"):
-		default_pkgconfig=os.environ["MINGW_CHOST"]+"-pkg-config"
-	else:
-		default_pkgconfig="pkg-config"
 else:
 	soname_major = ".1"
 	soname_minor = ".0"
-	default_pkgconfig ="pkgconfig"
 
 vars = Variables()
 
@@ -68,12 +63,6 @@ vars.Add(
 	'INSTALL_PYTHON'
 	,"Location to install 'share' files, examples, etc."
 	,default_install_python
-)
-
-vars.Add(
-	'PKGCONFIG'
-	,"pkg-config command"
-	,default_pkgconfig
 )
 
 vars.Add(
@@ -155,7 +144,7 @@ srcs = ["region1.c", "region2.c", "region3.c", "region4.c", "steam.c"
 
 lib_env = env.Clone()
 
-lib_env.ParseConfig('$PKGCONFIG gsl --libs --cflags')
+lib_env.ParseConfig('pkg-config gsl --libs --cflags')
 
 def check_gsl(ct):
 	ct.Message('Checking for GSL... ')
