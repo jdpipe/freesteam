@@ -16,8 +16,12 @@
 ##     along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 from freesteam import *
+
+import matplotlib
+matplotlib.use('Cairo')
+
 from matplotlib import rc
-rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+#rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 ## for Palatino and other serif fonts use:
 #rc('font',**{'family':'serif','serif':['Palatino']))
 rc('text', usetex=True)

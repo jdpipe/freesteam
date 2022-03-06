@@ -59,11 +59,12 @@ vars.Add(
 	,"$PREFIX/share"
 )
 
-vars.Add(
+vars.Add(PathVariable(
 	'INSTALL_PYTHON'
 	,"Location to install 'share' files, examples, etc."
 	,default_install_python
-)
+	,PathVariable.PathIsDirCreate
+))
 
 vars.Add(
 	'PYTHON'
@@ -183,7 +184,8 @@ if platform.system()=="Linux":
 
 lib = lib_env.SharedLibrary("freesteam",srcs)
 
-env.Program("test",["test.c"],LIBS=['freesteam'],LIBPATH=['#'])
+testprog = env.Program("test",["test.c"],LIBS=['freesteam'],LIBPATH=['#'])
+env.Alias('test',testprog)
 
 print("lib=",lib)
 import glob	
@@ -211,7 +213,6 @@ env.SConscript(["python/SConscript"],'env')
 env.SConscript(["gtk/SConscript"],'env')
 
 env.Alias('install',['#','$PREFIX','$INSTALL_PYTHON'])
-
 
 
 
