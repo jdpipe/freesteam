@@ -107,7 +107,18 @@ vars.Add(
 	,"$INSTALL_SHARE/freesteam"
 )
 
-env = Environment(variables=vars,tools=['default','textfile'])
+# Although SCons likes to avoid importing PATH and other env vars, it makes 
+# it much more difficult to test the build environment.
+def import_env_vars(envvars):
+	for v in envvars:
+		if v in os.environ:
+			env['ENV'][v] = os.environ[v]
+if platform.system()=="Windows":
+	env = Environment(variables=vars,tools=['default','mingw','textfile'])
+	import_env_vars(['PKG_CONFIG_PATH','PATH','TEMP'])
+elif platform.system()=="Linux":
+	env = Environment(variables=vars,tools=['default','textfile'])
+	import_env_vars(['PKG_CONFIG_PATH','PATH','LD_LIBRARY_PATH'])
 
 Help(vars.GenerateHelpText(env))
 
