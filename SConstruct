@@ -59,11 +59,12 @@ vars.Add(
 	,"$PREFIX/share"
 )
 
-vars.Add(
+vars.Add(PathVariable(
 	'INSTALL_PYTHON'
 	,"Location to install 'share' files, examples, etc."
 	,default_install_python
-)
+	,PathVariable.PathIsDirCreate
+))
 
 vars.Add(
 	'PYTHON'

@@ -85,7 +85,6 @@ if build_python:
 	)
 	env.Depends("freesteam.i","../config.h")
 
-	env.Command("${INSTALL_ROOT}$INSTALL_PYTHON/freesteam",swiglib,Mkdir("${INSTALL_ROOT}$INSTALL_PYTHON/freesteam"))
 	env.Install("${INSTALL_ROOT}$INSTALL_PYTHON/freesteam",[swiglib, 'freesteam.py','__init__.py'])
 
 #	env['installedfiles'] += [env.InstallLibrary("${INSTALL_ROOT}$INSTALL_PYTHON",[swiglib])]
