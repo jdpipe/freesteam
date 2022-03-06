@@ -63,8 +63,9 @@ jobs:
     - name: Test freesteam Python
       run: |
         export PATH=$PATH:~/.local/bin
+        export PYTHONPATH=~/.local/lib/python3.9/site-packages
         cd python
-        python3 hsdiagram.py
+        python3 test.py
 
 # vim: ts=2:sw=2:et
 
