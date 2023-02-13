@@ -3,7 +3,10 @@ Import('env')
 
 envg = env.Clone()
 
-envg.ParseConfig('pkg-config gtk+-2.0 --libs --cflags')
+try:
+	envg.ParseConfig('pkg-config gtk+-2.0 --libs --cflags')
+except OSError as e:
+	print("Failed to detect GTK2 using pkg-config. Is it installed?")
 
 conf = envg.Configure()
 if not conf.CheckHeader('gtk/gtk.h'):
