@@ -112,6 +112,27 @@ elif platform.system()=="Linux":
 
 Help(vars.GenerateHelpText(env))
 
+# some commands for installing stuff...
+import SCons
+from SCons.Script.SConscript import SConsEnvironment
+SConsEnvironment.Chmod = SCons.Action.ActionFactory(os.chmod,
+	lambda dest, mode: 'Chmod("%s", 0%o)' % (dest, mode))
+def InstallPerm(env, dest, files, perm):
+	obj = env.Install(dest, files)
+	for i in obj:
+		env.AddPostAction(i, env.Chmod(str(i), perm))
+	return dest
+def InstallPermAs(env, dest, filen, perm):
+	obj = env.InstallAs(dest, filen)
+	for i in obj:
+		env.AddPostAction(i, env.Chmod(str(i), perm))
+	return dest
+SConsEnvironment.InstallPerm = InstallPerm
+SConsEnvironment.InstallProgram = lambda env, dest, files: InstallPerm(env, dest, files, 0o755)
+SConsEnvironment.InstallHeader = lambda env, dest, files: InstallPerm(env, dest, files, 0o644)
+SConsEnvironment.InstallLibrary = lambda env, dest, files: InstallPerm(env, dest, files, 0o644)
+SConsEnvironment.InstallLibraryAs = lambda env, dest, files: InstallPermAs(env, dest, files, 0o644)
+
 env['SONAME'] = "${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}"
 
 subst_dict = {
@@ -132,6 +153,7 @@ configh = env.Substfile('config.h.in')
 
 configscript = env.Substfile('freesteam-config.in')
 
+install_config = env.InstallProgram("${INSTALL_ROOT}$INSTALL_BIN",configscript)
 
 srcs = ["region1.c", "region2.c", "region3.c", "region4.c", "steam.c"
 	,"backwards.c","b23.c", "common.c", "derivs.c", "zeroin.c", "solver2.c"
@@ -212,7 +234,7 @@ else:
 env.SConscript(["python/SConscript"],'env')
 env.SConscript(["gtk/SConscript"],'env')
 
-env.Alias('install',['#','$PREFIX','$INSTALL_PYTHON'])
+env.Alias('install',['#','$PREFIX','$INSTALL_PYTHON','$INSTALL_BIN',])
 
 
 

@@ -1,4 +1,5 @@
 #!@PYTHON@
+from __future__ import print_function
 from optparse import OptionParser
 import sys, platform, os.path
 
@@ -76,9 +77,9 @@ if options.cppflags:
 	if INCLUDE!="/usr/include":
 		include=INCLUDE
 	if -1!=include.find(" "):
-		print "-I"+munge(include)+""
+		sys.stdout.write(" -I"+munge(include)+"")
 	elif len(include):
-		print "-I"+include
+		sys.stdout.write(" -I"+include)
 	ok = True
 
 if options.libs:
@@ -86,17 +87,20 @@ if options.libs:
 	if LIB!="/usr/lib":
 		libs = LIB
 	if -1!=libs.find(" "):
-		print "-L"+munge(libs)+" -lfreesteam"
+		sys.stdout.write(" -L"+munge(libs)+" -lfreesteam")
 	else:
-		Lflag  = ""
+		Lflag  = " "
 		if len(libs):
-			Lflag = "-L"+libs+" "
-		print Lflag + "-lfreesteam"
+			Lflag = " -L"+libs+" "
+		sys.stdout.write(Lflag + "-lfreesteam")
 	ok = True
 
 if options.python:
-	print PYTHON
+	sys.stdout.write(" "+PYTHON)
 	ok = True
+
+if ok:
+	sys.stdout.write("\n")
 
 if not ok:
 	sys.stderr.write("invalid option '%s' (use --help for more info)\n" % args)
