@@ -19,7 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef FREESTEAM_COMMON_H
 #define FREESTEAM_COMMON_H
 
-#include "config.h"
+#if defined(FREESTEAM_BUILDING_LIB) || defined(FREESTEAM_LOCAL)
+# include "config.h"
+#else
+# include <freesteam/config.h>
+#endif
 
 #define FREESTEAM_CHAR int
 

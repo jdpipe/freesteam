@@ -25,7 +25,7 @@ if platform.system()=="Windows" or "MINGW" in platform.system():
 	soname_minor = ""
 else:
 	soname_major = ".1"
-	soname_minor = ".0"
+	soname_minor = ".1"
 
 vars = Variables()
 
@@ -133,6 +133,8 @@ SConsEnvironment.InstallHeader = lambda env, dest, files: InstallPerm(env, dest,
 SConsEnvironment.InstallLibrary = lambda env, dest, files: InstallPerm(env, dest, files, 0o644)
 SConsEnvironment.InstallLibraryAs = lambda env, dest, files: InstallPermAs(env, dest, files, 0o644)
 
+env['SONAME_MAJOR'] = soname_major
+env['SONAME_MINOR'] = soname_minor
 env['SONAME'] = "${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}"
 
 subst_dict = {
@@ -195,6 +197,8 @@ for h in ['string.h','math.h','stdlib.h','limits.h','gsl/gsl_multiroots.h','gsl/
 		Exit(1)
 envp = conf.Finish()
 
+# Create the shared library
+
 lib_env.Append(
 	LIBS = ['m']
 )
@@ -202,32 +206,57 @@ lib_env.Append(
 if platform.system()=="Linux":
 	lib_env.Append(LINKFLAGS=['-Wl,-soname,$SONAME'])
 
-# Create the shared library
-
 lib = lib_env.SharedLibrary("freesteam",srcs)
-
-testprog = env.Program("test",["test.c"],LIBS=['freesteam'],LIBPATH=['#'])
-env.Alias('test',testprog)
-
 print("lib=",lib)
-import glob	
-env.Install("${INSTALL_ROOT}$INSTALL_INCLUDE/freesteam", glob.glob("*.h"))
+libs = [lib]
 
-# create local symlink for the soname stuff.
+# create local symlink for the soname stuff
+
 if platform.system()=="Windows":
 	env.Install("${INSTALL_ROOT}$INSTALL_BIN",[lib[0]])
 	env.Install("${INSTALL_ROOT}$INSTALL_LIB",[lib[1]])
 else:
 	if env.get('SONAME_MAJOR'):
-		lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}",lib,Move("$TARGET","$SOURCE"))
-		#print "MAKING LINK, SONAME_MAJOR =",env.get('SONAME_MAJOR')
-		liblink = lib_env.Command("${SHLIBPREFIX}freesteam${SHLIBSUFFIX}${SONAME_MAJOR}"
+		lib_env.Command("${SONAME}",lib,Move("$TARGET","$SOURCE"))
+		print("MAKING LINK, SONAME_MAJOR =",env.get('SONAME_MAJOR'))
+		liblink = lib_env.Command("${SONAME}"
 			,lib
 			,"ln -s $SOURCE $TARGET"
 		)
 		libs.append(liblink)
 		env.Depends('python',liblink)
 		env.Depends('test',liblink)
+
+# install the lib
+
+if platform.system()=="Windows":
+	install_lib = env.InstallLibrary("$INSTALL_ROOT$INSTALL_LIB",[lib])
+else:
+	libname = "$INSTALL_LIB/$SONAME$SONAME_MINOR"
+	install_lib = env.InstallLibraryAs("${INSTALL_ROOT}"+libname, [lib])
+
+	link1 = "$INSTALL_LIB/${SHLIBPREFIX}freesteam$SHLIBSUFFIX"
+	link2 = "$INSTALL_LIB/$SONAME"
+
+	install_link1 = None
+	if env.subst(link1) != env.subst(libname):
+		install_link1 = env.Command("${INSTALL_ROOT}"+link1,install_lib,"ln -s %s $TARGET" % os.path.basename(libname))
+
+	install_link2 = None
+	if env.get("SONAME_MINOR"):
+		install_link2 = env.Command("${INSTALL_ROOT}"+link2,install_lib,"ln -s %s $TARGET"%os.path.basename(libname))
+
+	#env['installedfiles'] += [install_link1, install_link2]
+
+# compile the test program
+
+testprog = env.Program("test",["test.c"],LIBS=['freesteam'],LIBPATH=['#'])
+env.Alias('test',testprog)
+
+# install the header files
+
+import glob
+env.Install("${INSTALL_ROOT}$INSTALL_INCLUDE/freesteam", glob.glob("*.h"))
 
 # Python bindings
 

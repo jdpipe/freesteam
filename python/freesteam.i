@@ -106,6 +106,7 @@ You may not use it in commercially-released software."
 
 %{
 // function prototypes for included C use -- for reading by GCC
+#define FREESTEAM_LOCAL
 #include "config.h"
 #include "common.h"
 #include "steam.h"
