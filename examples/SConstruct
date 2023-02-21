@@ -1,7 +1,7 @@
 # simple SCons script to build the example(s)
 
 env = Environment()
-import sys
+import sys, shutil
 
 import platform
 if platform.system() == "Windows":
@@ -9,7 +9,7 @@ if platform.system() == "Windows":
 	cmd = [sys.executable,r'..\freesteam-config']
 else:
 	# on other platforms, it just works...
-	cmd = ['freesteam-config']
+	cmd = [shutil.which('freesteam-config')]
 
 env.ParseConfig(cmd + ['--libs','--cppflags'])
 	

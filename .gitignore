@@ -21,3 +21,4 @@ python/freesteam.py
 python/freesteam_wrap.c
 gtk/freesteam-gtk
 test
+libfreesteam.so*
