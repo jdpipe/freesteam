@@ -26,13 +26,20 @@ import sys, platform, os.path
 # platform specific name munging for '-L' and '-I' file paths...
 munge = lambda s: s
 
-if platform.system()=="Windows":
-	import _winreg
-	x=_winreg.ConnectRegistry(None,_winreg.HKEY_LOCAL_MACHINE)
-	y= _winreg.OpenKey(x,r"SOFTWARE\FREESTEAM")
-	BIN,t = _winreg.QueryValueEx(y,"Install_Dir")	
-	_winreg.CloseKey(y)
-	_winreg.CloseKey(x)
+if 0:
+	# previously, we installed freesteam using a Windows installer.
+	# however, for now, we don't do that, and the main thing is to make sure
+	# that this script works within the MSYS2 context. So disable the winreg stuff for now...
+	
+	# having said that, it would still useful to use 'cygpath' to get MSYS2 paths instead of native Windows ones.
+	
+	#if platform.system()=="Windows":
+	import winreg
+	x=winreg.ConnectRegistry(None,winreg.HKEY_LOCAL_MACHINE)
+	y= winreg.OpenKey(x,r"SOFTWARE\FREESTEAM")
+	BIN,t = winreg.QueryValueEx(y,"Install_Dir")	
+	winreg.CloseKey(y)
+	winreg.CloseKey(x)
 
 	LIB = os.path.join(BIN,"lib")
 	INCLUDE = os.path.join(BIN,"include")

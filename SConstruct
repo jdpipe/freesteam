@@ -16,7 +16,7 @@ default_prefix=os.path.join(os.path.expanduser("~"),".local")
 default_install_python = "$INSTALL_LIB/python%d.%d/site-packages"%(sys.version_info[0],sys.version_info[1])
 #print('system',platform.system())
 if platform.system()=="Windows" or "MINGW" in platform.system():
-	if os.environ.get('MSYSTEM') == "MINGW64":
+	if os.environ.get('MSYSTEM') in ["MINGW64","UCRT64"] :
 		# old, doesn't work, messed up slashes...
 		#default_prefix=os.path.join(os.environ['HOME'],'.local')
 		import pathlib
