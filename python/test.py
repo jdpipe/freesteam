@@ -1,3 +1,10 @@
+import platform
+if platform.system()=="Windows":
+  # we have to do this unless we want to put our extension directly into Python's system path. or maybe there's a better way...
+  import os, sys
+  from pathlib import Path
+  os.add_dll_directory(Path(os.environ['HOME']) / f".local/lib/python{sys.version_info.major}.{sys.version_info.minor}")
+
 import freesteam
 
 S = freesteam.steam_ph(100e5,300)
